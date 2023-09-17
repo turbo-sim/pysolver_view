@@ -1,0 +1,853 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Optimization functionality &#8212; PySolverView 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'source/PySolverView.optimization';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Optimization problems" href="PySolverView.optimization_problems.html" />
+    <link rel="prev" title="API Reference" href="modules.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">PySolverView 1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_optimization.html">Tutorial: Optimization problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_nonlinear_system.html">Tutorial: Nonlinear systems</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="modules.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Optimization functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PySolverView.optimization_problems.html">Optimization problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PySolverView.nonlinear_system.html">Nonlinear systems functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PySolverView.nonlinear_system_problems.html">Nonlinear systems problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PySolverView.utilities.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/source/PySolverView.optimization.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Optimization functionality</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationProblem"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationProblem.get_bounds"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_bounds()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationProblem.get_n_eq"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_n_eq()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationProblem.get_n_ineq"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_n_ineq()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationProblem.get_number_of_constraints"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_number_of_constraints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationProblem.get_values"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_values()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationProblem.merge_objective_and_constraints"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.merge_objective_and_constraints()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationSolver"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationSolver.get_jacobian"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.get_jacobian()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationSolver.get_values"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.get_values()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationSolver.plot_convergence_history"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.plot_convergence_history()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationSolver.print_convergence_history"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.print_convergence_history()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationSolver.solve"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.solve()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="module-PySolverView.optimization">
+<span id="optimization-functionality"></span><h1>Optimization functionality<a class="headerlink" href="#module-PySolverView.optimization" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="PySolverView.optimization.OptimizationProblem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PySolverView.optimization.</span></span><span class="sig-name descname"><span class="pre">OptimizationProblem</span></span><a class="reference internal" href="../_modules/PySolverView/optimization.html#OptimizationProblem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.optimization.OptimizationProblem" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Abstract base class for optimization problems.</p>
+<p>Derived optimization problem objects must implement the following methods:</p>
+<ul class="simple">
+<li><p><cite>get_values</cite>: Evaluate the objective function and constraints for a given set of decision variables.</p></li>
+<li><p><cite>get_bounds</cite>: Get the bounds for each decision variable.</p></li>
+<li><p><cite>get_n_eq</cite>: Return the number of equality constraints associated with the problem.</p></li>
+<li><p><cite>get_n_ineq</cite>: Return the number of inequality constraints associated with the problem.</p></li>
+</ul>
+<p>Additionally, specific problem classes can define the <cite>get_jacobian</cite> method to compute the Jacobians. If this method is not present in the derived class, the solver will revert to using forward finite differences for Jacobian calculations.</p>
+<p class="rubric">Examples</p>
+<p>Here’s an example of how to derive from <cite>OptimizationProblem</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyOptimizationProblem</span><span class="p">(</span><span class="n">OptimizationProblem</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="c1"># Implement evaluation logic here</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">get_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Return bounds of decision variables</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">get_n_eq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Return number of equality constraints</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">get_n_ineq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Return number of inequality constraints</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table class="table">
+<tbody>
+<tr class="row-odd"><td><p><strong>get_values(x)</strong></p></td>
+<td><p>Evaluate the objective function and constraints for a given set of decision variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>get_bounds()</strong></p></td>
+<td><p>Get the bounds for each decision variable.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>get_n_eq()</strong></p></td>
+<td><p>Return the number of equality constraints associated with the problem.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>get_n_ineq()</strong></p></td>
+<td><p>Return the number of inequality constraints associated with the problem.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="PySolverView.optimization.OptimizationProblem.get_bounds">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_bounds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/optimization.html#OptimizationProblem.get_bounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.optimization.OptimizationProblem.get_bounds" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the bounds for each decision variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>bounds</strong><span class="classifier">list of tuple</span></dt><dd><p>A list of tuples where each tuple contains two elements: the lower and upper bounds
+for the corresponding decision variable. For example, [(-2, 2), (-1, 1)] indicates
+that the first decision variable has bounds between -2 and 2, and the second has
+bounds between -1 and 1.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PySolverView.optimization.OptimizationProblem.get_n_eq">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_n_eq</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/optimization.html#OptimizationProblem.get_n_eq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.optimization.OptimizationProblem.get_n_eq" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the number of equality constraints associated with the problem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>neq</strong><span class="classifier">int</span></dt><dd><p>Number of equality constraints.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PySolverView.optimization.OptimizationProblem.get_n_ineq">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_n_ineq</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/optimization.html#OptimizationProblem.get_n_ineq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.optimization.OptimizationProblem.get_n_ineq" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the number of inequality constraints associated with the problem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>nineq</strong><span class="classifier">int</span></dt><dd><p>Number of inequality constraints.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PySolverView.optimization.OptimizationProblem.get_number_of_constraints">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_number_of_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/optimization.html#OptimizationProblem.get_number_of_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.optimization.OptimizationProblem.get_number_of_constraints" title="Permalink to this definition">#</a></dt>
+<dd><p>Retrieve the number of constraints based on the provided input.</p>
+<p>This function returns the count of constraints based on the nature of the
+input:</p>
+<ul class="simple">
+<li><p><cite>None</cite> returns 0</p></li>
+<li><p>Scalar values return 1</p></li>
+<li><p>Array-like structures return their length</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>var</strong><span class="classifier">None, scalar, or array-like (list, tuple, np.ndarray)</span></dt><dd><p>The input representing the constraint(s). This can be <cite>None</cite>, a scalar value,
+or an array-like structure containing multiple constraints.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>int</dt><dd><p>The number of constraints:</p>
+<ul class="simple">
+<li><p>0 for <cite>None</cite></p></li>
+<li><p>1 for scalar values</p></li>
+<li><p>Length of the array-like for array-like inputs</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_number_of_constraints</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_number_of_constraints</span><span class="p">(</span><span class="mf">5.0</span><span class="p">)</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_number_of_constraints</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PySolverView.optimization.OptimizationProblem.get_values">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/optimization.html#OptimizationProblem.get_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.optimization.OptimizationProblem.get_values" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluate the objective function and constraints for given decision variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">array-like</span></dt><dd><p>Vector of independent variables (i.e., degrees of freedom).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array_like</dt><dd><p>Vector containing the objective function, equality constraints, and inequality constraints.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PySolverView.optimization.OptimizationProblem.merge_objective_and_constraints">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">merge_objective_and_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_eq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_ineq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/optimization.html#OptimizationProblem.merge_objective_and_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.optimization.OptimizationProblem.merge_objective_and_constraints" title="Permalink to this definition">#</a></dt>
+<dd><p>Combine an objective function with its associated equality and inequality constraints.</p>
+<p>This function takes in an objective function value, a set of equality constraints,
+and a set of inequality constraints. It then returns a combined numpy array of
+these values. If the constraints are not given as a list, tuple, or numpy array,
+they will be appended as individual values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>f</strong><span class="classifier">float</span></dt><dd><p>The value of the objective function.</p>
+</dd>
+<dt><strong>c_eq</strong><span class="classifier">float, list, tuple, np.ndarray, or None</span></dt><dd><p>The equality constraint(s). This can be a single value or a collection of values.
+If <cite>None</cite>, no equality constraints will be added.</p>
+</dd>
+<dt><strong>c_ineq</strong><span class="classifier">float, list, tuple, np.ndarray, or None</span></dt><dd><p>The inequality constraint(s). This can be a single value or a collection of values.
+If <cite>None</cite>, no inequality constraints will be added.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray</dt><dd><p>A numpy array consisting of the objective function value followed by equality and
+inequality constraints.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">combine_objective_and_constraints</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+<span class="go">array([1. , 0.5, 0.6, 0.7, 0.8])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">combine_objective_and_constraints</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">)</span>
+<span class="go">array([1. , 0.5, 0.7])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PySolverView.optimization.OptimizationSolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PySolverView.optimization.</span></span><span class="sig-name descname"><span class="pre">OptimizationSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/optimization.html#OptimizationSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.optimization.OptimizationSolver" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Solver class for general nonlinear programming problems.</p>
+<p>The solver is designed to handle constrained optimization problems of the form:</p>
+<p>Minimize:</p>
+<div class="math notranslate nohighlight">
+\[f(\mathbf{x}) \; \mathrm{with} \; \mathbf{x} \in \mathbb{R}^n\]</div>
+<p>Subject to:</p>
+<div class="math notranslate nohighlight">
+\[c_{\mathrm{eq}}(\mathbf{x}) = 0\]</div>
+<div class="math notranslate nohighlight">
+\[c_{\mathrm{in}}(\mathbf{x}) \geq 0\]</div>
+<div class="math notranslate nohighlight">
+\[\mathbf{x}_l \leq \mathbf{x} \leq \mathbf{x}_u\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathbf{x}\)</span> is the vector of decision variables (i.e., degree of freedom).</p></li>
+<li><p><span class="math notranslate nohighlight">\(f(\mathbf{x})\)</span> is the objective function to be minimized. Maximization problems can be casted into minimization problems by changing the sign of the objective function.</p></li>
+<li><p><span class="math notranslate nohighlight">\(c_{\mathrm{eq}}(\mathbf{x})\)</span> are the equality constraints of the problem.</p></li>
+<li><p><span class="math notranslate nohighlight">\(c_{\mathrm{in}}(\mathbf{x})\)</span> are the inequality constraints of the problem. Constraints of type <span class="math notranslate nohighlight">\(c_{\mathrm{in}}(\mathbf{x}) \leq 0\)</span> can be casted into <span class="math notranslate nohighlight">\(c_{\mathrm{in}}(\mathbf{x}) \geq 0\)</span> type by changing the sign of the constraint functions.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{x}_l\)</span> and <span class="math notranslate nohighlight">\(\mathbf{x}_u\)</span> are the lower and upper bounds on the decision variables.</p></li>
+</ul>
+<p>The class interfaces with the <cite>minimize</cite> method from <cite>scipy.optimize</cite> to solve the problem and provides a structured framework for initialization, solution monitoring, and post-processing.</p>
+<p>This class employs a caching mechanism to avoid redundant evaluations. For a given set of independent variables, x, the optimizer requires the objective function, equality constraints, and inequality constraints to be provided separately. When working with complex models, these values are typically calculated all at once. If x hasn’t changed from a previous evaluation, the caching system ensures that previously computed values are used, preventing unnecessary recalculations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>problem</strong><span class="classifier">OptimizationProblem</span></dt><dd><p>An instance of the optimization problem to be solved.</p>
+</dd>
+<dt><strong>x0</strong><span class="classifier">array_like</span></dt><dd><p>Initial guess for the independent variables.</p>
+</dd>
+<dt><strong>display</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, displays the convergence progress. Defaults to True.</p>
+</dd>
+<dt><strong>plot</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, plots the convergence progress. Defaults to False.</p>
+</dd>
+<dt><strong>logger</strong><span class="classifier">logging.Logger, optional</span></dt><dd><p>Logger object to which logging messages will be directed. Defaults to None.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="table">
+<tbody>
+<tr class="row-odd"><td><p><strong>solve(x0, method=”slsqp”, tol=1e-9, options=None):</strong></p></td>
+<td><p>Solve the optimization problem using scipy’s minimize.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>get_values(x):</strong></p></td>
+<td><p>Evaluates the optimization problem values at a given point x.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>get_jacobian(x):</strong></p></td>
+<td><p>Evaluates the Jacobians of the optimization problem at a given point x.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>print_convergence_history():</strong></p></td>
+<td><p>Print the final result and convergence history of the optimization problem.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>plot_convergence_history():</strong></p></td>
+<td><p>Plot the convergence history of the optimization problem.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="PySolverView.optimization.OptimizationSolver.get_jacobian">
+<span class="sig-name descname"><span class="pre">get_jacobian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/optimization.html#OptimizationSolver.get_jacobian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.optimization.OptimizationSolver.get_jacobian" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluates the Jacobians of the optimization problem at the given point x.</p>
+<p>This method will use the <cite>get_jacobian</cite> method of the OptimizationProblem class if it exists. 
+If the <cite>get_jacobian</cite> method is not implemented the Jacobian is approximated using forward finite differences.</p>
+<p>To prevent redundant calculations, cached results are checked first. If a matching 
+cached result is found, it is returned; otherwise, a fresh calculation is performed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">array-like</span></dt><dd><p>Vector of independent variables (i.e., degrees of freedom).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple</dt><dd><dl class="simple">
+<dt>Three arrays representing:</dt><dd><ul class="simple">
+<li><p>Jacobian of the objective function</p></li>
+<li><p>Jacobian of equality constraints</p></li>
+<li><p>Jacobian of inequality constraints</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Cached values are based on the last evaluated point. If <cite>x</cite> matches the cached point, 
+the cached Jacobians are returned to save computational effort.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PySolverView.optimization.OptimizationSolver.get_values">
+<span class="sig-name descname"><span class="pre">get_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/optimization.html#OptimizationSolver.get_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.optimization.OptimizationSolver.get_values" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluates the optimization problem values at a given point x.</p>
+<p>This method queries the <cite>get_values</cite> method of the OptimizationProblem class to 
+compute the objective function value and constraint values. It first checks the cache 
+to avoid redundant evaluations. If no matching cached result exists, it proceeds to 
+evaluate the objective function and constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">array-like</span></dt><dd><p>Vector of independent variables (i.e., degrees of freedom).</p>
+</dd>
+<dt><strong>single_output</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, returns all values (objective and constraints) in a single array.
+If False, returns a tuple with separate arrays for the objective, equality 
+constraints, and inequality constraints. Default is False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple or array-like</dt><dd><dl class="simple">
+<dt>If <cite>single_output</cite> is True:</dt><dd><p>Array containing the objective function value followed by equality and inequality constraints values.</p>
+</dd>
+<dt>If <cite>single_output</cite> is False:</dt><dd><p>Tuple containing:
+- Objective function value
+- Array of equality constraints values
+- Array of inequality constraints values</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Cached values are based on the last evaluated point. If <cite>x</cite> matches the cached point, 
+the cached results are returned to save computational effort.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PySolverView.optimization.OptimizationSolver.plot_convergence_history">
+<span class="sig-name descname"><span class="pre">plot_convergence_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">savefig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_datetime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/optimization.html#OptimizationSolver.plot_convergence_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.optimization.OptimizationSolver.plot_convergence_history" title="Permalink to this definition">#</a></dt>
+<dd><p>Plot the convergence history of the problem.</p>
+<dl class="simple">
+<dt>This method plots the optimization progress against the number of iterations:</dt><dd><ul class="simple">
+<li><p>Objective function value (left y-axis)</p></li>
+<li><p>Maximum constraint violation (right y-axis)</p></li>
+</ul>
+</dd>
+<dt>Note:</dt><dd><ul class="simple">
+<li><p>This method should be called after the optimization process is completed.</p></li>
+<li><p>The constraint violation is only displayed if the problem has constraints</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PySolverView.optimization.OptimizationSolver.print_convergence_history">
+<span class="sig-name descname"><span class="pre">print_convergence_history</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/optimization.html#OptimizationSolver.print_convergence_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.optimization.OptimizationSolver.print_convergence_history" title="Permalink to this definition">#</a></dt>
+<dd><p>Print the convergence history of the problem.</p>
+<dl class="simple">
+<dt>The convergence history includes:</dt><dd><ul class="simple">
+<li><p>Current iteration</p></li>
+<li><p>Number of function evaluations</p></li>
+<li><p>Objective function value</p></li>
+<li><p>Maximum constraint violation</p></li>
+<li><p>Two-norm of the update step</p></li>
+</ul>
+</dd>
+<dt>The method provides a comprehensive report on the final solution, including:</dt><dd><ul class="simple">
+<li><p>Exit message</p></li>
+<li><p>Success status</p></li>
+<li><p>Final ojective function value</p></li>
+<li><p>Final independent variables values</p></li>
+</ul>
+</dd>
+<dt>Note:</dt><dd><p>This method should be called after the optimization process is completed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PySolverView.optimization.OptimizationSolver.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'slsqp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-09</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/optimization.html#OptimizationSolver.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.optimization.OptimizationSolver.solve" title="Permalink to this definition">#</a></dt>
+<dd><p>Solve the optimization problem using scipy’s minimize.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>Parameters:</strong></dt><dd></dd>
+<dt><strong>x0: array-like, optional</strong></dt><dd><p>Initial guess for the optimization problem. If not provided, the initial guess set during instantiation is used.</p>
+</dd>
+<dt><strong>method</strong><span class="classifier">str, optional</span></dt><dd><p>Optimization method to be used by scipy’s minimize.
+Two available solvers for nonlinear constrained optimization problems:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">trust-constr</span></code>: An interior-point method. This method might require more iterations to converge compared to <code class="code docutils literal notranslate"><span class="pre">slsqp</span></code>.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">slsqp</span></code>: A Sequential Quadratic Programming (SQP) method. It might have a different convergence rate compared to <code class="code docutils literal notranslate"><span class="pre">trust-constr</span></code>.</p></li>
+</ul>
+<p>Defaults to ‘slsqp’.</p>
+</dd>
+<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>Tolerance for the optimization termination. Defaults to 1e-9.</p>
+</dd>
+<dt><strong>options</strong><span class="classifier">dict, optional</span></dt><dd><p>Additional options to be passed to scipy’s minimize.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>OptimizeResult</dt><dd><p>A result object from scipy’s minimize detailing the outcome of the optimization.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The choice between <code class="code docutils literal notranslate"><span class="pre">trust-constr</span></code> and <code class="code docutils literal notranslate"><span class="pre">slsqp</span></code> can be influenced by the specific problem and the desired balance
+between potential computational speed and the method’s nature. It might be beneficial to experiment with both
+methods to determine which one is more suitable for a particular problem.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="modules.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">API Reference</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="PySolverView.optimization_problems.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Optimization problems</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationProblem"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationProblem.get_bounds"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_bounds()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationProblem.get_n_eq"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_n_eq()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationProblem.get_n_ineq"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_n_ineq()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationProblem.get_number_of_constraints"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_number_of_constraints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationProblem.get_values"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_values()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationProblem.merge_objective_and_constraints"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.merge_objective_and_constraints()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationSolver"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationSolver.get_jacobian"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.get_jacobian()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationSolver.get_values"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.get_values()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationSolver.plot_convergence_history"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.plot_convergence_history()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationSolver.print_convergence_history"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.print_convergence_history()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PySolverView.optimization.OptimizationSolver.solve"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.solve()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Roberto Agromayor
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

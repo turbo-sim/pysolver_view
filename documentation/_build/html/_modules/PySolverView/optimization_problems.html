@@ -1,0 +1,508 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PySolverView.optimization_problems &#8212; PySolverView 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/PySolverView/optimization_problems';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">PySolverView 1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../source/introduction.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/tutorial_optimization.html">Tutorial: Optimization problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/tutorial_nonlinear_system.html">Tutorial: Nonlinear systems</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../source/modules.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../source/PySolverView.optimization.html">Optimization functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../source/PySolverView.optimization_problems.html">Optimization problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../source/PySolverView.nonlinear_system.html">Nonlinear systems functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../source/PySolverView.nonlinear_system_problems.html">Nonlinear systems problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../source/PySolverView.utilities.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for PySolverView.optimization_problems</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize._numdiff</span> <span class="kn">import</span> <span class="n">approx_derivative</span>
+
+<span class="kn">from</span> <span class="nn">.optimization</span> <span class="kn">import</span> <span class="n">OptimizationProblem</span>
+
+
+<div class="viewcode-block" id="RosenbrockProblem"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.RosenbrockProblem">[docs]</a><span class="k">class</span> <span class="nc">RosenbrockProblem</span><span class="p">(</span><span class="n">OptimizationProblem</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of the Rosenbrock problem.</span>
+
+<span class="sd">    The Rosenbrock problem, also known as Rosenbrock&#39;s valley or banana function,</span>
+<span class="sd">    is defined as:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       </span>
+<span class="sd">        \begin{align}</span>
+<span class="sd">        \text{minimize} \quad  &amp; f(\mathbf{x}) = \sum_{i=1}^{n-1} \left[ 100(x_{i+1} - x_i^2)^2 + (x_i - 1)^2 \right] \\</span>
+<span class="sd">        \end{align}</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    get_values(x)</span>
+<span class="sd">        Evaluates the Rosenbrock function and its constraints.</span>
+<span class="sd">    get_bounds()</span>
+<span class="sd">        Returns the bounds for the problem.</span>
+<span class="sd">    get_n_eq()</span>
+<span class="sd">        Returns the number of equality constraints.</span>
+<span class="sd">    get_n_ineq()</span>
+<span class="sd">        Returns the number of inequality constraints.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="RosenbrockProblem.get_values"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.RosenbrockProblem.get_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+
+        <span class="c1"># Objective function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Equality constraints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span> <span class="o">=</span> <span class="p">[]</span>
+            
+        <span class="c1"># No inequality constraints given for this problem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Combine objective function and constraints</span>
+        <span class="n">objective_and_constraints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_objective_and_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">objective_and_constraints</span></div>
+
+
+<div class="viewcode-block" id="RosenbrockProblem.get_bounds"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.RosenbrockProblem.get_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">get_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="RosenbrockProblem.get_n_eq"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.RosenbrockProblem.get_n_eq">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_eq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RosenbrockProblem.get_n_ineq"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.RosenbrockProblem.get_n_ineq">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_ineq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RosenbrockProblemConstrained"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.RosenbrockProblemConstrained">[docs]</a><span class="k">class</span> <span class="nc">RosenbrockProblemConstrained</span><span class="p">(</span><span class="n">OptimizationProblem</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of the Chained Rosenbrock function with trigonometric-exponential constraints.</span>
+
+<span class="sd">    This problem is also referred to as Example 5.1 in the report by Luksan and Vlcek. The optimization problem is described as:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \begin{align}</span>
+<span class="sd">        \text{minimize} \quad &amp; \sum_{i=1}^{n-1}\left[100\left(x_i^2-x_{i+1}\right)^2 + \left(x_i-1\right)^2\right] \\</span>
+<span class="sd">        \text{s.t.} \quad &amp; 3x_{k+1}^3 + 2x_{k+2} - 5 + \sin(x_{k+1}-x_{k+2})\sin(x_{k+1}+x_{k+2}) + \\</span>
+<span class="sd">                            &amp; + 4x_{k+1} - x_k \exp(x_k-x_{k+1}) - 3 = 0, \; \forall k=1,...,n-2 \\</span>
+<span class="sd">                            &amp; -5 \le x_i \le 5, \forall i=1,...,n</span>
+<span class="sd">        \end{align}</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    - Luksan, L., and Jan Vlcek. “Sparse and partially separable test problems for unconstrained and equality constrained optimization.” (1999). `doi: link provided &lt;http://hdl.handle.net/11104/0123965&gt;`_.</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    get_values(x):</span>
+<span class="sd">        Compute objective, equality, and inequality constraint.</span>
+<span class="sd">    get_bounds():</span>
+<span class="sd">        Return variable bounds.</span>
+<span class="sd">    get_n_eq():</span>
+<span class="sd">        Get number of equality constraints.</span>
+<span class="sd">    get_n_ineq():  </span>
+<span class="sd">        Get number of inequality constraints.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="RosenbrockProblemConstrained.get_values"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.RosenbrockProblemConstrained.get_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+
+        <span class="c1"># Objective function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Equality constraints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">5</span> <span class="o">+</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">2</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span>
+                <span class="mi">4</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="c1"># No inequality constraints given for this problem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Combine objective function and constraints</span>
+        <span class="n">objective_and_constraints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_objective_and_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">objective_and_constraints</span></div>
+    
+    <span class="c1"># def get_jacobian(self, x):</span>
+    <span class="c1">#     jac = approx_derivative(self.get_values, x, method=&quot;2-point&quot;)</span>
+    <span class="c1">#     return np.atleast_2d(jac)</span>
+
+<div class="viewcode-block" id="RosenbrockProblemConstrained.get_bounds"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.RosenbrockProblemConstrained.get_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">get_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">))]</span>
+        <span class="k">return</span> <span class="n">bounds</span></div>
+
+<div class="viewcode-block" id="RosenbrockProblemConstrained.get_n_eq"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.RosenbrockProblemConstrained.get_n_eq">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_eq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RosenbrockProblemConstrained.get_n_ineq"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.RosenbrockProblemConstrained.get_n_ineq">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_ineq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span><span class="p">)</span></div></div>
+
+
+
+<div class="viewcode-block" id="HS71Problem"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.HS71Problem">[docs]</a><span class="k">class</span> <span class="nc">HS71Problem</span><span class="p">(</span><span class="n">OptimizationProblem</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of the Hock Schittkowski problem No.71.</span>
+
+<span class="sd">    This class implements the following optimization problem:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \begin{align}</span>
+<span class="sd">        \text{minimize} \quad  &amp; f(\mathbf{x}) = x_1x_4(x_1+x_2+x_3) + x_3 \\</span>
+<span class="sd">        \text{s.t.} \quad      &amp; x_1^2 + x_2^2 + x_3^2 + x_4^2 = 40 \\</span>
+<span class="sd">                                &amp; 25 - x_1 x_2 x_3 x_4 \le 0 \\</span>
+<span class="sd">                                &amp; 1 \le x_1, x_2, x_3, x_4 \le 5</span>
+<span class="sd">        \end{align}</span>
+
+<span class="sd">       </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    - W. Hock and K. Schittkowski. Test examples for nonlinear programming codes. Lecture Notes in Economics and Mathematical Systems, 187, 1981. `doi: 10.1007/978-3-642-48320-2 &lt;https://doi.org/10.1007/978-3-642-48320-2&gt;`_.</span>
+
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    get_values(x)`:</span>
+<span class="sd">        Compute objective, equality, and inequality constraint.</span>
+<span class="sd">    get_bounds()`:</span>
+<span class="sd">        Return variable bounds.</span>
+<span class="sd">    get_n_eq()`:</span>
+<span class="sd">        Get number of equality constraints.</span>
+<span class="sd">    get_n_ineq()`:  </span>
+<span class="sd">        Get number of inequality constraints.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="HS71Problem.get_values"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.HS71Problem.get_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+
+        <span class="c1"># Objective function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        
+        <span class="c1"># Equality constraints (as a list)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mf">40.0</span><span class="p">]</span>
+
+        <span class="c1"># Inequality constraints (as a list)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="mf">25.0</span>
+
+        <span class="c1"># Combine objective function and constraints</span>
+        <span class="n">objective_and_constraints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_objective_and_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">objective_and_constraints</span></div>
+
+<div class="viewcode-block" id="HS71Problem.get_bounds"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.HS71Problem.get_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">get_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="HS71Problem.get_n_eq"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.HS71Problem.get_n_eq">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_eq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HS71Problem.get_n_ineq"><a class="viewcode-back" href="../../source/PySolverView.optimization_problems.html#PySolverView.optimization_problems.HS71Problem.get_n_ineq">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_ineq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span><span class="p">)</span></div></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Roberto Agromayor
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

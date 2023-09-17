@@ -1,0 +1,773 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PySolverView.nonlinear_system &#8212; PySolverView 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/PySolverView/nonlinear_system';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">PySolverView 1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../source/introduction.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/tutorial_optimization.html">Tutorial: Optimization problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/tutorial_nonlinear_system.html">Tutorial: Nonlinear systems</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../source/modules.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../source/PySolverView.optimization.html">Optimization functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../source/PySolverView.optimization_problems.html">Optimization problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../source/PySolverView.nonlinear_system.html">Nonlinear systems functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../source/PySolverView.nonlinear_system_problems.html">Nonlinear systems problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../source/PySolverView.utilities.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for PySolverView.nonlinear_system</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">FormatStrFormatter</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">root</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize._numdiff</span> <span class="kn">import</span> <span class="n">approx_derivative</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+
+<div class="viewcode-block" id="NonlinearSystemSolver"><a class="viewcode-back" href="../../source/PySolverView.nonlinear_system.html#PySolverView.nonlinear_system.NonlinearSystemSolver">[docs]</a><span class="k">class</span> <span class="nc">NonlinearSystemSolver</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solver class for nonlinear systems of equations.</span>
+
+<span class="sd">    The solver is designed to handle system of nonlinear equations of the form:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        F(x) = 0</span>
+
+<span class="sd">    where :math:`F: \mathbb{R}^n \rightarrow \mathbb{R}^n` is a vector-valued</span>
+<span class="sd">    function of the vector :math:`x`.</span>
+
+<span class="sd">    The class interfaces with the `root` method from `scipy.optimize` to solve the equations and provides a structured framework for initialization, solution monitoring, and post-processing.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    problem : NonlinearSystemProblem</span>
+<span class="sd">        An instance of a problem defining the system of equations to be solved.</span>
+<span class="sd">    x0 : array_like</span>
+<span class="sd">        Initial guess for the independent variables.</span>
+<span class="sd">    display : bool, optional</span>
+<span class="sd">        If True, displays the convergence progress. Defaults to True.</span>
+<span class="sd">    plot : bool, optional</span>
+<span class="sd">        If True, plots the convergence progress. Defaults to False.</span>
+<span class="sd">    logger : logging.Logger, optional</span>
+<span class="sd">        Logger object to which logging messages will be directed. Defaults to None.</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    solve(x0=None, method=&#39;hybr&#39;, tol=1e-9, options=None)</span>
+<span class="sd">        Solve the system of nonlinear equations.</span>
+<span class="sd">    get_values(x)</span>
+<span class="sd">        Evaluate the given nonlinear system problem.</span>
+<span class="sd">    get_jacobian(x)</span>
+<span class="sd">        Evaluate the Jacobian of the system.</span>
+<span class="sd">    print_convergence_history()</span>
+<span class="sd">        Print the convergence history of the problem.</span>
+<span class="sd">    plot_convergence_history()</span>
+<span class="sd">        Plot the convergence history.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Initialize class variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">problem</span> <span class="o">=</span> <span class="n">problem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="n">display</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="n">plot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+
+        <span class="c1"># Check for logger validity</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;The provided logger is not a valid logging.Logger instance.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Initialize problem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x0</span> <span class="o">=</span> <span class="n">x0</span>
+        <span class="nb">eval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">([</span><span class="n">item</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">eval</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Problem evaluation contains None values. There may be an issue with the problem object provided.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Initialize variables for convergence report</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_x</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_residuals</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution_report</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;iteration&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;evaluations&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;norm_residual&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;norm_step&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Initialize convergence plot</span>
+        <span class="c1"># (convergence_history must be initialized before)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_callback</span><span class="p">(</span><span class="n">initialize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NonlinearSystemSolver.solve"><a class="viewcode-back" href="../../source/PySolverView.nonlinear_system.html#PySolverView.nonlinear_system.NonlinearSystemSolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;hybr&quot;</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solve the nonlinear system using scipy&#39;s root.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x0 : array-like, optional</span>
+<span class="sd">            Initial guess for the solution of the nonlinear system. If not provided, the initial guess set during instantiation is used.</span>
+<span class="sd">        method : str, optional</span>
+<span class="sd">            Method to be used by scipy&#39;s root for solving the nonlinear system. Available solvers are:</span>
+
+<span class="sd">            - :code:`hybr`: Refers to MINPACK&#39;s &#39;hybrd&#39; method. This is a modification of Powell&#39;s hybrid method and can be viewed as a quasi-Newton method. It is suitable for smooth functions and known to be robust, but can sometimes be slower than other methods.</span>
+<span class="sd">            - :code:`lm`: The Levenberg-Marquardt method. Often used for least-squares problems, it blends the steepest descent and the Gauss-Newton method. This method can perform well for functions that are reasonably well-behaved.</span>
+
+<span class="sd">            Defaults to &#39;hybr&#39;.</span>
+<span class="sd">        tol : float, optional</span>
+<span class="sd">            Tolerance for the solver termination. Defaults to 1e-9.</span>
+<span class="sd">        options : dict, optional</span>
+<span class="sd">            Additional options to be passed to scipy&#39;s root.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        RootResults</span>
+<span class="sd">            A result object from scipy&#39;s root detailing the outcome of the solution process.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The choice between :code:`hybr` and :code:`lm` largely depends on the specifics of the problem at hand and the nature of the function. Both methods have their strengths and can be applicable in various contexts. It is advisable to understand the characteristics of the system being solved and experiment with both methods to determine the most appropriate choice for a given problem.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Print report header</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_header</span><span class="p">()</span>
+
+        <span class="c1"># Solve the root finding problem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x0</span> <span class="k">if</span> <span class="n">x0</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution</span> <span class="o">=</span> <span class="n">root</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_values</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x0</span><span class="p">,</span>
+            <span class="n">jac</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_jacobian</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Print report footer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_footer</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span></div>
+
+<div class="viewcode-block" id="NonlinearSystemSolver.get_values"><a class="viewcode-back" href="../../source/PySolverView.nonlinear_system.html#PySolverView.nonlinear_system.NonlinearSystemSolver.get_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate the nonlinear system problem and increment the evaluation count.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : array_like</span>
+<span class="sd">            Independent variable vector.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array_like</span>
+<span class="sd">            Residuals of the problem.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_residuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_residuals</span></div>
+
+<div class="viewcode-block" id="NonlinearSystemSolver.get_jacobian"><a class="viewcode-back" href="../../source/PySolverView.nonlinear_system.html#PySolverView.nonlinear_system.NonlinearSystemSolver.get_jacobian">[docs]</a>    <span class="k">def</span> <span class="nf">get_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates the Jacobian of the nonlinear system of equations at the specified point x.</span>
+
+<span class="sd">        This method will use the `get_jacobian` method of the NonlinearSystemProblem class if it exists. </span>
+<span class="sd">        If the `get_jacobian` method is not implemented the Jacobian is appoximated using forward finite differences.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : array-like</span>
+<span class="sd">            Vector of independent variables.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like</span>
+<span class="sd">            Jacobian matrix of the residual vector.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Evaluate the Jacobian of the residual vector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iteration</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="s2">&quot;get_jacobian&quot;</span><span class="p">):</span>
+            <span class="c1"># If the problem has its own Jacobian method, use it</span>
+            <span class="n">jacobian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_jacobian</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="c1"># Fall back to finite differences</span>
+            <span class="n">jacobian</span> <span class="o">=</span> <span class="n">approx_derivative</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_values</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;2-point&quot;</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">last_residuals</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Display results after Jacobian is computed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_print_convergence_progress</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">jacobian</span></div>
+
+    <span class="k">def</span> <span class="nf">_write_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print a formatted header for the root finding report.</span>
+
+<span class="sd">        This internal method is used to display a consistent header format at the</span>
+<span class="sd">        beginning of the root finding process. The header includes columns for iteration</span>
+<span class="sd">        count, residual evaluations, norm of the residuals, and norm of the steps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Define header text</span>
+        <span class="n">initial_message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot; Solve system of equations for </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;Iteration&#39;</span><span class="si">:</span><span class="s2">&gt;20</span><span class="si">}{</span><span class="s1">&#39;F-count&#39;</span><span class="si">:</span><span class="s2">&gt;20</span><span class="si">}{</span><span class="s1">&#39;Norm of residual&#39;</span><span class="si">:</span><span class="s2">&gt;25</span><span class="si">}{</span><span class="s1">&#39;Norm of step&#39;</span><span class="si">:</span><span class="s2">&gt;25</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="n">separator</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+        <span class="n">lines_to_output</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">separator</span><span class="p">,</span>
+            <span class="n">initial_message</span><span class="p">,</span>
+            <span class="n">separator</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">,</span>
+            <span class="n">separator</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Display to stdout</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines_to_output</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+        <span class="c1"># Write to log</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines_to_output</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+        <span class="c1"># Store text in memory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution_report</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">lines_to_output</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_print_convergence_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print the current solution status and update convergence history.</span>
+
+<span class="sd">        This method captures and prints the following metrics:</span>
+<span class="sd">        - Number of iterations</span>
+<span class="sd">        - Number of function evaluations</span>
+<span class="sd">        - Norm of residual vector</span>
+<span class="sd">        - Norm of the update step</span>
+
+<span class="sd">        The method also updates the stored convergence history for potential future analysis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : array-like</span>
+<span class="sd">            The current solution (i.e., vector of independent variable values)</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The norm of the update step is calculated as the two-norm of the difference</span>
+<span class="sd">        between the current and the last independent variables. The norm of the residual </span>
+<span class="sd">        vector is computed using the two-norm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Compute norm of residual vector</span>
+        <span class="n">residual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_residuals</span>
+        <span class="n">norm_residual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span>
+
+        <span class="c1"># Compute the norm of the last step</span>
+        <span class="n">norm_step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_x</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># Store convergence status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iteration</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;evaluations&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;norm_residual&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">norm_residual</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;norm_step&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">norm_step</span><span class="p">)</span>
+
+        <span class="c1"># Current convergence message</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">iteration</span><span class="si">:</span><span class="s2">20</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="si">:</span><span class="s2">20d</span><span class="si">}{</span><span class="n">norm_residual</span><span class="si">:</span><span class="s2">25.6e</span><span class="si">}{</span><span class="n">norm_step</span><span class="si">:</span><span class="s2">25.6e</span><span class="si">}</span><span class="s2"> &quot;</span>
+
+        <span class="c1"># Display to stdout</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+
+        <span class="c1"># Write to log</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+
+        <span class="c1"># Store text in memory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution_report</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+
+        <span class="c1"># Refresh the plot with current values</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_callback</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_write_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print a formatted footer for the root finding report.</span>
+
+<span class="sd">        This method displays the final root finding result, including the</span>
+<span class="sd">        exit message, success status, and decision variables.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The footer&#39;s structure is intended to match the header&#39;s style,</span>
+<span class="sd">        providing a consistent look to the root finding report.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Define footer text</span>
+        <span class="n">separator</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+        <span class="n">exit_message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Exit message: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">success_status</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Success: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">success</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">solution_header</span> <span class="o">=</span> <span class="s2">&quot;Solution:&quot;</span>
+        <span class="n">solution_vars</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;   x</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">+6e</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">x</span><span class="p">)]</span>
+        <span class="n">lines_to_output</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">[</span><span class="n">separator</span><span class="p">,</span> <span class="n">exit_message</span><span class="p">,</span> <span class="n">success_status</span><span class="p">,</span> <span class="n">solution_header</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">solution_vars</span>
+            <span class="o">+</span> <span class="p">[</span><span class="n">separator</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Display to stdout</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines_to_output</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+        <span class="c1"># Write to log</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines_to_output</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+        <span class="c1"># Store text in memory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution_report</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">lines_to_output</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_plot_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback function to dynamically update the convergence progress plot.</span>
+
+<span class="sd">        This method initializes a matplotlib plot on the first iteration and updates</span>
+<span class="sd">        the data for each subsequent iteration. The plot showcases the evolution of</span>
+<span class="sd">        the residual vector as a function of number of iterations.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This is an internal method, meant to be called within the optimization process.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Initialize figure before first iteration</span>
+        <span class="k">if</span> <span class="n">initialize</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_line</span><span class="p">,)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#D95319&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Number of iterations&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Two-norm of the residual vector&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>  <span class="c1"># Set y-axis to logarithmic scale</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">FormatStrFormatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.0f</span><span class="s2">&quot;</span><span class="p">))</span>
+            <span class="c1"># self.ax.legend(loc=&quot;upper right&quot;)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Update plot data with current values</span>
+        <span class="n">iterations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span>
+        <span class="n">residual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;norm_residual&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj_line</span><span class="o">.</span><span class="n">set_xdata</span><span class="p">(</span><span class="n">iterations</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj_line</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span>
+
+        <span class="c1"># Adjust the plot limits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">relim</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">autoscale_view</span><span class="p">()</span>
+
+        <span class="c1"># Redraw the plot</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>  <span class="c1"># small pause to allow for update</span>
+
+<div class="viewcode-block" id="NonlinearSystemSolver.print_convergence_history"><a class="viewcode-back" href="../../source/PySolverView.nonlinear_system.html#PySolverView.nonlinear_system.NonlinearSystemSolver.print_convergence_history">[docs]</a>    <span class="k">def</span> <span class="nf">print_convergence_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print the convergence history of the problem.</span>
+
+<span class="sd">        The convergence history includes:</span>
+<span class="sd">            - Current iteration</span>
+<span class="sd">            - Number of function evaluations</span>
+<span class="sd">            - Two-norm of the residual vector</span>
+<span class="sd">            - Two-norm of the update step</span>
+
+<span class="sd">        The method provides a comprehensive report on the final solution, including:</span>
+<span class="sd">            - Exit message</span>
+<span class="sd">            - Success status</span>
+<span class="sd">            - Final independent variables values</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution_report</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;This method should be used after invoking the &#39;solve()&#39; method.&quot;</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="NonlinearSystemSolver.plot_convergence_history"><a class="viewcode-back" href="../../source/PySolverView.nonlinear_system.html#PySolverView.nonlinear_system.NonlinearSystemSolver.plot_convergence_history">[docs]</a>    <span class="k">def</span> <span class="nf">plot_convergence_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">savefig</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_datetime</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot the convergence history of the problem.</span>
+<span class="sd">        </span>
+<span class="sd">        This method plots the two norm of the residual vector versus the number of iterations</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_callback</span><span class="p">(</span><span class="n">initialize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;This method should be used after invoking the &#39;solve()&#39; method.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">savefig</span><span class="p">:</span>
+
+            <span class="c1"># Give a name to the figure if it is not specified</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;convergence_history_</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="c1"># Define figures directory if it is not provided</span>
+            <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;figures&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Create figures directory if it does not exist</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+            <span class="c1"># Define file name and path</span>
+            <span class="k">if</span> <span class="n">use_datetime</span><span class="p">:</span>
+                <span class="n">current_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">_%H-%M-%S&quot;</span><span class="p">)</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">current_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Save plots</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.svg&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span></div></div>
+            
+
+<div class="viewcode-block" id="NonlinearSystemProblem"><a class="viewcode-back" href="../../source/PySolverView.nonlinear_system.html#PySolverView.nonlinear_system.NonlinearSystemProblem">[docs]</a><span class="k">class</span> <span class="nc">NonlinearSystemProblem</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract base class for root-finding problems.</span>
+
+<span class="sd">    Derived root-finding problem objects must implement the following method:</span>
+
+<span class="sd">    - `get_values`: Evaluate the system of equations for a given set of decision variables.</span>
+
+<span class="sd">    Additionally, specific problem classes can define the `get_jacobian` method to compute the Jacobians. If this method is not present in the derived class, the solver will revert to using forward finite differences for Jacobian calculations.</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    get_values(x)</span>
+<span class="sd">        Evaluate the system of equations for a given set of decision variables.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Here&#39;s an example of how to derive from `RootFindingProblem`::</span>
+
+<span class="sd">        class MyRootFindingProblem(RootFindingProblem):</span>
+<span class="sd">            def get_values(self, x):</span>
+<span class="sd">                # Implement evaluation logic here</span>
+<span class="sd">                pass</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="NonlinearSystemProblem.get_values"><a class="viewcode-back" href="../../source/PySolverView.nonlinear_system.html#PySolverView.nonlinear_system.NonlinearSystemProblem.get_values">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate the system of equations for given decision variables.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : array-like</span>
+<span class="sd">            Vector of decision variables.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array_like</span>
+<span class="sd">            Vector containing the values of the system of equations for the given decision variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Roberto Agromayor
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
