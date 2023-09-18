@@ -31,7 +31,6 @@ x0 = np.asarray([1.5, 5, 5, 1])
 problem = psv.HS71Problem()
 solver = psv.OptimizationSolver(problem, x0, display=True, plot=True, logger=logger)
 sol = solver.solve(method="slsqp")
-solver.plot_convergence_history(savefig=True, use_datetime=False)
 
 # Keep plots open
 plt.show()
