@@ -18,10 +18,12 @@ logger = psv.create_logger("convergence_history", use_datetime=True)
 x0 = np.asarray([1.0, -3.0, 2.0])
 problem = psv.LorentzEquations()
 solver = psv.NonlinearSystemSolver(problem, x0, display=True, plot=True, logger=logger)
-solution = solver.solve(method="lm")
+# solution = solver.solve(method="hybr")
+solution = solver.solve(method="hybr")
+solution = solver.plot_convergence_history()
 
-# # Keep plots open
-# plt.show()
+# Keep plots open
+plt.show()
 
 # # Save figure
 # solver.plot_convergence_history(savefig=True, use_datetime=False)

@@ -3,7 +3,7 @@ import logging
 import warnings
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FormatStrFormatter
+from matplotlib.ticker import MultipleLocator
 from scipy.optimize import root
 from scipy.optimize._numdiff import approx_derivative
 from abc import ABC, abstractmethod
@@ -78,13 +78,15 @@ class NonlinearSystemSolver:
         # Initialize variables for convergence report
         self.last_x = None
         self.last_residuals = None
-        self.evaluations = 0
-        self.iteration = 0
+        self.grad_count = 0
+        self.func_count = 0
+        self.func_count_tot = 0
         self.solution = None
         self.solution_report = []
         self.convergence_history = {
-            "iteration": [],
-            "evaluations": [],
+            "grad_count": [],
+            "func_count": [],
+            "func_count_total": [],
             "norm_residual": [],
             "norm_step": [],
         }
@@ -127,10 +129,13 @@ class NonlinearSystemSolver:
         # Print report header
         self._write_header()
 
+        # Print progress on f-eval, not grad-eval
+        fun = lambda x: self.get_values(x, print_progress=True)
+
         # Solve the root finding problem
         self.x0 = self.x0 if x0 is None else x0
         self.solution = root(
-            self.get_values,
+            fun,
             self.x0,
             jac=self.get_jacobian,
             method=method,
@@ -143,9 +148,9 @@ class NonlinearSystemSolver:
 
         return self.solution
 
-    def get_values(self, x):
+    def get_values(self, x, print_progress=False):
         """
-        Evaluate the nonlinear system problem and increment the evaluation count.
+        Evaluate the nonlinear system residuals.
 
         Parameters
         ----------
@@ -157,11 +162,21 @@ class NonlinearSystemSolver:
         array_like
             Residuals of the problem.
         """
-        self.evaluations += 1
+
+        # Increase total counter (includes finite differences)
+        self.func_count_tot += 1
+
+        # Compute problem residuals
         self.last_residuals = self.problem.get_values(x)
+
+        # Update progress report
+        if print_progress:
+            self.func_count += 1  # Does not include finite differences
+            self._print_convergence_progress(x)
+
         return self.last_residuals
 
-    def get_jacobian(self, x):
+    def get_jacobian(self, x, print_progress=False):
         """
         Evaluates the Jacobian of the nonlinear system of equations at the specified point x.
 
@@ -180,7 +195,7 @@ class NonlinearSystemSolver:
         """
 
         # Evaluate the Jacobian of the residual vector
-        self.iteration += 1
+        self.grad_count += 1
         if hasattr(self.problem, "get_jacobian"):
             # If the problem has its own Jacobian method, use it
             jacobian = self.problem.get_jacobian(x)
@@ -191,8 +206,9 @@ class NonlinearSystemSolver:
                 self.get_values, x, method="2-point", f0=self.last_residuals
             )
 
-        # Display results after Jacobian is computed
-        self._print_convergence_progress(x)
+        # Update progress report
+        if print_progress:
+            self._print_convergence_progress(x)
 
         return jacobian
 
@@ -201,15 +217,15 @@ class NonlinearSystemSolver:
         Print a formatted header for the root finding report.
 
         This internal method is used to display a consistent header format at the
-        beginning of the root finding process. The header includes columns for iteration
-        count, residual evaluations, norm of the residuals, and norm of the steps.
+        beginning of the root finding process. The header includes columns for residual evaluations,
+        gradient evaluations, norm of the residuals, and norm of the steps.
         """
 
         # Define header text
         initial_message = (
             f" Solve system of equations for {type(self.problem).__name__}"
         )
-        self.header = f" {'Iteration':>20}{'F-count':>20}{'Norm of residual':>25}{'Norm of step':>25} "
+        self.header = f" {'Func-eval':>15}{'Grad-eval':>15}{'Norm of residual':>24}{'Norm of step':>24} "
         separator = "-" * len(self.header)
         lines_to_output = [
             separator,
@@ -237,10 +253,10 @@ class NonlinearSystemSolver:
         Print the current solution status and update convergence history.
 
         This method captures and prints the following metrics:
-        - Number of iterations
         - Number of function evaluations
-        - Norm of residual vector
-        - Norm of the update step
+        - Number of gradient evaluations
+        - Two-norm of the residual vector
+        - Two-norm of the update step
 
         The method also updates the stored convergence history for potential future analysis.
 
@@ -258,19 +274,21 @@ class NonlinearSystemSolver:
         # Compute norm of residual vector
         residual = self.last_residuals
         norm_residual = np.linalg.norm(residual)
+        # norm_residual = np.max([np.linalg.norm(residual), np.finfo(float).eps])
 
         # Compute the norm of the last step
         norm_step = np.linalg.norm(x - self.last_x) if self.last_x is not None else 0
         self.last_x = x.copy()
 
         # Store convergence status
-        self.convergence_history["iteration"].append(self.iteration)
-        self.convergence_history["evaluations"].append(self.evaluations)
+        self.convergence_history["grad_count"].append(self.grad_count)
+        self.convergence_history["func_count"].append(self.func_count)
+        self.convergence_history["func_count_total"].append(self.func_count_tot)
         self.convergence_history["norm_residual"].append(norm_residual)
         self.convergence_history["norm_step"].append(norm_step)
 
         # Current convergence message
-        status = f" {self.iteration:20}{self.evaluations:20d}{norm_residual:25.6e}{norm_step:25.6e} "
+        status = f" {self.func_count:15d}{self.grad_count:15d}{norm_residual:24.6e}{norm_step:24.6e} "
 
         # Display to stdout
         if self.display:
@@ -342,14 +360,15 @@ class NonlinearSystemSolver:
             self.ax.set_xlabel("Number of iterations")
             self.ax.set_ylabel("Two-norm of the residual vector")
             self.ax.set_yscale("log")  # Set y-axis to logarithmic scale
-            self.ax.xaxis.set_major_formatter(FormatStrFormatter("%.0f"))
+            self.ax.xaxis.set_major_locator(MultipleLocator(1))
             # self.ax.legend(loc="upper right")
             self.fig.tight_layout(pad=1)
 
         # Update plot data with current values
-        iterations = self.convergence_history["iteration"]
+        iteration = self.convergence_history["func_count"]
+        # iteration = self.convergence_history["grad_count"]
         residual = self.convergence_history["norm_residual"]
-        self.obj_line.set_xdata(iterations)
+        self.obj_line.set_xdata(iteration)
         self.obj_line.set_ydata(residual)
 
         # Adjust the plot limits
@@ -365,8 +384,9 @@ class NonlinearSystemSolver:
         Print the convergence history of the problem.
 
         The convergence history includes:
-            - Current iteration
             - Number of function evaluations
+            - Number of function evaluations (including finite differences)
+            - Number of gradient evaluations
             - Two-norm of the residual vector
             - Two-norm of the update step
 
@@ -385,7 +405,7 @@ class NonlinearSystemSolver:
                 "This method should be used after invoking the 'solve()' method."
             )
 
-    def plot_convergence_history(self, savefig=True, name=None, use_datetime=True, path=None):
+    def plot_convergence_history(self, savefig=True, name=None, use_datetime=False, path=None):
         """
         Plot the convergence history of the problem.
         
