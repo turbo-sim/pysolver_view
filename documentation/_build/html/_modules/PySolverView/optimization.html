@@ -247,7 +247,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">FormatStrFormatter</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">MaxNLocator</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize._numdiff</span> <span class="kn">import</span> <span class="n">approx_derivative</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
@@ -341,13 +341,15 @@ document.write(`
 
         <span class="c1"># Initialize variables for convergence report</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_x</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grad_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func_count</span> <span class="o">=</span> <span class="mi">0</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">func_count_tot</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solution</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solution_report</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;iteration&quot;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s2">&quot;evaluations&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;grad_count&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;func_count&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;func_count_total&quot;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s2">&quot;objective_value&quot;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s2">&quot;constraint_violation&quot;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s2">&quot;norm_step&quot;</span><span class="p">:</span> <span class="p">[],</span>
@@ -375,12 +377,12 @@ document.write(`
         <span class="p">}</span>
 
         <span class="c1"># Get handles to objective/constraint fucntions and their Jacobians</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">f_jac</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_jacobian</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">c_eq_jac</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_jacobian</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq_jac</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_jacobian</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_jac</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_jacobian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_eq_jac</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_jacobian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq_jac</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_jacobian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
 
         <span class="c1"># Define list of constraint dictionaries</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="p">[]</span>
@@ -395,6 +397,7 @@ document.write(`
 
         <span class="c1"># Initialize problem bounds</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_bounds</span><span class="p">()</span>
+
 
 <div class="viewcode-block" id="OptimizationSolver.solve"><a class="viewcode-back" href="../../source/PySolverView.optimization.html#PySolverView.optimization.OptimizationSolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;slsqp&quot;</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -451,7 +454,7 @@ document.write(`
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span></div>
 
-<div class="viewcode-block" id="OptimizationSolver.get_values"><a class="viewcode-back" href="../../source/PySolverView.optimization.html#PySolverView.optimization.OptimizationSolver.get_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">single_output</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="OptimizationSolver.get_values"><a class="viewcode-back" href="../../source/PySolverView.optimization.html#PySolverView.optimization.OptimizationSolver.get_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">single_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluates the optimization problem values at a given point x.</span>
 
@@ -493,8 +496,10 @@ document.write(`
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;c_eq&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;c_ineq&quot;</span><span class="p">]</span>
 
+        <span class="c1"># Increase total counter (includes finite differences)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func_count_tot</span> <span class="o">+=</span> <span class="mi">1</span>
+
         <span class="c1"># Evaluate objective function and constraints at once</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="n">func_constr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
         <span class="c1"># Split the combined result based on number of constraints</span>
@@ -513,13 +518,20 @@ document.write(`
             <span class="p">}</span>
         <span class="p">)</span>
 
+        <span class="c1"># Update progress report</span>
+        <span class="c1"># Better to hide progress at function evaluations (line searches)</span>
+        <span class="c1"># Show progress only at jacobian evaluations (true iterations)</span>
+        <span class="k">if</span> <span class="n">print_progress</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">func_count</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># Does not include finite differences</span>
+            <span class="c1"># self._print_convergence_progress(x)</span>
+
         <span class="c1"># Return objective and constraints as array or as tuple</span>
         <span class="k">if</span> <span class="n">single_output</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;objective_and_constraints&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;c_eq&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;c_ineq&quot;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="OptimizationSolver.get_jacobian"><a class="viewcode-back" href="../../source/PySolverView.optimization.html#PySolverView.optimization.OptimizationSolver.get_jacobian">[docs]</a>    <span class="k">def</span> <span class="nf">get_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="OptimizationSolver.get_jacobian"><a class="viewcode-back" href="../../source/PySolverView.optimization.html#PySolverView.optimization.OptimizationSolver.get_jacobian">[docs]</a>    <span class="k">def</span> <span class="nf">get_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluates the Jacobians of the optimization problem at the given point x.</span>
 
@@ -557,7 +569,7 @@ document.write(`
             <span class="p">)</span>
 
         <span class="c1"># Evaluate the Jacobian of objective function and constraints at once</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">iteration</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grad_count</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="s2">&quot;get_jacobian&quot;</span><span class="p">):</span>
             <span class="c1"># If the problem has its own Jacobian method, use it</span>
             <span class="n">jacobian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_jacobian</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -589,8 +601,9 @@ document.write(`
             <span class="p">}</span>
         <span class="p">)</span>
 
-        <span class="c1"># Display results after Jacobian is computed</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_print_convergence_progress</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="c1"># Report convergence progress</span>
+        <span class="k">if</span> <span class="n">print_progress</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_print_convergence_progress</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">f_jac</span><span class="p">,</span> <span class="n">c_eq_jac</span><span class="p">,</span> <span class="n">c_ineq_jac</span></div>
 
@@ -599,16 +612,16 @@ document.write(`
 <span class="sd">        Print a formatted header for the optimization report.</span>
 
 <span class="sd">        This internal method is used to display a consistent header format at the</span>
-<span class="sd">        beginning of the optimization process. The header includes columns for iteration</span>
-<span class="sd">        count, function evaluations, objective function value, constraint violations,</span>
-<span class="sd">        and step norms.</span>
+<span class="sd">        beginning of the optimization process. The header includes columns for function</span>
+<span class="sd">        evaluations, gradient evaluations, objective function value, constraint violations,</span>
+<span class="sd">        and norm of the steps.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Define header text</span>
         <span class="n">initial_message</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot; Starting optimization process for </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;Iteration&#39;</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}{</span><span class="s1">&#39;F-count&#39;</span><span class="si">:</span><span class="s2">&gt;14</span><span class="si">}{</span><span class="s1">&#39;F-value&#39;</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}{</span><span class="s1">&#39;Infeasibility&#39;</span><span class="si">:</span><span class="s2">&gt;20</span><span class="si">}{</span><span class="s1">&#39;Norm of step&#39;</span><span class="si">:</span><span class="s2">&gt;18</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;Grad-eval&#39;</span><span class="si">:</span><span class="s2">&gt;13</span><span class="si">}{</span><span class="s1">&#39;Func-eval&#39;</span><span class="si">:</span><span class="s2">&gt;13</span><span class="si">}{</span><span class="s1">&#39;Func-value&#39;</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}{</span><span class="s1">&#39;Infeasibility&#39;</span><span class="si">:</span><span class="s2">&gt;18</span><span class="si">}{</span><span class="s1">&#39;Norm of step&#39;</span><span class="si">:</span><span class="s2">&gt;18</span><span class="si">}</span><span class="s2"> &quot;</span>
         <span class="n">separator</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
         <span class="n">lines_to_output</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">separator</span><span class="p">,</span>
@@ -636,7 +649,7 @@ document.write(`
 <span class="sd">        Print the current optimization status and update convergence history.</span>
 
 <span class="sd">        This method captures and prints the following metrics:</span>
-<span class="sd">        - Number of iterations</span>
+<span class="sd">        - Number of gradient evaluations</span>
 <span class="sd">        - Number of function evaluations</span>
 <span class="sd">        - Objective function value</span>
 <span class="sd">        - Maximum constraint violation</span>
@@ -666,14 +679,15 @@ document.write(`
         <span class="n">violation_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">violation_all</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">violation_all</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
 
         <span class="c1"># Store convergence status</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iteration</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;evaluations&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;grad_count&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grad_count</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;func_count&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func_count</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;func_count_total&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func_count_tot</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;objective_value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;constraint_violation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">violation_max</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;norm_step&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">norm_step</span><span class="p">)</span>
 
         <span class="c1"># Current convergence message</span>
-        <span class="n">status</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">iteration</span><span class="si">:</span><span class="s2">10</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="si">:</span><span class="s2">14d</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">+16.3e</span><span class="si">}{</span><span class="n">violation_max</span><span class="si">:</span><span class="s2">+20.3e</span><span class="si">}{</span><span class="n">norm_step</span><span class="si">:</span><span class="s2">+18.3e</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">grad_count</span><span class="si">:</span><span class="s2">13d</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">func_count</span><span class="si">:</span><span class="s2">13d</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">+16.3e</span><span class="si">}{</span><span class="n">violation_max</span><span class="si">:</span><span class="s2">+18.3e</span><span class="si">}{</span><span class="n">norm_step</span><span class="si">:</span><span class="s2">+18.3e</span><span class="si">}</span><span class="s2"> &quot;</span>
 
         <span class="c1"># Display to stdout</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">:</span>
@@ -759,7 +773,7 @@ document.write(`
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ax_1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Number of iterations&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ax_1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Objective function&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ax_1</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">FormatStrFormatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.0f</span><span class="s2">&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ax_1</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="n">integer</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span> <span class="c1"># Interger ticks</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_eq</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_ineq</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ax_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax_1</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ax_2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Constraint violation&quot;</span><span class="p">)</span>
@@ -774,13 +788,14 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="c1"># Update plot data with current values</span>
-        <span class="n">iterations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span>
+        <span class="c1"># iteration = self.convergence_history[&quot;func_count&quot;]</span>
+        <span class="n">iteration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;grad_count&quot;</span><span class="p">]</span>
         <span class="n">objective_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;objective_value&quot;</span><span class="p">]</span>
         <span class="n">constraint_violation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;constraint_violation&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj_line_1</span><span class="o">.</span><span class="n">set_xdata</span><span class="p">(</span><span class="n">iterations</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj_line_1</span><span class="o">.</span><span class="n">set_xdata</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj_line_1</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span><span class="n">objective_function</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_eq</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_ineq</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">obj_line_2</span><span class="o">.</span><span class="n">set_xdata</span><span class="p">(</span><span class="n">iterations</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj_line_2</span><span class="o">.</span><span class="n">set_xdata</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">obj_line_2</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span><span class="n">constraint_violation</span><span class="p">)</span>
 
         <span class="c1"># Adjust the plot limits</span>
@@ -822,7 +837,7 @@ document.write(`
                 <span class="s2">&quot;This method should be used after invoking the &#39;solve()&#39; method.&quot;</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="OptimizationSolver.plot_convergence_history"><a class="viewcode-back" href="../../source/PySolverView.optimization.html#PySolverView.optimization.OptimizationSolver.plot_convergence_history">[docs]</a>    <span class="k">def</span> <span class="nf">plot_convergence_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">savefig</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_datetime</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="OptimizationSolver.plot_convergence_history"><a class="viewcode-back" href="../../source/PySolverView.optimization.html#PySolverView.optimization.OptimizationSolver.plot_convergence_history">[docs]</a>    <span class="k">def</span> <span class="nf">plot_convergence_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">savefig</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_datetime</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot the convergence history of the problem.</span>
 

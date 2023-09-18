@@ -125,7 +125,7 @@ Now that we understand how to implement nonlinear problems, let move to how to s
        x0 = np.asarray([1.0, 3.0, 5.0]) # Initial guess for the Lorenz system
        problem = psv.LorentzEquations()
        solver = psv.NonlinearSystemSolver(problem, x0, display=True, plot=True, logger=logger)
-       solution = solver.solve(method="lm")
+       solution = solver.solve(method="hybr")
        plt.show()  # Keep the visualization accessible
 
 
@@ -135,36 +135,32 @@ After running this code the optimization progress and the final solution will be
 
 .. code-block:: none
 
-    --------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------
     Solve system of equations for LorentzEquations
-    --------------------------------------------------------------------------------------------
-                Iteration             F-count         Norm of residual             Norm of step
-    --------------------------------------------------------------------------------------------
-                    1                    4             9.000000e+00             0.000000e+00
-                    2                    9             9.000000e+00             0.000000e+00 
-                    3                   13             3.750000e+00             2.915476e+00 
-                    4                   18             2.488774e+00             6.029936e-01 
-                    5                   22             5.174037e-01             1.256585e+00 
-                    6                   26             3.762520e-01             1.032404e+00 
-                    7                   30             1.156797e-02             1.908510e-01 
-                    8                   34             3.108463e-05             7.890109e-03 
-                    9                   38             2.983275e-08             1.647580e-05 
-                    10                  42             2.980232e-08             5.853237e-11 
-                    11                  46             2.980232e-08             9.067156e-22 
-                    12                  50             2.980232e-08             1.051394e-37 
-                    13                  54             2.980232e-08             2.152362e-53 
-                    14                  58             2.980232e-08             7.330962e-69 
-                    15                  62             2.980232e-08             2.199038e-84 
-                    16                  66             2.980232e-08            4.571950e-100 
-    --------------------------------------------------------------------------------------------
-    Exit message: The cosine of the angle between func(x) and any column of the
-    Jacobian is at most 0.000000 in absolute value
+    --------------------------------------------------------------------------------
+        Func-eval      Grad-eval        Norm of residual            Norm of step
+    --------------------------------------------------------------------------------
+                1              0            9.000000e+00            0.000000e+00
+                2              1            9.000000e+00            0.000000e+00 
+                3              1            9.000000e+00            0.000000e+00 
+                4              2            3.750000e+00            2.915476e+00 
+                5              2            8.697679e+00            4.332274e+00 
+                6              2            1.975421e+00            3.027129e+00 
+                7              2            2.003494e+00            1.452858e+00 
+                8              2            2.638365e-01            7.315543e-01 
+                9              2            4.628116e-02            1.111872e-01 
+               10              2            7.848118e-04            1.659329e-02 
+               11              2            2.257307e-06            2.766884e-04 
+               12              2            1.109020e-10            7.981165e-07 
+               13              2            1.839906e-11            4.391686e-11 
+    --------------------------------------------------------------------------------
+    Exit message: The solution converged.
     Success: True
     Solution:
-    x0 = +0.000000e+00
-    x1 = +0.000000e+00
-    x2 = +0.000000e+00
-    --------------------------------------------------------------------------------------------
+    x0 = -2.000000e+00
+    x1 = -2.000000e+00
+    x2 = +2.000000e+00
+    --------------------------------------------------------------------------------
 
 In addition, the script will also plot the convergence progress as illustrated in the figure below
 

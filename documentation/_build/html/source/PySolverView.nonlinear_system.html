@@ -413,7 +413,7 @@ function of the vector <span class="math notranslate nohighlight">\(x\)</span>.<
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="PySolverView.nonlinear_system.NonlinearSystemSolver.get_jacobian">
-<span class="sig-name descname"><span class="pre">get_jacobian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/nonlinear_system.html#NonlinearSystemSolver.get_jacobian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.nonlinear_system.NonlinearSystemSolver.get_jacobian" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_jacobian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/nonlinear_system.html#NonlinearSystemSolver.get_jacobian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.nonlinear_system.NonlinearSystemSolver.get_jacobian" title="Permalink to this definition">#</a></dt>
 <dd><p>Evaluates the Jacobian of the nonlinear system of equations at the specified point x.</p>
 <p>This method will use the <cite>get_jacobian</cite> method of the NonlinearSystemProblem class if it exists. 
 If the <cite>get_jacobian</cite> method is not implemented the Jacobian is appoximated using forward finite differences.</p>
@@ -435,8 +435,8 @@ If the <cite>get_jacobian</cite> method is not implemented the Jacobian is appox
 
 <dl class="py method">
 <dt class="sig sig-object py" id="PySolverView.nonlinear_system.NonlinearSystemSolver.get_values">
-<span class="sig-name descname"><span class="pre">get_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/nonlinear_system.html#NonlinearSystemSolver.get_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.nonlinear_system.NonlinearSystemSolver.get_values" title="Permalink to this definition">#</a></dt>
-<dd><p>Evaluate the nonlinear system problem and increment the evaluation count.</p>
+<span class="sig-name descname"><span class="pre">get_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/nonlinear_system.html#NonlinearSystemSolver.get_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.nonlinear_system.NonlinearSystemSolver.get_values" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluate the nonlinear system residuals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -455,7 +455,7 @@ If the <cite>get_jacobian</cite> method is not implemented the Jacobian is appox
 
 <dl class="py method">
 <dt class="sig sig-object py" id="PySolverView.nonlinear_system.NonlinearSystemSolver.plot_convergence_history">
-<span class="sig-name descname"><span class="pre">plot_convergence_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">savefig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_datetime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/nonlinear_system.html#NonlinearSystemSolver.plot_convergence_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.nonlinear_system.NonlinearSystemSolver.plot_convergence_history" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">plot_convergence_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">savefig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_datetime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PySolverView/nonlinear_system.html#NonlinearSystemSolver.plot_convergence_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PySolverView.nonlinear_system.NonlinearSystemSolver.plot_convergence_history" title="Permalink to this definition">#</a></dt>
 <dd><p>Plot the convergence history of the problem.</p>
 <p>This method plots the two norm of the residual vector versus the number of iterations</p>
 </dd></dl>
@@ -466,8 +466,9 @@ If the <cite>get_jacobian</cite> method is not implemented the Jacobian is appox
 <dd><p>Print the convergence history of the problem.</p>
 <dl class="simple">
 <dt>The convergence history includes:</dt><dd><ul class="simple">
-<li><p>Current iteration</p></li>
 <li><p>Number of function evaluations</p></li>
+<li><p>Number of function evaluations (including finite differences)</p></li>
+<li><p>Number of gradient evaluations</p></li>
 <li><p>Two-norm of the residual vector</p></li>
 <li><p>Two-norm of the update step</p></li>
 </ul>
