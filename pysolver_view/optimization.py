@@ -279,7 +279,7 @@ class OptimizationSolver:
         # Show progress only at jacobian evaluations (true iterations)
         if print_progress:
             self.func_count += 1  # Does not include finite differences
-            # self._print_convergence_progress(x)
+            self._print_convergence_progress(x)
 
         # Return objective and constraints as array or as tuple
         if single_output:
@@ -357,9 +357,9 @@ class OptimizationSolver:
             }
         )
 
-        # Report convergence progress
-        if print_progress:
-            self._print_convergence_progress(x)
+        # # Report convergence progress
+        # if print_progress:
+        #     self._print_convergence_progress(x)
 
         return f_jac, c_eq_jac, c_ineq_jac
 
@@ -544,8 +544,8 @@ class OptimizationSolver:
             self.fig.tight_layout(pad=1)
 
         # Update plot data with current values
-        # iteration = self.convergence_history["func_count"]
-        iteration = self.convergence_history["grad_count"]
+        iteration = self.convergence_history["func_count"]
+        # iteration = self.convergence_history["grad_count"]
         objective_function = self.convergence_history["objective_value"]
         constraint_violation = self.convergence_history["constraint_violation"]
         self.obj_line_1.set_xdata(iteration)
