@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from scipy.optimize import root
 from scipy.optimize._numdiff import approx_derivative
-from abc import ABC, abstractmethod
 from datetime import datetime
 
 
@@ -444,45 +443,3 @@ class NonlinearSystemSolver:
             self.fig.savefig(filename + ".png", bbox_inches="tight")
             self.fig.savefig(filename + ".svg", bbox_inches="tight")
             
-
-class NonlinearSystemProblem(ABC):
-    """
-    Abstract base class for root-finding problems.
-
-    Derived root-finding problem objects must implement the following method:
-
-    - `get_values`: Evaluate the system of equations for a given set of decision variables.
-
-    Additionally, specific problem classes can define the `get_jacobian` method to compute the Jacobians. If this method is not present in the derived class, the solver will revert to using forward finite differences for Jacobian calculations.
-
-    Methods
-    -------
-    get_values(x)
-        Evaluate the system of equations for a given set of decision variables.
-
-    Examples
-    --------
-    Here's an example of how to derive from `RootFindingProblem`::
-
-        class MyRootFindingProblem(RootFindingProblem):
-            def get_values(self, x):
-                # Implement evaluation logic here
-                pass
-    """
-
-    @abstractmethod
-    def get_values(self, x):
-        """
-        Evaluate the system of equations for given decision variables.
-
-        Parameters
-        ----------
-        x : array-like
-            Vector of decision variables.
-
-        Returns
-        -------
-        array_like
-            Vector containing the values of the system of equations for the given decision variables.
-        """
-        pass
