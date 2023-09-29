@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize._numdiff import approx_derivative
 
-from .optimization import OptimizationProblem
+from .optimization_solver import OptimizationProblem
 
 
 class RosenbrockProblem(OptimizationProblem):
