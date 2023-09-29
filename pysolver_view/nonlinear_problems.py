@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize._numdiff import approx_derivative
 
-from .nonlinear_system import NonlinearSystemProblem
+from .nonlinear_solver import NonlinearSystemProblem
 
 
 class LorentzEquations(NonlinearSystemProblem):
