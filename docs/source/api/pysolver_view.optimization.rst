@@ -1,7 +1,7 @@
-Optimization solver
+Optimization
 ==========================================
 
-.. automodule:: pysolver_view.optimization_solver
+.. automodule:: pysolver_view.optimization
    :members:
    :undoc-members:
    :show-inheritance:
