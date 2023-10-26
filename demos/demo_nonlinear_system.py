@@ -18,9 +18,9 @@ logger = pv.create_logger("convergence_history", use_datetime=True)
 x0 = np.asarray([1.0, -3.0, 2.0])
 problem = pv.LorentzEquations()
 solver = pv.NonlinearSystemSolver(problem, x0, display=True, plot=True, logger=logger)
-# solution = solver.solve(method="hybr")
 solution = solver.solve(method="hybr")
-solution = solver.plot_convergence_history()
+# solution = solver.solve(method="lm")
+# solution = solver.plot_convergence_history()
 
 # Keep plots open
 plt.show()
