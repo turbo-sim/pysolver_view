@@ -6,10 +6,6 @@
 Welcome to PySolverView documentation!
 =========================================
 
-
-:mod:`PySolverView` is a wrapper for the root finding and optimization solvers of :mod:`scipy`.
-
-
 Use the panel to the left or the table of contents below to navigathe the documentation.
 
 .. toctree::

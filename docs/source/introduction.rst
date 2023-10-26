@@ -11,7 +11,7 @@ Overview
 PySolverView: An Interface for SciPy Solvers
 ------------------------------------------------------
 
-:mod:`PySolverView` is a wrapper for the root finding and optimization solvers of :mod:`scipy`.
+:mod:`PySolverView` is a wrapper for the equation and optimization solvers of :mod:`scipy`.
 
 
 :mod:`scipy.optimize.root`, is a solver for nonlinear systems of equations:
@@ -62,6 +62,8 @@ PySolverView is a wrapper for the solvers of the Scipy package. Using this inter
     PySolverView integrates a caching mechanism. In cases where objective functions, equality constraints, and inequality constraints all require evaluations, the mechanism checks for unchanged independent variable seta and uses of previous calculations to avoid redundant recalculations.
 
 
+
+.. _installation:
 
 Installation
 =====================
