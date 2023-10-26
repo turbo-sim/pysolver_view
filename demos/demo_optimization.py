@@ -16,8 +16,8 @@ logger = pv.create_logger("convergence_history", use_datetime=True)
 
 # # Solve Rosenbrock problem
 # x0 = np.asarray([2, 2, 2, 2])
-# problem = psv.RosenbrockProblem()
-# solver = psv.OptimizationSolver(problem, x0, display=True, plot=True, logger=logger)
+# problem = pv.RosenbrockProblem()
+# solver = pv.OptimizationSolver(problem, x0, display=True, plot=True, logger=logger)
 # sol = solver.solve(method="slsqp")
 
 # Solve constrained Rosenbrock problem
@@ -28,8 +28,8 @@ sol = solver.solve(method="slsqp")
 
 # # Solve Hock-Schittkowski problem
 # x0 = np.asarray([1.5, 5, 5, 1])
-# problem = psv.HS71Problem()
-# solver = psv.OptimizationSolver(problem, x0, display=True, plot=True, logger=logger)
+# problem = pv.HS71Problem()
+# solver = pv.OptimizationSolver(problem, x0, display=True, plot=True, logger=logger)
 # sol = solver.solve(method="slsqp")
 
 # Keep plots open

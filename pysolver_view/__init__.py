@@ -11,7 +11,7 @@ else:
     
 
 from .utilities import *
-from .optimization_solver import *
+from .optimization import *
 from .optimization_problems import *
-from .nonlinear_solver import *
-from .nonlinear_problems import *
+from .nonlinear_system import *
+from .nonlinear_system_problems import *

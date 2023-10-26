@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from scipy.optimize import root
 from scipy.optimize._numdiff import approx_derivative
+from abc import ABC, abstractmethod
 from datetime import datetime
 
 
@@ -36,6 +37,8 @@ class NonlinearSystemSolver:
         If True, plots the convergence progress. Defaults to False.
     logger : logging.Logger, optional
         Logger object to which logging messages will be directed. Defaults to None.
+    update_on : str, optional
+        Specifies if the convergence report should be updated on a new function evaluations ("function") or on gradient evaluations ("gradient"). Defaults to "function".
 
     Methods
     -------
@@ -52,7 +55,9 @@ class NonlinearSystemSolver:
 
     """
 
-    def __init__(self, problem, x0, display=True, plot=False, logger=None):
+    def __init__(
+        self, problem, x0, display=True, plot=False, logger=None, update_on="function"
+    ):
         # Initialize class variables
         self.problem = problem
         self.display = display
@@ -65,6 +70,13 @@ class NonlinearSystemSolver:
                 raise ValueError(
                     "The provided logger is not a valid logging.Logger instance."
                 )
+
+        # Check for valid display_on value
+        self.update_on = update_on
+        if update_on not in ["function", "gradient"]:
+            raise ValueError(
+                "Invalid value for 'update_on'. It should be either 'function' or 'gradient'."
+            )
 
         # Initialize problem
         self.x0 = x0
@@ -129,12 +141,13 @@ class NonlinearSystemSolver:
         self._write_header()
 
         # Print progress on f-eval, not grad-eval
-        fun = lambda x: self.get_values(x, print_progress=True)
+        # fun = lambda x: self.get_values(x, print_progress=True)
+        # jac = lambda x: self.get_jacobian(x, print_progress=True)
 
         # Solve the root finding problem
         self.x0 = self.x0 if x0 is None else x0
         self.solution = root(
-            fun,
+            self.get_values,
             self.x0,
             jac=self.get_jacobian,
             method=method,
@@ -147,7 +160,7 @@ class NonlinearSystemSolver:
 
         return self.solution
 
-    def get_values(self, x, print_progress=False):
+    def get_values(self, x, called_from_jac=False):
         """
         Evaluate the nonlinear system residuals.
 
@@ -169,17 +182,18 @@ class NonlinearSystemSolver:
         self.last_residuals = self.problem.get_values(x)
 
         # Update progress report
-        if print_progress:
+        if not called_from_jac:
             self.func_count += 1  # Does not include finite differences
-            self._print_convergence_progress(x)
+            if self.update_on == "function":
+                self._print_convergence_progress(x)
 
         return self.last_residuals
 
-    def get_jacobian(self, x, print_progress=False):
+    def get_jacobian(self, x):
         """
         Evaluates the Jacobian of the nonlinear system of equations at the specified point x.
 
-        This method will use the `get_jacobian` method of the NonlinearSystemProblem class if it exists. 
+        This method will use the `get_jacobian` method of the NonlinearSystemProblem class if it exists.
         If the `get_jacobian` method is not implemented the Jacobian is appoximated using forward finite differences.
 
         Parameters
@@ -199,14 +213,15 @@ class NonlinearSystemSolver:
             # If the problem has its own Jacobian method, use it
             jacobian = self.problem.get_jacobian(x)
 
-        else: 
+        else:
             # Fall back to finite differences
+            fun = lambda x: self.get_values(x, called_from_jac=True)
             jacobian = approx_derivative(
-                self.get_values, x, method="2-point", f0=self.last_residuals
+                fun, x, method="2-point", f0=self.last_residuals
             )
 
         # Update progress report
-        if print_progress:
+        if self.update_on == "gradient":
             self._print_convergence_progress(x)
 
         return jacobian
@@ -267,7 +282,7 @@ class NonlinearSystemSolver:
         Notes
         -----
         The norm of the update step is calculated as the two-norm of the difference
-        between the current and the last independent variables. The norm of the residual 
+        between the current and the last independent variables. The norm of the residual
         vector is computed using the two-norm.
         """
         # Compute norm of residual vector
@@ -364,8 +379,11 @@ class NonlinearSystemSolver:
             self.fig.tight_layout(pad=1)
 
         # Update plot data with current values
-        iteration = self.convergence_history["func_count"]
-        # iteration = self.convergence_history["grad_count"]
+        iteration = (
+            self.convergence_history["func_count"]
+            if self.update_on == "function"
+            else self.convergence_history["grad_count"]
+        )
         residual = self.convergence_history["norm_residual"]
         self.obj_line.set_xdata(iteration)
         self.obj_line.set_ydata(residual)
@@ -404,10 +422,12 @@ class NonlinearSystemSolver:
                 "This method should be used after invoking the 'solve()' method."
             )
 
-    def plot_convergence_history(self, savefig=True, name=None, use_datetime=False, path=None):
+    def plot_convergence_history(
+        self, savefig=True, name=None, use_datetime=False, path=None
+    ):
         """
         Plot the convergence history of the problem.
-        
+
         This method plots the two norm of the residual vector versus the number of iterations
 
         """
@@ -419,7 +439,6 @@ class NonlinearSystemSolver:
             )
 
         if savefig:
-
             # Give a name to the figure if it is not specified
             if name is None:
                 name = f"convergence_history_{type(self.problem).__name__}"
@@ -438,8 +457,50 @@ class NonlinearSystemSolver:
                 filename = os.path.join(path, f"{name}_{current_time}")
             else:
                 filename = os.path.join(path, f"{name}")
-            
+
             # Save plots
             self.fig.savefig(filename + ".png", bbox_inches="tight")
             self.fig.savefig(filename + ".svg", bbox_inches="tight")
-            
+
+
+class NonlinearSystemProblem(ABC):
+    """
+    Abstract base class for root-finding problems.
+
+    Derived root-finding problem objects must implement the following method:
+
+    - `get_values`: Evaluate the system of equations for a given set of decision variables.
+
+    Additionally, specific problem classes can define the `get_jacobian` method to compute the Jacobians. If this method is not present in the derived class, the solver will revert to using forward finite differences for Jacobian calculations.
+
+    Methods
+    -------
+    get_values(x)
+        Evaluate the system of equations for a given set of decision variables.
+
+    Examples
+    --------
+    Here's an example of how to derive from `RootFindingProblem`::
+
+        class MyRootFindingProblem(RootFindingProblem):
+            def get_values(self, x):
+                # Implement evaluation logic here
+                pass
+    """
+
+    @abstractmethod
+    def get_values(self, x):
+        """
+        Evaluate the system of equations for given decision variables.
+
+        Parameters
+        ----------
+        x : array-like
+            Vector of decision variables.
+
+        Returns
+        -------
+        array_like
+            Vector containing the values of the system of equations for the given decision variables.
+        """
+        pass
