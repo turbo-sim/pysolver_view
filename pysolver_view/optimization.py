@@ -214,6 +214,7 @@ class OptimizationSolver:
             method=method,
             tol=tol,
             options=options,
+            hess=lambda x: np.zeros((self.x0.size,))  # TODO: Is it necessary?
         )
 
         # Print report footer
