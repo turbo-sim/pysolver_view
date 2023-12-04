@@ -1,4 +1,6 @@
 import os
+import time
+import copy
 import logging
 import warnings
 import numpy as np
@@ -8,6 +10,8 @@ from scipy.optimize import root
 from scipy.optimize._numdiff import approx_derivative
 from abc import ABC, abstractmethod
 from datetime import datetime
+
+SOLVER_OPTIONS = ["hybr", "lm"]
 
 
 class NonlinearSystemSolver:
@@ -31,6 +35,24 @@ class NonlinearSystemSolver:
         An instance of a problem defining the system of equations to be solved.
     x0 : array_like
         Initial guess for the independent variables.
+    method : str, optional
+        Method to be used by scipy's root for solving the nonlinear system. Available solvers are:
+
+        - :code:`hybr`: Refers to MINPACK's 'hybrd' method. This is a modification of Powell's hybrid method and can be viewed as a quasi-Newton method. It is suitable for smooth functions and known to be robust, but can sometimes be slower than other methods.
+        - :code:`lm`: The Levenberg-Marquardt method. Often used for least-squares problems, it blends the steepest descent and the Gauss-Newton method. This method can perform well for functions that are reasonably well-behaved.
+
+        The choice between :code:`hybr` and :code:`lm` largely depends on the specifics of the problem at hand and the nature of the function. Both methods have their strengths and can be applicable in various contexts. It is advisable to understand the characteristics of the system being solved and experiment with both methods to determine the most appropriate choice for a given problem.
+        Defaults to 'hybr'.
+    tol : float, optional
+        Tolerance for the solver termination. Defaults to 1e-9.
+    max_iter : integer, optional
+        Maximum number of function evaluations for the solver termination. Defaults to 100.
+    options : dict, optional
+        Additional options to be passed to scipy's root.
+    derivative_method : str, optional
+        Finite difference method to be used when the problem Jacobian is not provided. Defaults to '2-point'
+    derivative_rel_step : float, optional
+        Finite difference relative step size to be used when the problem Jacobian is not provided. Defaults to 1e-6
     display : bool, optional
         If True, displays the convergence progress. Defaults to True.
     plot : bool, optional
@@ -40,13 +62,14 @@ class NonlinearSystemSolver:
     update_on : str, optional
         Specifies if the convergence report should be updated on a new function evaluations ("function") or on gradient evaluations ("gradient"). Defaults to "function".
 
+
     Methods
     -------
-    solve(x0=None, method='hybr', tol=1e-9, options=None)
+    solve(x0=None)
         Solve the system of nonlinear equations.
-    get_values(x)
+    get_residual_values(x)
         Evaluate the given nonlinear system problem.
-    get_jacobian(x)
+    get_residual_jacobian(x)
         Evaluate the Jacobian of the system.
     print_convergence_history()
         Print the convergence history of the problem.
@@ -56,13 +79,44 @@ class NonlinearSystemSolver:
     """
 
     def __init__(
-        self, problem, x0, display=True, plot=False, logger=None, update_on="function"
+        self,
+        problem,
+        x0,
+        method="hybr",
+        tol=1e-9,
+        max_iter=100,
+        options={},
+        derivative_method="2-point",
+        derivative_rel_step=1e-6,
+        display=True,
+        plot=False,
+        logger=None,
+        update_on="function",
+        callback_func=None,
     ):
         # Initialize class variables
         self.problem = problem
         self.display = display
         self.plot = plot
         self.logger = logger
+        self.method = method
+        self.tol = tol
+        self.maxiter = max_iter
+        self.options = copy.deepcopy(options) if options else {}
+        self.derivative_method = derivative_method
+        self.derivative_rel_step = derivative_rel_step
+        self.callback_func = callback_func
+        self.callback_func_call_count = 0
+
+        # Define the maximun number of iterations
+        if method == "hybr":
+            self.options["maxfev"] = self.maxiter
+        elif method == "lm":
+            self.options["maxiter"] = self.maxiter
+        else:
+            raise ValueError(
+                f"Invalid solver. Available options: {', '.join(SOLVER_OPTIONS)}"
+            )
 
         # Check for logger validity
         if self.logger is not None:
@@ -80,7 +134,7 @@ class NonlinearSystemSolver:
 
         # Initialize problem
         self.x0 = x0
-        eval = self.problem.get_values(self.x0)
+        eval = self.problem.get_residual_values(self.x0)
         if np.any([item is None for item in eval]):
             raise ValueError(
                 "Problem evaluation contains None values. There may be an issue with the problem object provided."
@@ -94,6 +148,8 @@ class NonlinearSystemSolver:
         self.func_count_tot = 0
         self.solution = None
         self.solution_report = []
+        self.elapsed_time = None
+        self.include_solution_in_footer = False
         self.convergence_history = {
             "grad_count": [],
             "func_count": [],
@@ -107,7 +163,7 @@ class NonlinearSystemSolver:
         if self.plot:
             self._plot_callback(initialize=True)
 
-    def solve(self, x0=None, method="hybr", tol=1e-9, options=None):
+    def solve(self, x0=None):
         """
         Solve the nonlinear system using scipy's root.
 
@@ -115,52 +171,43 @@ class NonlinearSystemSolver:
         ----------
         x0 : array-like, optional
             Initial guess for the solution of the nonlinear system. If not provided, the initial guess set during instantiation is used.
-        method : str, optional
-            Method to be used by scipy's root for solving the nonlinear system. Available solvers are:
-
-            - :code:`hybr`: Refers to MINPACK's 'hybrd' method. This is a modification of Powell's hybrid method and can be viewed as a quasi-Newton method. It is suitable for smooth functions and known to be robust, but can sometimes be slower than other methods.
-            - :code:`lm`: The Levenberg-Marquardt method. Often used for least-squares problems, it blends the steepest descent and the Gauss-Newton method. This method can perform well for functions that are reasonably well-behaved.
-
-            Defaults to 'hybr'.
-        tol : float, optional
-            Tolerance for the solver termination. Defaults to 1e-9.
-        options : dict, optional
-            Additional options to be passed to scipy's root.
 
         Returns
         -------
         RootResults
             A result object from scipy's root detailing the outcome of the solution process.
 
-        Notes
-        -----
-        The choice between :code:`hybr` and :code:`lm` largely depends on the specifics of the problem at hand and the nature of the function. Both methods have their strengths and can be applicable in various contexts. It is advisable to understand the characteristics of the system being solved and experiment with both methods to determine the most appropriate choice for a given problem.
         """
+
+        # Start timing with high-resolution timer
+        start_time = time.perf_counter()
 
         # Print report header
         self._write_header()
 
-        # Print progress on f-eval, not grad-eval
-        # fun = lambda x: self.get_values(x, print_progress=True)
-        # jac = lambda x: self.get_jacobian(x, print_progress=True)
-
         # Solve the root finding problem
         self.x0 = self.x0 if x0 is None else x0
         self.solution = root(
-            self.get_values,
+            self.get_residual_values,
             self.x0,
-            jac=self.get_jacobian,
-            method=method,
-            tol=tol,
-            options=options,
+            jac=self.get_residual_jacobian,
+            method=self.method,
+            tol=self.tol,
+            options=self.options,
         )
+
+        # Evaluate performance again for the converged solution
+        self.get_residual_values(self.solution.x)
+
+        # Calculate elapsed time
+        self.elapsed_time = time.perf_counter() - start_time
 
         # Print report footer
         self._write_footer()
 
         return self.solution
 
-    def get_values(self, x, called_from_jac=False):
+    def get_residual_values(self, x, called_from_jac=False):
         """
         Evaluate the nonlinear system residuals.
 
@@ -179,7 +226,7 @@ class NonlinearSystemSolver:
         self.func_count_tot += 1
 
         # Compute problem residuals
-        self.last_residuals = self.problem.get_values(x)
+        self.last_residuals = self.problem.get_residual_values(x)
 
         # Update progress report
         if not called_from_jac:
@@ -189,12 +236,12 @@ class NonlinearSystemSolver:
 
         return self.last_residuals
 
-    def get_jacobian(self, x):
+    def get_residual_jacobian(self, x):
         """
         Evaluates the Jacobian of the nonlinear system of equations at the specified point x.
 
-        This method will use the `get_jacobian` method of the NonlinearSystemProblem class if it exists.
-        If the `get_jacobian` method is not implemented the Jacobian is appoximated using forward finite differences.
+        This method will use the `get_residual_jacobian` method of the NonlinearSystemProblem class if it exists.
+        If the `get_residual_jacobian` method is not implemented the Jacobian is appoximated using forward finite differences.
 
         Parameters
         ----------
@@ -209,15 +256,19 @@ class NonlinearSystemSolver:
 
         # Evaluate the Jacobian of the residual vector
         self.grad_count += 1
-        if hasattr(self.problem, "get_jacobian"):
+        if hasattr(self.problem, "get_residual_jacobian"):
             # If the problem has its own Jacobian method, use it
-            jacobian = self.problem.get_jacobian(x)
+            jacobian = self.problem.get_residual_jacobian(x)
 
         else:
             # Fall back to finite differences
-            fun = lambda x: self.get_values(x, called_from_jac=True)
+            fun = lambda x: self.get_residual_values(x, called_from_jac=True)
             jacobian = approx_derivative(
-                fun, x, method="2-point", f0=self.last_residuals
+                fun,
+                x,
+                f0=self.last_residuals,
+                method=self.derivative_method,
+                abs_step=self.derivative_rel_step * np.abs(x),
             )
 
         # Update progress report
@@ -234,7 +285,6 @@ class NonlinearSystemSolver:
         beginning of the root finding process. The header includes columns for residual evaluations,
         gradient evaluations, norm of the residuals, and norm of the steps.
         """
-
         # Define header text
         initial_message = (
             f" Solve system of equations for {type(self.problem).__name__}"
@@ -319,6 +369,11 @@ class NonlinearSystemSolver:
         if self.plot:
             self._plot_callback()
 
+        # Evaluate callback function
+        if self.callback_func:
+            self.callback_func_call_count += 1
+            self.callback_func(x, self.callback_func_call_count)
+
     def _write_footer(self):
         """
         Print a formatted footer for the root finding report.
@@ -335,17 +390,19 @@ class NonlinearSystemSolver:
         separator = "-" * len(self.header)
         exit_message = f"Exit message: {self.solution.message}"
         success_status = f"Success: {self.solution.success}"
+        time_message = f"Solution time: {self.elapsed_time:.3f} seconds"
         solution_header = "Solution:"
         solution_vars = [f"   x{i} = {x:+6e}" for i, x in enumerate(self.solution.x)]
-        lines_to_output = (
-            [separator, exit_message, success_status, solution_header]
-            + solution_vars
-            + [separator, ""]
-        )
+        lines_to_output = [separator, success_status, exit_message, time_message]
+        if self.include_solution_in_footer:
+            lines_to_output += [solution_header]
+            lines_to_output += solution_vars
+        lines_to_output += [separator, ""]
 
         # Display to stdout
-        for line in lines_to_output:
-            print(line)
+        if self.display:
+            for line in lines_to_output:
+                print(line)
 
         # Write to log
         if self.logger:
@@ -396,7 +453,9 @@ class NonlinearSystemSolver:
         plt.draw()
         plt.pause(0.01)  # small pause to allow for update
 
-    def print_convergence_history(self):
+    def print_convergence_history(
+        self, savefile=False, filename=None, output_dir="output"
+    ):
         """
         Print the convergence history of the problem.
 
@@ -415,8 +474,28 @@ class NonlinearSystemSolver:
 
         """
         if self.solution:
-            for line in self.solution_report:
-                print(line)
+            if savefile:
+                # Create figures directory if it does not exist
+                if not os.path.exists(output_dir):
+                    os.makedirs(output_dir)
+
+                # Give a name to the file if it is not specified
+                if filename is None:
+                    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                    filename = os.path.join(
+                        output_dir, f"convergence_history_{current_time}.txt"
+                    )
+                else:
+                    filename = os.path.join(output_dir, f"{filename}.txt")
+
+                # Save plots
+                with open(filename, "w") as f:
+                    f.write("\n".join(self.solution_report))
+
+            else:
+                for line in self.solution_report:
+                    print(line)
+
         else:
             warnings.warn(
                 "This method should be used after invoking the 'solve()' method."
@@ -469,13 +548,13 @@ class NonlinearSystemProblem(ABC):
 
     Derived root-finding problem objects must implement the following method:
 
-    - `get_values`: Evaluate the system of equations for a given set of decision variables.
+    - `get_residual_values`: Evaluate the system of equations for a given set of decision variables.
 
-    Additionally, specific problem classes can define the `get_jacobian` method to compute the Jacobians. If this method is not present in the derived class, the solver will revert to using forward finite differences for Jacobian calculations.
+    Additionally, specific problem classes can define the `get_residual_jacobian` method to compute the Jacobians. If this method is not present in the derived class, the solver will revert to using forward finite differences for Jacobian calculations.
 
     Methods
     -------
-    get_values(x)
+    get_residual_values(x)
         Evaluate the system of equations for a given set of decision variables.
 
     Examples
@@ -483,13 +562,13 @@ class NonlinearSystemProblem(ABC):
     Here's an example of how to derive from `RootFindingProblem`::
 
         class MyRootFindingProblem(RootFindingProblem):
-            def get_values(self, x):
+            def get_residual_values(self, x):
                 # Implement evaluation logic here
                 pass
     """
 
     @abstractmethod
-    def get_values(self, x):
+    def get_residual_values(self, x):
         """
         Evaluate the system of equations for given decision variables.
 

@@ -1,4 +1,6 @@
 import os
+import time
+import copy
 import logging
 import warnings
 import numpy as np
@@ -8,6 +10,8 @@ from scipy.optimize import minimize
 from scipy.optimize._numdiff import approx_derivative
 from abc import ABC, abstractmethod
 from datetime import datetime
+
+SOLVER_OPTIONS = ["slsqp", "trust-constr"]
 
 
 class OptimizationSolver:
@@ -62,9 +66,9 @@ class OptimizationSolver:
     -------
     solve(x0, method="slsqp", tol=1e-9, options=None):
         Solve the optimization problem using scipy's minimize.
-    get_values(x):
+    get_optimization_values(x):
         Evaluates the optimization problem values at a given point x.
-    get_jacobian(x):
+    get_optimization_jacobian(x):
         Evaluates the Jacobians of the optimization problem at a given point x.
     print_convergence_history():
         Print the final result and convergence history of the optimization problem.
@@ -73,13 +77,44 @@ class OptimizationSolver:
     """
 
     def __init__(
-        self, problem, x0, display=True, plot=False, logger=None, update_on="gradient"
+        self,
+        problem,
+        x0,
+        method="slsqp",
+        tol=1e-9,
+        max_iter=100,
+        options={},
+        derivative_method="2-point",
+        derivative_rel_step=1e-6,
+        display=True,
+        plot=False,
+        logger=None,
+        update_on="gradient",
+        callback_func=None,
     ):
         # Initialize class variables
         self.problem = problem
         self.display = display
         self.plot = plot
         self.logger = logger
+        self.method = method
+        self.tol = tol
+        self.maxiter = max_iter
+        self.options = copy.deepcopy(options) if options else {}
+        self.derivative_method = derivative_method
+        self.derivative_rel_step = derivative_rel_step
+        self.callback_func = callback_func
+        self.callback_func_call_count = 0
+
+        # Define the maximun number of iterations
+        if method == "slsqp":
+            self.options["maxiter"] = self.maxiter
+        elif method == "trust-constr":
+            self.options["maxiter"] = self.maxiter
+        else:
+            raise ValueError(
+                f"Invalid solver. Available options: {', '.join(SOLVER_OPTIONS)}"
+            )
 
         # Check for logger validity
         if self.logger is not None:
@@ -97,7 +132,7 @@ class OptimizationSolver:
 
         # Initialize problem
         self.x0 = x0
-        eval = self.problem.get_values(self.x0)
+        eval = self.problem.get_optimization_values(self.x0)
         if np.any([item is None for item in eval]):
             raise ValueError(
                 "Problem evaluation contains None values. There may be an issue with the problem object provided."
@@ -114,6 +149,8 @@ class OptimizationSolver:
         self.func_count_tot = 0
         self.solution = None
         self.solution_report = []
+        self.elapsed_time = None
+        self.include_solution_in_footer = False
         self.convergence_history = {
             "grad_count": [],
             "func_count": [],
@@ -145,12 +182,12 @@ class OptimizationSolver:
         }
 
         # Get handles to objective/constraint fucntions and their Jacobians
-        self.f = lambda x: self.get_values(x)[0]
-        self.c_eq = lambda x: self.get_values(x)[1]
-        self.c_ineq = lambda x: self.get_values(x)[2]
-        self.f_jac = lambda x: self.get_jacobian(x)[0]
-        self.c_eq_jac = lambda x: self.get_jacobian(x)[1]
-        self.c_ineq_jac = lambda x: self.get_jacobian(x)[2]
+        self.f = lambda x: self.get_optimization_values(x)[0]
+        self.c_eq = lambda x: self.get_optimization_values(x)[1]
+        self.c_ineq = lambda x: self.get_optimization_values(x)[2]
+        self.f_jac = lambda x: self.get_optimization_jacobian(x)[0]
+        self.c_eq_jac = lambda x: self.get_optimization_jacobian(x)[1]
+        self.c_ineq_jac = lambda x: self.get_optimization_jacobian(x)[2]
 
         # Define list of constraint dictionaries
         self.constraints = []
@@ -166,7 +203,7 @@ class OptimizationSolver:
         # Initialize problem bounds
         self.bounds = self.problem.get_bounds()
 
-    def solve(self, x0=None, method="slsqp", tol=1e-9, options=None):
+    def solve(self, x0=None):
         """
         Solve the optimization problem using scipy's minimize.
 
@@ -200,6 +237,9 @@ class OptimizationSolver:
         methods to determine which one is more suitable for a particular problem.
         """
 
+        # Start timing with high-resolution timer
+        start_time = time.perf_counter()
+
         # Print report header
         self._write_header()
 
@@ -211,22 +251,29 @@ class OptimizationSolver:
             jac=self.f_jac,
             constraints=self.constraints,
             bounds=self.bounds,
-            method=method,
-            tol=tol,
-            options=options,
-            hess=lambda x: np.zeros((self.x0.size,))  # TODO: Is it necessary?
+            method=self.method,
+            tol=self.tol,
+            options=self.options,
+            # hess=lambda x: np.zeros((self.x0.size,)),  # TODO: Is it necessary?
         )
 
+        # Evaluate performance again for the converged solution
+        self.get_optimization_values(self.solution.x)
+
+        # Calculate elapsed time
+        self.elapsed_time = time.perf_counter() - start_time
+
         # Print report footer
+        self._print_convergence_progress(self.solution.x)
         self._write_footer()
 
         return self.solution
 
-    def get_values(self, x, single_output=False, called_from_jac=False):
+    def get_optimization_values(self, x, single_output=False, called_from_jac=False):
         """
         Evaluates the optimization problem values at a given point x.
 
-        This method queries the `get_values` method of the OptimizationProblem class to
+        This method queries the `get_optimization_values` method of the OptimizationProblem class to
         compute the objective function value and constraint values. It first checks the cache
         to avoid redundant evaluations. If no matching cached result exists, it proceeds to
         evaluate the objective function and constraints.
@@ -268,7 +315,7 @@ class OptimizationSolver:
         self.func_count_tot += 1
 
         # Evaluate objective function and constraints at once
-        func_constr = self.problem.get_values(x)
+        func_constr = self.problem.get_optimization_values(x)
 
         # Split the combined result based on number of constraints
         f = func_constr[0]
@@ -300,12 +347,12 @@ class OptimizationSolver:
         else:
             return self.cache["f"], self.cache["c_eq"], self.cache["c_ineq"]
 
-    def get_jacobian(self, x):
+    def get_optimization_jacobian(self, x):
         """
         Evaluates the Jacobians of the optimization problem at the given point x.
 
-        This method will use the `get_jacobian` method of the OptimizationProblem class if it exists.
-        If the `get_jacobian` method is not implemented the Jacobian is approximated using forward finite differences.
+        This method will use the `get_optimization_jacobian` method of the OptimizationProblem class if it exists.
+        If the `get_optimization_jacobian` method is not implemented the Jacobian is approximated using forward finite differences.
 
         To prevent redundant calculations, cached results are checked first. If a matching
         cached result is found, it is returned; otherwise, a fresh calculation is performed.
@@ -339,13 +386,13 @@ class OptimizationSolver:
 
         # Evaluate the Jacobian of objective function and constraints at once
         self.grad_count += 1
-        if hasattr(self.problem, "get_jacobian"):
+        if hasattr(self.problem, "get_optimization_jacobian"):
             # If the problem has its own Jacobian method, use it
-            jac = self.problem.get_jacobian(x)
+            jac = self.problem.get_optimization_jacobian(x)
 
         else:
             # Fall back to finite differences
-            fun_constr = lambda x: self.get_values(
+            fun_constr = lambda x: self.get_optimization_values(
                 x, single_output=True, called_from_jac=True
             )
             fun_constr_0 = (
@@ -353,7 +400,10 @@ class OptimizationSolver:
                 if np.array_equal(x, self.cache["x"])
                 else fun_constr(x)
             )
-            jac = approx_derivative(fun_constr, x, method="2-point", f0=fun_constr_0)
+            eps = 1e-4 * np.abs(x)
+            jac = approx_derivative(
+                fun_constr, x, method="2-point", f0=fun_constr_0, abs_step=eps
+            )
             jac = np.atleast_2d(jac)  # Reshape for unconstrained problems
 
         # Get the jacobian of the objective function and constraint separately
@@ -475,6 +525,11 @@ class OptimizationSolver:
         if self.plot:
             self._plot_callback()
 
+        # Evaluate callback function
+        if self.callback_func:
+            self.callback_func_call_count += 1
+            self.callback_func(x, self.callback_func_call_count)
+
     def _write_footer(self):
         """
         Print a formatted footer for the optimization report.
@@ -491,20 +546,16 @@ class OptimizationSolver:
         separator = "-" * len(self.header)
         exit_message = f"Exit message: {self.solution.message}"
         success_status = f"Sucess: {self.solution.success}"
+        time_message = f"Solution time: {self.elapsed_time:.3f} seconds"
         solution_header = "Solution:"
         solution_objective = f"   f  = {self.solution.fun:+6e}"
         solution_vars = [f"   x{i} = {x:+6e}" for i, x in enumerate(self.solution.x)]
-        lines_to_output = (
-            [
-                separator,
-                exit_message,
-                success_status,
-                solution_header,
-                solution_objective,
-            ]
-            + solution_vars
-            + [separator]
-        )
+        lines_to_output = [separator, success_status, exit_message, time_message]
+        if self.include_solution_in_footer:
+            lines_to_output += [solution_header]
+            lines_to_output += solution_objective
+            lines_to_output += solution_vars
+        lines_to_output += [separator, ""]
 
         # Display to stdout
         if self.display:
@@ -667,16 +718,16 @@ class OptimizationProblem(ABC):
 
     Derived optimization problem objects must implement the following methods:
 
-    - `get_values`: Evaluate the objective function and constraints for a given set of decision variables.
+    - `get_optimization_values`: Evaluate the objective function and constraints for a given set of decision variables.
     - `get_bounds`: Get the bounds for each decision variable.
     - `get_n_eq`: Return the number of equality constraints associated with the problem.
     - `get_n_ineq`: Return the number of inequality constraints associated with the problem.
 
-    Additionally, specific problem classes can define the `get_jacobian` method to compute the Jacobians. If this method is not present in the derived class, the solver will revert to using forward finite differences for Jacobian calculations.
+    Additionally, specific problem classes can define the `get_optimization_jacobian` method to compute the Jacobians. If this method is not present in the derived class, the solver will revert to using forward finite differences for Jacobian calculations.
 
     Methods
     -------
-    get_values(x)
+    get_optimization_values(x)
         Evaluate the objective function and constraints for a given set of decision variables.
     get_bounds()
         Get the bounds for each decision variable.
@@ -690,7 +741,7 @@ class OptimizationProblem(ABC):
     Here's an example of how to derive from `OptimizationProblem`::
 
         class MyOptimizationProblem(OptimizationProblem):
-            def get_values(self, x):
+            def get_optimization_values(self, x):
                 # Implement evaluation logic here
                 pass
 
@@ -709,7 +760,7 @@ class OptimizationProblem(ABC):
     """
 
     @abstractmethod
-    def get_values(self, x):
+    def get_optimization_values(self, x):
         """
         Evaluate the objective function and constraints for given decision variables.
 
