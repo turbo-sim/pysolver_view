@@ -1,7 +1,7 @@
 import numpy as np
-from scipy.optimize._numdiff import approx_derivative
 
-from .optimization import OptimizationProblem
+from .optimization import OptimizationProblem, combine_objective_and_constraints
+from .numerical_differentiation import approx_derivative, approx_jacobian_hessians
 
 
 class RosenbrockProblem(OptimizationProblem):
@@ -19,7 +19,7 @@ class RosenbrockProblem(OptimizationProblem):
 
     Methods
     -------
-    get_optimization_values(x)
+    evaluate_problem(x)
         Evaluates the Rosenbrock function and its constraints.
     get_bounds()
         Returns the bounds for the problem.
@@ -29,38 +29,55 @@ class RosenbrockProblem(OptimizationProblem):
         Returns the number of inequality constraints.
     """
 
-    def __init__(self):
-        self.f = None
-        self.c_eq = None
-        self.c_ineq = None
+    def __init__(self, dim):
+        self.dim = dim
 
-    def get_optimization_values(self, x):
-        # Objective function
-        self.x = x
-        self.f = np.sum(100.0 * (x[1:] - x[:-1] ** 2) ** 2 + (x[:-1] - 1) ** 2)
+    def fitness(self, x):
+        """Rosenbrock function value"""
+        f = np.sum(100.0 * (x[1:] - x[:-1] ** 2) ** 2 + (x[:-1] - 1) ** 2)
+        return combine_objective_and_constraints(f, None, None)
 
-        # Equality constraints
-        self.c_eq = []
-
-        # No inequality constraints given for this problem
-        self.c_ineq = []
-
-        # Combine objective function and constraints
-        objective_and_constraints = self.merge_objective_and_constraints(
-            self.f, self.c_eq, self.c_ineq
+    def gradient(self, x):
+        """Rosenbrock function gradient"""
+        x = np.asarray(x)
+        xm = x[1:-1]
+        xm_m1 = x[:-2]
+        xm_p1 = x[2:]
+        grad = np.zeros_like(x)
+        grad[1:-1] = (
+            200 * (xm - xm_m1**2) - 400 * (xm_p1 - xm**2) * xm - 2 * (1 - xm)
         )
+        grad[0] = -400 * x[0] * (x[1] - x[0] ** 2) - 2 * (1 - x[0])
+        grad[-1] = 200 * (x[-1] - x[-2] ** 2)
+        return grad
 
-        return objective_and_constraints
+    def hessians(self, x, lower_triangular=True):
+        """Rosenbrock function gradient"""
+        x = np.atleast_1d(x)
+        H = np.diag(-400 * x[:-1], 1) - np.diag(400 * x[:-1], -1)
+        diagonal = np.zeros(len(x), dtype=x.dtype)
+        diagonal[0] = 1200 * x[0] ** 2 - 400 * x[1] + 2
+        diagonal[-1] = 200
+        diagonal[1:-1] = 202 + 1200 * x[1:-1] ** 2 - 400 * x[2:]
+        H = H + np.diag(diagonal)
+        if lower_triangular:
+            H = H[np.tril_indices(len(x))]  # Lower triangular
+            H = np.asarray([H])  # Correct Pygmo array shape
+        # return H.squeeze()
+        return H
+
+    # def hessians(self, x, lower_triangular=True):
+    #     return approx_jacobian_hessians(self.fitness, x, lower_triangular=lower_triangular)
 
     def get_bounds(self):
-        return None
+        return (-10 * np.ones(self.dim), 10 * np.ones(self.dim))
 
-    def get_n_eq(self):
-        return self.get_number_of_constraints(self.c_eq)
+    def get_nec(self):
+        return 0
 
-    def get_n_ineq(self):
-        return self.get_number_of_constraints(self.c_ineq)
-
+    def get_nic(self):
+        return 0
+    
 
 class RosenbrockProblemConstrained(OptimizationProblem):
     r"""
@@ -83,7 +100,7 @@ class RosenbrockProblemConstrained(OptimizationProblem):
 
     Methods
     -------
-    get_optimization_values(x):
+    evaluate_problem(x):
         Compute objective, equality, and inequality constraint.
     get_bounds():
         Return variable bounds.
@@ -93,19 +110,16 @@ class RosenbrockProblemConstrained(OptimizationProblem):
         Get number of inequality constraints.
     """
 
-    def __init__(self):
-        self.f = None
-        self.c_eq = None
-        self.c_ineq = None
+    def __init__(self, dim):
+        self.dim = dim
 
-    def get_optimization_values(self, x):
+    def fitness(self, x):
         # Objective function
-        self.x = x
-        self.f = np.sum(100.0 * (x[1:] - x[:-1] ** 2) ** 2 + (x[:-1] - 1) ** 2)
+        f = [np.sum(100.0 * (x[1:] - x[:-1] ** 2) ** 2 + (x[:-1] - 1) ** 2)]
 
         # Equality constraints
-        self.c_eq = []
-        for k in range(len(x) - 2):
+        c_eq = []
+        for k in range(self.dim - 2):
             val = (
                 3 * x[k + 1] ** 3
                 + 2 * x[k + 2]
@@ -115,32 +129,32 @@ class RosenbrockProblemConstrained(OptimizationProblem):
                 - x[k] * np.exp(x[k] - x[k + 1])
                 - 3
             )
-            self.c_eq.append(val)
+            c_eq.append(val)
 
-        # No inequality constraints given for this problem
-        self.c_ineq = []
+        return combine_objective_and_constraints(f, c_eq, None)
 
-        # Combine objective function and constraints
-        objective_and_constraints = self.merge_objective_and_constraints(
-            self.f, self.c_eq, self.c_ineq
+    def gradient(self, x):
+        gradient = approx_derivative(
+            self.fitness,
+            x,
+            method='2-point',
+            abs_step=1e-6 * np.abs(x),
         )
+        return gradient
 
-        return objective_and_constraints
-
-    # def get_jacobian(self, x):
-    #     jac = approx_derivative(self.get_values, x, method="2-point")
-    #     return np.atleast_2d(jac)
+    def hessians(self, x):
+        H = approx_jacobian_hessians(self.fitness, x, abs_step=1e-4, lower_triangular=True)
+        return H
 
     def get_bounds(self):
-        bounds = [(-5, 5) for _ in range(len(self.x))]
-        return bounds
+        return ([-10] * self.dim, [+10] * self.dim)
 
-    def get_n_eq(self):
-        return self.get_number_of_constraints(self.c_eq)
+    def get_nec(self):
+        return self.dim - 2
 
-    def get_n_ineq(self):
-        return self.get_number_of_constraints(self.c_ineq)
-
+    def get_nic(self):
+        return 0
+    
 
 class HS71Problem(OptimizationProblem):
     r"""
@@ -165,7 +179,7 @@ class HS71Problem(OptimizationProblem):
 
     Methods
     -------
-    get_optimization_values(x)`:
+    evaluate_problem(x)`:
         Compute objective, equality, and inequality constraint.
     get_bounds()`:
         Return variable bounds.
@@ -176,33 +190,84 @@ class HS71Problem(OptimizationProblem):
 
     """
 
-    def __init__(self):
-        self.f = None
-        self.c_eq = None
-        self.c_ineq = None
-
-    def get_optimization_values(self, x):
+    def fitness(self, x):
         # Objective function
-        self.f = x[0] * x[3] * (x[0] + x[1] + x[2]) + x[2]
+        f = x[0] * x[3] * (x[0] + x[1] + x[2]) + x[2]
 
-        # Equality constraints (as a list)
-        self.c_eq = [(x[0] ** 2 + x[1] ** 2 + x[2] ** 2 + x[3] ** 2) - 40.0]
+        # Equality constraints
+        c_eq = (x[0] ** 2 + x[1] ** 2 + x[2] ** 2 + x[3] ** 2) - 40.0
 
-        # Inequality constraints (as a list)
-        self.c_ineq = x[0] * x[1] * x[2] * x[3] - 25.0
+        # Inequality constraints
+        c_ineq = 25 - x[0] * x[1] * x[2] * x[3]
 
-        # Combine objective function and constraints
-        objective_and_constraints = self.merge_objective_and_constraints(
-            self.f, self.c_eq, self.c_ineq
-        )
-
-        return objective_and_constraints
+        return combine_objective_and_constraints(f, c_eq, c_ineq)
 
     def get_bounds(self):
-        return [(1, 5), (1, 5), (1, 5), (1, 5)]
+        return (4 * [1], 4 * [5])
 
-    def get_n_eq(self):
-        return self.get_number_of_constraints(self.c_eq)
+    def get_nec(self):
+        return 1
 
-    def get_n_ineq(self):
-        return self.get_number_of_constraints(self.c_ineq)
+    def get_nic(self):
+        return 1
+
+
+class LorentzEquationsOpt(OptimizationProblem):
+    r"""
+    Implementation of the Lorentz System of Nonlinear Equations as an optimization problem
+
+    This class implements the following system of algebraic nonlinear equations:
+
+    .. math::
+
+        \begin{align}
+        \dot{x} &= \sigma(y - x) = 0\\
+        \dot{y} &= x(\rho - z) - y = 0\\
+        \dot{z} &= xy - \beta z = 0
+        \end{align}
+
+    Where:
+
+    - :math:`\sigma` is related to the Prandtl number
+    - :math:`\rho` is related to the Rayleigh number
+    - :math:`\beta` is a geometric factor
+
+    References
+    ----------
+    - Edward N. Lorenz. "Deterministic Nonperiodic Flow". Journal of the Atmospheric Sciences, 20(2):130-141, 1963.
+    
+    Methods
+    -------
+    evaluate_problem(vars)`:
+        Evaluate the Lorentz system at a given state.
+
+    Attributes
+    ----------
+    sigma : float
+        The Prandtl number.
+    beta : float
+        The geometric factor.
+    rho : float
+        The Rayleigh number.
+    """
+
+    def __init__(self, sigma=1.0, beta=2.0, rho=3.0):
+        self.sigma = sigma
+        self.beta = beta
+        self.rho = rho
+
+    def fitness(self, vars):
+        x, y, z = vars
+        eq1 = self.sigma * (y - x)
+        eq2 = x * (self.rho - z) - y
+        eq3 = x * y - self.beta * z
+        return [0, eq1, eq2, eq3]
+
+    def get_nec(self):
+        return 3
+
+    def get_nic(self):
+        return 0
+
+    def get_bounds(self):
+        return (-10 * np.ones(3), 10 * np.ones(3))
