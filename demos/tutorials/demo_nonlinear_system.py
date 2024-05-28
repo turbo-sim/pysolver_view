@@ -1,11 +1,6 @@
 # Import packages
-import os
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
-
-# Import package from parent directory
-sys.path.insert(0, os.path.abspath(".."))
 import pysolver_view as pv
 
 # Set options for publication-quality figures
@@ -18,13 +13,20 @@ logger = pv.create_logger("convergence_history", use_datetime=True)
 x0 = np.asarray([1.0, -3.0, 2.0])
 problem = pv.LorentzEquations()
 solver = pv.NonlinearSystemSolver(
-    problem, x0, method="hybr", display=True, plot=False, logger=logger
+    problem,
+    method="hybr",
+    print_convergence=True,
+    plot_convergence=True,
+    logger=logger,
 )
-solver.solve()
-solver.plot_convergence_history()
+
+# Solve the problem
+solver.solve(x0)
 
 # Keep plots open
 plt.show()
 
-# # Save figure
-# solver.plot_convergence_history(savefig=True, use_datetime=False)
+# # Save the figure
+# solver.plot_convergence_history(savefile=True)
+
+
