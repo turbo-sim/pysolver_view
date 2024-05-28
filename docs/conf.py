@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # Define project metadata
 project = "pysolver_view"
-copyright = "2023, DTU Power Cycle Group"
+copyright = "2024, DTU Power Cycle Group"
 author = "DTU Power Cycle Group"
 release = "v0.0"
 

@@ -1,4 +1,4 @@
-Utilities
+Software utilities
 ===============================
 
 .. automodule:: pysolver_view.utilities

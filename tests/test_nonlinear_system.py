@@ -29,10 +29,10 @@ def test_lorentz_problem(method, stationary_point):
     solver = pv.NonlinearSystemSolver(
         problem,
         method=method,
-        display=True,
-        plot=False,
-        max_iter=300,
-        tol=1e-6,
+        print_convergence=True,
+        plot_convergence=False,
+        max_iterations=300,
+        tolerance=1e-6,
         update_on="function",
         logger=logger,
     )
