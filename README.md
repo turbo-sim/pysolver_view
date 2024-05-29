@@ -17,3 +17,5 @@ Please refer to the `documentation.html` for:
 - Complete documentation of all functions and classes in PySolverView
 
 
+## Other info
+- Pygmo and pygmo-plugin-nonfree should be installed with Conda
