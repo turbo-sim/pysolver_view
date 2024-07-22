@@ -317,7 +317,8 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#main-features-of-pysolverview">Main Features of PySolverView</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#user-installation-guide">User Installation Guide</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#developer-installation-guide">Developer Installation Guide</a></li>
 </ul>
             </nav>
         </div>
@@ -386,8 +387,8 @@ document.write(`
 </ol>
 </section>
 </section>
-<section id="installation">
-<span id="id2"></span><h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
+<section id="user-installation-guide">
+<span id="installation"></span><h2>User Installation Guide<a class="headerlink" href="#user-installation-guide" title="Link to this heading">#</a></h2>
 <p>If you use <a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/windows.html">Conda</a>, the following <a class="reference external" href="https://gitforwindows.org/">Bash</a> command can be executed to set up a new virtual environment with all necessary dependencies:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>--file<span class="w"> </span>environment.yaml
 </pre></div>
@@ -405,6 +406,102 @@ document.write(`
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> </span>--file<span class="w"> </span>environment.yaml<span class="w"> </span>--prune
 </pre></div>
 </div>
+<p>This guide will walk you through the process of installing <cite>pysolver_view</cite> via <cite>pip</cite>. To isolate the installation and avoid conflicts with other Python packages, it is recommended to create a dedicated Conda virtual environment.</p>
+<ol class="arabic">
+<li><p>Ensure conda is installed:</p>
+<ul class="simple">
+<li><p>Check if conda is installed in your terminal:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>list
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>If installed packages do not appear, <a class="reference external" href="https://conda.io/projects/conda/en/latest/user-guide/install/index.html">install conda</a>.</p></li>
+</ul>
+</li>
+<li><p>Open a terminal or command prompt and create a new virtual environment named <code class="docutils literal notranslate"><span class="pre">pysolver_env</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>pysolver_env<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11
+</pre></div>
+</div>
+</li>
+<li><p>Activate the newly created virtual environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>pysolver_env
+</pre></div>
+</div>
+</li>
+<li><p>Install the package using pip within the activated virtual environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pysolver_view
+</pre></div>
+</div>
+</li>
+<li><p>Verify the installation by running some of the examples in the [<cite>demos</cite>](../../demos) directory</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">pysolver_view</span></code> can use the optimization solvers available in the <code class="docutils literal notranslate"><span class="pre">scipy</span></code> package. However, a wider range of solvers are available through the <code class="docutils literal notranslate"><span class="pre">pygmo</span></code> wrapper, including <a class="reference external" href="https://coin-or.github.io/Ipopt/">IPOPT</a> and <a class="reference external" href="https://ccom.ucsd.edu/~optimizers/docs/snopt/introduction.html">SNOPT</a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>pygmo
+conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>pygmo_plugins_nonfree
+</pre></div>
+</div>
+</div>
+</section>
+<section id="developer-installation-guide">
+<h2>Developer Installation Guide<a class="headerlink" href="#developer-installation-guide" title="Link to this heading">#</a></h2>
+<p>This installation guide is intended for developers who wish to contribute to or modify the Turboflow source code. It assumes that the developer is using a Linux distribution or Windows with Git Bash terminal to have access to Git and Linux-like commands.</p>
+<ol class="arabic">
+<li><p><strong>Fork the repository:</strong></p>
+<ul class="simple">
+<li><p>Navigate to the <a class="reference external" href="https://github.com/turbo-sim/pysolver_view">project’s GitHub page</a>.</p></li>
+<li><p>Click the “Fork” button in the upper right corner of the repository page to create a copy of the repository under your own GitHub account.</p></li>
+</ul>
+</li>
+<li><p><strong>Clone the forked repository:</strong></p>
+<ul class="simple">
+<li><p>Open your terminal.</p></li>
+<li><p>Run the following command, replacing <cite>&lt;your-username&gt;</cite> with your GitHub username:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/&lt;your-username&gt;/&lt;repository-name&gt;.git
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Navigate into the cloned repository:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;repository-name&gt;
+</pre></div>
+</div>
+</li>
+<li><p><strong>Create a dedicated Conda virtual environment for development</strong>:</p>
+<ul class="simple">
+<li><p>Check that conda is installed:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>list
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>If not conda is installed, <a class="reference external" href="https://conda.io/projects/conda/en/latest/user-guide/install/index.html">install conda</a>.</p></li>
+<li><p>Create dedicated virtual environment for turboflow package:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--file<span class="w"> </span>environment.yaml
+</pre></div>
+</div>
+</li>
+<li><p><strong>Activate the newly created virtual environment</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>pysolver_env
+</pre></div>
+</div>
+</li>
+<li><p><strong>Install Poetry to manage dependencies</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>poetry
+</pre></div>
+</div>
+<p>Poetry is a powerful dependency manager that offers separation of user and developer dependencies, ensuring that only the necessary packages are installed based on the user’s intent. Additionally, it simplifies the process of adding, updating, and removing dependencies, making it easier to maintain the project’s requirements.</p>
+</li>
+<li><p><strong>Use Poetry to install the required dependencies for TurboFlow development</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install
+</pre></div>
+</div>
+</li>
+</ol>
 </section>
 </section>
 
@@ -458,7 +555,8 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#main-features-of-pysolverview">Main Features of PySolverView</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#user-installation-guide">User Installation Guide</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#developer-installation-guide">Developer Installation Guide</a></li>
 </ul>
   </nav></div>
 
