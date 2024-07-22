@@ -1,0 +1,754 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tutorial: Optimization problems &#8212; pysolver_view v0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=6885adaa"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'source/tutorial_optimization';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial: Nonlinear systems" href="tutorial_nonlinear_system.html" />
+    <link rel="prev" title="Getting started" href="introduction.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">pysolver_view v0.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Getting started</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Tutorial: Optimization problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_nonlinear_system.html">Tutorial: Nonlinear systems</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/modules.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.nonlinear_system.html">Nonlinear systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.nonlinear_system_problems.html">Nonlinear system problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.optimization.html">Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.optimization_wrappers.html">pysolver_view.optimization_wrappers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.optimization_problems.html">Optimization problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.numerical_differentiation.html">Numerical differentiation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.pysolver_utilities.html">Package utilities</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/source/tutorial_optimization.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Tutorial: Optimization problems</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-unconstrained-optimization">Example 1: Unconstrained optimization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-definition">Problem definition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-implementation">Problem implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-solution">Problem solution</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2-constrained-optimization">Example 2: Constrained optimization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Problem definition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Problem implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Problem solution</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="tutorial-optimization-problems">
+<span id="optimization-tutorial"></span><h1>Tutorial: Optimization problems<a class="headerlink" href="#tutorial-optimization-problems" title="Link to this heading">#</a></h1>
+<p>In this tutorial, we will explore how to utilize the <code class="code docutils literal notranslate"><span class="pre">OptimizationSolver</span></code> and <code class="code docutils literal notranslate"><span class="pre">OptimizationSolver</span></code> classes to solve optimization problems.</p>
+<section id="example-1-unconstrained-optimization">
+<h2>Example 1: Unconstrained optimization<a class="headerlink" href="#example-1-unconstrained-optimization" title="Link to this heading">#</a></h2>
+<section id="problem-definition">
+<h3>Problem definition<a class="headerlink" href="#problem-definition" title="Link to this heading">#</a></h3>
+<p>The general Rosenbrock problem, also known as Rosenbrock’s banana function, in <cite>n</cite> dimensions is defined as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+\text{minimize} \quad  &amp; f(\mathbf{x}) = \sum_{i=1}^{n-1} \left[ 100(x_{i+1} - x_i^2)^2 + (x_i - 1)^2 \right] \\
+\end{align}\end{split}\]</div>
+</section>
+<section id="problem-implementation">
+<h3>Problem implementation<a class="headerlink" href="#problem-implementation" title="Link to this heading">#</a></h3>
+<p>In order to solve this problem with <code class="code docutils literal notranslate"><span class="pre">OptimizationSolver</span></code> we have to define a problem class with the following methods:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">get_values(x)</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">get_bounds()</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">get_n_eq()</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">get_n_ineq()</span></code></p></li>
+</ul>
+<p>As the Rosenbrock problem is a very common test proplem, it is already implemented in the package.
+The code snipped below shows the definition of the <code class="code docutils literal notranslate"><span class="pre">RosenbrockProblem</span></code> class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RosenbrockProblem</span><span class="p">(</span><span class="n">OptimizationProblem</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+
+        <span class="c1"># Objective function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Equality constraints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># No inequality constraints given for this problem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Combine objective function and constraints</span>
+        <span class="n">objective_and_constraints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_objective_and_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">objective_and_constraints</span>
+
+    <span class="k">def</span> <span class="nf">get_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">get_n_eq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_n_ineq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the definition of the <code class="code docutils literal notranslate"><span class="pre">RosenbrockProblem</span></code> class is based on the abstract class <code class="code docutils literal notranslate"><span class="pre">OptimizationProblem</span></code>.
+As a result, the helper functions <code class="code docutils literal notranslate"><span class="pre">merge_objective_and_constraints</span></code> and <code class="code docutils literal notranslate"><span class="pre">get_number_of_constraints</span></code> are automatically inherited from  <code class="code docutils literal notranslate"><span class="pre">OptimizationProblem</span></code>.</p>
+</section>
+<section id="problem-solution">
+<h3>Problem solution<a class="headerlink" href="#problem-solution" title="Link to this heading">#</a></h3>
+<p>Now that we understand how to implement optimization problems, let move to how to solve them using the <code class="code docutils literal notranslate"><span class="pre">OptimizationSolver</span></code> class.</p>
+<ol class="arabic">
+<li><p><strong>Import Necessary Packages</strong></p>
+<p>Let’s start by importing the packages we need:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Importing PySolverView</strong></p>
+<p>To access the PySolverView package located in the parent directory, modify the system path and import the package:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">))</span>
+<span class="kn">import</span> <span class="nn">PySolverView</span> <span class="k">as</span> <span class="nn">psv</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Setting Up Plot Options</strong></p>
+<p>Customize your plots with PySolverView’s built-in functionalities for high-quality figures:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">psv</span><span class="o">.</span><span class="n">set_plot_options</span><span class="p">(</span><span class="n">grid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Logger Initialization</strong></p>
+<p>For efficient debugging and analysis, initialize a logger for the optimization process:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">logger</span> <span class="o">=</span> <span class="n">psv</span><span class="o">.</span><span class="n">create_logger</span><span class="p">(</span><span class="s2">&quot;convergence_history&quot;</span><span class="p">,</span> <span class="n">use_datetime</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Rosenbrock Problem Solution</strong></p>
+<p>Set your initial guess, define the problem, and solve:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span> <span class="c1"># Rosenbrock&#39;s problem in 4 dimensions</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">psv</span><span class="o">.</span><span class="n">RosenbrockProblem</span><span class="p">()</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">psv</span><span class="o">.</span><span class="n">OptimizationSolver</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
+<span class="n">sol</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;slsqp&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>  <span class="c1"># This will keep the plot window open</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>After running this code the optimization progress and the final solution will be printed to the console:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--------------------------------------------------------------------------------
+Starting optimization process for RosenbrockProblem
+--------------------------------------------------------------------------------
+    Grad-eval    Func-eval      Func-value     Infeasibility      Norm of step
+--------------------------------------------------------------------------------
+            1            1      +1.203e+03        +0.000e+00        +0.000e+00
+            2            5      +3.548e+02        +0.000e+00        +2.370e+00
+            3            9      +1.951e+02        +0.000e+00        +4.791e-01
+            4           12      +6.925e+01        +0.000e+00        +1.757e+00
+            5           15      +6.818e+01        +0.000e+00        +2.098e-01
+            6           18      +2.765e+01        +0.000e+00        +4.361e-01
+            7           19      +1.554e+01        +0.000e+00        +7.722e-01
+            8           20      +6.164e+00        +0.000e+00        +3.628e-01
+            9           21      +4.523e+00        +0.000e+00        +3.587e-02
+           10           22      +3.921e+00        +0.000e+00        +4.263e-02
+           11           23      +3.916e+00        +0.000e+00        +4.066e-03
+           12           24      +3.910e+00        +0.000e+00        +1.330e-02
+           13           25      +3.895e+00        +0.000e+00        +4.860e-02
+           14           26      +3.838e+00        +0.000e+00        +1.981e-01
+           15           28      +3.815e+00        +0.000e+00        +1.231e-01
+           16           29      +3.791e+00        +0.000e+00        +6.925e-02
+           17           30      +3.766e+00        +0.000e+00        +3.089e-02
+           18           31      +3.761e+00        +0.000e+00        +5.157e-02
+           19           32      +3.755e+00        +0.000e+00        +1.051e-02
+           20           33      +3.735e+00        +0.000e+00        +8.775e-02
+           21           34      +3.723e+00        +0.000e+00        +6.190e-02
+           22           35      +3.720e+00        +0.000e+00        +1.211e-01
+           23           36      +3.708e+00        +0.000e+00        +1.412e-02
+           24           37      +3.705e+00        +0.000e+00        +5.378e-02
+           25           38      +3.704e+00        +0.000e+00        +2.787e-02
+           26           39      +3.702e+00        +0.000e+00        +2.835e-02
+           27           40      +3.702e+00        +0.000e+00        +2.237e-02
+           28           41      +3.701e+00        +0.000e+00        +1.806e-02
+           29           42      +3.701e+00        +0.000e+00        +1.381e-02
+           30           43      +3.701e+00        +0.000e+00        +1.937e-03
+           31           44      +3.701e+00        +0.000e+00        +2.428e-04
+           32           45      +3.701e+00        +0.000e+00        +2.030e-05
+           33           46      +3.701e+00        +0.000e+00        +7.200e-05
+--------------------------------------------------------------------------------
+Exit message: Optimization terminated successfully
+Sucess: True
+Solution:
+f  = +3.701429e+00
+x0 = -7.756551e-01
+x1 = +6.130867e-01
+x2 = +3.820567e-01
+x3 = +1.459662e-01
+--------------------------------------------------------------------------------
+</pre></div>
+</div>
+<p>In addition, the script will also plot the optimization progress as illustrated in the figure below</p>
+<figure class="align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/convergence_history_RosenbrockProblem.svg"><img alt="../_images/convergence_history_RosenbrockProblem.svg" src="../_images/convergence_history_RosenbrockProblem.svg" width="80%" /></a>
+<figcaption>
+<p><span class="caption-text">Optimization Convergence History for the unconstrained Rosenbrock’s problem</span><a class="headerlink" href="#id4" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Congratulations! You’ve now successfully set up and solved the Rosenbrock problem using PySolverView.
+For the complete implementation of this example, please refer to the <code class="code docutils literal notranslate"><span class="pre">demo_optimization.py</span></code> script located in the demos directory.</p>
+</section>
+</section>
+<section id="example-2-constrained-optimization">
+<h2>Example 2: Constrained optimization<a class="headerlink" href="#example-2-constrained-optimization" title="Link to this heading">#</a></h2>
+<section id="id1">
+<h3>Problem definition<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>In this example we will extend the Rosenbrock problem to include trigonometric-exponential constraints:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+\text{minimize} \quad &amp; \sum_{i=1}^{n-1}\left[100\left(x_i^2-x_{i+1}\right)^2 + \left(x_i-1\right)^2\right] \\
+\text{s.t.} \quad &amp; 3x_{k+1}^3 + 2x_{k+2} - 5 + \sin(x_{k+1}-x_{k+2})\sin(x_{k+1}+x_{k+2}) + \\
+                    &amp; + 4x_{k+1} - x_k \exp(x_k-x_{k+1}) - 3 = 0, \; \forall k=1,...,n-2 \\
+                    &amp; -5 \le x_i \le 5, \forall i=1,...,n
+\end{align}\end{split}\]</div>
+</section>
+<section id="id2">
+<h3>Problem implementation<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<p>This problem is also implemented in the package, so we will only have to import it in our script.
+The code snipped below shows the definition of the <code class="code docutils literal notranslate"><span class="pre">RosenbrockProblemConstrained</span></code> class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RosenbrockProblemConstrained</span><span class="p">(</span><span class="n">OptimizationProblem</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+
+        <span class="c1"># Objective function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Equality constraints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">5</span> <span class="o">+</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">2</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span>
+                <span class="mi">4</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="c1"># No inequality constraints given for this problem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Combine objective function and constraints</span>
+        <span class="n">objective_and_constraints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_objective_and_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">objective_and_constraints</span>
+
+    <span class="k">def</span> <span class="nf">get_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">))]</span>
+        <span class="k">return</span> <span class="n">bounds</span>
+
+    <span class="k">def</span> <span class="nf">get_n_eq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_eq</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_n_ineq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_number_of_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_ineq</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h3>Problem solution<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<p>Let’s write a script to solve this problem with the <code class="code docutils literal notranslate"><span class="pre">OptimizationSolver</span></code> class.</p>
+<ol class="arabic">
+<li><p><strong>Import Necessary Packages</strong></p>
+<p>Start by importing the packages we need:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Importing PySolverView</strong></p>
+<p>To access the PySolverView package located in the parent directory, modify the system path and import the package:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">))</span>
+<span class="kn">import</span> <span class="nn">PySolverView</span> <span class="k">as</span> <span class="nn">psv</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Setting Up Plot Options</strong></p>
+<p>Customize your plots with PySolverView’s built-in functionalities for high-quality figures:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">psv</span><span class="o">.</span><span class="n">set_plot_options</span><span class="p">(</span><span class="n">grid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Logger Initialization</strong></p>
+<p>For efficient debugging and analysis, initialize a logger for the optimization process:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">logger</span> <span class="o">=</span> <span class="n">psv</span><span class="o">.</span><span class="n">create_logger</span><span class="p">(</span><span class="s2">&quot;convergence_history&quot;</span><span class="p">,</span> <span class="n">use_datetime</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Rosenbrock Problem Solution</strong></p>
+<p>Set your initial guess, define the problem, and solve:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span> <span class="c1"># Rosenbrock&#39;s problem in 4 dimensions</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">psv</span><span class="o">.</span><span class="n">RosenbrockProblemConstrained</span><span class="p">()</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">psv</span><span class="o">.</span><span class="n">OptimizationSolver</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
+<span class="n">sol</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;slsqp&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>  <span class="c1"># This will keep the plot window open</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>After running the code above, the optimization progress and the final solution will be printed to the console:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--------------------------------------------------------------------------------
+Starting optimization process for RosenbrockProblemConstrained
+--------------------------------------------------------------------------------
+    Grad-eval    Func-eval      Func-value     Infeasibility      Norm of step
+--------------------------------------------------------------------------------
+            1            1      +1.203e+03        +2.600e+01        +0.000e+00
+            2            4      +4.460e+02        +2.333e+01        +8.617e-01
+            3            6      +3.132e+02        +1.422e+01        +1.319e+00
+            4            7      +2.043e+01        +2.677e+00        +2.781e+00
+            5            8      +1.638e+00        +2.323e-01        +2.564e-01
+            6            9      +9.424e-01        +3.911e-03        +1.130e-01
+            7           10      +1.105e-02        +2.097e-03        +7.363e-02
+            8           11      +6.271e-06        +3.231e-05        +8.599e-03
+            9           12      +1.503e-11        +3.540e-08        +2.092e-04
+--------------------------------------------------------------------------------
+Exit message: Optimization terminated successfully
+Sucess: True
+Solution:
+f  = +1.213596e-13
+x0 = +1.000000e+00
+x1 = +1.000000e+00
+x2 = +1.000000e+00
+x3 = +1.000000e+00
+--------------------------------------------------------------------------------
+</pre></div>
+</div>
+<p>In addition, the script will also plot the optimization progress as illustrated in the figure below</p>
+<figure class="align-center" id="id5">
+<a class="reference internal image-reference" href="../_images/convergence_history_RosenbrockProblemConstrained.svg"><img alt="../_images/convergence_history_RosenbrockProblemConstrained.svg" src="../_images/convergence_history_RosenbrockProblemConstrained.svg" width="80%" /></a>
+<figcaption>
+<p><span class="caption-text">Optimization Convergence History for the constrained Rosenbrock’s problem</span><a class="headerlink" href="#id5" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Congratulations! You’ve now successfully set up and solved the constrained Rosenbrock problem using PySolverView.
+For the complete implementation of this example, please refer to the <code class="code docutils literal notranslate"><span class="pre">demo_optimization.py</span></code> script located in the demos directory.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="introduction.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Getting started</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="tutorial_nonlinear_system.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Tutorial: Nonlinear systems</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-unconstrained-optimization">Example 1: Unconstrained optimization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-definition">Problem definition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-implementation">Problem implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-solution">Problem solution</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2-constrained-optimization">Example 2: Constrained optimization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Problem definition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Problem implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Problem solution</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By DTU Power Cycle Group
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, DTU Power Cycle Group.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
