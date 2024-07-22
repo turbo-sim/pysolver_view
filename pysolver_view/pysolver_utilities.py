@@ -38,6 +38,7 @@ def set_plot_options(
     minor_ticks=True,
     margin=0.05,
     color_order="matlab",
+    linewidth=1.25,
 ):
     """
     Set options for creating publication-quality figures using Matplotlib.
@@ -129,7 +130,7 @@ def set_plot_options(
         "legend.handletextpad": 0.8,
         "legend.markerscale": 1.0,
         "legend.numpoints": 1,
-        "lines.linewidth": 1.25,
+        "lines.linewidth": linewidth,
         "lines.markersize": 4,
         "lines.markeredgewidth": 1.25,
         "lines.markerfacecolor": "white",
@@ -185,9 +186,7 @@ def print_rc_parameters(filename=None):
                 file.write(f"{key}: {value}\n")
 
 
-def savefig_in_formats(
-    fig, path_without_extension, formats=[".png", ".svg"], dpi=500
-):
+def savefig_in_formats(fig, path_without_extension, formats=[".png", ".svg"], dpi=500):
     """
     Save a given Matplotlib figure in multiple file formats.
 
@@ -219,7 +218,9 @@ def savefig_in_formats(
     allowed_formats = {".png", ".svg", ".pdf", ".eps"}
     invalid_formats = set(formats) - allowed_formats
     if invalid_formats:
-        raise ValueError(f"Unsupported file formats: {', '.join(invalid_formats)}. Allowed formats: {', '.join(allowed_formats)}")
+        raise ValueError(
+            f"Unsupported file formats: {', '.join(invalid_formats)}. Allowed formats: {', '.join(allowed_formats)}"
+        )
 
     for ext in formats:
         if ext == ".png":
