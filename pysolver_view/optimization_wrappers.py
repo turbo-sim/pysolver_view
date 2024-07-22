@@ -1,10 +1,16 @@
 import os
 import numpy as np
-import pygmo as pg
-import pygmo_plugins_nonfree as ppnf
 from scipy.optimize import minimize
 
+# Attempt to import pygmo and pygmo_plugins_nonfree
+try:
+    import pygmo as pg
+    import pygmo_plugins_nonfree as ppnf
 
+    PYGMO_AVAILABLE = True
+
+except ImportError:
+    PYGMO_AVAILABLE = False
 
 SCIPY_SOLVERS = [
     "nelder-mead",
@@ -165,6 +171,16 @@ def minimize_pygmo(problem, x0, method, options):
         If an invalid solver name is specified.
     """
 
+    # Check if pygmo is available
+    if not PYGMO_AVAILABLE:
+        raise ImportError(
+            f"To use the selected optimizer ({method}), you need to install 'pygmo' via Conda.\n\n"
+            "   1. Activate the Conda virtual environment where 'turboflow' is installed. For example:\n\n"
+            "           conda activate turboflow_env\n\n"
+            "   2. Install 'pygmo' and 'pygmo_plugins_nonfree' by running the following command:\n\n"
+            "           conda install --channel conda-forge pygmo pygmo_plugins_nonfree\n"
+        )
+
     if method == "snopt":
         return _minimize_pygmo_snopt(problem, x0, options)
     elif method == "ipopt":
@@ -281,8 +297,11 @@ def _minimize_pygmo_snopt(problem, x0, options):
     # Optimization output
 
     message = _extract_snopt_message(algorithm.get_extra_info())
-    success = True if message == "Finished successfully - optimality conditions satisfied" else False
-
+    success = (
+        True
+        if message == "Finished successfully - optimality conditions satisfied"
+        else False
+    )
 
     return success, message
 
