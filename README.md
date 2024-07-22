@@ -11,7 +11,7 @@ PySolverView is a wrapper for the optimization and root finding methods of Scipy
 
 ## Documentation
 
-Please refer to the `documentation.html` for:
+Please refer to the [`documentation`](https://turbo-sim.github.io/pysolver_view/index.html) for:
 - Installation instructions
 - Tutorials showing how to use the code
 - Complete documentation of all functions and classes in PySolverView
