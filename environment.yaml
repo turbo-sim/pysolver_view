@@ -2,19 +2,6 @@ name: pysolver_env
 channels:
  - conda-forge
 dependencies:
-  - python=3.11
+  - python=3.12
   - pip
-  - pygmo
-  - numpy
-  - scipy
-  - matplotlib
-  - pandas
-  - ipython
-    # - black
-    # - cycler
-    # - sphinx
-    # - sphinx-book-theme
-    # - sphinx-rtd-theme
-    # - pydata-sphinx-theme
-    # - numpydoc
-
+  
