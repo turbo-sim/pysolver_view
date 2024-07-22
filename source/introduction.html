@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Getting started &#8212; pysolver_view v0.0 documentation</title>
+    <title>Getting started &#8212; pysolver_view v0.1.0 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=6885adaa"></script>
+    <script src="../_static/documentation_options.js?v=d47532a6"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -133,7 +133,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.0 documentation</p>
+    <p class="title logo__title">pysolver_view v0.1.0 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -389,35 +389,14 @@ document.write(`
 </section>
 <section id="user-installation-guide">
 <span id="installation"></span><h2>User Installation Guide<a class="headerlink" href="#user-installation-guide" title="Link to this heading">#</a></h2>
-<p>If you use <a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/windows.html">Conda</a>, the following <a class="reference external" href="https://gitforwindows.org/">Bash</a> command can be executed to set up a new virtual environment with all necessary dependencies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>--file<span class="w"> </span>environment.yaml
-</pre></div>
-</div>
-<p>Executing the above will result in the creation of the <cite>pysolver_env</cite> virtual environment. The environment will then have all packages listed in the YAML file installed.</p>
-<p>To initialize the virtual environment, use the command below:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>pysolver_env
-</pre></div>
-</div>
-<p>In scenarios where additional packages are needed:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>&lt;name<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>package&gt;
-</pre></div>
-</div>
-<p>Alternatively, one can also append the desired package names to the <cite>environment.yaml</cite> file and update the environment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> </span>--file<span class="w"> </span>environment.yaml<span class="w"> </span>--prune
-</pre></div>
-</div>
 <p>This guide will walk you through the process of installing <cite>pysolver_view</cite> via <cite>pip</cite>. To isolate the installation and avoid conflicts with other Python packages, it is recommended to create a dedicated Conda virtual environment.</p>
 <ol class="arabic">
 <li><p>Ensure conda is installed:</p>
-<ul class="simple">
-<li><p>Check if conda is installed in your terminal:</p></li>
-</ul>
+<p>Check if conda is installed in your terminal:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>list
 </pre></div>
 </div>
-<ul class="simple">
-<li><p>If installed packages do not appear, <a class="reference external" href="https://conda.io/projects/conda/en/latest/user-guide/install/index.html">install conda</a>.</p></li>
-</ul>
+<p>If installed packages do not appear, <a class="reference external" href="https://conda.io/projects/conda/en/latest/user-guide/install/index.html">install conda</a>.</p>
 </li>
 <li><p>Open a terminal or command prompt and create a new virtual environment named <code class="docutils literal notranslate"><span class="pre">pysolver_env</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>pysolver_env<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11
@@ -450,37 +429,25 @@ conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> <
 <p>This installation guide is intended for developers who wish to contribute to or modify the Turboflow source code. It assumes that the developer is using a Linux distribution or Windows with Git Bash terminal to have access to Git and Linux-like commands.</p>
 <ol class="arabic">
 <li><p><strong>Fork the repository:</strong></p>
-<ul class="simple">
-<li><p>Navigate to the <a class="reference external" href="https://github.com/turbo-sim/pysolver_view">project’s GitHub page</a>.</p></li>
-<li><p>Click the “Fork” button in the upper right corner of the repository page to create a copy of the repository under your own GitHub account.</p></li>
-</ul>
+<p>Navigate to the <cite>project’s GitHub page &lt;https://github.com/turbo-sim/pysolver_view&gt;</cite> and click the “Fork” button in the upper right corner of the repository page to create a copy of the repository under your own GitHub account.</p>
 </li>
 <li><p><strong>Clone the forked repository:</strong></p>
-<ul class="simple">
-<li><p>Open your terminal.</p></li>
-<li><p>Run the following command, replacing <cite>&lt;your-username&gt;</cite> with your GitHub username:</p></li>
-</ul>
+<p>Open your terminal and run the following command, replacing <cite>&lt;your-username&gt;</cite> with your GitHub username:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/&lt;your-username&gt;/&lt;repository-name&gt;.git
 </pre></div>
 </div>
-<ul class="simple">
-<li><p>Navigate into the cloned repository:</p></li>
-</ul>
+<p>Navigate into the cloned repository:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;repository-name&gt;
 </pre></div>
 </div>
 </li>
 <li><p><strong>Create a dedicated Conda virtual environment for development</strong>:</p>
-<ul class="simple">
-<li><p>Check that conda is installed:</p></li>
-</ul>
+<p>Check that conda is installed:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>list
 </pre></div>
 </div>
-<ul class="simple">
-<li><p>If not conda is installed, <a class="reference external" href="https://conda.io/projects/conda/en/latest/user-guide/install/index.html">install conda</a>.</p></li>
-<li><p>Create dedicated virtual environment for turboflow package:</p></li>
-</ul>
+<p>If conda is not installed, <a class="reference external" href="https://conda.io/projects/conda/en/latest/user-guide/install/index.html">install conda</a>.</p>
+<p>Create dedicated virtual environment for the package:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--file<span class="w"> </span>environment.yaml
 </pre></div>
 </div>
@@ -571,7 +538,7 @@ conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> <
   <div class="footer-item">
     
 <p class="component-author">
-By DTU Power Cycle Group
+By Roberto Agromayor
 </p>
 
   </div>
@@ -581,7 +548,7 @@ By DTU Power Cycle Group
 
   <p class="copyright">
     
-      © Copyright 2024, DTU Power Cycle Group.
+      © Copyright 2024, Roberto Agromayor.
       <br/>
     
   </p>

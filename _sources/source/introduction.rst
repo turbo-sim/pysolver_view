@@ -68,45 +68,17 @@ PySolverView is a wrapper for the solvers of the Scipy package. Using this inter
 User Installation Guide
 ========================
 
-If you use `Conda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/windows.html>`_, the following `Bash <https://gitforwindows.org/>`_ command can be executed to set up a new virtual environment with all necessary dependencies:
-
-.. code-block:: bash
-
-    conda env create --file environment.yaml
-
-Executing the above will result in the creation of the `pysolver_env` virtual environment. The environment will then have all packages listed in the YAML file installed.
-
-To initialize the virtual environment, use the command below:
-
-.. code-block:: bash
-
-    conda activate pysolver_env
-
-In scenarios where additional packages are needed:
-
-.. code-block:: bash
-
-    conda install <name of the package>
-
-Alternatively, one can also append the desired package names to the `environment.yaml` file and update the environment:
-
-.. code-block:: bash
-
-    conda env update --file environment.yaml --prune
-
-
-
 This guide will walk you through the process of installing `pysolver_view` via `pip`. To isolate the installation and avoid conflicts with other Python packages, it is recommended to create a dedicated Conda virtual environment.
 
 1. Ensure conda is installed:
 
-   - Check if conda is installed in your terminal:
+   Check if conda is installed in your terminal:
 
    .. code-block:: bash
 
       conda list
 
-   - If installed packages do not appear, `install conda <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_.
+   If installed packages do not appear, `install conda <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_.
 
 2. Open a terminal or command prompt and create a new virtual environment named ``pysolver_env``:
 
@@ -145,20 +117,18 @@ This installation guide is intended for developers who wish to contribute to or 
 
 1. **Fork the repository:**
 
-   - Navigate to the `project's GitHub page <https://github.com/turbo-sim/pysolver_view>`_.
-   - Click the "Fork" button in the upper right corner of the repository page to create a copy of the repository under your own GitHub account.
+   Navigate to the `project's GitHub page <https://github.com/turbo-sim/pysolver_view>` and click the "Fork" button in the upper right corner of the repository page to create a copy of the repository under your own GitHub account.
 
 
 2. **Clone the forked repository:**
 
-   - Open your terminal.
-   - Run the following command, replacing `<your-username>` with your GitHub username:
+   Open your terminal and run the following command, replacing `<your-username>` with your GitHub username:
 
    .. code-block:: bash
 
       git clone https://github.com/<your-username>/<repository-name>.git
 
-   - Navigate into the cloned repository:
+   Navigate into the cloned repository:
 
    .. code-block:: bash
 
@@ -166,14 +136,15 @@ This installation guide is intended for developers who wish to contribute to or 
 
 3. **Create a dedicated Conda virtual environment for development**:
 
-   - Check that conda is installed:
+   Check that conda is installed:
 
    .. code-block:: bash
 
       conda list
 
-   - If not conda is installed, `install conda <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_.
-   - Create dedicated virtual environment for turboflow package:
+   If conda is not installed, `install conda <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_.
+   
+   Create dedicated virtual environment for the package:
 
    .. code-block:: bash
 
