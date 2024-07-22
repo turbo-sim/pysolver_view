@@ -10,5 +10,5 @@ API Reference
    pysolver_view.optimization_wrappers
    pysolver_view.optimization_problems
    pysolver_view.numerical_differentiation
-   pysolver_view.utilities
+   pysolver_view.pysolver_utilities
 
