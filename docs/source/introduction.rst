@@ -65,8 +65,8 @@ PySolverView is a wrapper for the solvers of the Scipy package. Using this inter
 
 .. _installation:
 
-Installation
-=====================
+User Installation Guide
+========================
 
 If you use `Conda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/windows.html>`_, the following `Bash <https://gitforwindows.org/>`_ command can be executed to set up a new virtual environment with all necessary dependencies:
 
@@ -94,4 +94,108 @@ Alternatively, one can also append the desired package names to the `environment
 
     conda env update --file environment.yaml --prune
 
+
+
+This guide will walk you through the process of installing `pysolver_view` via `pip`. To isolate the installation and avoid conflicts with other Python packages, it is recommended to create a dedicated Conda virtual environment.
+
+1. Ensure conda is installed:
+
+   - Check if conda is installed in your terminal:
+
+   .. code-block:: bash
+
+      conda list
+
+   - If installed packages do not appear, `install conda <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_.
+
+2. Open a terminal or command prompt and create a new virtual environment named ``pysolver_env``:
+
+   .. code-block:: bash
+
+      conda create --name pysolver_env python=3.11
+
+3. Activate the newly created virtual environment:
+
+   .. code-block:: bash
+
+      conda activate pysolver_env
+
+4. Install the package using pip within the activated virtual environment:
+
+   .. code-block:: bash
+
+      pip install pysolver_view
+
+5. Verify the installation by running some of the examples in the [`demos`](../../demos) directory
+
+
+.. note::
+   By default, ``pysolver_view`` can use the optimization solvers available in the ``scipy`` package. However, a wider range of solvers are available through the ``pygmo`` wrapper, including `IPOPT <https://coin-or.github.io/Ipopt/>`_ and `SNOPT <https://ccom.ucsd.edu/~optimizers/docs/snopt/introduction.html>`_.
+   
+   .. code-block:: bash
+
+      conda install -c conda-forge pygmo
+      conda install -c conda-forge pygmo_plugins_nonfree
+
+
+Developer Installation Guide
+============================
+
+This installation guide is intended for developers who wish to contribute to or modify the Turboflow source code. It assumes that the developer is using a Linux distribution or Windows with Git Bash terminal to have access to Git and Linux-like commands.
+
+1. **Fork the repository:**
+
+   - Navigate to the `project's GitHub page <https://github.com/turbo-sim/pysolver_view>`_.
+   - Click the "Fork" button in the upper right corner of the repository page to create a copy of the repository under your own GitHub account.
+
+
+2. **Clone the forked repository:**
+
+   - Open your terminal.
+   - Run the following command, replacing `<your-username>` with your GitHub username:
+
+   .. code-block:: bash
+
+      git clone https://github.com/<your-username>/<repository-name>.git
+
+   - Navigate into the cloned repository:
+
+   .. code-block:: bash
+
+      cd <repository-name>
+
+3. **Create a dedicated Conda virtual environment for development**:
+
+   - Check that conda is installed:
+
+   .. code-block:: bash
+
+      conda list
+
+   - If not conda is installed, `install conda <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_.
+   - Create dedicated virtual environment for turboflow package:
+
+   .. code-block:: bash
+
+      conda create --file environment.yaml
+
+4. **Activate the newly created virtual environment**:
+
+   .. code-block:: bash
+
+      conda activate pysolver_env
+
+5. **Install Poetry to manage dependencies**:
+
+   .. code-block:: bash
+
+      conda install poetry
+
+   Poetry is a powerful dependency manager that offers separation of user and developer dependencies, ensuring that only the necessary packages are installed based on the user's intent. Additionally, it simplifies the process of adding, updating, and removing dependencies, making it easier to maintain the project's requirements.
+
+6. **Use Poetry to install the required dependencies for TurboFlow development**:
+
+   .. code-block:: bash
+
+      poetry install
 
