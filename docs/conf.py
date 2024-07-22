@@ -6,9 +6,9 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # Define project metadata
 project = "pysolver_view"
-copyright = "2024, DTU Power Cycle Group"
-author = "DTU Power Cycle Group"
-release = "v0.0"
+copyright = "2024, Roberto Agromayor"
+author = "Roberto Agromayor"
+release = "v0.0.0"
 
 # Define extensions
 extensions = [
