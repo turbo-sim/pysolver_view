@@ -1,4 +1,4 @@
-pysolver\_view.optimization\_wrappers module
+Optimization wrappers
 ============================================
 
 .. automodule:: pysolver_view.optimization_wrappers
