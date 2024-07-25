@@ -148,7 +148,7 @@ This installation guide is intended for developers who wish to contribute to or 
 
    .. code-block:: bash
 
-      conda create --file environment.yaml
+      conda env create --file environment.yaml
 
 4. **Activate the newly created virtual environment**:
 
