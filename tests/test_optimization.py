@@ -1,11 +1,11 @@
 import pytest
 import numpy as np
 import matplotlib.pyplot as plt
-import pysolver_view as pv
+import pysolver_view as psv
 
 
 # Set up logger with unique date-time name
-logger = pv.create_logger("convergence_history", use_datetime=True)
+logger = psv.create_logger("convergence_history", use_datetime=True)
 
 # Define solver configurations
 UNCONSTRAINED_SOLVERS = [
@@ -32,8 +32,8 @@ CONSTRAINED_SOLVERS = [
 def test_rosenbrock_problem_unconstrained(library, method):
     # Set up problem and solver
     x0 = 1.5 * np.array([1, 1, 1, 1])
-    problem = pv.RosenbrockProblem(len(x0))
-    solver = pv.OptimizationSolver(
+    problem = psv.RosenbrockProblem(len(x0))
+    solver = psv.OptimizationSolver(
         problem,
         library=library,
         method=method,
@@ -80,8 +80,8 @@ def test_rosenbrock_problem_unconstrained(library, method):
 def test_rosenbrock_problem_constrained(library, method):
     # Set up problem and solver
     x0 = 1.5 * np.array([1, 1, 1, 1])
-    problem = pv.RosenbrockProblemConstrained(len(x0))
-    solver = pv.OptimizationSolver(
+    problem = psv.RosenbrockProblemConstrained(len(x0))
+    solver = psv.OptimizationSolver(
         problem,
         library=library,
         method=method,
@@ -152,8 +152,8 @@ STATIONARY_POINTS = [
 )
 def test_lorentz_system(library, method, stationary_point):
     # Set up problem and solver
-    problem = pv.LorentzEquationsOpt(sigma=SIGMA, beta=BETA, rho=RHO)
-    solver = pv.OptimizationSolver(
+    problem = psv.LorentzEquationsOpt(sigma=SIGMA, beta=BETA, rho=RHO)
+    solver = psv.OptimizationSolver(
         problem,
         library=library,
         method=method,
@@ -212,8 +212,8 @@ SOLVERS_AND_MAXITER = [
 def test_max_iter(library, method, max_iter):
     # Set up problem and solver
     x0 = 1.5 * np.array([1, 1, 1, 1])
-    problem = pv.RosenbrockProblem(len(x0))
-    solver = pv.OptimizationSolver(
+    problem = psv.RosenbrockProblem(len(x0))
+    solver = psv.OptimizationSolver(
         problem,
         library=library,
         method=method,

@@ -5,7 +5,7 @@ problem when solving using IPOPT with exact Hessian vs approximate BFGS update."
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-import pysolver_view as pv
+import pysolver_view as psv
 
 # Create the folder to save figures
 OUT_DIR = "figures"
@@ -13,16 +13,16 @@ if not os.path.exists(OUT_DIR):
     os.makedirs(OUT_DIR)
 
 # Set options for publication-quality figures
-pv.set_plot_options(grid=False)
+psv.set_plot_options(grid=False)
 
 # Set up logger with unique date-time name
-logger = pv.create_logger("convergence_history", use_datetime=True)
+logger = psv.create_logger("convergence_history", use_datetime=True)
 
 # Define problem
 ndim = 20
 x0 = 1.5 * np.ones(ndim)
 # problem = pv.RosenbrockProblem(ndim)
-problem = pv.RosenbrockProblemConstrained(ndim)
+problem = psv.RosenbrockProblemConstrained(ndim)
 problem_name = type(problem).__name__
 
 # Initialize figure
@@ -36,7 +36,7 @@ ax2.set_ylabel("Constraint violation")
 ax2.set_yscale("log")
 
 # Solve problem with exact Hessian matrix
-solver = pv.OptimizationSolver(
+solver = psv.OptimizationSolver(
     problem,
     library="pygmo",
     method="ipopt",
@@ -45,7 +45,7 @@ solver = pv.OptimizationSolver(
     logger=logger,
     update_on="gradient",
     max_iterations=1000,
-    options={"hessian_approximation": "exact"},
+    extra_options={"hessian_approximation": "exact"},
 )
 solver.solve(x0)
 ax.plot(
@@ -67,7 +67,7 @@ ax2.plot(
 )
 
 # Solve problem with BFGS Hessian update
-solver = pv.OptimizationSolver(
+solver = psv.OptimizationSolver(
     problem,
     library="pygmo",
     method="ipopt",
@@ -76,7 +76,7 @@ solver = pv.OptimizationSolver(
     logger=logger,
     update_on="gradient",
     max_iterations=1000,
-    options={
+    extra_options={
         "limited_memory_update_type": "bfgs",
         "limited_memory_max_history": 30,
     },
@@ -114,7 +114,7 @@ ax2.legend(
 fig.tight_layout(pad=1)
 
 # Save figure
-pv.savefig_in_formats(
+psv.savefig_in_formats(
     fig, os.path.join(OUT_DIR, f"IPOPT_HessianComparison_{problem_name}_{ndim}dims")
 )
 

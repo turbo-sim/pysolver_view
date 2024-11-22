@@ -2,7 +2,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-import pysolver_view as pv
+import pysolver_view as psv
 
 # Create the folder to save figures
 OUT_DIR = "figures"
@@ -10,15 +10,15 @@ if not os.path.exists(OUT_DIR):
     os.makedirs(OUT_DIR)
 
 # Set options for publication-quality figures
-pv.set_plot_options(grid=False)
+psv.set_plot_options(grid=False)
 
 # Set up logger with unique date-time name
-logger = pv.create_logger("convergence_history", use_datetime=True)
+logger = psv.create_logger("convergence_history", use_datetime=True)
 
 # Define Rosenbrock problem
 ndim = 10
 x0 = 1.50 * np.ones(ndim)
-problem = pv.RosenbrockProblem(ndim)
+problem = psv.RosenbrockProblem(ndim)
 
 
 # -------------------------------------------------------------------- #
@@ -35,13 +35,13 @@ for radius, color in zip(trust_region_radius, colors):
 
     # Create solver
     options = {"initial_tr_radius": radius}
-    solver = pv.OptimizationSolver(
+    solver = psv.OptimizationSolver(
         problem,
         method="trust-constr",
         print_convergence=True,
         plot_convergence=False,
         logger=logger,
-        options=options,
+        extra_options=options,
         update_on="function",
     )
 
@@ -61,7 +61,7 @@ for radius, color in zip(trust_region_radius, colors):
 title = "Initial trust region radius"
 ax.legend(title=title, title_fontsize=10, loc="lower left", fontsize=10)
 fig.tight_layout(pad=1)
-pv.savefig_in_formats(fig, os.path.join(OUT_DIR, "sensitivity_initial_trust_region_radius"))
+psv.savefig_in_formats(fig, os.path.join(OUT_DIR, "sensitivity_initial_trust_region_radius"))
 
 # Keep plots open
 plt.show()

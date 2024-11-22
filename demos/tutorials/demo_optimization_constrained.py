@@ -1,18 +1,18 @@
 # Import packages
 import numpy as np
 import matplotlib.pyplot as plt
-import pysolver_view as pv
+import pysolver_view as psv
 
 # Set options for publication-quality figures
-pv.set_plot_options(grid=False)
+psv.set_plot_options(grid=False)
 
 # Set up logger with unique date-time name
-logger = pv.create_logger("convergence_history", use_datetime=True)
+logger = psv.create_logger("convergence_history", use_datetime=True)
 
 # Solve Rosenbrock problem
 x0 = 1.5*np.asarray([1, 1, 1, 1])
-problem = pv.RosenbrockProblemConstrained(len(x0))
-solver = pv.OptimizationSolver(
+problem = psv.RosenbrockProblemConstrained(len(x0))
+solver = psv.OptimizationSolver(
     problem,
     library="scipy",
     method="slsqp",

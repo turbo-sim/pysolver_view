@@ -2,7 +2,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-import pysolver_view as pv
+import pysolver_view as psv
 
 # Create the folder to save figures
 OUT_DIR = "figures"
@@ -10,17 +10,17 @@ if not os.path.exists(OUT_DIR):
     os.makedirs(OUT_DIR)
 
 # Set options for publication-quality figures
-pv.set_plot_options(grid=False)
+psv.set_plot_options(grid=False)
 
 # Set up logger with unique date-time name
-logger = pv.create_logger("convergence_history", use_datetime=True)
+logger = psv.create_logger("convergence_history", use_datetime=True)
 
 ndim = 10
 
 PROBLEMS_AND_X0 = [
-    (pv.RosenbrockProblem(ndim), 1.5 * np.ones(ndim)),
-    (pv.RosenbrockProblemConstrained(ndim), 1.5 * np.ones(ndim)),
-    (pv.HS71Problem(), 1.5 * np.ones(4)),
+    (psv.RosenbrockProblem(ndim), 1.5 * np.ones(ndim)),
+    (psv.RosenbrockProblemConstrained(ndim), 1.5 * np.ones(ndim)),
+    (psv.HS71Problem(), 1.5 * np.ones(4)),
     # (pv.LorentzEquationsOpt(), [-3, -3, 3]),
 ]
 
@@ -52,7 +52,7 @@ for problem, x0 in PROBLEMS_AND_X0:
     colors = plt.get_cmap(cmap)(np.linspace(0.25, 0.8, len(SOLVERS)))
     for i, (library, method) in enumerate(SOLVERS):
         # Solve problem
-        solver = pv.OptimizationSolver(
+        solver = psv.OptimizationSolver(
             problem,
             library=library,
             method=method,
@@ -94,7 +94,7 @@ for problem, x0 in PROBLEMS_AND_X0:
     fig.tight_layout(pad=1)
 
     # Save figure
-    pv.savefig_in_formats(
+    psv.savefig_in_formats(
         fig, os.path.join(OUT_DIR, f"solver_comparison_{problem_name}")
     )
 

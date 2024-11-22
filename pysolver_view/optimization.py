@@ -118,7 +118,7 @@ class OptimizationSolver:
         method="slsqp",
         tolerance=1e-6,
         max_iterations=100,
-        options={},
+        extra_options={},
         derivative_method="2-point",
         derivative_abs_step=None,
         print_convergence=True,
@@ -149,9 +149,8 @@ class OptimizationSolver:
         self._validate_library_and_method()
 
         # Define options dictionary
-        self.options = copy.deepcopy(options) if options else {}
-        self.options["tol"] = tolerance
-        self.options["max_iter"] = max_iterations
+        self.options = {"tolerance": tolerance, "max_iterations": max_iterations}
+        self.options = self.options | extra_options
 
         # Check for logger validity
         if self.logger is not None:
@@ -184,6 +183,7 @@ class OptimizationSolver:
         self.elapsed_time = None
         self.include_solution_in_footer = False
         self.convergence_history = {
+            "x": [],
             "grad_count": [],
             "func_count": [],
             "func_count_total": [],
@@ -496,6 +496,7 @@ class OptimizationSolver:
         violation_max = np.max(np.abs(violation_all)) if len(violation_all) > 0 else 0.0
 
         # Store convergence status
+        self.convergence_history["x"].append(self.x_last)
         self.convergence_history["grad_count"].append(self.grad_count)
         self.convergence_history["func_count"].append(self.func_count)
         self.convergence_history["func_count_total"].append(self.func_count_tot)

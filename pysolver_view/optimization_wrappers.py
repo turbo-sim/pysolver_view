@@ -1,4 +1,5 @@
 import os
+import warnings
 import numpy as np
 from scipy.optimize import minimize
 
@@ -35,9 +36,19 @@ PYGMO_SOLVERS = [
     "ipopt",
     "snopt",
     # "worhp",
+    "de",
+    "sga",
+    "pso",
 ]
 """List of valid Pygmo solvers"""
 
+GENETIC_SOLVERS = [
+    "de",
+    "sga",
+    "pso",
+]
+
+GRADIENT_SOLVERS = list(set(PYGMO_SOLVERS + SCIPY_SOLVERS) - set(GENETIC_SOLVERS))
 
 NLOPT_SOLVERS = [
     "auglag",
@@ -63,7 +74,7 @@ NLOPT_SOLVERS = [
 """List of valid NLOpt solvers (interfaced through Pygmo)"""
 
 
-def minimize_scipy(problem, x0, method, options):
+def minimize_scipy(problem, x0, method, solver_options):
     """
     Optimize a given problem using the specified SciPy method.
 
@@ -99,9 +110,9 @@ def minimize_scipy(problem, x0, method, options):
         raise ValueError(error_message)
 
     # Define the options dictionary
-    options = options.copy()  # Work with a copy to avoid side effects
-    tol = options.pop("tol")
-    max_iter = options.pop("max_iter")
+    solver_options = solver_options.copy()  # Work with a copy to avoid side effects
+    tol = solver_options.pop("tolerance")
+    max_iter = solver_options.pop("max_iterations")
     default_options = {
         "bfgs": {"gtol": tol, "maxiter": max_iter},
         "l-bfgs-b": {"ftol": tol, "gtol": tol, "maxiter": max_iter},
@@ -111,7 +122,7 @@ def minimize_scipy(problem, x0, method, options):
     default_options = (
         default_options[method] if method in default_options.keys() else {}
     )
-    combined_options = default_options | options  # Merge defaults with input
+    combined_options = default_options | solver_options  # Merge defaults with input
 
     # Convert bounds from Pygmo to Scipy convention
     bounds = convert_pygmo_to_scipy_bounds(problem.get_bounds)
@@ -175,10 +186,10 @@ def minimize_pygmo(problem, x0, method, options):
     if not PYGMO_AVAILABLE:
         raise ImportError(
             f"To use the selected optimizer ({method}), you need to install 'pygmo' via Conda.\n\n"
-            "   1. Activate the Conda virtual environment where 'turboflow' is installed. For example:\n\n"
-            "           conda activate turboflow_env\n\n"
+            "   1. Activate the Conda virtual environment with:\n\n"
+            "           conda activate <your environment name>\n\n"
             "   2. Install 'pygmo' and 'pygmo_plugins_nonfree' by running the following command:\n\n"
-            "           conda install --channel conda-forge pygmo pygmo_plugins_nonfree\n"
+            "           conda install --channel conda-forge pygmo=2.19.6 pygmo_plugins_nonfree=0.24\n"
         )
 
     if method == "snopt":
@@ -187,6 +198,12 @@ def minimize_pygmo(problem, x0, method, options):
         return _minimize_pygmo_ipopt(problem, x0, options)
     # elif method == "worhp":
     #     return _minimize_pygmo_worhp(problem, x0, options)
+    elif method == "de":
+        return _minimize_pygmo_de(problem, x0, options)
+    elif method == "sga":
+        return _minimize_pygmo_sga(problem, x0, options)
+    elif method == "pso":
+        return _minimize_pygmo_pso(problem, x0, options)
     else:
         error_message = (
             f"Invalid solver: '{method}'. \nAvailable options:\n   - "
@@ -195,8 +212,106 @@ def minimize_pygmo(problem, x0, method, options):
         )
         raise ValueError(error_message)
 
+def _minimize_pygmo_de(problem, x0, options):
+    """Solve optimization problem using Pygmo's wrapper to de"""
 
-def _minimize_pygmo_ipopt(problem, x0, options):
+    # Define solver options
+    default_options = {
+        "gen": 10, 
+        "pop_size": 10,
+    }
+    options = options.copy()  # Work with a copy to avoid side effects
+    combined_options = default_options | options
+    
+    # Solve the problem
+    algorithm = pg.algorithm(pg.de(gen = int(combined_options["gen"])))
+    algorithm.set_verbosity(50)
+    problem = pg.problem(problem)
+    population = pg.population(problem, int(combined_options["pop_size"]))
+    population = algorithm.evolve(population)
+
+    # print solution
+    print("Best solution found:", population.champion_x)
+    print("Objective value of the best solution:", population.champion_f)
+
+    # Optimization output
+    success = ""
+    message = ""
+
+    return success, message
+
+def _minimize_pygmo_sga(problem, x0, solver_options):
+    """Solve optimization problem using Pygmo's wrapper to sga"""
+
+    # Define solver options
+    default_options = {
+        "gen": 10, 
+        "pop_size": 10,
+    }
+    solver_options = solver_options.copy()  # Work with a copy to avoid side effects
+    combined_options = default_options | solver_options
+
+    # Set seed 
+    if "seed" in list(combined_options.keys()):
+        pg.set_global_rng_seed(combined_options["seed"])
+    
+    # Solve the problem
+    algorithm = pg.algorithm(pg.sga(gen = int(combined_options["gen"])))
+    algorithm.set_verbosity(0)
+    problem = pg.problem(problem)
+    population = pg.population(problem, int(combined_options["pop_size"]))
+    population = algorithm.evolve(population)
+
+    # print solution
+    print("Best solution found:", population.champion_x)
+    print("Objective value of the best solution:", population.champion_f)
+
+    # Evaluate final solution 
+    final = problem.fitness(population.champion_x)
+
+    # Optimization output
+    success = ""
+    message = ""
+
+    return success, message
+
+def _minimize_pygmo_pso(problem, x0, solver_options):
+    """Solve optimization problem using Pygmo's wrapper to PSO"""
+
+    # Define solver options
+    default_options = {
+        "gen": 10, 
+        "pop_size": 10,
+    }
+    solver_options = solver_options.copy()  # Work with a copy to avoid side effects
+    combined_options = default_options | solver_options
+
+    # Set seed 
+    if "seed" in list(combined_options.keys()):
+        pg.set_global_rng_seed(combined_options["seed"])
+
+    # Solve the problem
+    algorithm = pg.algorithm(pg.pso(gen = int(combined_options["gen"])))
+    algorithm.set_verbosity(0)
+    problem = pg.problem(problem)
+    population = pg.population(problem, int(combined_options["pop_size"]))
+    population = algorithm.evolve(population)
+
+    # print solution
+    print("Best solution found:", population.champion_x)
+    print("Objective value of the best solution:", population.champion_f)
+
+    # Evaluate final solution 
+    final = problem.fitness(population.champion_x)
+
+    # Optimization output
+    success = ""
+    message = ""
+
+    return success, message
+
+
+def _minimize_pygmo_ipopt(problem, x0, solver_options):
     """Solve optimization problem using Pygmo's wrapper to IPOPT"""
 
     # Define mapping from exit flag to status
@@ -223,33 +338,46 @@ def _minimize_pygmo_ipopt(problem, x0, options):
         -199: "Internal Error",
     }
 
-    # Define solver options
-    options = options.copy()  # Work with a copy to avoid side effects
-    tol = options.pop("tol")
-    max_iter = options.pop("max_iter")
-    if tol < 1e-3:
-        print(
-            f"IPOPT struggles to converge to tight tolerances when exact Hessians are not provided.\nConsider relaxing the termination tolerance above 1e-3. Current tolerance: {tol:0.2e}."
-        )
-
-    # Define solver options
+    # Define default solver options
     default_options = {
         "print_level": 0,  # No output to the screen
         "sb": "yes",  # Suppress banner
-        "hessian_approximation": "limited-memory",  # exact, limited-memory
-        "limited_memory_update_type": "bfgs",  # bfgs, sr1
-        "line_search_method": "cg-penalty",  # filter, cg-penalty, penalty
-        "limited_memory_max_history": 30,  # bfgs
-        "max_iter": int(max_iter),
-        "tol": tol,
+        "hessian_approximation": "limited-memory",  # Options: 'exact', 'limited-memory'
+        "limited_memory_update_type": "bfgs",  # Options: 'bfgs', 'sr1'
+        "line_search_method": "cg-penalty",  # Options: 'filter', 'cg-penalty', 'penalty'
+        "limited_memory_max_history": 30,  # Max history for L-BFGS
+        "max_iter": 500,  # Maximum number of iterations.
+        "tol": 1e-3,  # Desired convergence tolerance (relative).
+        "dual_inf_tol": 1.00,  # Desired threshold for the dual infeasibility.
+        "compl_inf_tol": 1e-3,  # Desired threshold for the complementarity conditions
+        "constr_viol_tol": 1e-6,  # Desired threshold for the constraint and variable bound violation.
+        "acceptable_iter": 0,  # Number of "acceptable" iterates before triggering termination. If it is set to zero, this heuristic is disabled.
+        # acceptable_tol:
+        # acceptable_iter:
+        # acceptable_dual_inf_tol:
+        # acceptable_constr_viol_tol:
+        # acceptable_compl_inf_tol:
+        # acceptable_obj_change_tol:
     }
-    combined_options = default_options | options
+
+    # Define IPOPT tolerance settings based on generic input
+    tol_value = solver_options.pop("tolerance")
+    solver_options["constr_viol_tol"] = tol_value
+    # IPOPT will not converge if "tol" is too tight
+    # This parameter is considered an "expert setting" not controlled by the generic tolerance input
+
+    # Define IPOPT iteration limit settings based on generic input
+    max_iter = solver_options.pop("max_iterations")
+    solver_options["max_iter"] = max_iter
+
+    # Combine default and given options
+    solver_options = default_options | solver_options
 
     # Solve the problem
     problem = pg.problem(problem)
     algorithm = pg.algorithm(pg.ipopt())
     algorithm_handle = algorithm.extract(pg.ipopt)
-    _set_pygmo_options(algorithm_handle, combined_options)
+    _set_pygmo_options(algorithm_handle, solver_options)
     population = pg.population(problem, size=1)
     population.set_x(0, x0)
     population = algorithm.evolve(population)
@@ -262,40 +390,58 @@ def _minimize_pygmo_ipopt(problem, x0, options):
     return success, message
 
 
-def _minimize_pygmo_snopt(problem, x0, options):
+def _minimize_pygmo_snopt(problem, x0, solver_options):
     """Solve optimization problem using Pygmo's wrapper to SNOPT"""
 
-    # Define solver options
-    options = options.copy()  # Work with a copy to avoid side effects
-    tol = options.pop("tol")
-    max_iter = options.pop("max_iter")
+    # Define default solver options
     default_options = {
-        "Major feasibility tolerance": tol,
-        "Major optimality tolerance": tol,
-        "Minor feasibility tolerance": tol,
-        "Iterations limit": int(max_iter),
+        "Major feasibility tolerance": 1e-6,
+        "Major optimality tolerance": 1e-3,
+        "Minor feasibility tolerance": 1e-6,
+        "Iterations limit": 500,
         "Major iterations limit": 1e6,
         "Minor iterations limit": 1e6,
         "Hessian updates": 30,
     }
-    combined_options = default_options | options
+
+    # Work with a copy to avoid side effects
+    solver_options = solver_options.copy()
+
+    # Define SNOPT tolerance settings based on generic input
+    tol_value = solver_options.pop("tolerance")
+    solver_options["Major feasibility tolerance"] = tol_value
+    solver_options["Minor feasibility tolerance"] = tol_value
+    # SNOPT will not converge if optimality tolerance is too tight
+    # This parameter is considered an "expert setting" not controlled by the generic tolerance input
+    # snopt_options["Major optimality tolerance"] = tol_value 
+
+    # Define SNOPT iteration limit settings based on generic input
+    max_iter = solver_options.pop("max_iterations")
+    solver_options["Iterations limit"] = max_iter
+    solver_options["Major iterations limit"] = 10*max_iter
+    solver_options["Minor iterations limit"] = 10*max_iter
+
+    # Combine default and given options
+    solver_options = default_options | solver_options
 
     # Define SNOPT path
     lib = os.getenv("SNOPT_LIB")
     if not lib:
-        raise ValueError("SNOPT library path not set in environment variables.")
-
+        raise ValueError(
+            "SNOPT library path not set in environment variables. "
+            "Please set the 'SNOPT_LIB' environment variable to the path of the SNOPT library."
+        )
+    
     # Solve the problem
     problem = pg.problem(problem)
     algorithm = pg.algorithm(ppnf.snopt7(library=lib, minor_version=7))
     algorithm_handle = algorithm.extract(ppnf.snopt7)
-    _set_pygmo_options(algorithm_handle, combined_options)
+    _set_pygmo_options(algorithm_handle, solver_options)
     population = pg.population(problem, size=1)
     population.set_x(0, x0)
     population = algorithm.evolve(population)
 
     # Optimization output
-
     message = _extract_snopt_message(algorithm.get_extra_info())
     success = (
         True
@@ -306,44 +452,44 @@ def _minimize_pygmo_snopt(problem, x0, options):
     return success, message
 
 
-def _minimize_pygmo_worhp(problem, x0, options):
-    """Solve optimization problem using Pygmo's wrapper to WORHP"""
+# def _minimize_pygmo_worhp(problem, x0, solver_options):
+#     """Solve optimization problem using Pygmo's wrapper to WORHP"""
 
-    # Define solver options
-    options = options.copy()  # Work with a copy to avoid side effects
-    tol = options.pop("tol")
-    max_iter = options.pop("max_iter")
-    default_options = {
-        "Algorithm": 1,  # Set: 1 (SQP) or 2 (IP)
-        "BFGSmethod": 0,  # Set 0 to use the classic dense BFGS method
-        "TolOpti": tol,
-        "TolFeas": tol,
-        "MaxIter": max_iter,
-    }
-    combined_options = default_options | options
+#     # Define solver options
+#     solver_options = solver_options.copy()  # Work with a copy to avoid side effects
+#     tol = solver_options.pop("tol")
+#     max_iter = solver_options.pop("max_iter")
+#     default_options = {
+#         "Algorithm": 1,  # Set: 1 (SQP) or 2 (IP)
+#         "BFGSmethod": 0,  # Set 0 to use the classic dense BFGS method
+#         "TolOpti": tol,
+#         "TolFeas": tol,
+#         "MaxIter": max_iter,
+#     }
+#     combined_options = default_options | solver_options
 
-    # Define WORHP path
-    lib = os.getenv("WORHP_LIB")
-    if not lib:
-        raise ValueError("WORHP library path not set in environment variables.")
+#     # Define WORHP path
+#     lib = os.getenv("WORHP_LIB")
+#     if not lib:
+#         raise ValueError("WORHP library path not set in environment variables.")
 
-    # Solve the problem
-    problem = pg.problem(problem)
-    algorithm = pg.algorithm(ppnf.worhp(screen_output=False, library=lib))
-    algorithm_handle = algorithm.extract(ppnf.worhp)
-    _set_pygmo_options(algorithm_handle, combined_options)
-    population = pg.population(problem, size=1)
-    population.set_x(0, x0)
-    population = algorithm.evolve(population)
+#     # Solve the problem
+#     problem = pg.problem(problem)
+#     algorithm = pg.algorithm(ppnf.worhp(screen_output=False, library=lib))
+#     algorithm_handle = algorithm.extract(ppnf.worhp)
+#     _set_pygmo_options(algorithm_handle, combined_options)
+#     population = pg.population(problem, size=1)
+#     population.set_x(0, x0)
+#     population = algorithm.evolve(population)
 
-    # Optimization output
-    success = ""
-    message = ""
+#     # Optimization output
+#     success = ""
+#     message = ""
 
-    return success, message
+#     return success, message
 
 
-def minimize_nlopt(problem, x0, method, options):
+def minimize_nlopt(problem, x0, method, solver_options):
     """
     Optimize a given problem using the specified NLOpt optimization method.
 
@@ -394,9 +540,9 @@ def minimize_nlopt(problem, x0, method, options):
     }
 
     # Define solver options
-    options = options.copy()  # Work with a copy to avoid side effects
-    tol = options.pop("tol")
-    max_iter = options.pop("max_iter")
+    solver_options = solver_options.copy()  # Work with a copy to avoid side effects
+    tol = solver_options.pop("tol")
+    max_iter = solver_options.pop("max_iter")
     algorithm = pg.algorithm(pg.nlopt(solver=method))
     handle = algorithm.extract(pg.nlopt)
     handle.maxeval = max_iter
@@ -497,7 +643,7 @@ def _set_pygmo_options(handle, options):
     for option_name, value in options.items():
         if isinstance(value, str):
             handle.set_string_option(option_name, value)
-        elif isinstance(value, int):
+        elif isinstance(value, (int, np.int64)):
             handle.set_integer_option(option_name, value)
         elif isinstance(value, float):
             handle.set_numeric_option(option_name, value)

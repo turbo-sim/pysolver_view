@@ -2,7 +2,7 @@ import pytest
 import itertools
 import numpy as np
 import matplotlib.pyplot as plt
-import pysolver_view as pv
+import pysolver_view as psv
 
 
 # Define step sizes
@@ -12,9 +12,9 @@ step_sizes = [1e-4, 1e-6, 1e-8]
 x0 = [1.5 * np.array([1, 1, 1, 1])]
 
 PROBLEMS = [
-    pv.RosenbrockProblem(len(x0)),
-    pv.RosenbrockProblemConstrained(len(x0)),
-    pv.HS71Problem(),
+    psv.RosenbrockProblem(len(x0)),
+    psv.RosenbrockProblemConstrained(len(x0)),
+    psv.HS71Problem(),
 ]
 
 # Create a combined parameter list for problems and step sizes
@@ -29,9 +29,9 @@ PROBLEM_COMBINATIONS_BIS = list(itertools.product(PROBLEMS, x0, [1e-6]))
 @pytest.mark.parametrize("problem, x0, h", PROBLEM_COMBINATIONS)
 def test_forward_finite_differences_consistency(problem, x0, h):
     f = problem.fitness
-    grad_approx_derivative = pv.approx_derivative(f, x0, abs_step=h, method="2-point")
-    grad_approx_gradient = pv.approx_gradient(f, x0, abs_step=h, method="forward_finite_differences")
-    grad_forward_fd = pv.forward_finite_differences(f, x0, abs_step=h)
+    grad_approx_derivative = psv.approx_derivative(f, x0, abs_step=h, method="2-point")
+    grad_approx_gradient = psv.approx_gradient(f, x0, abs_step=h, method="forward_finite_differences")
+    grad_forward_fd = psv.forward_finite_differences(f, x0, abs_step=h)
     
     print(grad_approx_derivative)
     print(grad_forward_fd)
@@ -53,9 +53,9 @@ def test_forward_finite_differences_consistency(problem, x0, h):
 @pytest.mark.parametrize("problem, x0, h", PROBLEM_COMBINATIONS)
 def test_central_finite_differences_consistency(problem, x0, h):
     f = problem.fitness
-    grad_approx_derivative = pv.approx_derivative(f, x0, abs_step=h, method="3-point")
-    grad_approx_gradient = pv.approx_gradient(f, x0, abs_step=h, method="central_finite_differences")
-    grad_central_fd = pv.central_finite_differences(f, x0, abs_step=h)
+    grad_approx_derivative = psv.approx_derivative(f, x0, abs_step=h, method="3-point")
+    grad_approx_gradient = psv.approx_gradient(f, x0, abs_step=h, method="central_finite_differences")
+    grad_central_fd = psv.central_finite_differences(f, x0, abs_step=h)
 
     atol = 1e-15
     assert np.allclose(grad_approx_derivative, grad_approx_gradient, atol=atol), (
@@ -74,9 +74,9 @@ def test_central_finite_differences_consistency(problem, x0, h):
 @pytest.mark.parametrize("problem, x0, h", PROBLEM_COMBINATIONS)
 def test_complex_step_consistency(problem, x0, h):
     f = problem.fitness
-    grad_approx_derivative = pv.approx_derivative(f, x0, abs_step=h, method="cs")
-    grad_approx_gradient = pv.approx_gradient(f, x0, abs_step=h, method="complex_step")
-    grad_complex_step = pv.complex_step_derivative(f, x0, abs_step=h)
+    grad_approx_derivative = psv.approx_derivative(f, x0, abs_step=h, method="cs")
+    grad_approx_gradient = psv.approx_gradient(f, x0, abs_step=h, method="complex_step")
+    grad_complex_step = psv.complex_step_derivative(f, x0, abs_step=h)
 
     atol = 1e-15
     assert np.allclose(grad_approx_derivative, grad_approx_gradient, atol=atol), (
@@ -96,9 +96,9 @@ def test_complex_step_consistency(problem, x0, h):
 def test_comparison_across_methods(problem, x0, h):
     f = problem.fitness
 
-    grad_forward_fd = pv.forward_finite_differences(f, x0, abs_step=h)
-    grad_central_fd = pv.central_finite_differences(f, x0, abs_step=h)
-    grad_complex_step = pv.complex_step_derivative(f, x0, abs_step=h)
+    grad_forward_fd = psv.forward_finite_differences(f, x0, abs_step=h)
+    grad_central_fd = psv.central_finite_differences(f, x0, abs_step=h)
+    grad_complex_step = psv.complex_step_derivative(f, x0, abs_step=h)
 
     print(problem, grad_forward_fd, grad_central_fd)
 
@@ -138,7 +138,7 @@ STEPSIZE_INITIALGUESS_COMBINATIONS = list(itertools.product(stepsize, initial_gu
 def test_hessian_finite_differences(abs_step, x0):
 
     # Define the problem
-    problem = pv.RosenbrockProblem(len(x0))
+    problem = psv.RosenbrockProblem(len(x0))
 
     # Set lower triangular form to True
     LT = True
@@ -150,7 +150,7 @@ def test_hessian_finite_differences(abs_step, x0):
     f = problem.fitness
 
     # Compute the Hessian using finite differences
-    H_finite_diff = pv.approx_jacobian_hessians(f, x0, abs_step=abs_step, lower_triangular=LT)
+    H_finite_diff = psv.approx_jacobian_hessians(f, x0, abs_step=abs_step, lower_triangular=LT)
 
     # Compare the analytic Hessian with the finite difference Hessian
     tol = 1e-2

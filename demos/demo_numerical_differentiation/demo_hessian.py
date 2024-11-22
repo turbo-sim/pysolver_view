@@ -1,9 +1,9 @@
 import numpy as np
-import pysolver_view as pv
+import pysolver_view as psv
 
 # Define the problem
 x0 = 1.5 * np.array([1, 2, 1, 0.5])
-problem = pv.RosenbrockProblem(len(x0))
+problem = psv.RosenbrockProblem(len(x0))
 f = problem.fitness
 
 # Set lower triangular form to True
@@ -14,7 +14,7 @@ H_analytic = problem.hessians(x0, lower_triangular=LT)
 print(f"Analytic Hessian at x0 (lower triangular={LT}):\n{H_analytic}\nShape: {H_analytic.shape}\n")
 
 # Compute the Hessian using finite differences
-H_finite_diff = pv.approx_jacobian_hessians(f, x0, lower_triangular=LT)
+H_finite_diff = psv.approx_jacobian_hessians(f, x0, lower_triangular=LT)
 print(f"Finite Difference Hessian at x0 (lower triangular={LT}):\n{H_finite_diff}\nShape: {H_finite_diff.shape}\n")
 
 # Compare the analytic Hessian with the finite difference Hessian
