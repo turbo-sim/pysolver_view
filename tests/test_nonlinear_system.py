@@ -1,11 +1,11 @@
 import pytest
 import numpy as np
 import matplotlib.pyplot as plt
-import pysolver_view as pv
+import pysolver_view as psv
 
 
 # Set up logger with unique date-time name
-logger = pv.create_logger("convergence_history", use_datetime=True)
+logger = psv.create_logger("convergence_history", use_datetime=True)
 
 # Define solver configurations
 SOLVERS = ["lm", "hybr"]
@@ -25,8 +25,8 @@ STATIONARY_POINTS = [
 )
 def test_lorentz_problem(method, stationary_point):
     # Find a stationary point of the Lorentz equations
-    problem = pv.LorentzEquations(sigma=SIGMA, beta=BETA, rho=RHO)
-    solver = pv.NonlinearSystemSolver(
+    problem = psv.LorentzEquations(sigma=SIGMA, beta=BETA, rho=RHO)
+    solver = psv.NonlinearSystemSolver(
         problem,
         method=method,
         print_convergence=True,

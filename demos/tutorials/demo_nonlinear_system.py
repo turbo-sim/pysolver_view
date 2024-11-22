@@ -1,18 +1,18 @@
 # Import packages
 import numpy as np
 import matplotlib.pyplot as plt
-import pysolver_view as pv
+import pysolver_view as psv
 
 # Set options for publication-quality figures
-pv.set_plot_options(grid=False)
+psv.set_plot_options(grid=False)
 
 # Set up logger with unique date-time name
-logger = pv.create_logger("convergence_history", use_datetime=True)
+logger = psv.create_logger("convergence_history", use_datetime=True)
 
 # Find a stationary point of the Lorentz equations
 x0 = np.asarray([1.0, -3.0, 2.0])
-problem = pv.LorentzEquations()
-solver = pv.NonlinearSystemSolver(
+problem = psv.LorentzEquations()
+solver = psv.NonlinearSystemSolver(
     problem,
     method="hybr",
     print_convergence=True,
