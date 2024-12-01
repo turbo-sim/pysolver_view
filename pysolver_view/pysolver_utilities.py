@@ -231,7 +231,7 @@ def savefig_in_formats(fig, path_without_extension, formats=[".png", ".svg"], dp
             fig.savefig(f"{path_without_extension}{ext}", bbox_inches="tight")
 
 
-def create_logger(name, path=None, use_datetime=True):
+def create_logger(name, path=None, use_datetime=True, to_console=True):
     """
     Creates and configures a logging object for recording logs during program execution.
 
@@ -244,6 +244,8 @@ def create_logger(name, path=None, use_datetime=True):
         will be created in the current working directory (cwd).
     use_datetime : bool, optional
         Determines whether the log filename should have a unique datetime identifier appended. Default is True.
+    to_console : bool, optional
+        Whether to print log messages to the console. Default is True.
 
     Returns
     -------
@@ -284,6 +286,13 @@ def create_logger(name, path=None, use_datetime=True):
 
     # Create logger object
     logger = logging.getLogger()
+
+    # Console handler (optional)
+    if to_console:
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.INFO)
+        console_handler.setFormatter(logging.Formatter("%(message)s"))
+        logger.addHandler(console_handler)
 
     return logger
 
