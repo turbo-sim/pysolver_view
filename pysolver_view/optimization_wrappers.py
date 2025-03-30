@@ -126,6 +126,7 @@ def minimize_scipy(problem, x0, method, solver_options):
     default_options = (
         default_options[method] if method in default_options.keys() else {}
     )
+    solver_options = solver_options.copy()  # Work with a copy to avoid side effects
     combined_options = default_options | solver_options  # Merge defaults with input
 
     # Convert bounds from Pygmo to Scipy convention
@@ -244,7 +245,7 @@ def _minimize_pygmo_de(problem, x0, options):
 
     return success, message
 
-def _minimize_pygmo_sga(problem, x0, solver_options):
+def _minimize_pygmo_sga(problem, x0, options):
     """Solve optimization problem using Pygmo's wrapper to sga"""
 
     # Define solver options
@@ -252,8 +253,8 @@ def _minimize_pygmo_sga(problem, x0, solver_options):
         "gen": 10, 
         "pop_size": 10,
     }
-    solver_options = solver_options.copy()  # Work with a copy to avoid side effects
-    combined_options = default_options | solver_options
+    options = options.copy()  # Work with a copy to avoid side effects
+    combined_options = default_options | options
 
     # Set seed 
     if "seed" in list(combined_options.keys()):
@@ -279,7 +280,7 @@ def _minimize_pygmo_sga(problem, x0, solver_options):
 
     return success, message
 
-def _minimize_pygmo_pso(problem, x0, solver_options):
+def _minimize_pygmo_pso(problem, x0, options):
     """Solve optimization problem using Pygmo's wrapper to PSO"""
 
     # Define solver options
@@ -287,8 +288,8 @@ def _minimize_pygmo_pso(problem, x0, solver_options):
         "gen": 10, 
         "pop_size": 10,
     }
-    solver_options = solver_options.copy()  # Work with a copy to avoid side effects
-    combined_options = default_options | solver_options
+    options = options.copy()  # Work with a copy to avoid side effects
+    combined_options = default_options | options
 
     # Set seed 
     if "seed" in list(combined_options.keys()):
@@ -370,7 +371,7 @@ def _minimize_pygmo_ipopt(problem, x0, solver_options):
     # This parameter is considered an "expert setting" not controlled by the generic tolerance input
 
     # Define IPOPT iteration limit settings based on generic input
-    max_iter = solver_options.pop("max_iterations")
+    max_iter = int(solver_options.pop("max_iterations"))
     solver_options["max_iter"] = max_iter
 
     # Combine default and given options
@@ -420,7 +421,7 @@ def _minimize_pygmo_snopt(problem, x0, solver_options):
     # snopt_options["Major optimality tolerance"] = tol_value 
 
     # Define SNOPT iteration limit settings based on generic input
-    max_iter = solver_options.pop("max_iterations")
+    max_iter = int(solver_options.pop("max_iterations"))
     solver_options["Iterations limit"] = max_iter
     solver_options["Major iterations limit"] = max_iter
     solver_options["Minor iterations limit"] = 10*max_iter
@@ -507,7 +508,7 @@ def _minimize_pygmo_snopt(problem, x0, solver_options):
 #     return success, message
 
 
-def minimize_nlopt(problem, x0, method, solver_options):
+def minimize_nlopt(problem, x0, method, options):
     """
     Optimize a given problem using the specified NLOpt optimization method.
 
@@ -558,9 +559,9 @@ def minimize_nlopt(problem, x0, method, solver_options):
     }
 
     # Define solver options
-    solver_options = solver_options.copy()  # Work with a copy to avoid side effects
-    tol = solver_options.pop("tol")
-    max_iter = solver_options.pop("max_iter")
+    options = options.copy()  # Work with a copy to avoid side effects
+    tol = options.pop("tol")
+    max_iter = options.pop("max_iter")
     algorithm = pg.algorithm(pg.nlopt(solver=method))
     handle = algorithm.extract(pg.nlopt)
     handle.maxeval = max_iter

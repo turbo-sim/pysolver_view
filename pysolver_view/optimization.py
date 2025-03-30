@@ -65,24 +65,41 @@ class OptimizationSolver:
     Parameters
     ----------
     problem : OptimizationProblem
-        An instance of the optimization problem to be solved.
+        An instance of the optimization problem to be solved. The problem should be defined
+        in physical space, with its own bounds and (optionally) analytic derivatives.
     library : str, optional
         The library to use for solving the optimization problem (default is 'scipy').
     method : str, optional
         The optimization method to use from the specified library (default is 'slsqp').
-    tol : float, optional
-        Tolerance for termination. The selected minimization algorithm sets some relevant solver-specific tolerance(s) equal to tol. The termination tolerances can be fine-tuned through the `options` dictionary. (default is 1e-5).
-    max_iter : int, optional
+    tolerance : float, optional
+        Tolerance for termination. The minimization algorithm sets some solver-specific tolerances
+        equal to tol. (default is 1e-6)
+    max_iterations : int, optional
         Maximum number of iterations for the optimizer (default is 100).
-    options : dict, optional
-        A dictionary of solver-specific options that prevails over 'tol' and 'max_iter'
+    extra_options : dict, optional
+        A dictionary of solver-specific options that prevails over 'tolerance' and 'max_iterations'
     derivative_method : str, optional
         Method to use for derivative calculation (default is '2-point').
     derivative_abs_step : float, optional
-        Finite difference absolute step size to be used when the problem Jacobian is not provided. Defaults to 1e-6
-    display : bool, optional
+        Finite difference absolute step size to be used when the problem Jacobian is not provided. Default depends on calculation method.
+    problem_scale : float or None, optional
+        Scaling factor used to normalize the problem. This parameter controls the transformation
+        of physical variables into a normalized domain. Specifically, for a physical variable x,
+        with lower and upper bounds lb and ub, the normalized variable is computed as:
+
+            x_norm = problem_scale * (x - lb) / (ub - lb)
+
+        - If a numeric value is provided (e.g. 1.0, 10.0, etc.), the problem is scaled accordingly.
+          Increasing problem_scale reduces the relative step sizes in the normalized space during
+          line searches, which can improve convergence by making the optimization less aggresive.
+          The rationale for the scaling is that the initial line search step size of many solvers is 1.0.
+        - If set to None, no scaling is applied and the problem is solved in its original physical units.
+          This might be preferred if the problem is already well-conditioned or if the user wishes to
+          preserve the exact scale of the original formulation.
+
+    print_convergence : bool, optional
         If True, displays the convergence progress (default is True).
-    plot : bool, optional
+    plot_convergence : bool, optional
         If True, plots the convergence progress (default is False).
     plot_scale_objective : str, optional
         Specifies the scale of the objective function axis in the convergence plot (default is 'linear').
@@ -121,6 +138,7 @@ class OptimizationSolver:
         extra_options={},
         derivative_method="2-point",
         derivative_abs_step=None,
+        problem_scale=None, 
         print_convergence=True,
         plot_convergence=False,
         plot_scale_objective="linear",
@@ -145,12 +163,20 @@ class OptimizationSolver:
         self.callback_function_call_count = 0
         self.plot_improvement_only = plot_improvement_only
 
-        # # Validate library and method
+        # Validate library and method
         self._validate_library_and_method()
 
         # Define options dictionary
         self.options = {"tolerance": tolerance, "max_iterations": max_iterations}
         self.options = self.options | extra_options
+
+        # Set scaling for the optimization problem (define at the solver, rather than problem level)
+        self.problem.problem_scale = problem_scale
+
+        # Auto-generate design variable names if not provided
+        if not hasattr(self.problem, "variable_names"):
+            n_vars = len(self.problem.get_bounds()[0])
+            self.problem.variable_names = [f"design_variable_{i}" for i in range(n_vars)]
 
         # Check for logger validity
         if self.logger is not None:
@@ -270,6 +296,10 @@ class OptimizationSolver:
         # Start timing with high-resolution timer
         start_time = time.perf_counter()
 
+        # Normalize the problem as the very first thing
+        x0 = self.problem.scale_physical_to_normalized(x0)
+        x0 = self.problem.clip_to_bounds(x0, verbose=True)
+
         # Print report header
         self._write_header()
 
@@ -278,6 +308,9 @@ class OptimizationSolver:
 
         # Fetch the solver function
         lib_wrapper = OPTIMIZATION_LIBRARIES[self.library]
+
+        # Evaluate initial guess and solve the problem
+        self._print_convergence_progress(x0)
         solution = lib_wrapper(problem, x0, self.method, self.options)
 
         # Retrieve last solution (also works for gradient-free solvers when updating on gradient)
@@ -329,7 +362,7 @@ class OptimizationSolver:
         self.func_count_tot += 1
 
         # Evaluate objective function and constraints at once
-        fitness = self.problem.fitness(x)
+        fitness = self.problem.fitness_normalized_input(x)
 
         # Does not include finite differences
         if not called_from_grad:
@@ -384,7 +417,7 @@ class OptimizationSolver:
 
         # Use problem gradient method if it exists
         if hasattr(self.problem, "gradient"):
-            grad = self.problem.gradient(x)
+            grad = self.problem.gradient_normalized_input(x)
         else:
             # Fall back to finite differences
             fun = lambda x: self.fitness(x, called_from_grad=True)
@@ -393,7 +426,7 @@ class OptimizationSolver:
                 x,
                 f0=fun(x),
                 method=self.derivative_method,
-                abs_step=self.derivative_abs_step,  ## TODO make sure it works when design variable takes value 0 * np.abs(x),
+                abs_step=self.derivative_abs_step,
             )
 
         # Reshape gradient for unconstrained problems
@@ -411,7 +444,6 @@ class OptimizationSolver:
         )
 
         # Update progress report
-        # TODO check that the initial X is exact in cycle optimization
         self.grad_count += 1
         if self.update_on == "gradient":
             self._print_convergence_progress(x)
@@ -761,8 +793,43 @@ class OptimizationSolver:
             # Save plots
             fullfile = os.path.join(output_dir, filename)
             savefig_in_formats(self.fig, fullfile, formats=[".png", ".svg"])
-
+            
         return self.fig
+
+
+    def print_optimization_report(self, savefile=False, filename=None):
+        """
+        Print or save a complete optimization report, including variables and constraints.
+
+        Parameters
+        ----------
+        savefile : bool
+            If True, the report is written to file instead of printed.
+        filename : str, optional
+            Output filename. Defaults to 'optimization_report.txt'.
+        output_dir : str, optional
+            Output directory. Defaults to 'output'.
+        """
+        if self.x_final is not None:
+            self._plot_callback([], [], initialize=True)
+        else:
+            raise ValueError(
+                "This method can only be used after invoking the 'solve()' method."
+            )
+    
+        report = []
+        report.append(self.problem.make_design_variables_report(self.x_final, normalized=True))
+        report.append(self.problem.make_design_variables_report(self.x_final, normalized=False))
+        report.append(self.problem.make_constraint_report(self.x_final, tol=1.5*self.options["tolerance"]))
+        full_report = "\n".join(report)
+        if savefile:
+            if filename is None:
+                filename = "optimization_report.txt"
+            fullpath = os.path.join(self.out_dir, filename)
+            with open(fullpath, "w") as f:
+                f.write(full_report)
+        else:
+            print(full_report)
 
 
 class OptimizationProblem(ABC):
@@ -788,6 +855,13 @@ class OptimizationProblem(ABC):
         Return the number of equality constraints associated with the problem.
     get_nineq()
         Return the number of inequality constraints associated with the problem.
+
+    Parameters
+    ----------
+    problem_scale : float, optional
+        Scaling factor for normalization. Default is 1.0.
+    variable_names : list of str, optional
+        Names of the decision variables. Used for reporting and debugging.
 
     """
 
@@ -846,6 +920,314 @@ class OptimizationProblem(ABC):
             Number of inequality constraints.
         """
         pass
+
+
+    def get_bounds_normalized(self):
+        """
+        Return normalized bounds in [0, problem_scale]. If no scaling is applied (i.e., problem_scale is None),
+        the physical bounds are returned instead.
+
+        Returns
+        -------
+        tuple of lists
+            Tuple (lb, ub) in normalized space or the original physical bounds if problem_scale is None.
+        """
+        if self.problem_scale is None:
+            return self.get_bounds()
+
+        n = len(self.get_bounds()[0])
+        return [0.0] * n, [self.problem_scale] * n
+    
+
+    def scale_physical_to_normalized(self, x_phys):
+        """
+        Convert physical design variable values to normalized values in the range [0, problem_scale].
+        If self.problem_scale is None, no scaling is applied.
+
+        The method uses the bounds returned by `self.get_bounds()` and the internal `self.problem_scale`.
+        It automatically handles the case of fixed variables (i.e., upper bound = lower bound) by returning 0.0.
+
+        Parameters
+        ----------
+        x_phys : array-like
+            Physical values of the decision variables.
+
+        Returns
+        -------
+        np.ndarray
+            Normalized values in the range [0, problem_scale] if scaling is applied,
+            otherwise the original physical values.
+        """
+        x_phys = np.asarray(x_phys)
+        if self.problem_scale is None:
+            return x_phys
+        lb, ub = self.get_bounds()
+        lb = np.asarray(lb)
+        ub = np.asarray(ub)
+        return np.where(ub == lb, 0.0, self.problem_scale * (x_phys - lb) / (ub - lb))
+
+
+    def scale_normalized_to_physical(self, x_norm):
+        """
+        Convert normalized values in the range [0, problem_scale] back to physical variable values.
+        If self.problem_scale is None, no scaling is applied.
+
+        The method uses the bounds returned by `self.get_bounds()` and the internal `self.problem_scale`.
+
+        Parameters
+        ----------
+        x_norm : array-like
+            Normalized values of the decision variables.
+
+        Returns
+        -------
+        np.ndarray
+            Physical values corresponding to the normalized input, or the original values if no scaling.
+        """
+        x_norm = np.asarray(x_norm)
+        if self.problem_scale is None:
+            return x_norm
+        lb, ub = self.get_bounds()
+        lb = np.asarray(lb)
+        ub = np.asarray(ub)
+        return lb + (ub - lb) * (x_norm / self.problem_scale)
+
+
+    def fitness_normalized_input(self, x_norm):
+        """
+        Evaluate fitness starting from normalized input.
+
+        Parameters
+        ----------
+        x_norm : array-like
+            Normalized input vector.
+
+        Returns
+        -------
+        array_like
+            Output of `fitness` evaluated on the corresponding physical vector.
+        """
+        x_phys = self.scale_normalized_to_physical(x_norm)
+        return self.fitness(x_phys)
+    
+
+    def gradient_normalized_input(self, x_norm):
+        """
+        Compute the gradient of the objective and constraints with respect to normalized variables.
+
+        This function applies the chain rule to convert the gradient computed in the physical space
+        to the corresponding gradient in the normalized space. If `problem_scale` is set to `None`,
+        the problem is considered unscaled and the gradient is returned directly.
+
+        Parameters
+        ----------
+        x_norm : array-like
+            Normalized input vector (typically in [0, problem_scale]).
+
+        Returns
+        -------
+        np.ndarray
+            Gradient with respect to the normalized variables. The shape is:
+            - (n,) for scalar objective or flat constraint vectors.
+            - (m, n) for vector-valued constraints with m rows and n design variables.
+
+        Notes
+        -----
+        The chain rule is applied as follows:
+
+            x_phys = lb + (ub - lb) * (x_norm / problem_scale)
+            ∇f(x_norm) = ∇f(x_phys) * d(x_phys)/d(x_norm)
+
+        where:
+
+            d(x_phys)/d(x_norm) = (ub - lb) / problem_scale    [elementwise]
+
+        This correction ensures that exact user-defined gradients are consistent
+        with the scaling applied during optimization.
+        """
+        x_phys = self.scale_normalized_to_physical(x_norm)
+        grad_phys = self.gradient(x_phys)
+
+        if self.problem_scale is None:
+            return grad_phys
+
+        lb, ub = self.get_bounds()
+        lb, ub = np.asarray(lb), np.asarray(ub)
+        scaling_factor = (ub - lb) / self.problem_scale
+
+        # Apply scaling using broadcasting to support both 1D and 2D gradients
+        return grad_phys * scaling_factor
+
+
+    def clip_to_bounds(self, x_normalized, verbose=False):
+        """
+        Clip normalized values to lie within specified normalized bounds.
+
+        Parameters
+        ----------
+        x : array-like
+            Input vector.
+        bounds : tuple of lists
+            Tuple (lb, ub) of lower and upper bounds.
+        verbose : bool, optional
+            If True, prints warnings for clipped values.
+
+        Returns
+        -------
+        np.ndarray
+            Clipped vector.
+        """
+        lb, ub = self.get_bounds_normalized()
+        x_normalized = np.asarray(x_normalized)
+        x_clipped = np.clip(x_normalized, lb, ub)
+
+        if verbose:
+            for i, (orig, new, lo, hi) in enumerate(zip(x_normalized, x_clipped, lb, ub)):
+                if orig != new:
+                    print(
+                        f"\nWarning: optimization variable out of bounds\n"
+                        f"  Name       : {self.variable_names[i]}\n"
+                        f"  Original   : {orig}\n"
+                        f"  Bounds     : [{lo}, {hi}]\n"
+                        f"  Clipped to : {new}\n"
+                    )
+
+        return x_clipped
+
+
+    def make_design_variables_report(self, x_norm, normalized=True):
+        """
+        Generate design variable report as a string.
+
+        Parameters
+        ----------
+        x_norm : array-like
+            Normalized design variables (input to the solver).
+        normalized : bool, optional
+            Whether to report in normalized or physical values. Default is True.
+
+        Returns
+        -------
+        str
+            Formatted string report.
+        """
+        x_norm = np.asarray(x_norm)
+        x_phys = self.scale_normalized_to_physical(x_norm)
+
+        if normalized:
+            values = x_norm
+            lb_raw, ub_raw = self.get_bounds_normalized()
+        else:
+            values = x_phys
+            lb_raw, ub_raw = self.get_bounds()
+
+        names = self.variable_names or [f"design_variable_{i}" for i in range(len(values))]
+        scale_type = "normalized" if normalized else "physical"
+
+        lines = []
+        lines.append("")
+        lines.append("-" * 80)
+        lines.append(f"{'Optimization variables report (' + scale_type + ' values)':<80}")
+        lines.append("-" * 80)
+        lines.append(f"{'Variable name':<35}{'Lower':>15}{'Value':>15}{'Upper':>15}")
+        lines.append("-" * 80)
+
+        for key, lb, val, ub in zip(names, lb_raw, values, ub_raw):
+            if normalized:
+                lines.append(f"{key:<35}{lb:>15.4f}{val:>15.4f}{ub:>15.4f}")
+            else:
+                lines.append(f"{key:<35}{lb:>15.3e}{val:>15.3e}{ub:>15.3e}")
+
+        lines.append("-" * 80)
+        return "\n".join(lines)
+
+
+    def make_constraint_report(self, x_norm, constraint_report=None, tol=1e-6):
+        """
+        Generate a constraint report as a string by evaluating constraints at the given point.
+
+        This method evaluates the problem's constraints using the normalized input `x_norm`.
+        If a precomputed `constraint_report` is provided, it is used directly. Otherwise,
+        the constraints are evaluated using the fitness function and a default report is generated.
+
+        By default:
+        - Equality constraints are named "equality_constraint_{i}" with target 0 and type "=".
+        - Inequality constraints are named "inequality_constraint_{i}" with target 0 and type "<=".
+        - Tolerance `tol` is used to check whether constraints are satisfied.
+
+        Parameters
+        ----------
+        x_norm : array-like
+            Normalized design variable vector (typically in [0, problem_scale]).
+        constraint_report : list of dict, optional
+            Optional precomputed report (each dict must have keys: name, type, target, value, satisfied).
+            If provided, this report is formatted directly.
+        tol : float, optional
+            Tolerance used to determine whether constraints are satisfied (default is 1e-6).
+
+        Returns
+        -------
+        str
+            A formatted string with constraint values, targets, and satisfaction status.
+        """
+        max_name_width = 50
+
+        if constraint_report is None:
+            # Evaluate fitness at the given normalized input
+            x_norm = np.asarray(x_norm)
+            result = self.fitness_normalized_input(x_norm)
+
+            # Slice constraints
+            n_eq = self.get_nec()
+            n_ineq = self.get_nic()
+            c_eq = result[1:1 + n_eq]
+            c_ineq = result[1 + n_eq:]
+
+            # Build default report structure
+            constraint_report = []
+
+            for i, val in enumerate(c_eq):
+                constraint_report.append({
+                    "name": f"equality_constraint_{i}",
+                    "type": "=",
+                    "target": 0.0,
+                    "value": val,
+                    "satisfied": np.abs(val) < tol,
+                })
+
+            for i, val in enumerate(c_ineq):
+                constraint_report.append({
+                    "name": f"inequality_constraint_{i}",
+                    "type": "<=",
+                    "target": 0.0,
+                    "value": val,
+                    "satisfied": val <= tol,
+                })
+
+        # Format report lines
+        lines = []
+        lines.append("")
+        lines.append("-" * 80)
+        lines.append(f"{'Optimization constraints report':<80}")
+        lines.append("-" * 80)
+        lines.append(f"{'Constraint name':<52}{'Value':>10}{'Target':>12}{'Ok?':>6}")
+        lines.append("-" * 80)
+
+        for entry in constraint_report:
+            name = entry.get("name", "")
+            ctype = entry.get("type", "")
+            target = entry.get("target", 0.0)
+            value = entry.get("value", 0.0)
+            satisfied = "yes" if entry.get("satisfied", False) else "no"
+
+            if len(name) > max_name_width:
+                name = "..." + name[-(max_name_width - 3):]
+
+            symbol_target = f"{ctype} {target:.3f}"
+            lines.append(f"{name:<52}{value:>10.3f}{symbol_target:>12}{satisfied:>6}")
+
+        lines.append("-" * 80)
+        return "\n".join(lines)
 
 
 def count_constraints(var):
@@ -959,6 +1341,10 @@ def combine_objective_and_constraints(f, c_eq=None, c_ineq=None):
     return np.array(combined_list)
 
 
+
+
+
+
 class _PygmoProblem:
     """
     A wrapper class for optimization problems to be compatible with Pygmo's need for deep-copiable problems.
@@ -972,7 +1358,7 @@ class _PygmoProblem:
         self.gradient = lambda x: wrapped_problem.gradient(x).flatten()
 
         # Directly link bounds and constraint counts from the original problem.
-        self.get_bounds = lambda: wrapped_problem.problem.get_bounds()
+        self.get_bounds = lambda: wrapped_problem.problem.get_bounds_normalized()
         self.get_nec = lambda: wrapped_problem.problem.get_nec()
         self.get_nic = lambda: wrapped_problem.problem.get_nic()
 
