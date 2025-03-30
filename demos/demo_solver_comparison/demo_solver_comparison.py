@@ -44,7 +44,7 @@ for problem, x0 in PROBLEMS_AND_X0:
         # ("scipy", "bfgs"),
         ("scipy", "trust-constr"),
         ("scipy", "slsqp"),
-        ("pygmo", "snopt"),
+        # ("pygmo", "snopt"),
         ("pygmo", "ipopt"),
     ]
 

@@ -368,3 +368,4 @@ def print_object(obj):
             print(f"Method: {attr}")
         else:
             print(f"Attribute: {attr}")
+

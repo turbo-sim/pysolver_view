@@ -7,8 +7,7 @@ except ImportError:
     pass
 else:
     import sys
-
-    sys.excepthook = IPython.core.ultratb.ColorTB()
+    sys.excepthook = IPython.core.ultratb.FormattedTB(theme_name='linux', call_pdb=False)
 
 
 from .pysolver_utilities import *

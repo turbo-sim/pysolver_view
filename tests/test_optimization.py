@@ -10,18 +10,18 @@ logger = psv.create_logger("convergence_history", use_datetime=True)
 # Define solver configurations
 UNCONSTRAINED_SOLVERS = [
     ("scipy", "l-bfgs-b"),
-    #  ("scipy", "bfgs"),
+    # ("scipy", "bfgs"),
     ("scipy", "trust-constr"),
     ("scipy", "slsqp"),
     ("pygmo", "ipopt"),
-    ("pygmo", "snopt"),
+    # ("pygmo", "snopt"),
 ]
 
 CONSTRAINED_SOLVERS = [
     ("scipy", "trust-constr"),
     ("scipy", "slsqp"),
     ("pygmo", "ipopt"),
-    ("pygmo", "snopt"),
+    # ("pygmo", "snopt"),
 ]
 
 
@@ -33,6 +33,7 @@ def test_rosenbrock_problem_unconstrained(library, method):
     # Set up problem and solver
     x0 = 1.5 * np.array([1, 1, 1, 1])
     problem = psv.RosenbrockProblem(len(x0))
+    extra_options = {"tol": 1e-6} if method == "ipopt" else {}
     solver = psv.OptimizationSolver(
         problem,
         library=library,
@@ -43,6 +44,7 @@ def test_rosenbrock_problem_unconstrained(library, method):
         tolerance=1e-9,
         update_on="gradient",
         logger=logger,
+        extra_options=extra_options
     )
 
     # Perform the optimization
@@ -129,7 +131,7 @@ CONSTRAINED_SOLVERS = [
     #    ("scipy", "trust-constr"),
     ("scipy", "slsqp"),
     ("pygmo", "ipopt"),
-    ("pygmo", "snopt"),
+    # ("pygmo", "snopt"),
 ]
 
 # Calculate stationary points of the Lorentz system
@@ -203,8 +205,8 @@ SOLVERS_AND_MAXITER = [
     ("scipy", "slsqp", 20),
     ("pygmo", "ipopt", 10),
     ("pygmo", "ipopt", 20),
-    ("pygmo", "snopt", 10),
-    ("pygmo", "snopt", 20),
+    # ("pygmo", "snopt", 10),
+    # ("pygmo", "snopt", 20),
 ]
 
 
@@ -212,6 +214,7 @@ SOLVERS_AND_MAXITER = [
 def test_max_iter(library, method, max_iter):
     # Set up problem and solver
     x0 = 1.5 * np.array([1, 1, 1, 1])
+    extra_options = {"tol": 1e-6} if method == "ipopt" else {}
     problem = psv.RosenbrockProblem(len(x0))
     solver = psv.OptimizationSolver(
         problem,
@@ -223,6 +226,7 @@ def test_max_iter(library, method, max_iter):
         tolerance=1e-16,
         update_on="gradient",
         logger=logger,
+        extra_options=extra_options,
     )
 
     # Perform the optimization

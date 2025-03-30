@@ -192,10 +192,6 @@ class OptimizationSolver:
             "norm_step": [],
         }
 
-        # Initialize convergence plot
-        if self.plot:
-            self._plot_callback(initialize=True)
-
         # Initialize dictionary for cached variables
         self.cache = {
             "x": None,
@@ -264,6 +260,10 @@ class OptimizationSolver:
             An array with the optimal vector of design variables
 
         """
+        # Initialize convergence plot
+        if self.plot:
+            self._plot_callback([], [], initialize=True)
+
         # Get start datetime
         self.start_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
@@ -525,7 +525,7 @@ class OptimizationSolver:
 
         # Refresh the plot with current values
         if self.plot:
-            self._plot_callback()
+            self._plot_callback([], [])
 
         # Evaluate callback functions
         if self.callback_functions:
@@ -567,7 +567,7 @@ class OptimizationSolver:
         # Store text in memory
         self.solution_report.extend(lines_to_output)
 
-    def _plot_callback(self, initialize=False):
+    def _plot_callback(self, x, iter, initialize=False):
         """
         Callback function to dynamically update the convergence progress plot.
 
@@ -596,8 +596,10 @@ class OptimizationSolver:
             self.ax_1.xaxis.set_major_locator(
                 MaxNLocator(integer=True)
             )  # Integer ticks
+            self.ax_1.grid(False)
             if self.N_eq > 0 or self.N_ineq > 0:
                 self.ax_2 = self.ax_1.twinx()
+                self.ax_2.grid(False)
                 self.ax_2.set_ylabel("Constraint violation")
                 self.ax_2.set_yscale(self.plot_scale_constraints)
                 (self.obj_line_2,) = self.ax_2.plot(
@@ -739,7 +741,7 @@ class OptimizationSolver:
             If this method is called before the problem has been solved.
         """
         if self.x_final is not None:
-            self._plot_callback(initialize=True)
+            self._plot_callback([], [], initialize=True)
         else:
             raise ValueError(
                 "This method can only be used after invoking the 'solve()' method."

@@ -156,15 +156,8 @@ This installation guide is intended for developers who wish to contribute to or 
 
       conda activate pysolver_env
 
-5. **Install Poetry to manage dependencies**:
 
-   .. code-block:: bash
-
-      conda install poetry
-
-   Poetry is a powerful dependency manager that offers separation of user and developer dependencies, ensuring that only the necessary packages are installed based on the user's intent. Additionally, it simplifies the process of adding, updating, and removing dependencies, making it easier to maintain the project's requirements.
-
-6. **Use Poetry to install the required dependencies for TurboFlow development**:
+5. **Use Poetry to install the required dependencies along with the package for local development**:
 
    .. code-block:: bash
 

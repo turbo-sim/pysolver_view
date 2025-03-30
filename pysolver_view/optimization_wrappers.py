@@ -1,7 +1,11 @@
 import os
+import copy
+import ctypes
+import platform
 import warnings
 import numpy as np
 from scipy.optimize import minimize
+
 
 # Attempt to import pygmo and pygmo_plugins_nonfree
 try:
@@ -344,20 +348,19 @@ def _minimize_pygmo_ipopt(problem, x0, solver_options):
         "sb": "yes",  # Suppress banner
         "hessian_approximation": "limited-memory",  # Options: 'exact', 'limited-memory'
         "limited_memory_update_type": "bfgs",  # Options: 'bfgs', 'sr1'
-        "line_search_method": "cg-penalty",  # Options: 'filter', 'cg-penalty', 'penalty'
-        "limited_memory_max_history": 30,  # Max history for L-BFGS
+        "line_search_method": "filter",  # Options: 'filter', 'cg-penalty', 'penalty'
+        "limited_memory_max_history": 30, # Max history for L-BFGS
         "max_iter": 500,  # Maximum number of iterations.
-        "tol": 1e-3,  # Desired convergence tolerance (relative).
-        "dual_inf_tol": 1.00,  # Desired threshold for the dual infeasibility.
-        "compl_inf_tol": 1e-3,  # Desired threshold for the complementarity conditions
+        "tol": 1.0,  # Desired convergence tolerance (relative). # 1.0
+        "dual_inf_tol": 1e6,  # Desired threshold for the dual infeasibility.
+        "compl_inf_tol": 1e6,  # Desired threshold for the complementarity conditions
         "constr_viol_tol": 1e-6,  # Desired threshold for the constraint and variable bound violation.
-        "acceptable_iter": 0,  # Number of "acceptable" iterates before triggering termination. If it is set to zero, this heuristic is disabled.
-        # acceptable_tol:
-        # acceptable_iter:
+        # "acceptable_iter": 10,  # Number of "acceptable" iterates before triggering termination. If it is set to zero, this heuristic is disabled.
+        # "acceptable_tol": 1.0,
         # acceptable_dual_inf_tol:
         # acceptable_constr_viol_tol:
         # acceptable_compl_inf_tol:
-        # acceptable_obj_change_tol:
+        # "acceptable_obj_change_tol": 1e-2,
     }
 
     # Define IPOPT tolerance settings based on generic input
@@ -374,6 +377,7 @@ def _minimize_pygmo_ipopt(problem, x0, solver_options):
     solver_options = default_options | solver_options
 
     # Solve the problem
+    problem = copy.deepcopy(problem)
     problem = pg.problem(problem)
     algorithm = pg.algorithm(pg.ipopt())
     algorithm_handle = algorithm.extract(pg.ipopt)
@@ -396,7 +400,7 @@ def _minimize_pygmo_snopt(problem, x0, solver_options):
     # Define default solver options
     default_options = {
         "Major feasibility tolerance": 1e-6,
-        "Major optimality tolerance": 1e-3,
+        "Major optimality tolerance": 1.0, # 1.0
         "Minor feasibility tolerance": 1e-6,
         "Iterations limit": 500,
         "Major iterations limit": 1e6,
@@ -418,7 +422,7 @@ def _minimize_pygmo_snopt(problem, x0, solver_options):
     # Define SNOPT iteration limit settings based on generic input
     max_iter = solver_options.pop("max_iterations")
     solver_options["Iterations limit"] = max_iter
-    solver_options["Major iterations limit"] = 10*max_iter
+    solver_options["Major iterations limit"] = max_iter
     solver_options["Minor iterations limit"] = 10*max_iter
 
     # Combine default and given options
@@ -432,7 +436,21 @@ def _minimize_pygmo_snopt(problem, x0, solver_options):
             "Please set the 'SNOPT_LIB' environment variable to the path of the SNOPT library."
         )
     
+    # Try to load the shared library explicitly
+    try:
+        if platform.system() == "Windows":
+            ctypes.WinDLL(lib)
+        else:
+            ctypes.CDLL(lib)
+        print(f"Successfully loaded SNOPT library: {lib}")
+    except OSError as e:
+        raise RuntimeError(
+            f"Failed to load SNOPT shared library at {lib}. "
+            f"This may indicate a license issue or incorrect path.\n{e}"
+        )
+
     # Solve the problem
+    problem = copy.deepcopy(problem)
     problem = pg.problem(problem)
     algorithm = pg.algorithm(ppnf.snopt7(library=lib, minor_version=7))
     algorithm_handle = algorithm.extract(ppnf.snopt7)
