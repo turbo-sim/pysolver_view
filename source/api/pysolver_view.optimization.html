@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Optimization &#8212; pysolver_view v0.1.0 documentation</title>
+    <title>Optimization &#8212; pysolver_view v0.2.0 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=d47532a6"></script>
+    <script src="../../_static/documentation_options.js?v=0a6a6ad3"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -126,7 +126,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.1.0 documentation</p>
+    <p class="title logo__title">pysolver_view v0.2.0 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -294,10 +294,18 @@
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.clip_to_bounds"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.clip_to_bounds()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.fitness"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.fitness()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.fitness_normalized_input"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.fitness_normalized_input()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.get_bounds"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_bounds()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.get_bounds_normalized"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_bounds_normalized()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.get_nec"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_nec()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.get_nic"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_nic()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.gradient_normalized_input"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.gradient_normalized_input()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.make_constraint_report"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.make_constraint_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.make_design_variables_report"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.make_design_variables_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.scale_normalized_to_physical"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.scale_normalized_to_physical()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.scale_physical_to_normalized"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.scale_physical_to_normalized()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver</span></code></a><ul class="nav section-nav flex-column">
@@ -305,6 +313,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.gradient"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.gradient()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.plot_convergence_history"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.plot_convergence_history()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.print_convergence_history"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.print_convergence_history()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.print_optimization_report"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.print_optimization_report()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.solve"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.solve()</span></code></a></li>
 </ul>
 </li>
@@ -336,6 +345,16 @@
 <li><p><cite>get_nineq</cite>: Return the number of inequality constraints associated with the problem.</p></li>
 </ul>
 <p>Additionally, specific problem classes can define the <cite>gradient</cite> method to compute the Jacobians. If this method is not present in the derived class, the solver will revert to using forward finite differences for Jacobian calculations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>problem_scale</strong><span class="classifier">float, optional</span></dt><dd><p>Scaling factor for normalization. Default is 1.0.</p>
+</dd>
+<dt><strong>variable_names</strong><span class="classifier">list of str, optional</span></dt><dd><p>Names of the decision variables. Used for reporting and debugging.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <tbody>
@@ -354,6 +373,30 @@
 </tbody>
 </table>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationProblem.clip_to_bounds">
+<span class="sig-name descname"><span class="pre">clip_to_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_normalized</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.clip_to_bounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.clip_to_bounds" title="Link to this definition">#</a></dt>
+<dd><p>Clip normalized values to lie within specified normalized bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">array-like</span></dt><dd><p>Input vector.</p>
+</dd>
+<dt><strong>bounds</strong><span class="classifier">tuple of lists</span></dt><dd><p>Tuple (lb, ub) of lower and upper bounds.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, prints warnings for clipped values.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray</dt><dd><p>Clipped vector.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationProblem.fitness">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fitness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.fitness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.fitness" title="Link to this definition">#</a></dt>
@@ -375,6 +418,26 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationProblem.fitness_normalized_input">
+<span class="sig-name descname"><span class="pre">fitness_normalized_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.fitness_normalized_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.fitness_normalized_input" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate fitness starting from normalized input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x_norm</strong><span class="classifier">array-like</span></dt><dd><p>Normalized input vector.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array_like</dt><dd><p>Output of <cite>fitness</cite> evaluated on the corresponding physical vector.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationProblem.get_bounds">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_bounds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.get_bounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.get_bounds" title="Link to this definition">#</a></dt>
 <dd><p>Get the bounds for each decision variable (Pygmo format)</p>
@@ -385,6 +448,21 @@
 item of the list of upper bounds for the vector of decision variables. For example,
 ([-2 -1], [2, 1]) indicates that the first decision variable has bounds between
 -2 and 2, and the second has bounds between -1 and 1.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationProblem.get_bounds_normalized">
+<span class="sig-name descname"><span class="pre">get_bounds_normalized</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.get_bounds_normalized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.get_bounds_normalized" title="Link to this definition">#</a></dt>
+<dd><p>Return normalized bounds in [0, problem_scale]. If no scaling is applied (i.e., problem_scale is None),
+the physical bounds are returned instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>tuple of lists</dt><dd><p>Tuple (lb, ub) in normalized space or the original physical bounds if problem_scale is None.</p>
 </dd>
 </dl>
 </dd>
@@ -419,11 +497,148 @@ item of the list of upper bounds for the vector of decision variables. For examp
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationProblem.gradient_normalized_input">
+<span class="sig-name descname"><span class="pre">gradient_normalized_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.gradient_normalized_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.gradient_normalized_input" title="Link to this definition">#</a></dt>
+<dd><p>Compute the gradient of the objective and constraints with respect to normalized variables.</p>
+<p>This function applies the chain rule to convert the gradient computed in the physical space
+to the corresponding gradient in the normalized space. If <cite>problem_scale</cite> is set to <cite>None</cite>,
+the problem is considered unscaled and the gradient is returned directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x_norm</strong><span class="classifier">array-like</span></dt><dd><p>Normalized input vector (typically in [0, problem_scale]).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray</dt><dd><p>Gradient with respect to the normalized variables. The shape is:
+- (n,) for scalar objective or flat constraint vectors.
+- (m, n) for vector-valued constraints with m rows and n design variables.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The chain rule is applied as follows:</p>
+<blockquote>
+<div><p>x_phys = lb + (ub - lb) * (x_norm / problem_scale)
+∇f(x_norm) = ∇f(x_phys) * d(x_phys)/d(x_norm)</p>
+</div></blockquote>
+<p>where:</p>
+<blockquote>
+<div><p>d(x_phys)/d(x_norm) = (ub - lb) / problem_scale    [elementwise]</p>
+</div></blockquote>
+<p>This correction ensures that exact user-defined gradients are consistent
+with the scaling applied during optimization.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationProblem.make_constraint_report">
+<span class="sig-name descname"><span class="pre">make_constraint_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint_report</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.make_constraint_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.make_constraint_report" title="Link to this definition">#</a></dt>
+<dd><p>Generate a constraint report as a string by evaluating constraints at the given point.</p>
+<p>This method evaluates the problem’s constraints using the normalized input <cite>x_norm</cite>.
+If a precomputed <cite>constraint_report</cite> is provided, it is used directly. Otherwise,
+the constraints are evaluated using the fitness function and a default report is generated.</p>
+<p>By default:
+- Equality constraints are named “equality_constraint_{i}” with target 0 and type “=”.
+- Inequality constraints are named “inequality_constraint_{i}” with target 0 and type “&lt;=”.
+- Tolerance <cite>tol</cite> is used to check whether constraints are satisfied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x_norm</strong><span class="classifier">array-like</span></dt><dd><p>Normalized design variable vector (typically in [0, problem_scale]).</p>
+</dd>
+<dt><strong>constraint_report</strong><span class="classifier">list of dict, optional</span></dt><dd><p>Optional precomputed report (each dict must have keys: name, type, target, value, satisfied).
+If provided, this report is formatted directly.</p>
+</dd>
+<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>Tolerance used to determine whether constraints are satisfied (default is 1e-6).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>A formatted string with constraint values, targets, and satisfaction status.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationProblem.make_design_variables_report">
+<span class="sig-name descname"><span class="pre">make_design_variables_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.make_design_variables_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.make_design_variables_report" title="Link to this definition">#</a></dt>
+<dd><p>Generate design variable report as a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x_norm</strong><span class="classifier">array-like</span></dt><dd><p>Normalized design variables (input to the solver).</p>
+</dd>
+<dt><strong>normalized</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to report in normalized or physical values. Default is True.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>Formatted string report.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationProblem.scale_normalized_to_physical">
+<span class="sig-name descname"><span class="pre">scale_normalized_to_physical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.scale_normalized_to_physical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.scale_normalized_to_physical" title="Link to this definition">#</a></dt>
+<dd><p>Convert normalized values in the range [0, problem_scale] back to physical variable values.
+If self.problem_scale is None, no scaling is applied.</p>
+<p>The method uses the bounds returned by <cite>self.get_bounds()</cite> and the internal <cite>self.problem_scale</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x_norm</strong><span class="classifier">array-like</span></dt><dd><p>Normalized values of the decision variables.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray</dt><dd><p>Physical values corresponding to the normalized input, or the original values if no scaling.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationProblem.scale_physical_to_normalized">
+<span class="sig-name descname"><span class="pre">scale_physical_to_normalized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_phys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.scale_physical_to_normalized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.scale_physical_to_normalized" title="Link to this definition">#</a></dt>
+<dd><p>Convert physical design variable values to normalized values in the range [0, problem_scale].
+If self.problem_scale is None, no scaling is applied.</p>
+<p>The method uses the bounds returned by <cite>self.get_bounds()</cite> and the internal <cite>self.problem_scale</cite>.
+It automatically handles the case of fixed variables (i.e., upper bound = lower bound) by returning 0.0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x_phys</strong><span class="classifier">array-like</span></dt><dd><p>Physical values of the decision variables.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.ndarray</dt><dd><p>Normalized values in the range [0, problem_scale] if scaling is applied,
+otherwise the original physical values.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationSolver">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysolver_view.optimization.</span></span><span class="sig-name descname"><span class="pre">OptimizationSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scipy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'slsqp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2-point'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative_abs_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_scale_objective</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_scale_constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gradient'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_functions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_improvement_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysolver_view.optimization.</span></span><span class="sig-name descname"><span class="pre">OptimizationSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scipy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'slsqp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2-point'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative_abs_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_scale_objective</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_scale_constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gradient'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_functions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_improvement_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Solver class for general nonlinear programming problems.</p>
 <p>The solver is designed to handle constrained optimization problems of the form:</p>
@@ -447,28 +662,46 @@ item of the list of upper bounds for the vector of decision variables. For examp
 </ul>
 <p>The class interfaces with various optimization methods provided by libraries such as <cite>scipy</cite> and <cite>pygmo</cite> to solve the problem and provides a structured framework for initialization, solution monitoring, and post-processing.</p>
 <p>This class employs a caching mechanism to avoid redundant evaluations. For a given set of independent variables, x, the optimizer requires the objective function, equality constraints, and inequality constraints to be provided separately. When working with complex models, these values are typically calculated all at once. If x hasn’t changed from a previous evaluation, the caching system ensures that previously computed values are used, preventing unnecessary recalculations.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>problem</strong><span class="classifier">OptimizationProblem</span></dt><dd><p>An instance of the optimization problem to be solved.</p>
+<dd class="field-odd"><dl>
+<dt><strong>problem</strong><span class="classifier">OptimizationProblem</span></dt><dd><p>An instance of the optimization problem to be solved. The problem should be defined
+in physical space, with its own bounds and (optionally) analytic derivatives.</p>
 </dd>
 <dt><strong>library</strong><span class="classifier">str, optional</span></dt><dd><p>The library to use for solving the optimization problem (default is ‘scipy’).</p>
 </dd>
 <dt><strong>method</strong><span class="classifier">str, optional</span></dt><dd><p>The optimization method to use from the specified library (default is ‘slsqp’).</p>
 </dd>
-<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>Tolerance for termination. The selected minimization algorithm sets some relevant solver-specific tolerance(s) equal to tol. The termination tolerances can be fine-tuned through the <cite>options</cite> dictionary. (default is 1e-5).</p>
+<dt><strong>tolerance</strong><span class="classifier">float, optional</span></dt><dd><p>Tolerance for termination. The minimization algorithm sets some solver-specific tolerances
+equal to tol. (default is 1e-6)</p>
 </dd>
-<dt><strong>max_iter</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum number of iterations for the optimizer (default is 100).</p>
+<dt><strong>max_iterations</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum number of iterations for the optimizer (default is 100).</p>
 </dd>
-<dt><strong>options</strong><span class="classifier">dict, optional</span></dt><dd><p>A dictionary of solver-specific options that prevails over ‘tol’ and ‘max_iter’</p>
+<dt><strong>extra_options</strong><span class="classifier">dict, optional</span></dt><dd><p>A dictionary of solver-specific options that prevails over ‘tolerance’ and ‘max_iterations’</p>
 </dd>
 <dt><strong>derivative_method</strong><span class="classifier">str, optional</span></dt><dd><p>Method to use for derivative calculation (default is ‘2-point’).</p>
 </dd>
-<dt><strong>derivative_abs_step</strong><span class="classifier">float, optional</span></dt><dd><p>Finite difference absolute step size to be used when the problem Jacobian is not provided. Defaults to 1e-6</p>
+<dt><strong>derivative_abs_step</strong><span class="classifier">float, optional</span></dt><dd><p>Finite difference absolute step size to be used when the problem Jacobian is not provided. Default depends on calculation method.</p>
 </dd>
-<dt><strong>display</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, displays the convergence progress (default is True).</p>
+<dt><strong>problem_scale</strong><span class="classifier">float or None, optional</span></dt><dd><p>Scaling factor used to normalize the problem. This parameter controls the transformation
+of physical variables into a normalized domain. Specifically, for a physical variable x,
+with lower and upper bounds lb and ub, the normalized variable is computed as:</p>
+<blockquote>
+<div><p>x_norm = problem_scale * (x - lb) / (ub - lb)</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>If a numeric value is provided (e.g. 1.0, 10.0, etc.), the problem is scaled accordingly.
+Increasing problem_scale reduces the relative step sizes in the normalized space during
+line searches, which can improve convergence by making the optimization less aggresive.
+The rationale for the scaling is that the initial line search step size of many solvers is 1.0.</p></li>
+<li><p>If set to None, no scaling is applied and the problem is solved in its original physical units.
+This might be preferred if the problem is already well-conditioned or if the user wishes to
+preserve the exact scale of the original formulation.</p></li>
+</ul>
 </dd>
-<dt><strong>plot</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, plots the convergence progress (default is False).</p>
+<dt><strong>print_convergence</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, displays the convergence progress (default is True).</p>
+</dd>
+<dt><strong>plot_convergence</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, plots the convergence progress (default is False).</p>
 </dd>
 <dt><strong>plot_scale_objective</strong><span class="classifier">str, optional</span></dt><dd><p>Specifies the scale of the objective function axis in the convergence plot (default is ‘linear’).</p>
 </dd>
@@ -645,6 +878,24 @@ using the problem name and the start datetime. The file extension is not require
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationSolver.print_optimization_report">
+<span class="sig-name descname"><span class="pre">print_optimization_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">savefile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver.print_optimization_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver.print_optimization_report" title="Link to this definition">#</a></dt>
+<dd><p>Print or save a complete optimization report, including variables and constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>savefile</strong><span class="classifier">bool</span></dt><dd><p>If True, the report is written to file instead of printed.</p>
+</dd>
+<dt><strong>filename</strong><span class="classifier">str, optional</span></dt><dd><p>Output filename. Defaults to ‘optimization_report.txt’.</p>
+</dd>
+<dt><strong>output_dir</strong><span class="classifier">str, optional</span></dt><dd><p>Output directory. Defaults to ‘output’.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationSolver.solve">
 <span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver.solve" title="Link to this definition">#</a></dt>
 <dd><p>Solve the optimization problem using the specified library and solver.</p>
@@ -803,10 +1054,18 @@ or an array-like structure containing multiple constraints.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.clip_to_bounds"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.clip_to_bounds()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.fitness"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.fitness()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.fitness_normalized_input"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.fitness_normalized_input()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.get_bounds"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_bounds()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.get_bounds_normalized"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_bounds_normalized()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.get_nec"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_nec()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.get_nic"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_nic()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.gradient_normalized_input"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.gradient_normalized_input()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.make_constraint_report"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.make_constraint_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.make_design_variables_report"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.make_design_variables_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.scale_normalized_to_physical"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.scale_normalized_to_physical()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.scale_physical_to_normalized"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.scale_physical_to_normalized()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver</span></code></a><ul class="nav section-nav flex-column">
@@ -814,6 +1073,7 @@ or an array-like structure containing multiple constraints.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.gradient"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.gradient()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.plot_convergence_history"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.plot_convergence_history()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.print_convergence_history"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.print_convergence_history()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.print_optimization_report"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.print_optimization_report()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.solve"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.solve()</span></code></a></li>
 </ul>
 </li>
