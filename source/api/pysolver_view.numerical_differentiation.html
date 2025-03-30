@@ -296,6 +296,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.numerical_differentiation.approx_jacobian_hessians"><code class="docutils literal notranslate"><span class="pre">approx_jacobian_hessians()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.numerical_differentiation.central_finite_differences"><code class="docutils literal notranslate"><span class="pre">central_finite_differences()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.numerical_differentiation.complex_step_derivative"><code class="docutils literal notranslate"><span class="pre">complex_step_derivative()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.numerical_differentiation.compute_hessians_jax"><code class="docutils literal notranslate"><span class="pre">compute_hessians_jax()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.numerical_differentiation.forward_finite_differences"><code class="docutils literal notranslate"><span class="pre">forward_finite_differences()</span></code></a></li>
 </ul>
             </nav>
@@ -424,6 +425,32 @@ If lower_triangular is True, the Hessians are returned in a lower triangular for
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="pysolver_view.numerical_differentiation.compute_hessians_jax">
+<span class="sig-prename descclassname"><span class="pre">pysolver_view.numerical_differentiation.</span></span><span class="sig-name descname"><span class="pre">compute_hessians_jax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fitness_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_triangular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/numerical_differentiation.html#compute_hessians_jax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.numerical_differentiation.compute_hessians_jax" title="Link to this definition">#</a></dt>
+<dd><p>Compute the Hessians of a vector-valued fitness function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>fitness_function</strong><span class="classifier">callable</span></dt><dd><p>The vector-valued function for which to compute the Hessians.</p>
+</dd>
+<dt><strong>x</strong><span class="classifier">array-like</span></dt><dd><p>The point at which to compute the Hessians.</p>
+</dd>
+<dt><strong>lower_triangular</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, return the Hessians in lower triangular format. Default is True.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Hessians</strong><span class="classifier">ndarray</span></dt><dd><p>A tensor where each slice along the first dimension corresponds to the Hessian
+of a component of the fitness function. If lower_triangular is True, the Hessians
+are returned in a flattened lower triangular format.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="pysolver_view.numerical_differentiation.forward_finite_differences">
 <span class="sig-prename descclassname"><span class="pre">pysolver_view.numerical_differentiation.</span></span><span class="sig-name descname"><span class="pre">forward_finite_differences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function_handle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abs_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/numerical_differentiation.html#forward_finite_differences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.numerical_differentiation.forward_finite_differences" title="Link to this definition">#</a></dt>
 <dd><p>Gradient approximation by forward finite differences.</p>
@@ -499,6 +526,7 @@ If lower_triangular is True, the Hessians are returned in a lower triangular for
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.numerical_differentiation.approx_jacobian_hessians"><code class="docutils literal notranslate"><span class="pre">approx_jacobian_hessians()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.numerical_differentiation.central_finite_differences"><code class="docutils literal notranslate"><span class="pre">central_finite_differences()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.numerical_differentiation.complex_step_derivative"><code class="docutils literal notranslate"><span class="pre">complex_step_derivative()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.numerical_differentiation.compute_hessians_jax"><code class="docutils literal notranslate"><span class="pre">compute_hessians_jax()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.numerical_differentiation.forward_finite_differences"><code class="docutils literal notranslate"><span class="pre">forward_finite_differences()</span></code></a></li>
 </ul>
   </nav></div>

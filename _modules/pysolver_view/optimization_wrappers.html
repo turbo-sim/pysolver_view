@@ -247,9 +247,13 @@
                   
   <h1>Source code for pysolver_view.optimization_wrappers</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="kn">import</span> <span class="nn">platform</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+
 
 <span class="c1"># Attempt to import pygmo and pygmo_plugins_nonfree</span>
 <span class="k">try</span><span class="p">:</span>
@@ -598,20 +602,19 @@
         <span class="s2">&quot;sb&quot;</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span>  <span class="c1"># Suppress banner</span>
         <span class="s2">&quot;hessian_approximation&quot;</span><span class="p">:</span> <span class="s2">&quot;limited-memory&quot;</span><span class="p">,</span>  <span class="c1"># Options: &#39;exact&#39;, &#39;limited-memory&#39;</span>
         <span class="s2">&quot;limited_memory_update_type&quot;</span><span class="p">:</span> <span class="s2">&quot;bfgs&quot;</span><span class="p">,</span>  <span class="c1"># Options: &#39;bfgs&#39;, &#39;sr1&#39;</span>
-        <span class="s2">&quot;line_search_method&quot;</span><span class="p">:</span> <span class="s2">&quot;cg-penalty&quot;</span><span class="p">,</span>  <span class="c1"># Options: &#39;filter&#39;, &#39;cg-penalty&#39;, &#39;penalty&#39;</span>
-        <span class="s2">&quot;limited_memory_max_history&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>  <span class="c1"># Max history for L-BFGS</span>
+        <span class="s2">&quot;line_search_method&quot;</span><span class="p">:</span> <span class="s2">&quot;filter&quot;</span><span class="p">,</span>  <span class="c1"># Options: &#39;filter&#39;, &#39;cg-penalty&#39;, &#39;penalty&#39;</span>
+        <span class="s2">&quot;limited_memory_max_history&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="c1"># Max history for L-BFGS</span>
         <span class="s2">&quot;max_iter&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>  <span class="c1"># Maximum number of iterations.</span>
-        <span class="s2">&quot;tol&quot;</span><span class="p">:</span> <span class="mf">1e-3</span><span class="p">,</span>  <span class="c1"># Desired convergence tolerance (relative).</span>
-        <span class="s2">&quot;dual_inf_tol&quot;</span><span class="p">:</span> <span class="mf">1.00</span><span class="p">,</span>  <span class="c1"># Desired threshold for the dual infeasibility.</span>
-        <span class="s2">&quot;compl_inf_tol&quot;</span><span class="p">:</span> <span class="mf">1e-3</span><span class="p">,</span>  <span class="c1"># Desired threshold for the complementarity conditions</span>
+        <span class="s2">&quot;tol&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>  <span class="c1"># Desired convergence tolerance (relative). # 1.0</span>
+        <span class="s2">&quot;dual_inf_tol&quot;</span><span class="p">:</span> <span class="mf">1e6</span><span class="p">,</span>  <span class="c1"># Desired threshold for the dual infeasibility.</span>
+        <span class="s2">&quot;compl_inf_tol&quot;</span><span class="p">:</span> <span class="mf">1e6</span><span class="p">,</span>  <span class="c1"># Desired threshold for the complementarity conditions</span>
         <span class="s2">&quot;constr_viol_tol&quot;</span><span class="p">:</span> <span class="mf">1e-6</span><span class="p">,</span>  <span class="c1"># Desired threshold for the constraint and variable bound violation.</span>
-        <span class="s2">&quot;acceptable_iter&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># Number of &quot;acceptable&quot; iterates before triggering termination. If it is set to zero, this heuristic is disabled.</span>
-        <span class="c1"># acceptable_tol:</span>
-        <span class="c1"># acceptable_iter:</span>
+        <span class="c1"># &quot;acceptable_iter&quot;: 10,  # Number of &quot;acceptable&quot; iterates before triggering termination. If it is set to zero, this heuristic is disabled.</span>
+        <span class="c1"># &quot;acceptable_tol&quot;: 1.0,</span>
         <span class="c1"># acceptable_dual_inf_tol:</span>
         <span class="c1"># acceptable_constr_viol_tol:</span>
         <span class="c1"># acceptable_compl_inf_tol:</span>
-        <span class="c1"># acceptable_obj_change_tol:</span>
+        <span class="c1"># &quot;acceptable_obj_change_tol&quot;: 1e-2,</span>
     <span class="p">}</span>
 
     <span class="c1"># Define IPOPT tolerance settings based on generic input</span>
@@ -628,6 +631,7 @@
     <span class="n">solver_options</span> <span class="o">=</span> <span class="n">default_options</span> <span class="o">|</span> <span class="n">solver_options</span>
 
     <span class="c1"># Solve the problem</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
     <span class="n">problem</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">problem</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
     <span class="n">algorithm</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">algorithm</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">ipopt</span><span class="p">())</span>
     <span class="n">algorithm_handle</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">ipopt</span><span class="p">)</span>
@@ -650,7 +654,7 @@
     <span class="c1"># Define default solver options</span>
     <span class="n">default_options</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;Major feasibility tolerance&quot;</span><span class="p">:</span> <span class="mf">1e-6</span><span class="p">,</span>
-        <span class="s2">&quot;Major optimality tolerance&quot;</span><span class="p">:</span> <span class="mf">1e-3</span><span class="p">,</span>
+        <span class="s2">&quot;Major optimality tolerance&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="c1"># 1.0</span>
         <span class="s2">&quot;Minor feasibility tolerance&quot;</span><span class="p">:</span> <span class="mf">1e-6</span><span class="p">,</span>
         <span class="s2">&quot;Iterations limit&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
         <span class="s2">&quot;Major iterations limit&quot;</span><span class="p">:</span> <span class="mf">1e6</span><span class="p">,</span>
@@ -672,7 +676,7 @@
     <span class="c1"># Define SNOPT iteration limit settings based on generic input</span>
     <span class="n">max_iter</span> <span class="o">=</span> <span class="n">solver_options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;max_iterations&quot;</span><span class="p">)</span>
     <span class="n">solver_options</span><span class="p">[</span><span class="s2">&quot;Iterations limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_iter</span>
-    <span class="n">solver_options</span><span class="p">[</span><span class="s2">&quot;Major iterations limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">max_iter</span>
+    <span class="n">solver_options</span><span class="p">[</span><span class="s2">&quot;Major iterations limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_iter</span>
     <span class="n">solver_options</span><span class="p">[</span><span class="s2">&quot;Minor iterations limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">max_iter</span>
 
     <span class="c1"># Combine default and given options</span>
@@ -686,7 +690,21 @@
             <span class="s2">&quot;Please set the &#39;SNOPT_LIB&#39; environment variable to the path of the SNOPT library.&quot;</span>
         <span class="p">)</span>
     
+    <span class="c1"># Try to load the shared library explicitly</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Windows&quot;</span><span class="p">:</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">WinDLL</span><span class="p">(</span><span class="n">lib</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="n">lib</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully loaded SNOPT library: </span><span class="si">{</span><span class="n">lib</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Failed to load SNOPT shared library at </span><span class="si">{</span><span class="n">lib</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;This may indicate a license issue or incorrect path.</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
     <span class="c1"># Solve the problem</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
     <span class="n">problem</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">problem</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
     <span class="n">algorithm</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">algorithm</span><span class="p">(</span><span class="n">ppnf</span><span class="o">.</span><span class="n">snopt7</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="n">lib</span><span class="p">,</span> <span class="n">minor_version</span><span class="o">=</span><span class="mi">7</span><span class="p">))</span>
     <span class="n">algorithm_handle</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">ppnf</span><span class="o">.</span><span class="n">snopt7</span><span class="p">)</span>

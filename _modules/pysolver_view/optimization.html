@@ -442,10 +442,6 @@
             <span class="s2">&quot;norm_step&quot;</span><span class="p">:</span> <span class="p">[],</span>
         <span class="p">}</span>
 
-        <span class="c1"># Initialize convergence plot</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_callback</span><span class="p">(</span><span class="n">initialize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
         <span class="c1"># Initialize dictionary for cached variables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
@@ -516,6 +512,10 @@
 <span class="sd">            An array with the optimal vector of design variables</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Initialize convergence plot</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_callback</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">initialize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="c1"># Get start datetime</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">_%H-%M-%S&quot;</span><span class="p">)</span>
 
@@ -784,7 +784,7 @@
 
         <span class="c1"># Refresh the plot with current values</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_callback</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_callback</span><span class="p">([],</span> <span class="p">[])</span>
 
         <span class="c1"># Evaluate callback functions</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_functions</span><span class="p">:</span>
@@ -826,7 +826,7 @@
         <span class="c1"># Store text in memory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solution_report</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">lines_to_output</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_plot_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_plot_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="nb">iter</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Callback function to dynamically update the convergence progress plot.</span>
 
@@ -855,8 +855,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">ax_1</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span>
                 <span class="n">MaxNLocator</span><span class="p">(</span><span class="n">integer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="p">)</span>  <span class="c1"># Integer ticks</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ax_1</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_eq</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_ineq</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ax_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax_1</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ax_2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ax_2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Constraint violation&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ax_2</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_scale_constraints</span><span class="p">)</span>
                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_line_2</span><span class="p">,)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax_2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
@@ -1003,7 +1005,7 @@
 <span class="sd">            If this method is called before the problem has been solved.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_final</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_callback</span><span class="p">(</span><span class="n">initialize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_callback</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">initialize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;This method can only be used after invoking the &#39;solve()&#39; method.&quot;</span>

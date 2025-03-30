@@ -249,6 +249,15 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize._numdiff</span> <span class="kn">import</span> <span class="n">approx_derivative</span>
 
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">jax</span>
+    <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="n">USE_JAX</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="n">jnp</span> <span class="o">=</span> <span class="n">np</span>
+    <span class="n">USE_JAX</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="n">DERIVATIVE_METHODS</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;2-point&quot;</span><span class="p">,</span>
@@ -497,6 +506,51 @@
         <span class="n">Hessians</span> <span class="o">=</span> <span class="n">Hessians_L</span>
 
     <span class="k">return</span> <span class="n">Hessians</span></div>
+
+
+
+
+<div class="viewcode-block" id="compute_hessians_jax">
+<a class="viewcode-back" href="../../source/api/pysolver_view.numerical_differentiation.html#pysolver_view.numerical_differentiation.compute_hessians_jax">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_hessians_jax</span><span class="p">(</span><span class="n">fitness_function</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">lower_triangular</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the Hessians of a vector-valued fitness function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fitness_function : callable</span>
+<span class="sd">        The vector-valued function for which to compute the Hessians.</span>
+<span class="sd">    x : array-like</span>
+<span class="sd">        The point at which to compute the Hessians.</span>
+<span class="sd">    lower_triangular : bool, optional</span>
+<span class="sd">        If True, return the Hessians in lower triangular format. Default is True.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Hessians : ndarray</span>
+<span class="sd">        A tensor where each slice along the first dimension corresponds to the Hessian</span>
+<span class="sd">        of a component of the fitness function. If lower_triangular is True, the Hessians</span>
+<span class="sd">        are returned in a flattened lower triangular format.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Compute full Hessians with JAX</span>
+    <span class="n">H_full</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">jacfwd</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jacrev</span><span class="p">(</span><span class="n">fitness_function</span><span class="p">))(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># Convert to NumPy for post-processing</span>
+    <span class="n">H_full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">H_full</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">lower_triangular</span><span class="p">:</span>
+        <span class="c1"># Extract the lower triangular part</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">H_full</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">//</span> <span class="mi">2</span>  <span class="c1"># Number of elements in the lower triangular part</span>
+        <span class="n">H_lower_triangular</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">H_full</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">k</span><span class="p">))</span>
+
+        <span class="c1"># Loop over all components of the fitness</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">H_full</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">H_lower_triangular</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">H_full</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">H_lower_triangular</span>
+
+    <span class="k">return</span> <span class="n">H_full</span></div>
 
 </pre></div>
 
