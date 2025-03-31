@@ -316,7 +316,7 @@ def _minimize_pygmo_pso(problem, x0, options):
     return success, message
 
 
-def _minimize_pygmo_ipopt(problem, x0, solver_options):
+def _minimize_pygmo_ipopt(problem, x0, options):
     """Solve optimization problem using Pygmo's wrapper to IPOPT"""
 
     # Define mapping from exit flag to status
@@ -352,7 +352,7 @@ def _minimize_pygmo_ipopt(problem, x0, solver_options):
         "line_search_method": "filter",  # Options: 'filter', 'cg-penalty', 'penalty'
         "limited_memory_max_history": 30, # Max history for L-BFGS
         "max_iter": 500,  # Maximum number of iterations.
-        "tol": 1.0,  # Desired convergence tolerance (relative). # 1.0
+        "tol": 1e-3,  # Desired convergence tolerance (relative). # 1.0
         "dual_inf_tol": 1e6,  # Desired threshold for the dual infeasibility.
         "compl_inf_tol": 1e6,  # Desired threshold for the complementarity conditions
         "constr_viol_tol": 1e-6,  # Desired threshold for the constraint and variable bound violation.
@@ -365,24 +365,25 @@ def _minimize_pygmo_ipopt(problem, x0, solver_options):
     }
 
     # Define IPOPT tolerance settings based on generic input
-    tol_value = solver_options.pop("tolerance")
-    solver_options["constr_viol_tol"] = tol_value
+    options = options.copy()  # Work with a copy to avoid side effects
+    tol_value = options.pop("tolerance")
+    options["constr_viol_tol"] = tol_value
     # IPOPT will not converge if "tol" is too tight
     # This parameter is considered an "expert setting" not controlled by the generic tolerance input
 
     # Define IPOPT iteration limit settings based on generic input
-    max_iter = int(solver_options.pop("max_iterations"))
-    solver_options["max_iter"] = max_iter
+    max_iter = int(options.pop("max_iterations"))
+    options["max_iter"] = max_iter
 
     # Combine default and given options
-    solver_options = default_options | solver_options
+    options = default_options | options
 
     # Solve the problem
     problem = copy.deepcopy(problem)
     problem = pg.problem(problem)
     algorithm = pg.algorithm(pg.ipopt())
     algorithm_handle = algorithm.extract(pg.ipopt)
-    _set_pygmo_options(algorithm_handle, solver_options)
+    _set_pygmo_options(algorithm_handle, options)
     population = pg.population(problem, size=1)
     population.set_x(0, x0)
     population = algorithm.evolve(population)
@@ -395,7 +396,7 @@ def _minimize_pygmo_ipopt(problem, x0, solver_options):
     return success, message
 
 
-def _minimize_pygmo_snopt(problem, x0, solver_options):
+def _minimize_pygmo_snopt(problem, x0, options):
     """Solve optimization problem using Pygmo's wrapper to SNOPT"""
 
     # Define default solver options
@@ -410,24 +411,24 @@ def _minimize_pygmo_snopt(problem, x0, solver_options):
     }
 
     # Work with a copy to avoid side effects
-    solver_options = solver_options.copy()
+    options = options.copy()
 
     # Define SNOPT tolerance settings based on generic input
-    tol_value = solver_options.pop("tolerance")
-    solver_options["Major feasibility tolerance"] = tol_value
-    solver_options["Minor feasibility tolerance"] = tol_value
+    tol_value = options.pop("tolerance")
+    options["Major feasibility tolerance"] = tol_value
+    options["Minor feasibility tolerance"] = tol_value
     # SNOPT will not converge if optimality tolerance is too tight
     # This parameter is considered an "expert setting" not controlled by the generic tolerance input
     # snopt_options["Major optimality tolerance"] = tol_value 
 
     # Define SNOPT iteration limit settings based on generic input
-    max_iter = int(solver_options.pop("max_iterations"))
-    solver_options["Iterations limit"] = max_iter
-    solver_options["Major iterations limit"] = max_iter
-    solver_options["Minor iterations limit"] = 10*max_iter
+    max_iter = int(options.pop("max_iterations"))
+    options["Iterations limit"] = max_iter
+    options["Major iterations limit"] = max_iter
+    options["Minor iterations limit"] = 10*max_iter
 
     # Combine default and given options
-    solver_options = default_options | solver_options
+    options = default_options | options
 
     # Define SNOPT path
     lib = os.getenv("SNOPT_LIB")
@@ -455,7 +456,7 @@ def _minimize_pygmo_snopt(problem, x0, solver_options):
     problem = pg.problem(problem)
     algorithm = pg.algorithm(ppnf.snopt7(library=lib, minor_version=7))
     algorithm_handle = algorithm.extract(ppnf.snopt7)
-    _set_pygmo_options(algorithm_handle, solver_options)
+    _set_pygmo_options(algorithm_handle, options)
     population = pg.population(problem, size=1)
     population.set_x(0, x0)
     population = algorithm.evolve(population)

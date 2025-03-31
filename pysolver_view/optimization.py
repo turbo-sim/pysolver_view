@@ -12,7 +12,7 @@ from matplotlib.ticker import MaxNLocator
 
 from . import numerical_differentiation
 from . import optimization_wrappers as _opt
-from .pysolver_utilities import savefig_in_formats
+from .pysolver_utilities import savefig_in_formats, validate_keys
 
 
 # Define valid libraries and their corresponding methods
@@ -199,7 +199,7 @@ class OptimizationSolver:
         # Initialize variables for convergence report
         self.f_final = None
         self.x_final = None
-        self.x_last = None
+        self.x_last_norm = None
         self.grad_count = 0
         self.func_count = 0
         self.func_count_tot = 0
@@ -268,6 +268,7 @@ class OptimizationSolver:
             error_msg = f"callback_func must be a function or a list of functions. Received type: {type(callback)} ({callback})"
             raise TypeError(error_msg)
 
+
     def solve(self, x0):
         """
         Solve the optimization problem using the specified library and solver.
@@ -288,7 +289,7 @@ class OptimizationSolver:
         """
         # Initialize convergence plot
         if self.plot:
-            self._plot_callback([], [], initialize=True)
+            self._plot_convergence_callback([], [], initialize=True)
 
         # Get start datetime
         self.start_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -297,8 +298,8 @@ class OptimizationSolver:
         start_time = time.perf_counter()
 
         # Normalize the problem as the very first thing
-        x0 = self.problem.scale_physical_to_normalized(x0)
         x0 = self.problem.clip_to_bounds(x0, verbose=True)
+        x0 = self.problem.scale_physical_to_normalized(x0)
 
         # Print report header
         self._write_header()
@@ -309,16 +310,19 @@ class OptimizationSolver:
         # Fetch the solver function
         lib_wrapper = OPTIMIZATION_LIBRARIES[self.library]
 
-        # Evaluate initial guess and solve the problem
-        self._print_convergence_progress(x0)
+        # Print initial guess evaluation when using gradient
+        if self.update_on == "gradient":
+            self._print_convergence_progress(x0)
+
+        # Solv ethe problem
         solution = lib_wrapper(problem, x0, self.method, self.options)
 
         # Retrieve last solution (also works for gradient-free solvers when updating on gradient)
-        x_last = self.x_last if self.x_last is not None else self.cache["x"]
+        x_last = self.x_last_norm if self.x_last_norm is not None else self.cache["x"]
 
         # Save solution
         self.x_final = copy.deepcopy(x_last)
-        self.f_final = copy.deepcopy(self.fitness(self.x_final)[0])
+        self.f_final = copy.deepcopy(self.cache["f"])
         self.success, self.message = solution
 
         # Calculate elapsed time
@@ -328,9 +332,12 @@ class OptimizationSolver:
         self._print_convergence_progress(self.x_final)
         self._write_footer()
 
+        # Save variable in physical scale
+        self.x_final = self.problem.scale_normalized_to_physical(self.x_final)
+
         return self.x_final
 
-    def fitness(self, x, called_from_grad=False):
+    def fitness(self, x_norm, called_from_grad=False):
         """
         Evaluates the optimization problem values at a given point x.
 
@@ -355,21 +362,21 @@ class OptimizationSolver:
 
         """
         # If x hasn't changed, use cached values
-        if np.array_equal(x, self.cache["x"]):
+        if np.array_equal(x_norm, self.cache["x"]):
             return self.cache["fitness"]
 
         # Increase total counter (includes finite differences)
         self.func_count_tot += 1
 
         # Evaluate objective function and constraints at once
-        fitness = self.problem.fitness_normalized_input(x)
+        fitness = self.problem.fitness_normalized_input(x_norm)
 
         # Does not include finite differences
         if not called_from_grad:
             # Update cached variabled
             self.cache.update(
                 {
-                    "x": x.copy(),  # Needed for finite differences
+                    "x": x_norm.copy(),  # Needed for finite differences
                     "f": fitness[0],
                     "c_eq": fitness[1 : 1 + self.N_eq],
                     "c_ineq": fitness[1 + self.N_eq :],
@@ -381,12 +388,13 @@ class OptimizationSolver:
             self.func_count += 1
 
             # Update progress report
+            # print(self.problem.make_design_variables_report(x))
             if self.update_on == "function":
-                self._print_convergence_progress(x)
+                self._print_convergence_progress(x_norm)
 
         return fitness
 
-    def gradient(self, x):
+    def gradient(self, x_norm):
         """
         Evaluates the Jacobian matrix of the optimization problem at the given point x.
 
@@ -412,19 +420,19 @@ class OptimizationSolver:
         """
 
         # If x hasn't changed, use cached values
-        if np.array_equal(x, self.cache["x_jac"]):
+        if np.array_equal(x_norm, self.cache["x_jac"]):
             return self.cache["gradient"]
 
         # Use problem gradient method if it exists
         if hasattr(self.problem, "gradient"):
-            grad = self.problem.gradient_normalized_input(x)
+            grad = self.problem.gradient_normalized_input(x_norm)
         else:
             # Fall back to finite differences
             fun = lambda x: self.fitness(x, called_from_grad=True)
             grad = numerical_differentiation.approx_gradient(
                 fun,
-                x,
-                f0=fun(x),
+                x_norm,
+                f0=fun(x_norm),
                 method=self.derivative_method,
                 abs_step=self.derivative_abs_step,
             )
@@ -435,7 +443,7 @@ class OptimizationSolver:
         # Update cache
         self.cache.update(
             {
-                "x_jac": x.copy(),
+                "x_jac": x_norm.copy(),
                 "f_jac": grad[0, :],
                 "c_eq_jac": grad[1 : 1 + self.N_eq, :],
                 "c_ineq_jac": grad[1 + self.N_eq :, :],
@@ -446,7 +454,7 @@ class OptimizationSolver:
         # Update progress report
         self.grad_count += 1
         if self.update_on == "gradient":
-            self._print_convergence_progress(x)
+            self._print_convergence_progress(x_norm)
 
         return grad
 
@@ -530,8 +538,8 @@ class OptimizationSolver:
             self.fitness(x)
 
         # Compute the norm of the last step
-        norm_step = np.linalg.norm(x - self.x_last) if self.x_last is not None else 0
-        self.x_last = x.copy()
+        norm_step = np.linalg.norm(x - self.x_last_norm) if self.x_last_norm is not None else 0
+        self.x_last_norm = x.copy()
 
         # Compute the maximun constraint violation
         c_eq = self.cache["c_eq"]
@@ -540,7 +548,7 @@ class OptimizationSolver:
         violation_max = np.max(np.abs(violation_all)) if len(violation_all) > 0 else 0.0
 
         # Store convergence status
-        self.convergence_history["x"].append(self.x_last)
+        self.convergence_history["x"].append(self.x_last_norm)
         self.convergence_history["grad_count"].append(self.grad_count)
         self.convergence_history["func_count"].append(self.func_count)
         self.convergence_history["func_count_total"].append(self.func_count_tot)
@@ -557,7 +565,7 @@ class OptimizationSolver:
 
         # Refresh the plot with current values
         if self.plot:
-            self._plot_callback([], [])
+            self._plot_convergence_callback([], [])
 
         # Evaluate callback functions
         if self.callback_functions:
@@ -599,7 +607,7 @@ class OptimizationSolver:
         # Store text in memory
         self.solution_report.extend(lines_to_output)
 
-    def _plot_callback(self, x, iter, initialize=False):
+    def _plot_convergence_callback(self, x, iter, initialize=False, showfig=True):
         """
         Callback function to dynamically update the convergence progress plot.
 
@@ -675,8 +683,72 @@ class OptimizationSolver:
             self.ax_2.autoscale_view()
 
         # Redraw the plot
-        plt.draw()
-        plt.pause(0.01)  # small pause to allow for update
+        if showfig:
+            plt.draw()
+            plt.pause(0.01)  # small pause to allow for update
+
+    def plot_convergence_history(
+        self, savefile=False, filename=None, output_dir="output", showfig=True,
+    ):
+        """
+        Plot the convergence history of the problem.
+
+        This method plots the optimization progress against the number of iterations:
+            - Objective function value (left y-axis)
+            - Maximum constraint violation (right y-axis)
+
+        The constraint violation is only displayed if the problem has nonlinear constraints
+
+        This method should be called only after the optimization problem has been solved, as it relies on data generated by the solving process.
+
+        Parameters
+        ----------
+        savefile : bool, optional
+            If True, the plot is saved to a file instead of being displayed. Default is False.
+        filename : str, optional
+            The name of the file to save the plot to. If not specified, the filename is automatically generated
+            using the problem name and the start datetime. The file extension is not required.
+        output_dir : str, optional
+            The directory where the plot file will be saved if savefile is True. Default is "output".
+
+        Returns
+        -------
+        matplotlib.figure.Figure
+            The Matplotlib figure object for the plot. This can be used for further customization or display.
+
+        Raises
+        ------
+        ValueError
+            If this method is called before the problem has been solved.
+        """
+        # TODO: streamline code, it is too long and not clear
+        if self.x_final is not None:
+            self._plot_convergence_callback([], [], initialize=True, showfig=showfig)
+        else:
+            raise ValueError(
+                "This method can only be used after invoking the 'solve()' method."
+            )
+
+        if savefile:
+            # Create output directory if it does not exist
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+
+            # Give a name to the file if it is not specified
+            if filename is None:
+                filename = (
+                    f"convergence_{type(self.problem).__name__}_{self.start_datetime}"
+                )
+
+            # Save plots
+            fullfile = os.path.join(output_dir, filename)
+            savefig_in_formats(self.fig, fullfile, formats=[".png", ".svg"])
+
+        # Optionally close the figure so it is not shown
+        if not showfig:
+            plt.close(self.fig)
+
+        return self.fig
 
     def print_convergence_history(
         self, savefile=False, filename=None, output_dir="output"
@@ -714,6 +786,7 @@ class OptimizationSolver:
             If this method is called before the problem has been solved.
 
         """
+        # TODO: streamline code, it is too long and not clear
         if self.x_final is not None:
             if savefile:
                 # Create output directory if it does not exist
@@ -738,95 +811,47 @@ class OptimizationSolver:
                 "This method can only be used after invoking the 'solve()' method."
             )
 
-    def plot_convergence_history(
-        self, savefile=False, filename=None, output_dir="output"
-    ):
+    def print_optimization_report(self, savefile=False, filename=None, output_dir="output"):
         """
-        Plot the convergence history of the problem.
+        Print or save a complete optimization report, including variables and constraints.
 
-        This method plots the optimization progress against the number of iterations:
-            - Objective function value (left y-axis)
-            - Maximum constraint violation (right y-axis)
+        This method generates a report with:
+            - Design variable values (normalized and/or physical)
+            - Constraint values and satisfaction status
 
-        The constraint violation is only displayed if the problem has nonlinear constraints
-
-        This method should be called only after the optimization problem has been solved, as it relies on data generated by the solving process.
+        This method should be called only after the optimization problem has been solved.
 
         Parameters
         ----------
         savefile : bool, optional
-            If True, the plot is saved to a file instead of being displayed. Default is False.
+            If True, the report is written to a file. Otherwise, it is printed. Default is False.
         filename : str, optional
-            The name of the file to save the plot to. If not specified, the filename is automatically generated
-            using the problem name and the start datetime. The file extension is not required.
+            Output filename. If not specified, a default name is generated based on the problem type and datetime.
         output_dir : str, optional
-            The directory where the plot file will be saved if savefile is True. Default is "output".
-
-        Returns
-        -------
-        matplotlib.figure.Figure
-            The Matplotlib figure object for the plot. This can be used for further customization or display.
+            Directory where the report file will be saved if `savefile=True`. Default is "output".
 
         Raises
         ------
         ValueError
-            If this method is called before the problem has been solved.
+            If this method is called before the optimization problem has been solved.
         """
-        if self.x_final is not None:
-            self._plot_callback([], [], initialize=True)
-        else:
-            raise ValueError(
-                "This method can only be used after invoking the 'solve()' method."
-            )
+        # TODO: streamline code, it is too long and not clear
+        if self.x_final is None:
+            raise ValueError("This method can only be used after invoking the 'solve()' method.")
+            
+        full_report = self.problem.make_optimization_report(self.x_final, tol=2*self.options["tolerance"])
 
         if savefile:
-            # Create output directory if it does not exist
+            # Ensure output directory exists
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
 
-            # Give a name to the file if it is not specified
             if filename is None:
-                filename = (
-                    f"convergence_{type(self.problem).__name__}_{self.start_datetime}"
-                )
+                filename = f"optimization_report_{type(self.problem).__name__}_{self.start_datetime}.txt"
 
-            # Save plots
             fullfile = os.path.join(output_dir, filename)
-            savefig_in_formats(self.fig, fullfile, formats=[".png", ".svg"])
-            
-        return self.fig
 
-
-    def print_optimization_report(self, savefile=False, filename=None):
-        """
-        Print or save a complete optimization report, including variables and constraints.
-
-        Parameters
-        ----------
-        savefile : bool
-            If True, the report is written to file instead of printed.
-        filename : str, optional
-            Output filename. Defaults to 'optimization_report.txt'.
-        output_dir : str, optional
-            Output directory. Defaults to 'output'.
-        """
-        if self.x_final is not None:
-            self._plot_callback([], [], initialize=True)
-        else:
-            raise ValueError(
-                "This method can only be used after invoking the 'solve()' method."
-            )
-    
-        report = []
-        report.append(self.problem.make_design_variables_report(self.x_final, normalized=True))
-        report.append(self.problem.make_design_variables_report(self.x_final, normalized=False))
-        report.append(self.problem.make_constraint_report(self.x_final, tol=1.5*self.options["tolerance"]))
-        full_report = "\n".join(report)
-        if savefile:
-            if filename is None:
-                filename = "optimization_report.txt"
-            fullpath = os.path.join(self.out_dir, filename)
-            with open(fullpath, "w") as f:
+            with open(fullfile, "w") as f:
                 f.write(full_report)
         else:
             print(full_report)
@@ -964,8 +989,14 @@ class OptimizationProblem(ABC):
         lb, ub = self.get_bounds()
         lb = np.asarray(lb)
         ub = np.asarray(ub)
-        return np.where(ub == lb, 0.0, self.problem_scale * (x_phys - lb) / (ub - lb))
+        x_scaled = []
+        for xi, lbi, ubi in zip(x_phys, lb, ub):
+            if ubi == lbi:
+                x_scaled.append(0.0)
+            else:
+                x_scaled.append(self.problem_scale * (xi - lbi) / (ubi - lbi))
 
+        return np.array(x_scaled)
 
     def scale_normalized_to_physical(self, x_norm):
         """
@@ -1059,7 +1090,7 @@ class OptimizationProblem(ABC):
         return grad_phys * scaling_factor
 
 
-    def clip_to_bounds(self, x_normalized, verbose=False):
+    def clip_to_bounds(self, x_physical, verbose=False):
         """
         Clip normalized values to lie within specified normalized bounds.
 
@@ -1077,25 +1108,36 @@ class OptimizationProblem(ABC):
         np.ndarray
             Clipped vector.
         """
-        lb, ub = self.get_bounds_normalized()
-        x_normalized = np.asarray(x_normalized)
-        x_clipped = np.clip(x_normalized, lb, ub)
+        lb, ub = self.get_bounds()
+        x_physical = np.asarray(x_physical)
+        x_clipped = np.clip(x_physical, lb, ub)
 
         if verbose:
-            for i, (orig, new, lo, hi) in enumerate(zip(x_normalized, x_clipped, lb, ub)):
+            for i, (orig, new, low, high) in enumerate(zip(x_physical, x_clipped, lb, ub)):
                 if orig != new:
                     print(
                         f"\nWarning: optimization variable out of bounds\n"
                         f"  Name       : {self.variable_names[i]}\n"
-                        f"  Original   : {orig}\n"
-                        f"  Bounds     : [{lo}, {hi}]\n"
-                        f"  Clipped to : {new}\n"
+                        f"  Original   : {orig:.3e}\n"
+                        f"  Bounds     : [{low:.3e}, {high:.3e}]\n"
+                        f"  Clipped to : {new:.3e}\n"
                     )
 
         return x_clipped
 
 
-    def make_design_variables_report(self, x_norm, normalized=True):
+    def make_optimization_report(self, x_phys, tol=1e-6):
+        """
+        Print or save a complete optimization report, including variables and constraints.
+        """
+        report = []
+        report.append(self.make_design_variables_report(x_phys, normalized=True))
+        report.append(self.make_design_variables_report(x_phys, normalized=False))
+        report.append(self.make_constraint_report(x_phys, tol=tol))
+        return "\n".join(report)
+    
+
+    def make_design_variables_report(self, x_phys, normalized=True):
         """
         Generate design variable report as a string.
 
@@ -1111,8 +1153,8 @@ class OptimizationProblem(ABC):
         str
             Formatted string report.
         """
-        x_norm = np.asarray(x_norm)
-        x_phys = self.scale_normalized_to_physical(x_norm)
+        x_phys = np.asarray(x_phys)
+        x_norm = self.scale_physical_to_normalized(x_phys)
 
         if normalized:
             values = x_norm
@@ -1142,52 +1184,63 @@ class OptimizationProblem(ABC):
         return "\n".join(lines)
 
 
-    def make_constraint_report(self, x_norm, constraint_report=None, tol=1e-6):
+    def make_constraint_report(self, x_phys, tol=1e-6):
         """
         Generate a constraint report as a string by evaluating constraints at the given point.
 
-        This method evaluates the problem's constraints using the normalized input `x_norm`.
-        If a precomputed `constraint_report` is provided, it is used directly. Otherwise,
-        the constraints are evaluated using the fitness function and a default report is generated.
+        This method uses `self.constraint_data` if available, otherwise it evaluates the fitness function to get the constraints information.
 
         By default:
         - Equality constraints are named "equality_constraint_{i}" with target 0 and type "=".
-        - Inequality constraints are named "inequality_constraint_{i}" with target 0 and type "<=".
-        - Tolerance `tol` is used to check whether constraints are satisfied.
+        - Inequality constraints are named "inequality_constraint_{i}" with target 0 and type "<".
+        - Tolerance `tol` is used to determine satisfaction.
 
         Parameters
         ----------
-        x_norm : array-like
-            Normalized design variable vector (typically in [0, problem_scale]).
-        constraint_report : list of dict, optional
-            Optional precomputed report (each dict must have keys: name, type, target, value, satisfied).
-            If provided, this report is formatted directly.
+        x_phys : array-like
+            Physical design variable vector.
         tol : float, optional
             Tolerance used to determine whether constraints are satisfied (default is 1e-6).
 
         Returns
         -------
         str
-            A formatted string with constraint values, targets, and satisfaction status.
+            A formatted string report of constraints and satisfaction status.
+
+        Raises
+        ------
+        TypeError
+            If `self.constraint_data` exists but is not a valid list of dictionaries.
         """
         max_name_width = 50
 
-        if constraint_report is None:
-            # Evaluate fitness at the given normalized input
-            x_norm = np.asarray(x_norm)
-            result = self.fitness_normalized_input(x_norm)
+        # Use cached constraint data if available and valid
+        if hasattr(self, "constraint_data"):
+            if not isinstance(self.constraint_data, list) or not all(isinstance(d, dict) for d in self.constraint_data):
+                raise TypeError("Expected self.constraint_data to be a list of dictionaries.")
 
-            # Slice constraints
+            required_keys = {"name", "type", "target", "value", "satisfied"}
+            allowed_keys = required_keys | {"normalized_mismatch", "mismatch", "normalize"}
+            for i, entry in enumerate(self.constraint_data):
+                validate_keys(entry, required_keys, allowed_keys)
+
+            constraint_data = self.constraint_data
+
+        else:
+            # Evaluate constraints from scratch
+            x_phys = np.asarray(x_phys)
+            result = self.fitness(x_phys)
             n_eq = self.get_nec()
             n_ineq = self.get_nic()
             c_eq = result[1:1 + n_eq]
             c_ineq = result[1 + n_eq:]
 
             # Build default report structure
-            constraint_report = []
+            constraint_data = []
 
             for i, val in enumerate(c_eq):
-                constraint_report.append({
+                print(val, tol)
+                constraint_data.append({
                     "name": f"equality_constraint_{i}",
                     "type": "=",
                     "target": 0.0,
@@ -1196,9 +1249,10 @@ class OptimizationProblem(ABC):
                 })
 
             for i, val in enumerate(c_ineq):
-                constraint_report.append({
+                print(val, tol)
+                constraint_data.append({
                     "name": f"inequality_constraint_{i}",
-                    "type": "<=",
+                    "type": "<",
                     "target": 0.0,
                     "value": val,
                     "satisfied": val <= tol,
@@ -1213,7 +1267,7 @@ class OptimizationProblem(ABC):
         lines.append(f"{'Constraint name':<52}{'Value':>10}{'Target':>12}{'Ok?':>6}")
         lines.append("-" * 80)
 
-        for entry in constraint_report:
+        for entry in constraint_data:
             name = entry.get("name", "")
             ctype = entry.get("type", "")
             target = entry.get("target", 0.0)
