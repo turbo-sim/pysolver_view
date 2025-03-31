@@ -37,39 +37,33 @@ jobs:
       run: poetry run pytest
 
 
-  # test_windows:
-  #   runs-on: windows-latest
+  test_windows:
+    runs-on: windows-latest
 
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v2
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-  #   - name: Set up Miniconda
-  #     uses: conda-incubator/setup-miniconda@v2
-  #     with:
-  #       auto-update-conda: true
-  #       python-version: '3.11'
-  #       channels: conda-forge
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.12'
 
-  #   - name: Create environment and install dependencies
-  #     run: |
-  #       conda env create -f environment.yaml
-  #       conda activate pysolver_env
-  #       conda install --channel conda-forge pygmo=2.19.7
-  #       poetry install
-  #     shell: bash -l {0}
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+      shell: bash -l {0}
 
-  #   - name: Run tests
-  #     run: |
-  #       conda activate pysolver_env
-  #       pytest
-  #     shell: bash -l {0}
+    - name: Run tests
+      run: poetry run pytest
+      shell: bash -l {0}
 
 
   publish_to_pypi:
 
 
-    needs: [test_ubuntu] #, test_windows]
+    needs: [test_ubuntu, test_windows]
     runs-on: ubuntu-latest
     
     steps:
