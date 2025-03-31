@@ -1,0 +1,105 @@
+
+name: publish_to_pypi
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    branches:
+      - main
+
+
+jobs:
+
+  test_ubuntu:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Miniconda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        auto-update-conda: true
+        python-version: '3.11'
+        channels: conda-forge
+    
+    - name: Create environment and install dependencies
+      run: |
+        conda env create -f environment.yaml
+        source "$(conda info --base)/etc/profile.d/conda.sh"
+        conda activate pysolver_env
+        poetry install
+        conda install pygmo=2.19.7
+
+    - name: Run tests
+      run: |
+        source "$(conda info --base)/etc/profile.d/conda.sh"
+        conda activate pysolver_env
+        pytest
+
+
+
+  test_windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Miniconda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        auto-update-conda: true
+        python-version: '3.11'
+        channels: conda-forge
+
+    - name: Create environment and install dependencies
+      run: |
+        conda env create -f environment.yaml
+        conda activate pysolver_env
+        pip install poetry
+        poetry install
+        conda install pygmo=2.19.7 -y
+      shell: bash -l {0}
+
+    - name: Run tests
+      run: |
+        conda activate pysolver_env
+        pytest
+      shell: bash -l {0}
+
+
+  publish_to_pypi:
+
+
+    needs: [test_ubuntu, test_windows]
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.12'
+
+
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Install dependencies
+      run: poetry install --only=main
+
+    - name: Publish to PyPI
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        poetry build
+        poetry publish --username $TWINE_USERNAME --password $TWINE_PASSWORD
