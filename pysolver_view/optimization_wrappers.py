@@ -130,7 +130,10 @@ def minimize_scipy(problem, x0, method, solver_options):
     combined_options = default_options | solver_options  # Merge defaults with input
 
     # Convert bounds from Pygmo to Scipy convention
-    bounds = convert_pygmo_to_scipy_bounds(problem.get_bounds)
+    if problem.get_bounds() is None:
+        bounds = None
+    else:
+        bounds = convert_pygmo_to_scipy_bounds(problem.get_bounds)()
 
     # Define list of constraint dictionaries
     constr = []
@@ -149,7 +152,7 @@ def minimize_scipy(problem, x0, method, solver_options):
         tol=tol,
         jac=problem.f_jac,
         constraints=constr,
-        bounds=bounds(),
+        bounds=bounds,
         method=method,
         options=combined_options,
     )

@@ -298,7 +298,8 @@ class OptimizationSolver:
         start_time = time.perf_counter()
 
         # Normalize the problem as the very first thing
-        x0 = self.problem.clip_to_bounds(x0, verbose=True)
+        if self.problem.get_bounds() is not None:
+            x0 = self.problem.clip_to_bounds(x0, verbose=True)
         x0 = self.problem.scale_physical_to_normalized(x0)
 
         # Print report header
