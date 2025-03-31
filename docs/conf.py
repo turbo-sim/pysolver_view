@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.abspath(".."))
 project = "pysolver_view"
 copyright = "2024, Roberto Agromayor"
 author = "Roberto Agromayor"
-release = "v0.4.1"
+release = "v0.4.2"
 
 # Define extensions
 extensions = [
