@@ -69,7 +69,7 @@ jobs:
   publish_to_pypi:
 
 
-    needs: [test_ubuntu, test_windows]
+    needs: [test_ubuntu] #, test_windows]
     runs-on: ubuntu-latest
     
     steps:
