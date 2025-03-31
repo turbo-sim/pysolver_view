@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Package utilities &#8212; pysolver_view v0.2.1 documentation</title>
+    <title>Package utilities &#8212; pysolver_view v0.3.1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=b196e8ce"></script>
+    <script src="../../_static/documentation_options.js?v=4d4cdd22"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -124,7 +124,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.2.1 documentation</p>
+    <p class="title logo__title">pysolver_view v0.3.1 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -291,6 +291,7 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.DictionaryValidationError"><code class="docutils literal notranslate"><span class="pre">DictionaryValidationError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.create_logger"><code class="docutils literal notranslate"><span class="pre">create_logger()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.print_dict"><code class="docutils literal notranslate"><span class="pre">print_dict()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.print_installed_fonts"><code class="docutils literal notranslate"><span class="pre">print_installed_fonts()</span></code></a></li>
@@ -298,6 +299,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.print_rc_parameters"><code class="docutils literal notranslate"><span class="pre">print_rc_parameters()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.savefig_in_formats"><code class="docutils literal notranslate"><span class="pre">savefig_in_formats()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.set_plot_options"><code class="docutils literal notranslate"><span class="pre">set_plot_options()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.validate_keys"><code class="docutils literal notranslate"><span class="pre">validate_keys()</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -311,6 +313,13 @@
                   
   <section id="module-pysolver_view.pysolver_utilities">
 <span id="package-utilities"></span><h1>Package utilities<a class="headerlink" href="#module-pysolver_view.pysolver_utilities" title="Link to this heading">#</a></h1>
+<dl class="py exception">
+<dt class="sig sig-object py" id="pysolver_view.pysolver_utilities.DictionaryValidationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysolver_view.pysolver_utilities.</span></span><span class="sig-name descname"><span class="pre">DictionaryValidationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/pysolver_utilities.html#DictionaryValidationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.pysolver_utilities.DictionaryValidationError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception raised for errors in the configuration options.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="pysolver_view.pysolver_utilities.create_logger">
 <span class="sig-prename descclassname"><span class="pre">pysolver_view.pysolver_utilities.</span></span><span class="sig-name descname"><span class="pre">create_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_datetime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_console</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/pysolver_utilities.html#create_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.pysolver_utilities.create_logger" title="Link to this definition">#</a></dt>
@@ -466,6 +475,33 @@ Features include improved font selections, tick marks, grid appearance, and colo
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="pysolver_view.pysolver_utilities.validate_keys">
+<span class="sig-prename descclassname"><span class="pre">pysolver_view.pysolver_utilities.</span></span><span class="sig-name descname"><span class="pre">validate_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checked_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required_keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/pysolver_utilities.html#validate_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.pysolver_utilities.validate_keys" title="Link to this definition">#</a></dt>
+<dd><p>Validate the presence of required keys and check for any unexpected keys in a dictionary.</p>
+<p>Give required keys and allowed keys to have complete control
+Give required keys twice to check that the list of keys is necessary and sufficient
+Give only required keys to allow all extra additional key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>checked_dict</strong><span class="classifier">dict</span></dt><dd><p>The dictionary to be checked.</p>
+</dd>
+<dt><strong>required_keys</strong><span class="classifier">set</span></dt><dd><p>A set of keys that are required in the dictionary.</p>
+</dd>
+<dt><strong>allowed_keys</strong><span class="classifier">set</span></dt><dd><p>A set of keys that are allowed in the dictionary.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>ConfigurationError</dt><dd><p>If either required keys are missing or unexpected keys are found.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -505,6 +541,7 @@ Features include improved font selections, tick marks, grid appearance, and colo
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.DictionaryValidationError"><code class="docutils literal notranslate"><span class="pre">DictionaryValidationError</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.create_logger"><code class="docutils literal notranslate"><span class="pre">create_logger()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.print_dict"><code class="docutils literal notranslate"><span class="pre">print_dict()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.print_installed_fonts"><code class="docutils literal notranslate"><span class="pre">print_installed_fonts()</span></code></a></li>
@@ -512,6 +549,7 @@ Features include improved font selections, tick marks, grid appearance, and colo
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.print_rc_parameters"><code class="docutils literal notranslate"><span class="pre">print_rc_parameters()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.savefig_in_formats"><code class="docutils literal notranslate"><span class="pre">savefig_in_formats()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.set_plot_options"><code class="docutils literal notranslate"><span class="pre">set_plot_options()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.pysolver_utilities.validate_keys"><code class="docutils literal notranslate"><span class="pre">validate_keys()</span></code></a></li>
 </ul>
   </nav></div>
 

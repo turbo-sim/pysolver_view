@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pysolver_view.pysolver_utilities &#8212; pysolver_view v0.2.1 documentation</title>
+    <title>pysolver_view.pysolver_utilities &#8212; pysolver_view v0.3.1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=b196e8ce"></script>
+    <script src="../../_static/documentation_options.js?v=4d4cdd22"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -124,7 +124,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.2.1 documentation</p>
+    <p class="title logo__title">pysolver_view v0.3.1 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -560,6 +560,45 @@
 
 
 
+<div class="viewcode-block" id="print_object">
+<a class="viewcode-back" href="../../source/api/pysolver_view.pysolver_utilities.html#pysolver_view.pysolver_utilities.print_object">[docs]</a>
+<span class="k">def</span> <span class="nf">print_object</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prints all attributes and methods of an object, sorted alphabetically.</span>
+
+<span class="sd">    - Methods are identified as callable and printed with the prefix &#39;Method: &#39;.</span>
+<span class="sd">    - Attributes are identified as non-callable and printed with the prefix &#39;Attribute: &#39;.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj : object</span>
+<span class="sd">        The object whose attributes and methods are to be printed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        This function does not return any value. It prints the attributes and methods of the given object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Retrieve all attributes and methods</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="nb">dir</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="c1"># Sort them alphabetically, case-insensitive</span>
+    <span class="n">sorted_attributes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+    <span class="c1"># Iterate over sorted attributes</span>
+    <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">sorted_attributes</span><span class="p">:</span>
+        <span class="c1"># Retrieve the attribute or method from the object</span>
+        <span class="n">attribute_or_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+
+        <span class="c1"># Check if it is callable (method) or not (attribute)</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">attribute_or_method</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Method: </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attribute: </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
 
 <div class="viewcode-block" id="print_dict">
 <a class="viewcode-back" href="../../source/api/pysolver_view.pysolver_utilities.html#pysolver_view.pysolver_utilities.print_dict">[docs]</a>
@@ -601,45 +640,75 @@
 
 
 
-<div class="viewcode-block" id="print_object">
-<a class="viewcode-back" href="../../source/api/pysolver_view.pysolver_utilities.html#pysolver_view.pysolver_utilities.print_object">[docs]</a>
-<span class="k">def</span> <span class="nf">print_object</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="validate_keys">
+<a class="viewcode-back" href="../../source/api/pysolver_view.pysolver_utilities.html#pysolver_view.pysolver_utilities.validate_keys">[docs]</a>
+<span class="k">def</span> <span class="nf">validate_keys</span><span class="p">(</span><span class="n">checked_dict</span><span class="p">,</span> <span class="n">required_keys</span><span class="p">,</span> <span class="n">allowed_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Prints all attributes and methods of an object, sorted alphabetically.</span>
+<span class="sd">    Validate the presence of required keys and check for any unexpected keys in a dictionary.</span>
 
-<span class="sd">    - Methods are identified as callable and printed with the prefix &#39;Method: &#39;.</span>
-<span class="sd">    - Attributes are identified as non-callable and printed with the prefix &#39;Attribute: &#39;.</span>
+<span class="sd">    Give required keys and allowed keys to have complete control</span>
+<span class="sd">    Give required keys twice to check that the list of keys is necessary and sufficient</span>
+<span class="sd">    Give only required keys to allow all extra additional key</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    obj : object</span>
-<span class="sd">        The object whose attributes and methods are to be printed.</span>
+<span class="sd">    checked_dict : dict</span>
+<span class="sd">        The dictionary to be checked.</span>
+<span class="sd">    required_keys : set</span>
+<span class="sd">        A set of keys that are required in the dictionary.</span>
+<span class="sd">    allowed_keys : set</span>
+<span class="sd">        A set of keys that are allowed in the dictionary.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    None</span>
-<span class="sd">        This function does not return any value. It prints the attributes and methods of the given object.</span>
-
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ConfigurationError</span>
+<span class="sd">        If either required keys are missing or unexpected keys are found.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Retrieve all attributes and methods</span>
-    <span class="n">attributes</span> <span class="o">=</span> <span class="nb">dir</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
-    <span class="c1"># Sort them alphabetically, case-insensitive</span>
-    <span class="n">sorted_attributes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="c1"># Convert input lists to sets for set operations</span>
+    <span class="n">checked_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">checked_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">required_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">required_keys</span><span class="p">)</span>
 
-    <span class="c1"># Iterate over sorted attributes</span>
-    <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">sorted_attributes</span><span class="p">:</span>
-        <span class="c1"># Retrieve the attribute or method from the object</span>
-        <span class="n">attribute_or_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+    <span class="c1"># Set allowed_keys to all present keys if not provided</span>
+    <span class="k">if</span> <span class="n">allowed_keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">allowed_keys</span> <span class="o">=</span> <span class="n">checked_keys</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">allowed_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">allowed_keys</span><span class="p">)</span>
 
-        <span class="c1"># Check if it is callable (method) or not (attribute)</span>
-        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">attribute_or_method</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Method: </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attribute: </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+    <span class="c1"># Check for extra and missing keys</span>
+    <span class="n">missing_keys</span> <span class="o">=</span> <span class="n">required_keys</span> <span class="o">-</span> <span class="n">checked_keys</span>
+    <span class="n">extra_keys</span> <span class="o">=</span> <span class="n">checked_keys</span> <span class="o">-</span> <span class="n">allowed_keys</span>
+
+    <span class="c1"># Prepare error messages</span>
+    <span class="n">error_messages</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">missing_keys</span><span class="p">:</span>
+        <span class="n">error_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing required keys: </span><span class="si">{</span><span class="n">missing_keys</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">extra_keys</span><span class="p">:</span>
+        <span class="n">error_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found unexpected keys: </span><span class="si">{</span><span class="n">extra_keys</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Raise combined error if there are any issues</span>
+    <span class="k">if</span> <span class="n">error_messages</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DictionaryValidationError</span><span class="p">(</span><span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">error_messages</span><span class="p">))</span></div>
 
 
 
+<div class="viewcode-block" id="DictionaryValidationError">
+<a class="viewcode-back" href="../../source/api/pysolver_view.pysolver_utilities.html#pysolver_view.pysolver_utilities.DictionaryValidationError">[docs]</a>
+<span class="k">class</span> <span class="nc">DictionaryValidationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception raised for errors in the configuration options.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_message</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_format_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2"> Key: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;, Value: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span></div>
+
+    
 </pre></div>
 
                 </article>

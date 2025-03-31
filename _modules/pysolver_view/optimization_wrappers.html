@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pysolver_view.optimization_wrappers &#8212; pysolver_view v0.2.1 documentation</title>
+    <title>pysolver_view.optimization_wrappers &#8212; pysolver_view v0.3.1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=b196e8ce"></script>
+    <script src="../../_static/documentation_options.js?v=4d4cdd22"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -124,7 +124,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.2.1 documentation</p>
+    <p class="title logo__title">pysolver_view v0.3.1 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -570,7 +570,7 @@
     <span class="k">return</span> <span class="n">success</span><span class="p">,</span> <span class="n">message</span>
 
 
-<span class="k">def</span> <span class="nf">_minimize_pygmo_ipopt</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">solver_options</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_minimize_pygmo_ipopt</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve optimization problem using Pygmo&#39;s wrapper to IPOPT&quot;&quot;&quot;</span>
 
     <span class="c1"># Define mapping from exit flag to status</span>
@@ -606,7 +606,7 @@
         <span class="s2">&quot;line_search_method&quot;</span><span class="p">:</span> <span class="s2">&quot;filter&quot;</span><span class="p">,</span>  <span class="c1"># Options: &#39;filter&#39;, &#39;cg-penalty&#39;, &#39;penalty&#39;</span>
         <span class="s2">&quot;limited_memory_max_history&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="c1"># Max history for L-BFGS</span>
         <span class="s2">&quot;max_iter&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>  <span class="c1"># Maximum number of iterations.</span>
-        <span class="s2">&quot;tol&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>  <span class="c1"># Desired convergence tolerance (relative). # 1.0</span>
+        <span class="s2">&quot;tol&quot;</span><span class="p">:</span> <span class="mf">1e-3</span><span class="p">,</span>  <span class="c1"># Desired convergence tolerance (relative). # 1.0</span>
         <span class="s2">&quot;dual_inf_tol&quot;</span><span class="p">:</span> <span class="mf">1e6</span><span class="p">,</span>  <span class="c1"># Desired threshold for the dual infeasibility.</span>
         <span class="s2">&quot;compl_inf_tol&quot;</span><span class="p">:</span> <span class="mf">1e6</span><span class="p">,</span>  <span class="c1"># Desired threshold for the complementarity conditions</span>
         <span class="s2">&quot;constr_viol_tol&quot;</span><span class="p">:</span> <span class="mf">1e-6</span><span class="p">,</span>  <span class="c1"># Desired threshold for the constraint and variable bound violation.</span>
@@ -619,24 +619,25 @@
     <span class="p">}</span>
 
     <span class="c1"># Define IPOPT tolerance settings based on generic input</span>
-    <span class="n">tol_value</span> <span class="o">=</span> <span class="n">solver_options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;tolerance&quot;</span><span class="p">)</span>
-    <span class="n">solver_options</span><span class="p">[</span><span class="s2">&quot;constr_viol_tol&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tol_value</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Work with a copy to avoid side effects</span>
+    <span class="n">tol_value</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;tolerance&quot;</span><span class="p">)</span>
+    <span class="n">options</span><span class="p">[</span><span class="s2">&quot;constr_viol_tol&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tol_value</span>
     <span class="c1"># IPOPT will not converge if &quot;tol&quot; is too tight</span>
     <span class="c1"># This parameter is considered an &quot;expert setting&quot; not controlled by the generic tolerance input</span>
 
     <span class="c1"># Define IPOPT iteration limit settings based on generic input</span>
-    <span class="n">max_iter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">solver_options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;max_iterations&quot;</span><span class="p">))</span>
-    <span class="n">solver_options</span><span class="p">[</span><span class="s2">&quot;max_iter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_iter</span>
+    <span class="n">max_iter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;max_iterations&quot;</span><span class="p">))</span>
+    <span class="n">options</span><span class="p">[</span><span class="s2">&quot;max_iter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_iter</span>
 
     <span class="c1"># Combine default and given options</span>
-    <span class="n">solver_options</span> <span class="o">=</span> <span class="n">default_options</span> <span class="o">|</span> <span class="n">solver_options</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="n">default_options</span> <span class="o">|</span> <span class="n">options</span>
 
     <span class="c1"># Solve the problem</span>
     <span class="n">problem</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
     <span class="n">problem</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">problem</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
     <span class="n">algorithm</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">algorithm</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">ipopt</span><span class="p">())</span>
     <span class="n">algorithm_handle</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">ipopt</span><span class="p">)</span>
-    <span class="n">_set_pygmo_options</span><span class="p">(</span><span class="n">algorithm_handle</span><span class="p">,</span> <span class="n">solver_options</span><span class="p">)</span>
+    <span class="n">_set_pygmo_options</span><span class="p">(</span><span class="n">algorithm_handle</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
     <span class="n">population</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">population</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">population</span><span class="o">.</span><span class="n">set_x</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span>
     <span class="n">population</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
@@ -649,7 +650,7 @@
     <span class="k">return</span> <span class="n">success</span><span class="p">,</span> <span class="n">message</span>
 
 
-<span class="k">def</span> <span class="nf">_minimize_pygmo_snopt</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">solver_options</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_minimize_pygmo_snopt</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve optimization problem using Pygmo&#39;s wrapper to SNOPT&quot;&quot;&quot;</span>
 
     <span class="c1"># Define default solver options</span>
@@ -664,24 +665,24 @@
     <span class="p">}</span>
 
     <span class="c1"># Work with a copy to avoid side effects</span>
-    <span class="n">solver_options</span> <span class="o">=</span> <span class="n">solver_options</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="c1"># Define SNOPT tolerance settings based on generic input</span>
-    <span class="n">tol_value</span> <span class="o">=</span> <span class="n">solver_options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;tolerance&quot;</span><span class="p">)</span>
-    <span class="n">solver_options</span><span class="p">[</span><span class="s2">&quot;Major feasibility tolerance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tol_value</span>
-    <span class="n">solver_options</span><span class="p">[</span><span class="s2">&quot;Minor feasibility tolerance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tol_value</span>
+    <span class="n">tol_value</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;tolerance&quot;</span><span class="p">)</span>
+    <span class="n">options</span><span class="p">[</span><span class="s2">&quot;Major feasibility tolerance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tol_value</span>
+    <span class="n">options</span><span class="p">[</span><span class="s2">&quot;Minor feasibility tolerance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tol_value</span>
     <span class="c1"># SNOPT will not converge if optimality tolerance is too tight</span>
     <span class="c1"># This parameter is considered an &quot;expert setting&quot; not controlled by the generic tolerance input</span>
     <span class="c1"># snopt_options[&quot;Major optimality tolerance&quot;] = tol_value </span>
 
     <span class="c1"># Define SNOPT iteration limit settings based on generic input</span>
-    <span class="n">max_iter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">solver_options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;max_iterations&quot;</span><span class="p">))</span>
-    <span class="n">solver_options</span><span class="p">[</span><span class="s2">&quot;Iterations limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_iter</span>
-    <span class="n">solver_options</span><span class="p">[</span><span class="s2">&quot;Major iterations limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_iter</span>
-    <span class="n">solver_options</span><span class="p">[</span><span class="s2">&quot;Minor iterations limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">max_iter</span>
+    <span class="n">max_iter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;max_iterations&quot;</span><span class="p">))</span>
+    <span class="n">options</span><span class="p">[</span><span class="s2">&quot;Iterations limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_iter</span>
+    <span class="n">options</span><span class="p">[</span><span class="s2">&quot;Major iterations limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_iter</span>
+    <span class="n">options</span><span class="p">[</span><span class="s2">&quot;Minor iterations limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">max_iter</span>
 
     <span class="c1"># Combine default and given options</span>
-    <span class="n">solver_options</span> <span class="o">=</span> <span class="n">default_options</span> <span class="o">|</span> <span class="n">solver_options</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="n">default_options</span> <span class="o">|</span> <span class="n">options</span>
 
     <span class="c1"># Define SNOPT path</span>
     <span class="n">lib</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SNOPT_LIB&quot;</span><span class="p">)</span>
@@ -709,7 +710,7 @@
     <span class="n">problem</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">problem</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
     <span class="n">algorithm</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">algorithm</span><span class="p">(</span><span class="n">ppnf</span><span class="o">.</span><span class="n">snopt7</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="n">lib</span><span class="p">,</span> <span class="n">minor_version</span><span class="o">=</span><span class="mi">7</span><span class="p">))</span>
     <span class="n">algorithm_handle</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">ppnf</span><span class="o">.</span><span class="n">snopt7</span><span class="p">)</span>
-    <span class="n">_set_pygmo_options</span><span class="p">(</span><span class="n">algorithm_handle</span><span class="p">,</span> <span class="n">solver_options</span><span class="p">)</span>
+    <span class="n">_set_pygmo_options</span><span class="p">(</span><span class="n">algorithm_handle</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
     <span class="n">population</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">population</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">population</span><span class="o">.</span><span class="n">set_x</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span>
     <span class="n">population</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
