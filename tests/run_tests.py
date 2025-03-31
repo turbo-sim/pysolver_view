@@ -8,3 +8,8 @@ tests_list = ["test_differentiation.py", "test_optimization.py", "test_nonlinear
 pytest.main(tests_list + ["-vv"])
 # pytest.main([__file__, "-vv"])
 # pytest.main([__file__])
+
+
+
+# TODO it would be good to use TOX or NOX to test my installation accorss multiple python versions.
+# Maybe it is even better to do so through github actions

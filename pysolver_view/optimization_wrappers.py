@@ -194,7 +194,7 @@ def minimize_pygmo(problem, x0, method, options):
             "   1. Activate the Conda virtual environment with:\n\n"
             "           conda activate <your environment name>\n\n"
             "   2. Install 'pygmo' and 'pygmo_plugins_nonfree' by running the following command:\n\n"
-            "           conda install --channel conda-forge pygmo=2.19.6 pygmo_plugins_nonfree=0.24\n"
+            "           conda install --channel conda-forge pygmo=2.19.7 pygmo_plugins_nonfree=0.26\n"
         )
 
     if method == "snopt":
