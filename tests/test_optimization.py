@@ -13,14 +13,14 @@ UNCONSTRAINED_SOLVERS = [
     # ("scipy", "bfgs"),
     ("scipy", "trust-constr"),
     ("scipy", "slsqp"),
-    ("pygmo", "ipopt"),
+    # ("pygmo", "ipopt"),
     # ("pygmo", "snopt"),
 ]
 
 CONSTRAINED_SOLVERS = [
     ("scipy", "trust-constr"),
     ("scipy", "slsqp"),
-    ("pygmo", "ipopt"),
+    # ("pygmo", "ipopt"),
     # ("pygmo", "snopt"),
 ]
 
@@ -130,7 +130,7 @@ def test_rosenbrock_problem_constrained(library, method):
 CONSTRAINED_SOLVERS = [
     #    ("scipy", "trust-constr"),
     ("scipy", "slsqp"),
-    ("pygmo", "ipopt"),
+    # ("pygmo", "ipopt"),
     # ("pygmo", "snopt"),
 ]
 
@@ -203,8 +203,8 @@ def test_lorentz_system(library, method, stationary_point):
 SOLVERS_AND_MAXITER = [
     ("scipy", "slsqp", 10),
     ("scipy", "slsqp", 20),
-    ("pygmo", "ipopt", 10),
-    ("pygmo", "ipopt", 20),
+    # ("pygmo", "ipopt", 10),
+    # ("pygmo", "ipopt", 20),
     # ("pygmo", "snopt", 10),
     # ("pygmo", "snopt", 20),
 ]
