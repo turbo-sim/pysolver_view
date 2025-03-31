@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pysolver_view.optimization_wrappers &#8212; pysolver_view v0.4.1 documentation</title>
+    <title>pysolver_view.optimization_wrappers &#8212; pysolver_view v0.4.6 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=d6d95e65"></script>
+    <script src="../../_static/documentation_options.js?v=43ccdcb4"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -124,7 +124,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.4.1 documentation</p>
+    <p class="title logo__title">pysolver_view v0.4.6 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -380,7 +380,10 @@
     <span class="n">combined_options</span> <span class="o">=</span> <span class="n">default_options</span> <span class="o">|</span> <span class="n">solver_options</span>  <span class="c1"># Merge defaults with input</span>
 
     <span class="c1"># Convert bounds from Pygmo to Scipy convention</span>
-    <span class="n">bounds</span> <span class="o">=</span> <span class="n">convert_pygmo_to_scipy_bounds</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">get_bounds</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">problem</span><span class="o">.</span><span class="n">get_bounds</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="n">convert_pygmo_to_scipy_bounds</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">get_bounds</span><span class="p">)()</span>
 
     <span class="c1"># Define list of constraint dictionaries</span>
     <span class="n">constr</span> <span class="o">=</span> <span class="p">[]</span>
@@ -399,7 +402,7 @@
         <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
         <span class="n">jac</span><span class="o">=</span><span class="n">problem</span><span class="o">.</span><span class="n">f_jac</span><span class="p">,</span>
         <span class="n">constraints</span><span class="o">=</span><span class="n">constr</span><span class="p">,</span>
-        <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">(),</span>
+        <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
         <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
         <span class="n">options</span><span class="o">=</span><span class="n">combined_options</span><span class="p">,</span>
     <span class="p">)</span>
