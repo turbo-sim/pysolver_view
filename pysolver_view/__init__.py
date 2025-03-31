@@ -25,6 +25,6 @@ from .nonlinear_system import *
 from .nonlinear_system_problems import *
 
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 URL_GITHUB = "https://github.com/turbo-sim/pysolver_view"
 URL_DOCS = "https://turbo-sim.github.io/pysolver_view/"
