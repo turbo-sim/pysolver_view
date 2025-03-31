@@ -1,4 +1,5 @@
-name: pysolver_env
+# This file is provided to streamline Conda virtual environment generation
+# Using conda (instead of poetry) is necessary to install Pygmo and access IPOPT/SNOPTname: pysolver_env
 channels:
  - conda-forge
 dependencies:

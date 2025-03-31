@@ -22,7 +22,7 @@ cycler = "^0.12.1"
 jax = "^0.5.3"
 
 [tool.poetry.group.dev.dependencies]
-ipython = "^9.0.2"
+ipython = ">=8.13,<8.17"
 black = "^25.1.0"
 pytest = "^8.3.5"
 pyzotero = "^1.5.19"
