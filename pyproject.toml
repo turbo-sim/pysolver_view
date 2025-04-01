@@ -10,7 +10,7 @@ documentation = "https://turbo-sim.github.io/pysolver_view/"
 
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.14"
+python = ">=3.10,<3.14"
 numpy = "^2.2.4"
 scipy = "^1.15.2"
 matplotlib = "^3.10.1"
