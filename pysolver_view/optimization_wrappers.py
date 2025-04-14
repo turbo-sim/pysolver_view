@@ -387,8 +387,8 @@ def _minimize_pygmo_ipopt(problem, x0, options):
     algorithm = pg.algorithm(pg.ipopt())
     algorithm_handle = algorithm.extract(pg.ipopt)
     _set_pygmo_options(algorithm_handle, options)
-    population = pg.population(problem, size=1)
-    population.set_x(0, x0)
+    population = pg.population(problem)
+    population.push_back(x0)
     population = algorithm.evolve(population)
 
     # Optimization output
@@ -460,8 +460,8 @@ def _minimize_pygmo_snopt(problem, x0, options):
     algorithm = pg.algorithm(ppnf.snopt7(library=lib, minor_version=7))
     algorithm_handle = algorithm.extract(ppnf.snopt7)
     _set_pygmo_options(algorithm_handle, options)
-    population = pg.population(problem, size=1)
-    population.set_x(0, x0)
+    population = pg.population(problem)
+    population.push_back(x0)
     population = algorithm.evolve(population)
 
     # Optimization output
@@ -501,8 +501,8 @@ def _minimize_pygmo_snopt(problem, x0, options):
 #     algorithm = pg.algorithm(ppnf.worhp(screen_output=False, library=lib))
 #     algorithm_handle = algorithm.extract(ppnf.worhp)
 #     _set_pygmo_options(algorithm_handle, combined_options)
-#     population = pg.population(problem, size=1)
-#     population.set_x(0, x0)
+#     population = pg.population(problem)
+#     population.push_back(x0)
 #     population = algorithm.evolve(population)
 
 #     # Optimization output

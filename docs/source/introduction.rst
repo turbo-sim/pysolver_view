@@ -113,7 +113,7 @@ This guide will walk you through the process of installing `pysolver_view` via `
 Developer Installation Guide
 ============================
 
-This installation guide is intended for developers who wish to contribute to or modify the Turboflow source code. It assumes that the developer is using a Linux distribution or Windows with Git Bash terminal to have access to Git and Linux-like commands.
+This installation guide is intended for developers who wish to contribute to or modify the ``pysolver_view`` source code. It assumes that the developer is using a Linux distribution or Windows with Git Bash terminal to have access to Git and Linux-like commands.
 
 1. **Fork the repository:**
 

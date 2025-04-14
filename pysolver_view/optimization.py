@@ -308,14 +308,12 @@ class OptimizationSolver:
         # Define new problem with anonymous methods (avoid problems when Pygmo creates a deep copy)
         problem = _PygmoProblem(self)
 
-        # Fetch the solver function
-        lib_wrapper = OPTIMIZATION_LIBRARIES[self.library]
-
         # Print initial guess evaluation when using gradient
         if self.update_on == "gradient":
             self._print_convergence_progress(x0)
 
-        # Solv ethe problem
+        # Solve the problem
+        lib_wrapper = OPTIMIZATION_LIBRARIES[self.library]
         solution = lib_wrapper(problem, x0, self.method, self.options)
 
         # Retrieve last solution (also works for gradient-free solvers when updating on gradient)
@@ -389,7 +387,6 @@ class OptimizationSolver:
             self.func_count += 1
 
             # Update progress report
-            # print(self.problem.make_design_variables_report(x))
             if self.update_on == "function":
                 self._print_convergence_progress(x_norm)
 
