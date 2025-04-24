@@ -21,8 +21,8 @@ logger = psv.create_logger("convergence_history", use_datetime=True)
 # Define problem
 ndim = 20
 x0 = 1.5 * np.ones(ndim)
-# problem = pv.RosenbrockProblem(ndim)
-problem = psv.RosenbrockProblemConstrained(ndim)
+problem = psv.RosenbrockProblem(ndim)
+# problem = psv.RosenbrockProblemConstrained(ndim)
 problem_name = type(problem).__name__
 
 # Initialize figure
@@ -40,7 +40,7 @@ solver = psv.OptimizationSolver(
     problem,
     library="pygmo",
     method="ipopt",
-    print_convergence=True,
+    display_text=True,
     plot_convergence=False,
     logger=logger,
     update_on="gradient",
@@ -71,7 +71,7 @@ solver = psv.OptimizationSolver(
     problem,
     library="pygmo",
     method="ipopt",
-    print_convergence=True,
+    display_text=True,
     plot_convergence=False,
     logger=logger,
     update_on="gradient",

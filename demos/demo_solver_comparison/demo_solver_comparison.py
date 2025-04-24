@@ -58,7 +58,7 @@ for problem, x0 in PROBLEMS_AND_X0:
             method=method,
             max_iterations=500,
             tolerance=1e-5,
-            print_convergence=True,
+            display_text=True,
             plot_convergence=False,
             logger=logger,
             update_on="gradient",

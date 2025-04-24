@@ -42,7 +42,7 @@ for i, tolerance in enumerate(tolerances):
         problem,
         library="pygmo",
         method="ipopt",
-        print_convergence=True,
+        display_text=True,
         plot_convergence=False,
         logger=logger,
         update_on="gradient",

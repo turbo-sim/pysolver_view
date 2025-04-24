@@ -38,7 +38,7 @@ for radius, color in zip(trust_region_radius, colors):
     solver = psv.OptimizationSolver(
         problem,
         method="trust-constr",
-        print_convergence=True,
+        display_text=True,
         plot_convergence=False,
         logger=logger,
         extra_options=options,

@@ -40,7 +40,7 @@ for i, bfgs_steps in enumerate(bfgs_history):
         problem,
         library="pygmo",
         method="snopt",
-        print_convergence=True,
+        display_text=True,
         plot_convergence=False,
         logger=logger,
         update_on="gradient",
