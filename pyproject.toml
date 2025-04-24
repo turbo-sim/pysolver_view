@@ -19,7 +19,7 @@ openpyxl = "^3.1.5"
 PyYAML = "^6.0.2"
 toml = "^0.10.2"
 cycler = "^0.12.1"
-jax = "^0.5.3"
+# jax = "^0.5.3"
 
 [tool.poetry.group.dev.dependencies]
 ipython = ">=8.13,<8.17"

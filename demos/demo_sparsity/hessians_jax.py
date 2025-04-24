@@ -128,7 +128,7 @@ solver = psv.OptimizationSolver(
     problem,
     library="pygmo",
     method="ipopt",
-    display_text=True,
+    print_convergence=True,
     plot_convergence=False,
     update_on="gradient",
     max_iterations=1000,

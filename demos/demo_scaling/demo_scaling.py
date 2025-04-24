@@ -40,7 +40,7 @@ for i, scale in enumerate(scales):
         max_iterations=100,
         tolerance=1e-8,
         problem_scale=scale,
-        display_text=True,
+        print_convergence=True,
         plot_convergence=False,
         logger=logger,
         update_on="function",

@@ -48,6 +48,7 @@ solver.print_optimization_report(
 
 # TODO: I have to improve the printing and logging behavior
 # TODO: currently there are some clashes leading to bad/unintuitive user experience
+# TODO: update the documentation
 
 # Show figure
 plt.show()
