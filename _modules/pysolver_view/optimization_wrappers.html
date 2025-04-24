@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pysolver_view.optimization_wrappers &#8212; pysolver_view v0.4.7 documentation</title>
+    <title>pysolver_view.optimization_wrappers &#8212; pysolver_view v0.6.0 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=f8305ea9"></script>
+    <script src="../../_static/documentation_options.js?v=4fe0b1e1"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -124,7 +124,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.4.7 documentation</p>
+    <p class="title logo__title">pysolver_view v0.6.0 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -641,8 +641,8 @@
     <span class="n">algorithm</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">algorithm</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">ipopt</span><span class="p">())</span>
     <span class="n">algorithm_handle</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">ipopt</span><span class="p">)</span>
     <span class="n">_set_pygmo_options</span><span class="p">(</span><span class="n">algorithm_handle</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
-    <span class="n">population</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">population</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">population</span><span class="o">.</span><span class="n">set_x</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span>
+    <span class="n">population</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">population</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">population</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
     <span class="n">population</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
 
     <span class="c1"># Optimization output</span>
@@ -714,8 +714,8 @@
     <span class="n">algorithm</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">algorithm</span><span class="p">(</span><span class="n">ppnf</span><span class="o">.</span><span class="n">snopt7</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="n">lib</span><span class="p">,</span> <span class="n">minor_version</span><span class="o">=</span><span class="mi">7</span><span class="p">))</span>
     <span class="n">algorithm_handle</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">ppnf</span><span class="o">.</span><span class="n">snopt7</span><span class="p">)</span>
     <span class="n">_set_pygmo_options</span><span class="p">(</span><span class="n">algorithm_handle</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
-    <span class="n">population</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">population</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">population</span><span class="o">.</span><span class="n">set_x</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span>
+    <span class="n">population</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">population</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">population</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
     <span class="n">population</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
 
     <span class="c1"># Optimization output</span>
@@ -755,8 +755,8 @@
 <span class="c1">#     algorithm = pg.algorithm(ppnf.worhp(screen_output=False, library=lib))</span>
 <span class="c1">#     algorithm_handle = algorithm.extract(ppnf.worhp)</span>
 <span class="c1">#     _set_pygmo_options(algorithm_handle, combined_options)</span>
-<span class="c1">#     population = pg.population(problem, size=1)</span>
-<span class="c1">#     population.set_x(0, x0)</span>
+<span class="c1">#     population = pg.population(problem)</span>
+<span class="c1">#     population.push_back(x0)</span>
 <span class="c1">#     population = algorithm.evolve(population)</span>
 
 <span class="c1">#     # Optimization output</span>

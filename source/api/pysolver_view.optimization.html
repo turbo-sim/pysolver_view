@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Optimization &#8212; pysolver_view v0.4.7 documentation</title>
+    <title>Optimization &#8212; pysolver_view v0.6.0 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=f8305ea9"></script>
+    <script src="../../_static/documentation_options.js?v=4fe0b1e1"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -126,7 +126,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.4.7 documentation</p>
+    <p class="title logo__title">pysolver_view v0.6.0 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -302,16 +302,19 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.get_nec"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_nec()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.get_nic"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_nic()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.gradient_normalized_input"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.gradient_normalized_input()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.make_constraint_report"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.make_constraint_report()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.make_design_variables_report"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.make_design_variables_report()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.make_optimization_report"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.make_optimization_report()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.scale_normalized_to_physical"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.scale_normalized_to_physical()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.scale_physical_to_normalized"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.scale_physical_to_normalized()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.evaluate_kkt_conditions"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.evaluate_kkt_conditions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.fitness"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.fitness()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.get_constraint_data"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.get_constraint_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.gradient"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.gradient()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.make_constraint_report"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.make_constraint_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.make_kkt_optimality_report"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.make_kkt_optimality_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.make_lagrange_multipliers_report"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.make_lagrange_multipliers_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.make_variables_report"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.make_variables_report()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.plot_convergence_history"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.plot_convergence_history()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.print_convergence_history"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.print_convergence_history()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.print_optimization_report"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.print_optimization_report()</span></code></a></li>
@@ -376,16 +379,14 @@
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationProblem.clip_to_bounds">
-<span class="sig-name descname"><span class="pre">clip_to_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_physical</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.clip_to_bounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.clip_to_bounds" title="Link to this definition">#</a></dt>
-<dd><p>Clip normalized values to lie within specified normalized bounds.</p>
+<span class="sig-name descname"><span class="pre">clip_to_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_physical</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.clip_to_bounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.clip_to_bounds" title="Link to this definition">#</a></dt>
+<dd><p>Clip physical variable values to lie within specified bounds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>x</strong><span class="classifier">array-like</span></dt><dd><p>Input vector.</p>
+<dt><strong>x_physical</strong><span class="classifier">array-like</span></dt><dd><p>Input vector in physical space.</p>
 </dd>
-<dt><strong>bounds</strong><span class="classifier">tuple of lists</span></dt><dd><p>Tuple (lb, ub) of lower and upper bounds.</p>
-</dd>
-<dt><strong>verbose</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, prints warnings for clipped values.</p>
+<dt><strong>logger</strong><span class="classifier">logging.Logger or None, optional</span></dt><dd><p>Logger for outputting warnings. If None, warnings are printed to standard output.</p>
 </dd>
 </dl>
 </dd>
@@ -533,67 +534,6 @@ the problem is considered unscaled and the gradient is returned directly.</p>
 </div></blockquote>
 <p>This correction ensures that exact user-defined gradients are consistent
 with the scaling applied during optimization.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationProblem.make_constraint_report">
-<span class="sig-name descname"><span class="pre">make_constraint_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_phys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.make_constraint_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.make_constraint_report" title="Link to this definition">#</a></dt>
-<dd><p>Generate a constraint report as a string by evaluating constraints at the given point.</p>
-<p>This method uses <cite>self.constraint_data</cite> if available, otherwise it evaluates the fitness function to get the constraints information.</p>
-<p>By default:
-- Equality constraints are named “equality_constraint_{i}” with target 0 and type “=”.
-- Inequality constraints are named “inequality_constraint_{i}” with target 0 and type “&lt;”.
-- Tolerance <cite>tol</cite> is used to determine satisfaction.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>x_phys</strong><span class="classifier">array-like</span></dt><dd><p>Physical design variable vector.</p>
-</dd>
-<dt><strong>tol</strong><span class="classifier">float, optional</span></dt><dd><p>Tolerance used to determine whether constraints are satisfied (default is 1e-6).</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>str</dt><dd><p>A formatted string report of constraints and satisfaction status.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt>TypeError</dt><dd><p>If <cite>self.constraint_data</cite> exists but is not a valid list of dictionaries.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationProblem.make_design_variables_report">
-<span class="sig-name descname"><span class="pre">make_design_variables_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_phys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.make_design_variables_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.make_design_variables_report" title="Link to this definition">#</a></dt>
-<dd><p>Generate design variable report as a string.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>x_norm</strong><span class="classifier">array-like</span></dt><dd><p>Normalized design variables (input to the solver).</p>
-</dd>
-<dt><strong>normalized</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to report in normalized or physical values. Default is True.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>str</dt><dd><p>Formatted string report.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationProblem.make_optimization_report">
-<span class="sig-name descname"><span class="pre">make_optimization_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_phys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationProblem.make_optimization_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationProblem.make_optimization_report" title="Link to this definition">#</a></dt>
-<dd><p>Print or save a complete optimization report, including variables and constraints.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -748,6 +688,30 @@ preserve the exact scale of the original formulation.</p></li>
 </table>
 </div>
 <dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationSolver.evaluate_kkt_conditions">
+<span class="sig-name descname"><span class="pre">evaluate_kkt_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver.evaluate_kkt_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver.evaluate_kkt_conditions" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the raw quantities required for KKT condition checks.</p>
+<dl class="simple">
+<dt>This method performs all necessary calculations to evaluate:</dt><dd><ul class="simple">
+<li><p>Lagrangian gradient</p></li>
+<li><p>Constraint violations (equality and inequality)</p></li>
+<li><p>Lagrange multipliers for active constraints</p></li>
+<li><p>Complementary slackness products</p></li>
+</ul>
+</dd>
+</dl>
+<p>It does not apply any tolerance threshold; that is handled separately.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>dict</dt><dd><p>A dictionary containing raw values needed to assess the KKT conditions.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationSolver.fitness">
 <span class="sig-name descname"><span class="pre">fitness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">called_from_grad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver.fitness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver.fitness" title="Link to this definition">#</a></dt>
 <dd><p>Evaluates the optimization problem values at a given point x.</p>
@@ -776,6 +740,17 @@ finite-differences gradient calculations. Default is False.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationSolver.get_constraint_data">
+<span class="sig-name descname"><span class="pre">get_constraint_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver.get_constraint_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver.get_constraint_data" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>return a list of dicts with keys:</dt><dd><p>name, type (‘=’, ‘&lt;’), target, value, satisfied</p>
+</dd>
+</dl>
+<p>for all equality and inequality constraints.
+If self.constraint_data exists, validate and return it.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationSolver.gradient">
 <span class="sig-name descname"><span class="pre">gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver.gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver.gradient" title="Link to this definition">#</a></dt>
 <dd><p>Evaluates the Jacobian matrix of the optimization problem at the given point x.</p>
@@ -797,6 +772,65 @@ The Jacobian matrix includes:
 - Gradient of the objective function
 - Jacobian of equality constraints
 - Jacobian of inequality constraints</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationSolver.make_constraint_report">
+<span class="sig-name descname"><span class="pre">make_constraint_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver.make_constraint_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver.make_constraint_report" title="Link to this definition">#</a></dt>
+<dd><p>generate a formatted constraint report at x_phys,
+using get_constraint_data to build/validate the entries.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationSolver.make_kkt_optimality_report">
+<span class="sig-name descname"><span class="pre">make_kkt_optimality_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver.make_kkt_optimality_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver.make_kkt_optimality_report" title="Link to this definition">#</a></dt>
+<dd><p>Generate an 80-char wide summary report of KKT condition satisfaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>str</dt><dd><p>The formatted KKT report as a single string.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationSolver.make_lagrange_multipliers_report">
+<span class="sig-name descname"><span class="pre">make_lagrange_multipliers_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver.make_lagrange_multipliers_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver.make_lagrange_multipliers_report" title="Link to this definition">#</a></dt>
+<dd><p>Generate a report of all Lagrange multipliers:
+- Equalities: always included
+- Inequalities and bounds: show value if active, ‘inactive’ otherwise</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>str</dt><dd><p>The formatted multipliers report as a single string.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationSolver.make_variables_report">
+<span class="sig-name descname"><span class="pre">make_variables_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver.make_variables_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver.make_variables_report" title="Link to this definition">#</a></dt>
+<dd><p>Generate design variable report as a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x_norm</strong><span class="classifier">array-like</span></dt><dd><p>Normalized design variables (input to the solver).</p>
+</dd>
+<dt><strong>normalized</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to report in normalized or physical values. Default is True.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>Formatted string report.</p>
 </dd>
 </dl>
 </dd>
@@ -846,39 +880,42 @@ using the problem name and the start datetime. The file extension is not require
 <dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationSolver.print_convergence_history">
 <span class="sig-name descname"><span class="pre">print_convergence_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">savefile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'output'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver.print_convergence_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver.print_convergence_history" title="Link to this definition">#</a></dt>
-<dd><p>Print the convergence history of the problem.</p>
-<dl class="simple">
-<dt>The convergence history includes:</dt><dd><ul class="simple">
-<li><p>Number of function evaluations</p></li>
+<dd><p>Print or save the convergence history of the optimization process.</p>
+<p>This function prints (or saves) a the report of the optimization convergence progress.
+It includes information collected at each iteration, including:</p>
+<ul class="simple">
 <li><p>Number of gradient evaluations</p></li>
+<li><p>Number of function evaluations</p></li>
 <li><p>Objective function value</p></li>
 <li><p>Maximum constraint violation</p></li>
 <li><p>Two-norm of the update step</p></li>
 </ul>
-</dd>
-<dt>The method provides a detailed report on:</dt><dd><ul class="simple">
+<p>It also includes a summary at the end of the run with:</p>
+<ul class="simple">
 <li><p>Exit message</p></li>
-<li><p>Success status</p></li>
-<li><p>Execution time</p></li>
+<li><p>Success flag</p></li>
+<li><p>Total solution time (in seconds)</p></li>
 </ul>
-</dd>
-</dl>
-<p>This method should be called only after the optimization problem has been solved, as it relies on data generated by the solving process.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method must be called <strong>after</strong> <cite>solve()</cite> has been executed. Otherwise, the convergence
+report is unavailable and a <cite>ValueError</cite> is raised.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>savefile</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, the convergence history will be saved to a file, otherwise printed to standard output. Default is False.</p>
+<dt><strong>savefile</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, the report is saved to a file. Otherwise, it is printed to the screen. Default is False.</p>
 </dd>
-<dt><strong>filename</strong><span class="classifier">str, optional</span></dt><dd><p>The name of the file to save the convergence history. If not specified, the filename is automatically generated
-using the problem name and the start datetime. The file extension is not required.</p>
+<dt><strong>filename</strong><span class="classifier">str or None, optional</span></dt><dd><p>The name of the file to save the report to. If None, a default name is generated based on the
+problem class name and the optimization start datetime.</p>
 </dd>
-<dt><strong>output_dir</strong><span class="classifier">str, optional</span></dt><dd><p>The directory where the plot file will be saved if savefile is True. Default is “output”.</p>
+<dt><strong>output_dir</strong><span class="classifier">str, optional</span></dt><dd><p>Directory where the report file is saved if <cite>savefile=True</cite>. Default is “output”.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt>ValueError</dt><dd><p>If this method is called before the problem has been solved.</p>
+<dt>ValueError</dt><dd><p>If the method is called before the optimization problem has been solved.</p>
 </dd>
 </dl>
 </dd>
@@ -887,31 +924,43 @@ using the problem name and the start datetime. The file extension is not require
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationSolver.print_optimization_report">
-<span class="sig-name descname"><span class="pre">print_optimization_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">savefile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'output'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver.print_optimization_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver.print_optimization_report" title="Link to this definition">#</a></dt>
-<dd><p>Print or save a complete optimization report, including variables and constraints.</p>
-<dl class="simple">
-<dt>This method generates a report with:</dt><dd><ul class="simple">
-<li><p>Design variable values (normalized and/or physical)</p></li>
-<li><p>Constraint values and satisfaction status</p></li>
+<span class="sig-name descname"><span class="pre">print_optimization_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_design_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_kkt_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_multipliers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'output'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver.print_optimization_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver.print_optimization_report" title="Link to this definition">#</a></dt>
+<dd><blockquote>
+<div><p>Generate and print or save a complete optimization report with customizable content.</p>
+<p>This method assembles a detailed summary of the optimization process and results,
+allowing fine-grained control over which components to include. It supports
+outputting the report to the console or saving it to a file.</p>
+<p>The report may include the following sections:
+- Convergence history: number of function and gradient evaluations, objective function value, maximum constraint violation, and step norm. The report also includes The method provides a detailed report on an exit message, success status, and execution time
+- Number of function evaluations
+- Number of gradient evaluations
+- Objective function value
+- Maximum constraint violation
+- Two-norm of the update step</p>
+</div></blockquote>
+<dl>
+<dt>Objective value, constraint violation, and step norm over iterations.</dt><dd><ul class="simple">
+<li><p>Design variables: Final values, shown in physical units and (if applicable) normalized space.</p></li>
+<li><p>Constraints: Numerical values and satisfaction status of all constraints.</p></li>
+<li><p>KKT conditions: Checks of the Karush-Kuhn-Tucker optimality conditions.</p></li>
+<li><p>Lagrange multipliers: Values of multipliers for equality, inequality, and bound constraints.</p></li>
 </ul>
+<p>This method is intended to be called after the <cite>solve()</cite> method has been completed.</p>
 </dd>
 </dl>
-<p>This method should be called only after the optimization problem has been solved.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>savefile</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, the report is written to a file. Otherwise, it is printed. Default is False.</p>
-</dd>
-<dt><strong>filename</strong><span class="classifier">str, optional</span></dt><dd><p>Output filename. If not specified, a default name is generated based on the problem type and datetime.</p>
-</dd>
-<dt><strong>output_dir</strong><span class="classifier">str, optional</span></dt><dd><p>Directory where the report file will be saved if <cite>savefile=True</cite>. Default is “output”.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>ValueError</dt><dd><p>If this method is called before the optimization problem has been solved.</p>
-</dd>
+<dt><strong>include_convergence_history</strong><span class="classifier">bool</span></dt><dd></dd>
+<dt><strong>include_design_variables_normalized</strong><span class="classifier">bool</span></dt><dd></dd>
+<dt><strong>include_design_variables_physical</strong><span class="classifier">bool</span></dt><dd></dd>
+<dt><strong>include_constraints</strong><span class="classifier">bool</span></dt><dd></dd>
+<dt><strong>include_kkt</strong><span class="classifier">bool</span></dt><dd></dd>
+<dt><strong>include_multipliers</strong><span class="classifier">bool</span></dt><dd></dd>
+<dt><strong>savefile</strong><span class="classifier">bool</span></dt><dd></dd>
+<dt><strong>filename</strong><span class="classifier">str or None</span></dt><dd></dd>
+<dt><strong>tol</strong><span class="classifier">float or None  (tolerance for constraints/KKT)</span></dt><dd></dd>
+<dt><strong>output_dir</strong><span class="classifier">str      (directory for saving file)</span></dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -1084,16 +1133,19 @@ or an array-like structure containing multiple constraints.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.get_nec"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_nec()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.get_nic"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.get_nic()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.gradient_normalized_input"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.gradient_normalized_input()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.make_constraint_report"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.make_constraint_report()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.make_design_variables_report"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.make_design_variables_report()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.make_optimization_report"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.make_optimization_report()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.scale_normalized_to_physical"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.scale_normalized_to_physical()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationProblem.scale_physical_to_normalized"><code class="docutils literal notranslate"><span class="pre">OptimizationProblem.scale_physical_to_normalized()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.evaluate_kkt_conditions"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.evaluate_kkt_conditions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.fitness"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.fitness()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.get_constraint_data"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.get_constraint_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.gradient"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.gradient()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.make_constraint_report"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.make_constraint_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.make_kkt_optimality_report"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.make_kkt_optimality_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.make_lagrange_multipliers_report"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.make_lagrange_multipliers_report()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.make_variables_report"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.make_variables_report()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.plot_convergence_history"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.plot_convergence_history()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.print_convergence_history"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.print_convergence_history()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.OptimizationSolver.print_optimization_report"><code class="docutils literal notranslate"><span class="pre">OptimizationSolver.print_optimization_report()</span></code></a></li>
