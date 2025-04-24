@@ -47,7 +47,6 @@ class RosenbrockProblem(OptimizationProblem):
         grad[1:-1] = 200 * (xm - xm_m1**2) - 400 * (xm_p1 - xm**2) * xm - 2 * (1 - xm)
         grad[0] = -400 * x[0] * (x[1] - x[0] ** 2) - 2 * (1 - x[0])
         grad[-1] = 200 * (x[-1] - x[-2] ** 2)
-
         return grad
 
     def hessians(self, x, lower_triangular=True):
@@ -65,8 +64,8 @@ class RosenbrockProblem(OptimizationProblem):
         # return H.squeeze()
         return H
 
-    def hessians(self, x, lower_triangular=True):
-        return approx_jacobian_hessians(self.fitness, x, lower_triangular=lower_triangular)
+    # def hessians(self, x, lower_triangular=True):
+    #     return approx_jacobian_hessians(self.fitness, x, lower_triangular=lower_triangular)
 
     def get_bounds(self):
         return (-10 * np.ones(self.dim), 10 * np.ones(self.dim))
@@ -202,11 +201,12 @@ class HS71Problem(OptimizationProblem):
 
         # Inequality constraints
         c_ineq = 25 - x[0] * x[1] * x[2] * x[3]
+        # c_ineq = None
 
         return combine_objective_and_constraints(f, c_eq, c_ineq)
 
     def get_bounds(self):
-        return (4 * [1], 4 * [5])
+        return (4 * [1.0], 4 * [5])
 
     def get_nec(self):
         return 1

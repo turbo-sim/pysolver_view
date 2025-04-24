@@ -231,7 +231,7 @@ def savefig_in_formats(fig, path_without_extension, formats=[".png", ".svg"], dp
             fig.savefig(f"{path_without_extension}{ext}", bbox_inches="tight")
 
 
-def create_logger(name, path=None, use_datetime=True, to_console=True):
+def create_logger(name, path=None, use_datetime=True, to_console=False):
     """
     Creates and configures a logging object for recording logs during program execution.
 
