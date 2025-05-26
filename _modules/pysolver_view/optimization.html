@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pysolver_view.optimization &#8212; pysolver_view v0.6.0 documentation</title>
+    <title>pysolver_view.optimization &#8212; pysolver_view v0.6.1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=4fe0b1e1"></script>
+    <script src="../../_static/documentation_options.js?v=f41c33fc"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -124,7 +124,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.6.0 documentation</p>
+    <p class="title logo__title">pysolver_view v0.6.1 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -261,7 +261,6 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">numerical_differentiation</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">optimization_wrappers</span> <span class="k">as</span> <span class="n">_opt</span>
 <span class="kn">from</span> <span class="nn">.pysolver_utilities</span> <span class="kn">import</span> <span class="n">savefig_in_formats</span><span class="p">,</span> <span class="n">validate_keys</span>
-
 
 <span class="c1"># Define valid libraries and their corresponding methods</span>
 <span class="n">OPTIMIZATION_LIBRARIES</span> <span class="o">=</span> <span class="p">{</span>
@@ -412,7 +411,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">callback_functions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_callback</span><span class="p">(</span><span class="n">callback_functions</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callback_function_call_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_improvement_only</span> <span class="o">=</span> <span class="n">plot_improvement_only</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cache_tol</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_cache_tol</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
 
         <span class="c1"># Validate library and method</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_library_and_method</span><span class="p">()</span>
@@ -619,7 +618,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># If x hasn&#39;t changed, use cached values</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_tol</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">check_cache_tol</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;fitness&quot;</span><span class="p">]</span>
 
         <span class="c1"># Increase total counter (includes finite differences)</span>
@@ -679,7 +678,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># If x hasn&#39;t changed, use cached values</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x_jac&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x_jac&quot;</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_tol</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x_jac&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x_jac&quot;</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">check_cache_tol</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;gradient&quot;</span><span class="p">]</span>
 
         <span class="c1"># Use problem gradient method if it exists</span>
@@ -718,7 +717,7 @@
         <span class="k">return</span> <span class="n">grad</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_handle_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">savefile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_handle_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">savefile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">to_console</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unified output handler: print, log, and optionally save to a file.</span>
 
@@ -738,7 +737,7 @@
 
         <span class="c1"># Print to screen if display is enabled and no logger used</span>
         <span class="c1"># if self.display and not self.logger:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="ow">or</span> <span class="n">to_console</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
         <span class="c1"># Save to file if requested</span>
@@ -763,7 +762,7 @@
             <span class="sa">f</span><span class="s2">&quot; Starting optimization process for </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot; Optimization algorithm employed: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;Grad-eval&#39;</span><span class="si">:</span><span class="s2">&gt;13</span><span class="si">}{</span><span class="s1">&#39;Func-eval&#39;</span><span class="si">:</span><span class="s2">&gt;13</span><span class="si">}{</span><span class="s1">&#39;Func-value&#39;</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}{</span><span class="s1">&#39;Infeasibility&#39;</span><span class="si">:</span><span class="s2">&gt;18</span><span class="si">}{</span><span class="s1">&#39;Norm of step&#39;</span><span class="si">:</span><span class="s2">&gt;18</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;Grad-eval&#39;</span><span class="si">:</span><span class="s2">&gt;13</span><span class="si">}{</span><span class="s1">&#39;Func-eval&#39;</span><span class="si">:</span><span class="s2">&gt;13</span><span class="si">}{</span><span class="s1">&#39;Func-value&#39;</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}{</span><span class="s1">&#39;Infeasibility&#39;</span><span class="si">:</span><span class="s2">&gt;18</span><span class="si">}{</span><span class="s1">&#39;Norm of step&#39;</span><span class="si">:</span><span class="s2">&gt;18</span><span class="si">}{</span><span class="s1">&#39;Optimality&#39;</span><span class="si">:</span><span class="s2">&gt;18</span><span class="si">}</span><span class="s2"> &quot;</span>
         <span class="n">separator</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
         <span class="n">lines_to_output</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">separator</span><span class="p">,</span>
@@ -820,6 +819,8 @@
         <span class="n">c_ineq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;c_ineq&quot;</span><span class="p">]</span>
         <span class="n">violation_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">c_eq</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">c_ineq</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
         <span class="n">violation_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">violation_all</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">violation_all</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="n">kkt_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_kkt_conditions</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">])</span>
+        <span class="n">optimality</span> <span class="o">=</span> <span class="n">kkt_data</span><span class="p">[</span><span class="s2">&quot;first_order_optimality&quot;</span><span class="p">]</span>
 
         <span class="c1"># Store convergence status</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_last_norm</span><span class="p">)</span>
@@ -831,7 +832,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">convergence_history</span><span class="p">[</span><span class="s2">&quot;norm_step&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">norm_step</span><span class="p">)</span>
 
         <span class="c1"># Current convergence message</span>
-        <span class="n">status</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">grad_count</span><span class="si">:</span><span class="s2">13d</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">func_count</span><span class="si">:</span><span class="s2">13d</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">+16.3e</span><span class="si">}{</span><span class="n">violation_max</span><span class="si">:</span><span class="s2">+18.3e</span><span class="si">}{</span><span class="n">norm_step</span><span class="si">:</span><span class="s2">+18.3e</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">grad_count</span><span class="si">:</span><span class="s2">13d</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">func_count</span><span class="si">:</span><span class="s2">13d</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">+16.3e</span><span class="si">}{</span><span class="n">violation_max</span><span class="si">:</span><span class="s2">+18.3e</span><span class="si">}{</span><span class="n">norm_step</span><span class="si">:</span><span class="s2">+18.3e</span><span class="si">}{</span><span class="n">optimality</span><span class="si">:</span><span class="s2">+18.3e</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="c1"># status = f&quot; {self.grad_count:13d}{self.func_count:13d}{self.cache[&#39;f&#39;]:+16.3e}{violation_max:+18.3e}{norm_step:+18.3e} &quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
 
         <span class="c1"># Store text in memory</span>
@@ -1077,7 +1079,7 @@
             <span class="n">filepath</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Output the report (either print or save to file)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">(</span><span class="n">full_text</span><span class="p">,</span> <span class="n">savefile</span><span class="o">=</span><span class="n">savefile</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filepath</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">(</span><span class="n">full_text</span><span class="p">,</span> <span class="n">savefile</span><span class="o">=</span><span class="n">savefile</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filepath</span><span class="p">,</span> <span class="n">to_console</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 
@@ -1149,7 +1151,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">problem_scale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+                <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_phys</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
                 <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">include_constraints</span><span class="p">:</span>
             <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_constraint_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">))</span>
@@ -1289,42 +1291,6 @@
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">data</span></div>
-
-
-<div class="viewcode-block" id="OptimizationSolver.make_constraint_report">
-<a class="viewcode-back" href="../../source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.make_constraint_report">[docs]</a>
-    <span class="k">def</span> <span class="nf">make_constraint_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        generate a formatted constraint report at x_phys,</span>
-<span class="sd">        using get_constraint_data to build/validate the entries.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">max_name_width</span> <span class="o">=</span> <span class="mi">48</span>
-        <span class="n">constraint_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_constraint_data</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span>
-
-        <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39; Optimization constraints report&#39;</span><span class="si">:</span><span class="s2">&lt;80</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39; Constraint name&#39;</span><span class="si">:</span><span class="s2">&lt;49</span><span class="si">}{</span><span class="s1">&#39;Value&#39;</span><span class="si">:</span><span class="s2">&gt;11</span><span class="si">}{</span><span class="s1">&#39;Target&#39;</span><span class="si">:</span><span class="s2">&gt;13</span><span class="si">}{</span><span class="s1">&#39;Ok?&#39;</span><span class="si">:</span><span class="s2">&gt;6</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">constraint_data</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="n">ctype</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="n">target</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
-            <span class="n">satisfied</span> <span class="o">=</span> <span class="s2">&quot;yes&quot;</span> <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;satisfied&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;no&quot;</span>
-
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_name_width</span><span class="p">:</span>
-                <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">max_name_width</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span> <span class="p">:]</span>
-
-            <span class="n">symbol_target</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ctype</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">target</span><span class="si">:</span><span class="s2">+.2e</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;48</span><span class="si">}{</span><span class="n">value</span><span class="si">:</span><span class="s2">&gt;+11.2e</span><span class="si">}{</span><span class="n">symbol_target</span><span class="si">:</span><span class="s2">&gt;13</span><span class="si">}{</span><span class="n">satisfied</span><span class="si">:</span><span class="s2">&gt;6</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
 
 
 
@@ -1474,12 +1440,31 @@
 <a class="viewcode-back" href="../../source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.make_kkt_optimality_report">[docs]</a>
     <span class="k">def</span> <span class="nf">make_kkt_optimality_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate an 80-char wide summary report of KKT condition satisfaction.</span>
+<span class="sd">        Generate a detailed KKT condition satisfaction report (80-character width).</span>
+
+<span class="sd">        This report includes five key KKT checks:</span>
+<span class="sd">        - First order optimality:     ∥∇L(x, λ)∥ ≤ tol</span>
+<span class="sd">        - Equality feasibility:       max |c_eq(x)| ≤ tol</span>
+<span class="sd">        - Inequality feasibility:     max(0, c_ineq(x)) ≤ tol</span>
+<span class="sd">        - Dual feasibility:           min(λ_ineq) ≥ 0</span>
+<span class="sd">        - Complementary slackness:    max |λ_i * c_i| ≤ tol</span>
+
+<span class="sd">        For each condition, the report shows:</span>
+<span class="sd">        - Actual computed value</span>
+<span class="sd">        - Comparison direction and target (tolerance or 0)</span>
+<span class="sd">        - Satisfaction status</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x_norm : array-like</span>
+<span class="sd">            Normalized decision variable vector to evaluate the KKT conditions at.</span>
+<span class="sd">        tol : float</span>
+<span class="sd">            Numerical tolerance used for comparisons in optimality and feasibility checks.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
-<span class="sd">            The formatted KKT report as a single string.</span>
+<span class="sd">            A formatted report string summarizing KKT condition satisfaction.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Compute KKT conditions</span>
         <span class="n">kkt_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_kkt_conditions</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span>
@@ -1489,9 +1474,7 @@
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="n">sep</span><span class="p">,</span>
-            <span class="s2">&quot; Karush-Kuhn-Tucker (KKT) conditions report&quot;</span><span class="p">,</span>
-            <span class="n">sep</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;Condition&#39;</span><span class="si">:</span><span class="s2">&lt;40</span><span class="si">}{</span><span class="s1">&#39;Value&#39;</span><span class="si">:</span><span class="s2">&gt;20</span><span class="si">}{</span><span class="s1">&#39;Ok?&#39;</span><span class="si">:</span><span class="s2">&gt;18</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;Karush-Kuhn-Tucker (KKT) conditions&#39;</span><span class="si">:</span><span class="s2">&lt;36</span><span class="si">}{</span><span class="s1">&#39;Value&#39;</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}{</span><span class="s1">&#39;Target&#39;</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}{</span><span class="s1">&#39;Ok?&#39;</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="n">sep</span><span class="p">,</span>
         <span class="p">]</span>
 
@@ -1499,37 +1482,273 @@
             <span class="p">(</span>
                 <span class="s2">&quot;First order optimality&quot;</span><span class="p">,</span>
                 <span class="n">kkt_data</span><span class="p">[</span><span class="s2">&quot;first_order_optimality&quot;</span><span class="p">],</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="n">tol</span><span class="si">:</span><span class="s2">+.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">kkt_data</span><span class="p">[</span><span class="s2">&quot;first_order_optimality_ok&quot;</span><span class="p">],</span>
             <span class="p">),</span>
             <span class="p">(</span>
                 <span class="s2">&quot;Equality feasibility&quot;</span><span class="p">,</span>
                 <span class="n">kkt_data</span><span class="p">[</span><span class="s2">&quot;feasibility_equality&quot;</span><span class="p">],</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="n">tol</span><span class="si">:</span><span class="s2">+.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">kkt_data</span><span class="p">[</span><span class="s2">&quot;feasibility_equality_ok&quot;</span><span class="p">],</span>
             <span class="p">),</span>
             <span class="p">(</span>
                 <span class="s2">&quot;Inequality feasibility&quot;</span><span class="p">,</span>
                 <span class="n">kkt_data</span><span class="p">[</span><span class="s2">&quot;feasibility_inequality&quot;</span><span class="p">],</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="n">tol</span><span class="si">:</span><span class="s2">+.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">kkt_data</span><span class="p">[</span><span class="s2">&quot;feasibility_inequality_ok&quot;</span><span class="p">],</span>
             <span class="p">),</span>
             <span class="p">(</span>
                 <span class="s2">&quot;Dual feasibility&quot;</span><span class="p">,</span>
                 <span class="n">kkt_data</span><span class="p">[</span><span class="s2">&quot;feasibility_dual&quot;</span><span class="p">],</span>
+                <span class="sa">f</span><span class="s2">&quot;&gt; </span><span class="si">{</span><span class="o">-</span><span class="n">tol</span><span class="si">:</span><span class="s2">+.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">kkt_data</span><span class="p">[</span><span class="s2">&quot;feasibility_dual_ok&quot;</span><span class="p">],</span>
             <span class="p">),</span>
             <span class="p">(</span>
                 <span class="s2">&quot;Complementary slackness&quot;</span><span class="p">,</span>
                 <span class="n">kkt_data</span><span class="p">[</span><span class="s2">&quot;complementary_slackness&quot;</span><span class="p">],</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="n">tol</span><span class="si">:</span><span class="s2">+.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">kkt_data</span><span class="p">[</span><span class="s2">&quot;complementary_slackness_ok&quot;</span><span class="p">],</span>
             <span class="p">),</span>
         <span class="p">]</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">ok</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">ok</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
             <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;yes&quot;</span> <span class="k">if</span> <span class="n">ok</span> <span class="k">else</span> <span class="s2">&quot; no&quot;</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;40</span><span class="si">}{</span><span class="n">val</span><span class="si">:</span><span class="s2">&gt;+20.3e</span><span class="si">}{</span><span class="n">status</span><span class="si">:</span><span class="s2">&gt;18</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;36</span><span class="si">}{</span><span class="n">val</span><span class="si">:</span><span class="s2">&gt;+16.3e</span><span class="si">}{</span><span class="n">target</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}{</span><span class="n">status</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
 
     
+
+    <span class="c1"># def make_constraint_report(self, x_norm, tol):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Generate a compact constraint report that includes:</span>
+    <span class="c1">#     - Constraint value and target</span>
+    <span class="c1">#     - Satisfaction status</span>
+    <span class="c1">#     - Lagrange multiplier (if active), otherwise &#39;inactive&#39;</span>
+
+    <span class="c1">#     This merges value and multiplier reports for better readability.</span>
+
+    <span class="c1">#     Parameters</span>
+    <span class="c1">#     ----------</span>
+    <span class="c1">#     x_norm : array-like</span>
+    <span class="c1">#         Normalized design variable vector.</span>
+    <span class="c1">#     tol : float</span>
+    <span class="c1">#         Tolerance used for satisfaction and KKT activeness checks.</span>
+
+    <span class="c1">#     Returns</span>
+    <span class="c1">#     -------</span>
+    <span class="c1">#     str</span>
+    <span class="c1">#         A formatted string with the constraint summary.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     max_name_width = 35</span>
+    <span class="c1">#     constraint_data = self.get_constraint_data(x_norm, tol)</span>
+    <span class="c1">#     kkt_data = self.evaluate_kkt_conditions(x_norm, tol)</span>
+    <span class="c1">#     active_multipliers = kkt_data[&quot;multipliers_ineq&quot;]</span>
+    <span class="c1">#     multipliers_eq = kkt_data[&quot;multipliers_eq&quot;]</span>
+
+    <span class="c1">#     sep = &quot;-&quot; * 80</span>
+    <span class="c1">#     lines = [</span>
+    <span class="c1">#         &quot;&quot;,</span>
+    <span class="c1">#         sep,</span>
+    <span class="c1">#         &quot; Constraint summary report&quot;,</span>
+    <span class="c1">#         sep,</span>
+    <span class="c1">#         f&quot; {&#39;Constraint name&#39;:&lt;{max_name_width}}{&#39;Value&#39;:&gt;12}{&#39;Target&#39;:&gt;13}{&#39;Ok?&#39;:&gt;6}{&#39;Multiplier&#39;:&gt;12}&quot;,</span>
+    <span class="c1">#         sep,</span>
+    <span class="c1">#     ]</span>
+
+    <span class="c1">#     eq_count = 0</span>
+    <span class="c1">#     ineq_count = 0</span>
+    <span class="c1">#     var_names = self.problem.variable_names</span>
+    <span class="c1">#     n_vars = len(var_names)</span>
+    <span class="c1">#     n_ineq = self.problem.get_nic()</span>
+
+    <span class="c1">#     for i, entry in enumerate(constraint_data):</span>
+    <span class="c1">#         name = entry.get(&quot;name&quot;, &quot;&quot;)</span>
+    <span class="c1">#         ctype = entry.get(&quot;type&quot;, &quot;&quot;)</span>
+    <span class="c1">#         value = entry.get(&quot;value&quot;, 0.0)</span>
+    <span class="c1">#         target = entry.get(&quot;target&quot;, 0.0)</span>
+    <span class="c1">#         satisfied = &quot;yes&quot; if entry.get(&quot;satisfied&quot;, False) else &quot; no&quot;</span>
+
+    <span class="c1">#         if len(name) &gt; max_name_width:</span>
+    <span class="c1">#             name = &quot;...&quot; + name[-(max_name_width - 3):]</span>
+
+    <span class="c1">#         # Determine the target symbol</span>
+    <span class="c1">#         symbol = &quot;=&quot; if ctype == &quot;=&quot; else &quot;&lt;&quot;</span>
+    <span class="c1">#         target_str = f&quot;{symbol} {target:+.3e}&quot;</span>
+    <span class="c1">#         value_str = f&quot;{value:+.3e}&quot;</span>
+
+    <span class="c1">#         # Multiplier</span>
+    <span class="c1">#         if ctype == &quot;=&quot;:</span>
+    <span class="c1">#             multiplier = f&quot;{multipliers_eq[eq_count]:+.3e}&quot;</span>
+    <span class="c1">#             eq_count += 1</span>
+    <span class="c1">#         elif ctype == &quot;&lt;&quot;:</span>
+    <span class="c1">#             # Inequality constraint or bounds</span>
+    <span class="c1">#             if ineq_count in active_multipliers:</span>
+    <span class="c1">#                 multiplier = f&quot;{active_multipliers[ineq_count]:+.3e}&quot;</span>
+    <span class="c1">#             else:</span>
+    <span class="c1">#                 multiplier = &quot;inactive&quot;</span>
+    <span class="c1">#             ineq_count += 1</span>
+    <span class="c1">#         else:</span>
+    <span class="c1">#             multiplier = &quot;---&quot;</span>
+
+    <span class="c1">#         lines.append(f&quot; {name:&lt;{max_name_width}}{value_str:&gt;12}{target_str:&gt;13}{satisfied:&gt;6}{multiplier:&gt;12}&quot;)</span>
+
+    <span class="c1">#     lines.append(sep)</span>
+    <span class="c1">#     return &quot;\n&quot;.join(lines)</span>
+
+
+    <span class="c1"># def make_constraint_report(self, x_norm, tol):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Generate a compact constraint report that includes:</span>
+    <span class="c1">#     - Constraint value and target</span>
+    <span class="c1">#     - Satisfaction status</span>
+    <span class="c1">#     - Lagrange multiplier (if active), otherwise &#39;inactive&#39;</span>
+
+    <span class="c1">#     Supports equality, less-than, and greater-than constraints, including bounds.</span>
+
+    <span class="c1">#     Parameters</span>
+    <span class="c1">#     ----------</span>
+    <span class="c1">#     x_norm : array-like</span>
+    <span class="c1">#         Normalized design variable vector.</span>
+    <span class="c1">#     tol : float</span>
+    <span class="c1">#         Tolerance used for constraint satisfaction and activeness checks.</span>
+
+    <span class="c1">#     Returns</span>
+    <span class="c1">#     -------</span>
+    <span class="c1">#     str</span>
+    <span class="c1">#         A formatted string with the constraint summary.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     max_name_width = 35</span>
+    <span class="c1">#     var_names = self.problem.variable_names</span>
+    <span class="c1">#     n_vars = len(var_names)</span>
+
+    <span class="c1">#     constraint_data = self.get_constraint_data(x_norm, tol)</span>
+    <span class="c1">#     kkt_data = self.evaluate_kkt_conditions(x_norm, tol)</span>
+    <span class="c1">#     active_multipliers = kkt_data[&quot;multipliers_ineq&quot;]</span>
+    <span class="c1">#     multipliers_eq = kkt_data[&quot;multipliers_eq&quot;]</span>
+
+    <span class="c1">#     # Append bound constraints with natural inequality direction</span>
+    <span class="c1">#     lb, ub = self.problem.get_bounds_normalized()</span>
+    <span class="c1">#     bounds_lower, bounds_upper = [], []</span>
+    <span class="c1">#     for i, (name, xi, lb_i, ub_i) in enumerate(zip(var_names, x_norm, lb, ub)):</span>
+    <span class="c1">#         if lb_i is not None:</span>
+    <span class="c1">#             bounds_lower.append({</span>
+    <span class="c1">#                 &quot;name&quot;: name,</span>
+    <span class="c1">#                 &quot;type&quot;: &quot;&gt;&quot;,</span>
+    <span class="c1">#                 &quot;value&quot;: xi,</span>
+    <span class="c1">#                 &quot;target&quot;: lb_i,</span>
+    <span class="c1">#                 &quot;satisfied&quot;: (xi - lb_i &gt;= -tol)  # xi ≥ lb_i</span>
+    <span class="c1">#             })</span>
+    <span class="c1">#         if ub_i is not None:</span>
+    <span class="c1">#             bounds_upper.append({</span>
+    <span class="c1">#                 &quot;name&quot;: name,</span>
+    <span class="c1">#                 &quot;type&quot;: &quot;&lt;&quot;,</span>
+    <span class="c1">#                 &quot;value&quot;: xi,</span>
+    <span class="c1">#                 &quot;target&quot;: ub_i,</span>
+    <span class="c1">#                 &quot;satisfied&quot;: (ub_i - xi &gt;= -tol)  # xi ≤ ub_i</span>
+    <span class="c1">#             })</span>
+
+    <span class="c1">#     # Then concatenate in order:</span>
+    <span class="c1">#     constraint_data = bounds_lower + bounds_upper + constraint_data</span>
+    <span class="c1">#     print(constraint_data)</span>
+
+
+    <span class="c1">#     # Build the report</span>
+    <span class="c1">#     sep = &quot;-&quot; * 80</span>
+    <span class="c1">#     lines = [</span>
+    <span class="c1">#         &quot;&quot;,</span>
+    <span class="c1">#         sep,</span>
+    <span class="c1">#         f&quot; {&#39;Constraint summary report&#39;:&lt;{max_name_width}}{&#39;Value&#39;:&gt;12}{&#39;Target&#39;:&gt;13}{&#39;Ok?&#39;:&gt;6}{&#39;Multiplier&#39;:&gt;12}&quot;,</span>
+    <span class="c1">#         sep,</span>
+    <span class="c1">#     ]</span>
+
+    <span class="c1">#     eq_count = 0</span>
+    <span class="c1">#     ineq_count = 0</span>
+    <span class="c1">#     for entry in constraint_data:</span>
+    <span class="c1">#         name = entry.get(&quot;name&quot;, &quot;&quot;)</span>
+    <span class="c1">#         ctype = entry.get(&quot;type&quot;, &quot;&quot;)</span>
+    <span class="c1">#         value = entry.get(&quot;value&quot;, 0.0)</span>
+    <span class="c1">#         target = entry.get(&quot;target&quot;, 0.0)</span>
+    <span class="c1">#         satisfied = &quot;yes&quot; if entry.get(&quot;satisfied&quot;, False) else &quot; no&quot;</span>
+
+    <span class="c1">#         if len(name) &gt; max_name_width:</span>
+    <span class="c1">#             name = &quot;...&quot; + name[-(max_name_width - 3):]</span>
+
+    <span class="c1">#         # Set the symbol for the target constraint</span>
+    <span class="c1">#         if ctype == &quot;=&quot;:</span>
+    <span class="c1">#             symbol = &quot;=&quot;</span>
+    <span class="c1">#         elif ctype == &quot;&lt;&quot;:</span>
+    <span class="c1">#             symbol = &quot;&lt;&quot;</span>
+    <span class="c1">#         elif ctype == &quot;&gt;&quot;:</span>
+    <span class="c1">#             symbol = &quot;&gt;&quot;</span>
+    <span class="c1">#         else:</span>
+    <span class="c1">#             symbol = &quot;?&quot;</span>
+
+    <span class="c1">#         value_str = f&quot;{value:+.3e}&quot;</span>
+    <span class="c1">#         target_str = f&quot;{symbol} {target:+.3e}&quot;</span>
+
+    <span class="c1">#         # Handle multipliers</span>
+    <span class="c1">#         if ctype == &quot;=&quot;:</span>
+    <span class="c1">#             multiplier = f&quot;{multipliers_eq[eq_count]:+.3e}&quot;</span>
+    <span class="c1">#             eq_count += 1</span>
+    <span class="c1">#         elif ctype in {&quot;&lt;&quot;, &quot;&gt;&quot;}:</span>
+    <span class="c1">#             if ineq_count in active_multipliers:</span>
+    <span class="c1">#                 multiplier = f&quot;{active_multipliers[ineq_count]:+.3e}&quot;</span>
+    <span class="c1">#             else:</span>
+    <span class="c1">#                 multiplier = &quot;inactive&quot;</span>
+    <span class="c1">#             ineq_count += 1</span>
+    <span class="c1">#         else:</span>
+    <span class="c1">#             multiplier = &quot;---&quot;</span>
+
+    <span class="c1">#         lines.append(f&quot; {name:&lt;{max_name_width}}{value_str:&gt;12}{target_str:&gt;13}{satisfied:&gt;6}{multiplier:&gt;12}&quot;)</span>
+
+    <span class="c1">#     lines.append(sep)</span>
+    <span class="c1">#     return &quot;\n&quot;.join(lines)</span>
+
+
+<div class="viewcode-block" id="OptimizationSolver.make_constraint_report">
+<a class="viewcode-back" href="../../source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.make_constraint_report">[docs]</a>
+    <span class="k">def</span> <span class="nf">make_constraint_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        generate a formatted constraint report at x_phys,</span>
+<span class="sd">        using get_constraint_data to build/validate the entries.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">max_name_width</span> <span class="o">=</span> <span class="mi">48</span>
+        <span class="n">constraint_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_constraint_data</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span>
+
+        <span class="c1"># from .pysolver_utilities import print_dict</span>
+        <span class="c1"># print(&quot;Data dictionary&quot;)</span>
+        <span class="c1"># for item in constraint_data:</span>
+        <span class="c1">#     print()</span>
+        <span class="c1">#     print_dict(item)</span>
+
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39; Optimization constraints report&#39;</span><span class="si">:</span><span class="s2">&lt;80</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39; Constraint name&#39;</span><span class="si">:</span><span class="s2">&lt;49</span><span class="si">}{</span><span class="s1">&#39;Value&#39;</span><span class="si">:</span><span class="s2">&gt;11</span><span class="si">}{</span><span class="s1">&#39;Target&#39;</span><span class="si">:</span><span class="s2">&gt;13</span><span class="si">}{</span><span class="s1">&#39;Ok?&#39;</span><span class="si">:</span><span class="s2">&gt;6</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">constraint_data</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">ctype</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+            <span class="n">satisfied</span> <span class="o">=</span> <span class="s2">&quot;yes&quot;</span> <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;satisfied&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;no&quot;</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_name_width</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">max_name_width</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span> <span class="p">:]</span>
+
+            <span class="n">symbol_target</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ctype</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">target</span><span class="si">:</span><span class="s2">+.2e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;48</span><span class="si">}{</span><span class="n">value</span><span class="si">:</span><span class="s2">&gt;+11.2e</span><span class="si">}{</span><span class="n">symbol_target</span><span class="si">:</span><span class="s2">&gt;13</span><span class="si">}{</span><span class="n">satisfied</span><span class="si">:</span><span class="s2">&gt;6</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
+
+
 
 <div class="viewcode-block" id="OptimizationSolver.make_lagrange_multipliers_report">
 <a class="viewcode-back" href="../../source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.make_lagrange_multipliers_report">[docs]</a>

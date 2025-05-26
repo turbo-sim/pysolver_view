@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pysolver_view.optimization_problems &#8212; pysolver_view v0.6.0 documentation</title>
+    <title>pysolver_view.optimization_problems &#8212; pysolver_view v0.6.1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=4fe0b1e1"></script>
+    <script src="../../_static/documentation_options.js?v=f41c33fc"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -124,7 +124,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.6.0 documentation</p>
+    <p class="title logo__title">pysolver_view v0.6.1 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -591,6 +591,29 @@
         <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span></div>
 </div>
 
+
+
+
+
+
+<span class="c1"># class SimoneProblem(OptimizationProblem):</span>
+
+<span class="c1">#     def gradient(self, x):</span>
+<span class="c1">#         return (4 * (x[0] - 2) * (x[1] - 4)**4, 8 * (x[0] - 2)**2 * (x[1] - 4)**3)</span>
+    
+<span class="c1">#     def fitness(self, x):</span>
+<span class="c1">#         y=2*(x[0]-2)**2*(x[1]-4)**4</span>
+<span class="c1">#         print(&#39;x = [%14f,%14f]&#39;%(x[0],x[1]))</span>
+<span class="c1">#         return np.atleast_1d(y)</span>
+    
+<span class="c1">#     def get_bounds(self):</span>
+<span class="c1">#         return (2*[-1e6], 2*[1e6])</span>
+
+<span class="c1">#     def get_nec(self):</span>
+<span class="c1">#         return 0</span>
+
+<span class="c1">#     def get_nic(self):</span>
+<span class="c1">#         return 0</span>
 </pre></div>
 
                 </article>

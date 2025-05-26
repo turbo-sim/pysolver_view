@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Optimization &#8212; pysolver_view v0.6.0 documentation</title>
+    <title>Optimization &#8212; pysolver_view v0.6.1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=4fe0b1e1"></script>
+    <script src="../../_static/documentation_options.js?v=f41c33fc"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -126,7 +126,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.6.0 documentation</p>
+    <p class="title logo__title">pysolver_view v0.6.1 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -788,11 +788,29 @@ using get_constraint_data to build/validate the entries.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.OptimizationSolver.make_kkt_optimality_report">
 <span class="sig-name descname"><span class="pre">make_kkt_optimality_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pysolver_view/optimization.html#OptimizationSolver.make_kkt_optimality_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.OptimizationSolver.make_kkt_optimality_report" title="Link to this definition">#</a></dt>
-<dd><p>Generate an 80-char wide summary report of KKT condition satisfaction.</p>
+<dd><p>Generate a detailed KKT condition satisfaction report (80-character width).</p>
+<p>This report includes five key KKT checks:
+- First order optimality:     ∥∇L(x, λ)∥ ≤ tol
+- Equality feasibility:       max <a href="#id1"><span class="problematic" id="id2">|c_eq(x)|</span></a> ≤ tol
+- Inequality feasibility:     max(0, c_ineq(x)) ≤ tol
+- Dual feasibility:           min(λ_ineq) ≥ 0
+- Complementary slackness:    max <a href="#id3"><span class="problematic" id="id4">|λ_i * c_i|</span></a> ≤ tol</p>
+<p>For each condition, the report shows:
+- Actual computed value
+- Comparison direction and target (tolerance or 0)
+- Satisfaction status</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt>str</dt><dd><p>The formatted KKT report as a single string.</p>
+<dt><strong>x_norm</strong><span class="classifier">array-like</span></dt><dd><p>Normalized decision variable vector to evaluate the KKT conditions at.</p>
+</dd>
+<dt><strong>tol</strong><span class="classifier">float</span></dt><dd><p>Numerical tolerance used for comparisons in optimality and feasibility checks.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>A formatted report string summarizing KKT condition satisfaction.</p>
 </dd>
 </dl>
 </dd>
