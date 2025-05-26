@@ -14,7 +14,6 @@ from . import numerical_differentiation
 from . import optimization_wrappers as _opt
 from .pysolver_utilities import savefig_in_formats, validate_keys
 
-
 # Define valid libraries and their corresponding methods
 OPTIMIZATION_LIBRARIES = {
     "scipy": _opt.minimize_scipy,
@@ -162,7 +161,7 @@ class OptimizationSolver:
         self.callback_functions = self._validate_callback(callback_functions)
         self.callback_function_call_count = 0
         self.plot_improvement_only = plot_improvement_only
-        self.cache_tol = 10*np.finfo(float).eps
+        self.check_cache_tol = 10*np.finfo(float).eps
 
         # Validate library and method
         self._validate_library_and_method()
@@ -364,7 +363,7 @@ class OptimizationSolver:
 
         """
         # If x hasn't changed, use cached values
-        if self.cache["x"] is not None and np.allclose(x_norm, self.cache["x"], rtol=0, atol=self.cache_tol):
+        if self.cache["x"] is not None and np.allclose(x_norm, self.cache["x"], rtol=0, atol=self.check_cache_tol):
             return self.cache["fitness"]
 
         # Increase total counter (includes finite differences)
@@ -421,7 +420,7 @@ class OptimizationSolver:
         """
 
         # If x hasn't changed, use cached values
-        if self.cache["x_jac"] is not None and np.allclose(x_norm, self.cache["x_jac"], rtol=0, atol=self.cache_tol):
+        if self.cache["x_jac"] is not None and np.allclose(x_norm, self.cache["x_jac"], rtol=0, atol=self.check_cache_tol):
             return self.cache["gradient"]
 
         # Use problem gradient method if it exists
@@ -459,7 +458,7 @@ class OptimizationSolver:
 
         return grad
 
-    def _handle_output(self, text: str, savefile: bool = False, filename: str = None):
+    def _handle_output(self, text: str, savefile: bool = False, filename: str = None, to_console=False):
         """
         Unified output handler: print, log, and optionally save to a file.
 
@@ -479,7 +478,7 @@ class OptimizationSolver:
 
         # Print to screen if display is enabled and no logger used
         # if self.display and not self.logger:
-        if self.display:
+        if self.display or to_console:
             print(text)
 
         # Save to file if requested
@@ -504,7 +503,7 @@ class OptimizationSolver:
             f" Starting optimization process for {type(self.problem).__name__}\n"
             f" Optimization algorithm employed: {self.method}"
         )
-        self.header = f" {'Grad-eval':>13}{'Func-eval':>13}{'Func-value':>16}{'Infeasibility':>18}{'Norm of step':>18} "
+        self.header = f" {'Grad-eval':>13}{'Func-eval':>13}{'Func-value':>16}{'Infeasibility':>18}{'Norm of step':>18}{'Optimality':>18} "
         separator = "-" * len(self.header)
         lines_to_output = [
             separator,
@@ -561,6 +560,8 @@ class OptimizationSolver:
         c_ineq = self.cache["c_ineq"]
         violation_all = np.concatenate((c_eq, np.maximum(c_ineq, 0)))
         violation_max = np.max(np.abs(violation_all)) if len(violation_all) > 0 else 0.0
+        kkt_data = self.evaluate_kkt_conditions(x, 5*self.options["tolerance"])
+        optimality = kkt_data["first_order_optimality"]
 
         # Store convergence status
         self.convergence_history["x"].append(self.x_last_norm)
@@ -572,7 +573,8 @@ class OptimizationSolver:
         self.convergence_history["norm_step"].append(norm_step)
 
         # Current convergence message
-        status = f" {self.grad_count:13d}{self.func_count:13d}{self.cache['f']:+16.3e}{violation_max:+18.3e}{norm_step:+18.3e} "
+        status = f" {self.grad_count:13d}{self.func_count:13d}{self.cache['f']:+16.3e}{violation_max:+18.3e}{norm_step:+18.3e}{optimality:+18.3e} "
+        # status = f" {self.grad_count:13d}{self.func_count:13d}{self.cache['f']:+16.3e}{violation_max:+18.3e}{norm_step:+18.3e} "
         self._handle_output(status)
 
         # Store text in memory
@@ -813,7 +815,7 @@ class OptimizationSolver:
             filepath = None
 
         # Output the report (either print or save to file)
-        self._handle_output(full_text, savefile=savefile, filename=filepath)
+        self._handle_output(full_text, savefile=savefile, filename=filepath, to_console=True)
 
 
     def print_optimization_report(
@@ -882,7 +884,7 @@ class OptimizationSolver:
             if self.problem.problem_scale is None:
                 r.append(self.make_variables_report(x_norm, normalized=False))
             else:
-                r.append(self.make_variables_report(x_norm, normalized=False))
+                r.append(self.make_variables_report(x_phys, normalized=False))
                 r.append(self.make_variables_report(x_norm, normalized=True))
         if include_constraints:
             r.append(self.make_constraint_report(x_norm, tol))
@@ -1016,39 +1018,6 @@ class OptimizationSolver:
             )
 
         return data
-
-    def make_constraint_report(self, x_norm, tol):
-        """
-        generate a formatted constraint report at x_phys,
-        using get_constraint_data to build/validate the entries.
-        """
-        max_name_width = 48
-        constraint_data = self.get_constraint_data(x_norm, tol)
-
-        lines = []
-        lines = []
-        lines.append("")
-        lines.append("-" * 80)
-        lines.append(f"{' Optimization constraints report':<80}")
-        lines.append("-" * 80)
-        lines.append(f"{' Constraint name':<49}{'Value':>11}{'Target':>13}{'Ok?':>6}")
-        lines.append("-" * 80)
-
-        for entry in constraint_data:
-            name = entry.get("name", "")
-            ctype = entry.get("type", "")
-            target = entry.get("target", 0.0)
-            value = entry.get("value", 0.0)
-            satisfied = "yes" if entry.get("satisfied", False) else "no"
-
-            if len(name) > max_name_width:
-                name = "..." + name[-(max_name_width - 3) :]
-
-            symbol_target = f"{ctype} {target:+.2e}"
-            lines.append(f" {name:<48}{value:>+11.2e}{symbol_target:>13}{satisfied:>6}")
-
-        lines.append("-" * 80)
-        return "\n".join(lines)
 
 
     def evaluate_kkt_conditions(self, x_norm, tol):
@@ -1192,12 +1161,31 @@ class OptimizationSolver:
 
     def make_kkt_optimality_report(self, x_norm, tol):
         """
-        Generate an 80-char wide summary report of KKT condition satisfaction.
+        Generate a detailed KKT condition satisfaction report (80-character width).
+
+        This report includes five key KKT checks:
+        - First order optimality:     ∥∇L(x, λ)∥ ≤ tol
+        - Equality feasibility:       max |c_eq(x)| ≤ tol
+        - Inequality feasibility:     max(0, c_ineq(x)) ≤ tol
+        - Dual feasibility:           min(λ_ineq) ≥ 0
+        - Complementary slackness:    max |λ_i * c_i| ≤ tol
+
+        For each condition, the report shows:
+        - Actual computed value
+        - Comparison direction and target (tolerance or 0)
+        - Satisfaction status
+
+        Parameters
+        ----------
+        x_norm : array-like
+            Normalized decision variable vector to evaluate the KKT conditions at.
+        tol : float
+            Numerical tolerance used for comparisons in optimality and feasibility checks.
 
         Returns
         -------
         str
-            The formatted KKT report as a single string.
+            A formatted report string summarizing KKT condition satisfaction.
         """
         # Compute KKT conditions
         kkt_data = self.evaluate_kkt_conditions(x_norm, tol)
@@ -1207,9 +1195,7 @@ class OptimizationSolver:
         lines = [
             "",
             sep,
-            " Karush-Kuhn-Tucker (KKT) conditions report",
-            sep,
-            f" {'Condition':<40}{'Value':>20}{'Ok?':>18}",
+            f" {'Karush-Kuhn-Tucker (KKT) conditions':<36}{'Value':>16}{'Target':>16}{'Ok?':>10}",
             sep,
         ]
 
@@ -1217,36 +1203,269 @@ class OptimizationSolver:
             (
                 "First order optimality",
                 kkt_data["first_order_optimality"],
+                f"< {tol:+.3e}",
                 kkt_data["first_order_optimality_ok"],
             ),
             (
                 "Equality feasibility",
                 kkt_data["feasibility_equality"],
+                f"< {tol:+.3e}",
                 kkt_data["feasibility_equality_ok"],
             ),
             (
                 "Inequality feasibility",
                 kkt_data["feasibility_inequality"],
+                f"< {tol:+.3e}",
                 kkt_data["feasibility_inequality_ok"],
             ),
             (
                 "Dual feasibility",
                 kkt_data["feasibility_dual"],
+                f"> {-tol:+.3e}",
                 kkt_data["feasibility_dual_ok"],
             ),
             (
                 "Complementary slackness",
                 kkt_data["complementary_slackness"],
+                f"< {tol:+.3e}",
                 kkt_data["complementary_slackness_ok"],
             ),
         ]
-        for name, val, ok in entries:
+
+        for name, val, target, ok in entries:
             status = "yes" if ok else " no"
-            lines.append(f" {name:<40}{val:>+20.3e}{status:>18}")
+            lines.append(f" {name:<36}{val:>+16.3e}{target:>16}{status:>10}")
 
         lines.append(sep)
         return "\n".join(lines)
     
+
+    # def make_constraint_report(self, x_norm, tol):
+    #     """
+    #     Generate a compact constraint report that includes:
+    #     - Constraint value and target
+    #     - Satisfaction status
+    #     - Lagrange multiplier (if active), otherwise 'inactive'
+
+    #     This merges value and multiplier reports for better readability.
+
+    #     Parameters
+    #     ----------
+    #     x_norm : array-like
+    #         Normalized design variable vector.
+    #     tol : float
+    #         Tolerance used for satisfaction and KKT activeness checks.
+
+    #     Returns
+    #     -------
+    #     str
+    #         A formatted string with the constraint summary.
+    #     """
+    #     max_name_width = 35
+    #     constraint_data = self.get_constraint_data(x_norm, tol)
+    #     kkt_data = self.evaluate_kkt_conditions(x_norm, tol)
+    #     active_multipliers = kkt_data["multipliers_ineq"]
+    #     multipliers_eq = kkt_data["multipliers_eq"]
+
+    #     sep = "-" * 80
+    #     lines = [
+    #         "",
+    #         sep,
+    #         " Constraint summary report",
+    #         sep,
+    #         f" {'Constraint name':<{max_name_width}}{'Value':>12}{'Target':>13}{'Ok?':>6}{'Multiplier':>12}",
+    #         sep,
+    #     ]
+
+    #     eq_count = 0
+    #     ineq_count = 0
+    #     var_names = self.problem.variable_names
+    #     n_vars = len(var_names)
+    #     n_ineq = self.problem.get_nic()
+
+    #     for i, entry in enumerate(constraint_data):
+    #         name = entry.get("name", "")
+    #         ctype = entry.get("type", "")
+    #         value = entry.get("value", 0.0)
+    #         target = entry.get("target", 0.0)
+    #         satisfied = "yes" if entry.get("satisfied", False) else " no"
+
+    #         if len(name) > max_name_width:
+    #             name = "..." + name[-(max_name_width - 3):]
+
+    #         # Determine the target symbol
+    #         symbol = "=" if ctype == "=" else "<"
+    #         target_str = f"{symbol} {target:+.3e}"
+    #         value_str = f"{value:+.3e}"
+
+    #         # Multiplier
+    #         if ctype == "=":
+    #             multiplier = f"{multipliers_eq[eq_count]:+.3e}"
+    #             eq_count += 1
+    #         elif ctype == "<":
+    #             # Inequality constraint or bounds
+    #             if ineq_count in active_multipliers:
+    #                 multiplier = f"{active_multipliers[ineq_count]:+.3e}"
+    #             else:
+    #                 multiplier = "inactive"
+    #             ineq_count += 1
+    #         else:
+    #             multiplier = "---"
+
+    #         lines.append(f" {name:<{max_name_width}}{value_str:>12}{target_str:>13}{satisfied:>6}{multiplier:>12}")
+
+    #     lines.append(sep)
+    #     return "\n".join(lines)
+
+
+    # def make_constraint_report(self, x_norm, tol):
+    #     """
+    #     Generate a compact constraint report that includes:
+    #     - Constraint value and target
+    #     - Satisfaction status
+    #     - Lagrange multiplier (if active), otherwise 'inactive'
+
+    #     Supports equality, less-than, and greater-than constraints, including bounds.
+
+    #     Parameters
+    #     ----------
+    #     x_norm : array-like
+    #         Normalized design variable vector.
+    #     tol : float
+    #         Tolerance used for constraint satisfaction and activeness checks.
+
+    #     Returns
+    #     -------
+    #     str
+    #         A formatted string with the constraint summary.
+    #     """
+    #     max_name_width = 35
+    #     var_names = self.problem.variable_names
+    #     n_vars = len(var_names)
+
+    #     constraint_data = self.get_constraint_data(x_norm, tol)
+    #     kkt_data = self.evaluate_kkt_conditions(x_norm, tol)
+    #     active_multipliers = kkt_data["multipliers_ineq"]
+    #     multipliers_eq = kkt_data["multipliers_eq"]
+
+    #     # Append bound constraints with natural inequality direction
+    #     lb, ub = self.problem.get_bounds_normalized()
+    #     bounds_lower, bounds_upper = [], []
+    #     for i, (name, xi, lb_i, ub_i) in enumerate(zip(var_names, x_norm, lb, ub)):
+    #         if lb_i is not None:
+    #             bounds_lower.append({
+    #                 "name": name,
+    #                 "type": ">",
+    #                 "value": xi,
+    #                 "target": lb_i,
+    #                 "satisfied": (xi - lb_i >= -tol)  # xi ≥ lb_i
+    #             })
+    #         if ub_i is not None:
+    #             bounds_upper.append({
+    #                 "name": name,
+    #                 "type": "<",
+    #                 "value": xi,
+    #                 "target": ub_i,
+    #                 "satisfied": (ub_i - xi >= -tol)  # xi ≤ ub_i
+    #             })
+
+    #     # Then concatenate in order:
+    #     constraint_data = bounds_lower + bounds_upper + constraint_data
+    #     print(constraint_data)
+
+
+    #     # Build the report
+    #     sep = "-" * 80
+    #     lines = [
+    #         "",
+    #         sep,
+    #         f" {'Constraint summary report':<{max_name_width}}{'Value':>12}{'Target':>13}{'Ok?':>6}{'Multiplier':>12}",
+    #         sep,
+    #     ]
+
+    #     eq_count = 0
+    #     ineq_count = 0
+    #     for entry in constraint_data:
+    #         name = entry.get("name", "")
+    #         ctype = entry.get("type", "")
+    #         value = entry.get("value", 0.0)
+    #         target = entry.get("target", 0.0)
+    #         satisfied = "yes" if entry.get("satisfied", False) else " no"
+
+    #         if len(name) > max_name_width:
+    #             name = "..." + name[-(max_name_width - 3):]
+
+    #         # Set the symbol for the target constraint
+    #         if ctype == "=":
+    #             symbol = "="
+    #         elif ctype == "<":
+    #             symbol = "<"
+    #         elif ctype == ">":
+    #             symbol = ">"
+    #         else:
+    #             symbol = "?"
+
+    #         value_str = f"{value:+.3e}"
+    #         target_str = f"{symbol} {target:+.3e}"
+
+    #         # Handle multipliers
+    #         if ctype == "=":
+    #             multiplier = f"{multipliers_eq[eq_count]:+.3e}"
+    #             eq_count += 1
+    #         elif ctype in {"<", ">"}:
+    #             if ineq_count in active_multipliers:
+    #                 multiplier = f"{active_multipliers[ineq_count]:+.3e}"
+    #             else:
+    #                 multiplier = "inactive"
+    #             ineq_count += 1
+    #         else:
+    #             multiplier = "---"
+
+    #         lines.append(f" {name:<{max_name_width}}{value_str:>12}{target_str:>13}{satisfied:>6}{multiplier:>12}")
+
+    #     lines.append(sep)
+    #     return "\n".join(lines)
+
+
+    def make_constraint_report(self, x_norm, tol):
+        """
+        generate a formatted constraint report at x_phys,
+        using get_constraint_data to build/validate the entries.
+        """
+        max_name_width = 48
+        constraint_data = self.get_constraint_data(x_norm, tol)
+
+        # from .pysolver_utilities import print_dict
+        # print("Data dictionary")
+        # for item in constraint_data:
+        #     print()
+        #     print_dict(item)
+
+        lines = []
+        lines = []
+        lines.append("")
+        lines.append("-" * 80)
+        lines.append(f"{' Optimization constraints report':<80}")
+        lines.append("-" * 80)
+        lines.append(f"{' Constraint name':<49}{'Value':>11}{'Target':>13}{'Ok?':>6}")
+        lines.append("-" * 80)
+
+        for entry in constraint_data:
+            name = entry.get("name", "")
+            ctype = entry.get("type", "")
+            target = entry.get("target", 0.0)
+            value = entry.get("value", 0.0)
+            satisfied = "yes" if entry.get("satisfied", False) else "no"
+
+            if len(name) > max_name_width:
+                name = "..." + name[-(max_name_width - 3) :]
+
+            symbol_target = f"{ctype} {target:+.2e}"
+            lines.append(f" {name:<48}{value:>+11.2e}{symbol_target:>13}{satisfied:>6}")
+
+        lines.append("-" * 80)
+        return "\n".join(lines)
+
 
     def make_lagrange_multipliers_report(self, x_norm, tol):
         """

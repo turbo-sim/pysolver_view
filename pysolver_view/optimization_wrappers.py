@@ -354,8 +354,9 @@ def _minimize_pygmo_ipopt(problem, x0, options):
         "limited_memory_update_type": "bfgs",  # Options: 'bfgs', 'sr1'
         "line_search_method": "filter",  # Options: 'filter', 'cg-penalty', 'penalty'
         "limited_memory_max_history": 30, # Max history for L-BFGS
+        "limited_memory_max_skipping": 100,  # TODO Not reseting improves convergence in some cases I testd
         "max_iter": 500,  # Maximum number of iterations.
-        "tol": 1e-3,  # Desired convergence tolerance (relative). # 1.0
+        "tol": 1e-3,  # Desired convergence tolerance (relative). # TODO Can this be tightened when Hessian is not reseted?
         "dual_inf_tol": 1e6,  # Desired threshold for the dual infeasibility.
         "compl_inf_tol": 1e6,  # Desired threshold for the complementarity conditions
         "constr_viol_tol": 1e-6,  # Desired threshold for the constraint and variable bound violation.
@@ -410,7 +411,8 @@ def _minimize_pygmo_snopt(problem, x0, options):
         "Iterations limit": 500,
         "Major iterations limit": 1e6,
         "Minor iterations limit": 1e6,
-        "Hessian updates": 30,
+        # "Hessian": "full memory", # TODO check this option
+        "Hessian updates": 10,
     }
 
     # Work with a copy to avoid side effects

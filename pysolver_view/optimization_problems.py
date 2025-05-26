@@ -274,3 +274,26 @@ class LorentzEquationsOpt(OptimizationProblem):
 
     def get_bounds(self):
         return (-10 * np.ones(3), 10 * np.ones(3))
+
+
+
+
+
+# class SimoneProblem(OptimizationProblem):
+
+#     def gradient(self, x):
+#         return (4 * (x[0] - 2) * (x[1] - 4)**4, 8 * (x[0] - 2)**2 * (x[1] - 4)**3)
+    
+#     def fitness(self, x):
+#         y=2*(x[0]-2)**2*(x[1]-4)**4
+#         print('x = [%14f,%14f]'%(x[0],x[1]))
+#         return np.atleast_1d(y)
+    
+#     def get_bounds(self):
+#         return (2*[-1e6], 2*[1e6])
+
+#     def get_nec(self):
+#         return 0
+
+#     def get_nic(self):
+#         return 0

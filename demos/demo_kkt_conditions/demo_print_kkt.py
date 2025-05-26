@@ -20,15 +20,15 @@ x0 = np.asarray([2.5, 3, 2, 2])
 problem = psv.HS71Problem()
 
 # Solve problem
-# library, method = ("scipy", "slsqp")
-library, method = ("pygmo", "ipopt")
+library, method = ("scipy", "slsqp")
+# library, method = ("pygmo", "ipopt")
 solver = psv.OptimizationSolver(
     problem,
     library=library,
     method=method,
     max_iterations=100,
     tolerance=1e-6,
-    problem_scale=10.0,
+    problem_scale=None,
     print_convergence=True,
     plot_convergence=False,
     logger=logger,
@@ -45,6 +45,11 @@ solver.print_optimization_report(
     savefile=True,
 )
 
+
+# TODO make sectioning in the constraint report
+# first constraints (if there are any)
+# then inequality constriants (if there are any)
+# finally (bound constraints) if there are any
 
 # TODO: I have to improve the printing and logging behavior
 # TODO: currently there are some clashes leading to bad/unintuitive user experience
