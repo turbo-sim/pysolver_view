@@ -270,9 +270,9 @@ def _minimize_pygmo_sga(problem, x0, options):
     population = pg.population(problem, int(combined_options["pop_size"]))
     population = algorithm.evolve(population)
 
-    # print solution
-    print("Best solution found:", population.champion_x)
-    print("Objective value of the best solution:", population.champion_f)
+    # # print solution
+    # print("Best solution found:", population.champion_x)
+    # print("Objective value of the best solution:", population.champion_f)
 
     # Evaluate final solution 
     final = problem.fitness(population.champion_x)
@@ -305,9 +305,9 @@ def _minimize_pygmo_pso(problem, x0, options):
     population = pg.population(problem, int(combined_options["pop_size"]))
     population = algorithm.evolve(population)
 
-    # print solution
-    print("Best solution found:", population.champion_x)
-    print("Objective value of the best solution:", population.champion_f)
+    # # print solution
+    # print("Best solution found:", population.champion_x)
+    # print("Objective value of the best solution:", population.champion_f)
 
     # Evaluate final solution 
     final = problem.fitness(population.champion_x)

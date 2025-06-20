@@ -146,6 +146,7 @@ class OptimizationSolver:
         update_on="gradient",
         callback_functions=None,
         plot_improvement_only=False,
+        tolerance_check_cache=None
     ):
         # Initialize class variables
         self.problem = problem
@@ -161,7 +162,12 @@ class OptimizationSolver:
         self.callback_functions = self._validate_callback(callback_functions)
         self.callback_function_call_count = 0
         self.plot_improvement_only = plot_improvement_only
-        self.check_cache_tol = 10*np.finfo(float).eps
+        
+        # Tolerance to check if design variables are the same as in previous fitness call
+        if tolerance_check_cache is None:
+            self.tolerance_cache = 10 * np.finfo(float).eps
+        else:
+            self.tolerance_cache = tolerance_check_cache
 
         # Validate library and method
         self._validate_library_and_method()
@@ -363,7 +369,7 @@ class OptimizationSolver:
 
         """
         # If x hasn't changed, use cached values
-        if self.cache["x"] is not None and np.allclose(x_norm, self.cache["x"], rtol=0, atol=self.check_cache_tol):
+        if self.cache["x"] is not None and np.allclose(x_norm, self.cache["x"], rtol=0, atol=self.tolerance_cache):
             return self.cache["fitness"]
 
         # Increase total counter (includes finite differences)
@@ -420,7 +426,7 @@ class OptimizationSolver:
         """
 
         # If x hasn't changed, use cached values
-        if self.cache["x_jac"] is not None and np.allclose(x_norm, self.cache["x_jac"], rtol=0, atol=self.check_cache_tol):
+        if self.cache["x_jac"] is not None and np.allclose(x_norm, self.cache["x_jac"], rtol=0, atol=self.tolerance_cache):
             return self.cache["gradient"]
 
         # Use problem gradient method if it exists
@@ -478,7 +484,7 @@ class OptimizationSolver:
 
         # Print to screen if display is enabled and no logger used
         # if self.display and not self.logger:
-        if self.display or to_console:
+        if self.display and to_console:
             print(text)
 
         # Save to file if requested
@@ -515,7 +521,7 @@ class OptimizationSolver:
 
         # Print or log content
         for line in lines_to_output:
-            self._handle_output(line)
+            self._handle_output(line, to_console=True)
 
         # Store text in memory
         self.convergence_report.extend(lines_to_output)
@@ -560,7 +566,7 @@ class OptimizationSolver:
         c_ineq = self.cache["c_ineq"]
         violation_all = np.concatenate((c_eq, np.maximum(c_ineq, 0)))
         violation_max = np.max(np.abs(violation_all)) if len(violation_all) > 0 else 0.0
-        kkt_data = self.evaluate_kkt_conditions(x, 5*self.options["tolerance"])
+        kkt_data = self.evaluate_kkt_conditions(x, 50*self.options["tolerance"])
         optimality = kkt_data["first_order_optimality"]
 
         # Store convergence status
@@ -575,7 +581,7 @@ class OptimizationSolver:
         # Current convergence message
         status = f" {self.grad_count:13d}{self.func_count:13d}{self.cache['f']:+16.3e}{violation_max:+18.3e}{norm_step:+18.3e}{optimality:+18.3e} "
         # status = f" {self.grad_count:13d}{self.func_count:13d}{self.cache['f']:+16.3e}{violation_max:+18.3e}{norm_step:+18.3e} "
-        self._handle_output(status)
+        self._handle_output(status, to_console=True)
 
         # Store text in memory
         self.convergence_report.append(status)
@@ -613,7 +619,7 @@ class OptimizationSolver:
 
         # Print or log content
         for line in lines_to_output:
-            self._handle_output(line)
+            self._handle_output(line, to_console=True)
 
         # Store text in memory
         self.convergence_report.extend(lines_to_output)
@@ -758,7 +764,7 @@ class OptimizationSolver:
         return self.fig
     
 
-    def print_convergence_history(self, savefile=False, filename=None, output_dir="output"):
+    def print_convergence_history(self, savefile=False, filename=None, output_dir="output", to_console=True):
         """
         Print or save the convergence history of the optimization process.
 
@@ -815,7 +821,7 @@ class OptimizationSolver:
             filepath = None
 
         # Output the report (either print or save to file)
-        self._handle_output(full_text, savefile=savefile, filename=filepath, to_console=True)
+        self._handle_output(full_text, savefile=savefile, filename=filepath, to_console=to_console)
 
 
     def print_optimization_report(
@@ -829,6 +835,7 @@ class OptimizationSolver:
         savefile=False,
         filename=None,
         output_dir="output",
+        to_console=True,
     ):
         """
         Generate and print or save a complete optimization report with customizable content.
@@ -884,8 +891,8 @@ class OptimizationSolver:
             if self.problem.problem_scale is None:
                 r.append(self.make_variables_report(x_norm, normalized=False))
             else:
-                r.append(self.make_variables_report(x_phys, normalized=False))
                 r.append(self.make_variables_report(x_norm, normalized=True))
+                r.append(self.make_variables_report(x_phys, normalized=False))    
         if include_constraints:
             r.append(self.make_constraint_report(x_norm, tol))
         if include_multipliers:
@@ -905,7 +912,7 @@ class OptimizationSolver:
             filepath = None
 
         # 5) emit once to console, logger, or file
-        self._handle_output(full_text, savefile=savefile, filename=filepath)
+        self._handle_output(full_text, savefile=savefile, filename=filepath, to_console=to_console)
 
 
 
@@ -947,22 +954,25 @@ class OptimizationSolver:
             f"design_variable_{i}" for i in range(len(values))
         ]
         scale_type = "normalized" if normalized else "physical"
+        max_name_width = 38
 
         lines = []
         lines.append("")
         lines.append("-" * 80)
-        lines.append(
-            f"{' Optimization variables report (' + scale_type + ' values)':<80}"
-        )
+        header = f"{' Optimization variables report (' + scale_type + ' values)':<80}"
+        lines.append(header)
         lines.append("-" * 80)
-        lines.append(f" {'Variable name':<33}{'Lower':>15}{'Value':>15}{'Upper':>15}")
+        lines.append(f" {'Variable name':<39}{'Lower':>13}{'Value':>13}{'Upper':>13}")
         lines.append("-" * 80)
 
         for key, lb, val, ub in zip(names, lb_raw, values, ub_raw):
+            if len(key) > max_name_width:
+                key = "..." + key[-(max_name_width - 3):]
+
             if normalized:
-                lines.append(f" {key:<33}{lb:>15.4f}{val:>15.4f}{ub:>15.4f}")
+                lines.append(f" {key:<39}{lb:>13.4f}{val:>13.4f}{ub:>13.4f}")
             else:
-                lines.append(f" {key:<33}{lb:>15.3e}{val:>15.3e}{ub:>15.3e}")
+                lines.append(f" {key:<39}{lb:>13.3e}{val:>13.3e}{ub:>13.3e}")
 
         lines.append("-" * 80)
         return "\n".join(lines)
