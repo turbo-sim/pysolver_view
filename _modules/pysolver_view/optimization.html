@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pysolver_view.optimization &#8212; pysolver_view v0.6.1 documentation</title>
+    <title>pysolver_view.optimization &#8212; pysolver_view v0.6.2 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=f41c33fc"></script>
+    <script src="../../_static/documentation_options.js?v=e368b39a"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -124,7 +124,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.6.1 documentation</p>
+    <p class="title logo__title">pysolver_view v0.6.2 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -396,6 +396,7 @@
         <span class="n">update_on</span><span class="o">=</span><span class="s2">&quot;gradient&quot;</span><span class="p">,</span>
         <span class="n">callback_functions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">plot_improvement_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">tolerance_check_cache</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
         <span class="c1"># Initialize class variables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">problem</span> <span class="o">=</span> <span class="n">problem</span>
@@ -411,7 +412,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">callback_functions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_callback</span><span class="p">(</span><span class="n">callback_functions</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callback_function_call_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_improvement_only</span> <span class="o">=</span> <span class="n">plot_improvement_only</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_cache_tol</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+        
+        <span class="c1"># Tolerance to check if design variables are the same as in previous fitness call</span>
+        <span class="k">if</span> <span class="n">tolerance_check_cache</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tolerance_cache</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tolerance_cache</span> <span class="o">=</span> <span class="n">tolerance_check_cache</span>
 
         <span class="c1"># Validate library and method</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_library_and_method</span><span class="p">()</span>
@@ -618,7 +624,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># If x hasn&#39;t changed, use cached values</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">check_cache_tol</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tolerance_cache</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;fitness&quot;</span><span class="p">]</span>
 
         <span class="c1"># Increase total counter (includes finite differences)</span>
@@ -678,7 +684,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># If x hasn&#39;t changed, use cached values</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x_jac&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x_jac&quot;</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">check_cache_tol</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x_jac&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x_jac&quot;</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tolerance_cache</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;gradient&quot;</span><span class="p">]</span>
 
         <span class="c1"># Use problem gradient method if it exists</span>
@@ -737,7 +743,7 @@
 
         <span class="c1"># Print to screen if display is enabled and no logger used</span>
         <span class="c1"># if self.display and not self.logger:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="ow">or</span> <span class="n">to_console</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="ow">and</span> <span class="n">to_console</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
         <span class="c1"># Save to file if requested</span>
@@ -774,7 +780,7 @@
 
         <span class="c1"># Print or log content</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines_to_output</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">to_console</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Store text in memory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">convergence_report</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">lines_to_output</span><span class="p">)</span>
@@ -819,7 +825,7 @@
         <span class="n">c_ineq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;c_ineq&quot;</span><span class="p">]</span>
         <span class="n">violation_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">c_eq</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">c_ineq</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
         <span class="n">violation_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">violation_all</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">violation_all</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
-        <span class="n">kkt_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_kkt_conditions</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">])</span>
+        <span class="n">kkt_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_kkt_conditions</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">50</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">])</span>
         <span class="n">optimality</span> <span class="o">=</span> <span class="n">kkt_data</span><span class="p">[</span><span class="s2">&quot;first_order_optimality&quot;</span><span class="p">]</span>
 
         <span class="c1"># Store convergence status</span>
@@ -834,7 +840,7 @@
         <span class="c1"># Current convergence message</span>
         <span class="n">status</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">grad_count</span><span class="si">:</span><span class="s2">13d</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">func_count</span><span class="si">:</span><span class="s2">13d</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">+16.3e</span><span class="si">}{</span><span class="n">violation_max</span><span class="si">:</span><span class="s2">+18.3e</span><span class="si">}{</span><span class="n">norm_step</span><span class="si">:</span><span class="s2">+18.3e</span><span class="si">}{</span><span class="n">optimality</span><span class="si">:</span><span class="s2">+18.3e</span><span class="si">}</span><span class="s2"> &quot;</span>
         <span class="c1"># status = f&quot; {self.grad_count:13d}{self.func_count:13d}{self.cache[&#39;f&#39;]:+16.3e}{violation_max:+18.3e}{norm_step:+18.3e} &quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">to_console</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Store text in memory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">convergence_report</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
@@ -872,7 +878,7 @@
 
         <span class="c1"># Print or log content</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines_to_output</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">to_console</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Store text in memory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">convergence_report</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">lines_to_output</span><span class="p">)</span>
@@ -1022,7 +1028,7 @@
 
 <div class="viewcode-block" id="OptimizationSolver.print_convergence_history">
 <a class="viewcode-back" href="../../source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.print_convergence_history">[docs]</a>
-    <span class="k">def</span> <span class="nf">print_convergence_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">savefile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">print_convergence_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">savefile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="n">to_console</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print or save the convergence history of the optimization process.</span>
 
@@ -1079,7 +1085,7 @@
             <span class="n">filepath</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Output the report (either print or save to file)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">(</span><span class="n">full_text</span><span class="p">,</span> <span class="n">savefile</span><span class="o">=</span><span class="n">savefile</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filepath</span><span class="p">,</span> <span class="n">to_console</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">(</span><span class="n">full_text</span><span class="p">,</span> <span class="n">savefile</span><span class="o">=</span><span class="n">savefile</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filepath</span><span class="p">,</span> <span class="n">to_console</span><span class="o">=</span><span class="n">to_console</span><span class="p">)</span></div>
 
 
 
@@ -1096,6 +1102,7 @@
         <span class="n">savefile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">,</span>
+        <span class="n">to_console</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate and print or save a complete optimization report with customizable content.</span>
@@ -1151,8 +1158,8 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">problem_scale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_phys</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
                 <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+                <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_phys</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>    
         <span class="k">if</span> <span class="n">include_constraints</span><span class="p">:</span>
             <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_constraint_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">include_multipliers</span><span class="p">:</span>
@@ -1172,7 +1179,7 @@
             <span class="n">filepath</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># 5) emit once to console, logger, or file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">(</span><span class="n">full_text</span><span class="p">,</span> <span class="n">savefile</span><span class="o">=</span><span class="n">savefile</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filepath</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">(</span><span class="n">full_text</span><span class="p">,</span> <span class="n">savefile</span><span class="o">=</span><span class="n">savefile</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filepath</span><span class="p">,</span> <span class="n">to_console</span><span class="o">=</span><span class="n">to_console</span><span class="p">)</span></div>
 
 
 
@@ -1217,22 +1224,25 @@
             <span class="sa">f</span><span class="s2">&quot;design_variable_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
         <span class="p">]</span>
         <span class="n">scale_type</span> <span class="o">=</span> <span class="s2">&quot;normalized&quot;</span> <span class="k">if</span> <span class="n">normalized</span> <span class="k">else</span> <span class="s2">&quot;physical&quot;</span>
+        <span class="n">max_name_width</span> <span class="o">=</span> <span class="mi">38</span>
 
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39; Optimization variables report (&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scale_type</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39; values)&#39;</span><span class="si">:</span><span class="s2">&lt;80</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39; Optimization variables report (&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scale_type</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39; values)&#39;</span><span class="si">:</span><span class="s2">&lt;80</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;Variable name&#39;</span><span class="si">:</span><span class="s2">&lt;33</span><span class="si">}{</span><span class="s1">&#39;Lower&#39;</span><span class="si">:</span><span class="s2">&gt;15</span><span class="si">}{</span><span class="s1">&#39;Value&#39;</span><span class="si">:</span><span class="s2">&gt;15</span><span class="si">}{</span><span class="s1">&#39;Upper&#39;</span><span class="si">:</span><span class="s2">&gt;15</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;Variable name&#39;</span><span class="si">:</span><span class="s2">&lt;39</span><span class="si">}{</span><span class="s1">&#39;Lower&#39;</span><span class="si">:</span><span class="s2">&gt;13</span><span class="si">}{</span><span class="s1">&#39;Value&#39;</span><span class="si">:</span><span class="s2">&gt;13</span><span class="si">}{</span><span class="s1">&#39;Upper&#39;</span><span class="si">:</span><span class="s2">&gt;13</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">ub</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">lb_raw</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">ub_raw</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_name_width</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span> <span class="o">+</span> <span class="n">key</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">max_name_width</span> <span class="o">-</span> <span class="mi">3</span><span class="p">):]</span>
+
             <span class="k">if</span> <span class="n">normalized</span><span class="p">:</span>
-                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">key</span><span class="si">:</span><span class="s2">&lt;33</span><span class="si">}{</span><span class="n">lb</span><span class="si">:</span><span class="s2">&gt;15.4f</span><span class="si">}{</span><span class="n">val</span><span class="si">:</span><span class="s2">&gt;15.4f</span><span class="si">}{</span><span class="n">ub</span><span class="si">:</span><span class="s2">&gt;15.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">key</span><span class="si">:</span><span class="s2">&lt;39</span><span class="si">}{</span><span class="n">lb</span><span class="si">:</span><span class="s2">&gt;13.4f</span><span class="si">}{</span><span class="n">val</span><span class="si">:</span><span class="s2">&gt;13.4f</span><span class="si">}{</span><span class="n">ub</span><span class="si">:</span><span class="s2">&gt;13.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">key</span><span class="si">:</span><span class="s2">&lt;33</span><span class="si">}{</span><span class="n">lb</span><span class="si">:</span><span class="s2">&gt;15.3e</span><span class="si">}{</span><span class="n">val</span><span class="si">:</span><span class="s2">&gt;15.3e</span><span class="si">}{</span><span class="n">ub</span><span class="si">:</span><span class="s2">&gt;15.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">key</span><span class="si">:</span><span class="s2">&lt;39</span><span class="si">}{</span><span class="n">lb</span><span class="si">:</span><span class="s2">&gt;13.3e</span><span class="si">}{</span><span class="n">val</span><span class="si">:</span><span class="s2">&gt;13.3e</span><span class="si">}{</span><span class="n">ub</span><span class="si">:</span><span class="s2">&gt;13.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>

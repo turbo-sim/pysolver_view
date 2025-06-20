@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pysolver_view.optimization_wrappers &#8212; pysolver_view v0.6.1 documentation</title>
+    <title>pysolver_view.optimization_wrappers &#8212; pysolver_view v0.6.2 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=f41c33fc"></script>
+    <script src="../../_static/documentation_options.js?v=e368b39a"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -124,7 +124,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.6.1 documentation</p>
+    <p class="title logo__title">pysolver_view v0.6.2 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -524,9 +524,9 @@
     <span class="n">population</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">population</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">combined_options</span><span class="p">[</span><span class="s2">&quot;pop_size&quot;</span><span class="p">]))</span>
     <span class="n">population</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
 
-    <span class="c1"># print solution</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best solution found:&quot;</span><span class="p">,</span> <span class="n">population</span><span class="o">.</span><span class="n">champion_x</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Objective value of the best solution:&quot;</span><span class="p">,</span> <span class="n">population</span><span class="o">.</span><span class="n">champion_f</span><span class="p">)</span>
+    <span class="c1"># # print solution</span>
+    <span class="c1"># print(&quot;Best solution found:&quot;, population.champion_x)</span>
+    <span class="c1"># print(&quot;Objective value of the best solution:&quot;, population.champion_f)</span>
 
     <span class="c1"># Evaluate final solution </span>
     <span class="n">final</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">fitness</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">champion_x</span><span class="p">)</span>
@@ -559,9 +559,9 @@
     <span class="n">population</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">population</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">combined_options</span><span class="p">[</span><span class="s2">&quot;pop_size&quot;</span><span class="p">]))</span>
     <span class="n">population</span> <span class="o">=</span> <span class="n">algorithm</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
 
-    <span class="c1"># print solution</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best solution found:&quot;</span><span class="p">,</span> <span class="n">population</span><span class="o">.</span><span class="n">champion_x</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Objective value of the best solution:&quot;</span><span class="p">,</span> <span class="n">population</span><span class="o">.</span><span class="n">champion_f</span><span class="p">)</span>
+    <span class="c1"># # print solution</span>
+    <span class="c1"># print(&quot;Best solution found:&quot;, population.champion_x)</span>
+    <span class="c1"># print(&quot;Objective value of the best solution:&quot;, population.champion_f)</span>
 
     <span class="c1"># Evaluate final solution </span>
     <span class="n">final</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">fitness</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">champion_x</span><span class="p">)</span>
