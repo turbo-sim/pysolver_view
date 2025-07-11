@@ -19,7 +19,10 @@ openpyxl = "^3.1.5"
 PyYAML = "^6.0.2"
 toml = "^0.10.2"
 cycler = "^0.12.1"
-# jax = "^0.5.3"
+jax = { version = "^0.5.3", optional = true }
+
+[tool.poetry.extras]
+jax = ["jax"]
 
 [tool.poetry.group.dev.dependencies]
 ipython = ">=8.13,<8.17"
@@ -36,6 +39,8 @@ sphinxawesome-theme = "^5.1.5"
 sphinx-design = "^0.6.0"
 sphinx-togglebutton = "^0.3.2"
 bump2version = "^1.0.1"
+sphinx-autobuild = "^2024.10.3"
+myst-parser = "^4.0.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -44,3 +49,9 @@ build-backend = "poetry.core.masonry.api"
 
 # Rememeber to add --tags when publishing a new version
 # git push origin main --tags
+
+# Installation of optional dependencies
+# pip install pysolver_view
+# pip install pysolver_view[jax]
+# poetry install --extras jax
+

@@ -4,11 +4,8 @@ from scipy.optimize._numdiff import approx_derivative
 try:
     import jax
     import jax.numpy as jnp
-    import numpy as np
     USE_JAX = True
 except ImportError:
-    import numpy as np
-    jnp = np
     USE_JAX = False
 
 DERIVATIVE_METHODS = [
@@ -267,6 +264,9 @@ def compute_hessians_jax(fitness_function, x, lower_triangular=True):
         of a component of the fitness function. If lower_triangular is True, the Hessians
         are returned in a flattened lower triangular format.
     """
+    if not USE_JAX:
+        raise ImportError("JAX is not installed. Install with `pip install pysolver_view[jax]` to use this feature.")
+
     # Compute full Hessians with JAX
     H_full = jax.jacfwd(jax.jacrev(fitness_function))(x)
 
