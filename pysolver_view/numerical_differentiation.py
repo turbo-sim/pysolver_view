@@ -88,6 +88,7 @@ def forward_finite_differences(function_handle, x, abs_step=None, f0=None):
         abs_step = np.finfo(float).eps ** (1 / 2)
 
     # Ensure abs_step is an array of the same shape as x
+    x = np.atleast_1d(x)
     abs_step = np.broadcast_to(abs_step, x.shape)
 
     # Avoid one function evaluation if f0 is provided
@@ -132,6 +133,7 @@ def central_finite_differences(function_handle, x, abs_step=None):
         abs_step = np.finfo(float).eps ** (1 / 3)
 
     # Ensure abs_step is an array of the same shape as x
+    x = np.atleast_1d(x)
     abs_step = np.broadcast_to(abs_step, x.shape)
 
     # Compute gradient

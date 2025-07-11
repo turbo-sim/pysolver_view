@@ -1797,7 +1797,7 @@ class OptimizationProblem(ABC):
             Clipped vector.
         """
         lb, ub = self.get_bounds()
-        x_physical = np.asarray(x_physical)
+        x_physical = np.atleast_1d(x_physical)
         x_clipped = np.clip(x_physical, lb, ub)
 
         for i, (orig, new, low, high) in enumerate(zip(x_physical, x_clipped, lb, ub)):
