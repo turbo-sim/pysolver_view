@@ -2,7 +2,7 @@ import os
 import toml
 import shutil
 import subprocess
-
+import argparse
 
 def get_package_name(pyproject_path="../pyproject.toml"):
     pyproject = toml.load(pyproject_path)
@@ -74,6 +74,7 @@ def run_sphinx_build(docs_dir=".", build_dir="_build", builder="html"):
     subprocess.check_call(cmd)
     print(f"Sphinx build ({builder} format) completed successfully.")
 
+
 def run_sphinx_autobuild(docs_dir=".", build_dir="_build", port=8000):
     """
     Run sphinx-autobuild to serve and auto-rebuild docs on changes.
@@ -113,7 +114,11 @@ if __name__ == "__main__":
     run_sphinx_apidoc(output_dir="source/api/", src_dir=source_path, exclude=EXCLUDE_MODULES)
 
     # Build documentation
-    # run_sphinx_build(docs_dir=".", build_dir="_build")
-    run_sphinx_autobuild(docs_dir=".", build_dir="_build")
-
+    parser = argparse.ArgumentParser(description="Build or preview Sphinx documentation.")
+    parser.add_argument("--no-autobuild", action="store_true", help="Disable live preview (sphinx-autobuild) and use sphinx-build instead.")
+    args = parser.parse_args()
+    if args.no_autobuild:  # For GitHub action
+        run_sphinx_build(docs_dir=".", build_dir="_build")
+    else:  # For local development
+        run_sphinx_autobuild(docs_dir=".", build_dir="_build")
 

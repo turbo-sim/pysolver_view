@@ -979,10 +979,58 @@ class OptimizationSolver:
 
     def get_constraint_data(self, x_norm, tol):
         """
-        return a list of dicts with keys:
-          name, type ('=', '<'), target, value, satisfied
-        for all equality and inequality constraints.
-        If self.constraint_data exists, validate and return it.
+        Return constraint evaluation data for the current optimization problem.
+
+        This method returns a list of dictionaries describing the satisfaction
+        status of all equality and inequality constraints at a given normalized
+        design point.
+
+        If `self.problem.constraint_data` exists and is valid, it is returned
+        directly after key validation.
+
+        Parameters
+        ----------
+        x_norm : array_like
+            Normalized design variable vector.
+        tol : float
+            Tolerance for constraint satisfaction.
+
+        Returns
+        -------
+        list of dict
+            Each dictionary contains:
+
+            - **name** : str  
+              Constraint identifier.
+
+            - **type** : str  
+              Either "=" for equality or "<" for inequality constraints.
+
+            - **target** : float  
+              Desired target value (0.0 for all constraints).
+
+            - **value** : float  
+              Actual evaluated constraint value.
+
+            - **satisfied** : bool  
+              Whether the constraint is satisfied (based on `tol`).
+
+            Optionally, each dictionary may also include:
+
+            - **normalized_mismatch** : float  
+              Mismatch scaled by the normalization factor.
+
+            - **mismatch** : float  
+              Raw constraint violation (value - target).
+
+            - **normalize** : float  
+              Normalization factor (if defined).
+
+        Raises
+        ------
+        TypeError
+            If `self.problem.constraint_data` exists but is not a list of dictionaries,
+            or if required keys are missing from any entry.
         """
         # Use cached constraint data if available and valid
         if hasattr(self.problem, "constraint_data"):
@@ -1035,6 +1083,7 @@ class OptimizationSolver:
         Evaluate the raw quantities required for KKT condition checks.
 
         This method performs all necessary calculations to evaluate:
+
             - Lagrangian gradient
             - Constraint violations (equality and inequality)
             - Lagrange multipliers for active constraints
@@ -1170,20 +1219,24 @@ class OptimizationSolver:
         }
 
     def make_kkt_optimality_report(self, x_norm, tol):
-        """
+        r"""
         Generate a detailed KKT condition satisfaction report (80-character width).
 
-        This report includes five key KKT checks:
-        - First order optimality:     ∥∇L(x, λ)∥ ≤ tol
-        - Equality feasibility:       max |c_eq(x)| ≤ tol
-        - Inequality feasibility:     max(0, c_ineq(x)) ≤ tol
-        - Dual feasibility:           min(λ_ineq) ≥ 0
-        - Complementary slackness:    max |λ_i * c_i| ≤ tol
+        This report includes five key Karush-Kuhn-Tucker (KKT) checks:
+
+        .. math::
+
+            \|\nabla L(x, \lambda)\| \leq \mathrm{tol} \quad &\text{(First order optimality)} \\
+            \max |c_{\text{eq}}(x)| \leq \mathrm{tol} \quad &\text{(Equality feasibility)} \\
+            \max(0, c_{\text{ineq}}(x)) \leq \mathrm{tol} \quad &\text{(Inequality feasibility)} \\
+            \min(\lambda_{\text{ineq}}) \geq 0 \quad &\text{(Dual feasibility)} \\
+            \max |\lambda_i \cdot c_i| \leq \mathrm{tol} \quad &\text{(Complementary slackness)}
 
         For each condition, the report shows:
-        - Actual computed value
-        - Comparison direction and target (tolerance or 0)
-        - Satisfaction status
+
+            - Actual computed value
+            - Comparison direction and target (tolerance or 0)
+            - Satisfaction status
 
         Parameters
         ----------
@@ -1439,8 +1492,7 @@ class OptimizationSolver:
 
     def make_constraint_report(self, x_norm, tol):
         """
-        generate a formatted constraint report at x_phys,
-        using get_constraint_data to build/validate the entries.
+        generate a formatted constraint report at x_phys, using get_constraint_data to build/validate the entries.
         """
         max_name_width = 48
         constraint_data = self.get_constraint_data(x_norm, tol)
