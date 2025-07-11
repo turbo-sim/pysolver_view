@@ -19,14 +19,14 @@ psv.set_plot_options(grid=False)
 logger = psv.create_logger("convergence_history", use_datetime=True)
 
 # Define problem
-ndim = 50
-# x0 = 1.5*np.ones(ndim)
 # x0 = [2, 2, 2, 2]
-x0 = [1.1, 4.2, 3.5, 1.5]
-problem = psv.HS71Problem()
-# problem = psv.RosenbrockProblemConstrained(ndim)
+# x0 = [1.1, 4.2, 3.5, 1.5]
+# problem = psv.HS71Problem()
+ndim = 4
+x0 = 1.5*np.ones(ndim)
+problem = psv.RosenbrockProblemConstrained(ndim)
 problem_name = type(problem).__name__
-                
+    
 # Initialize figure
 fig, ax = plt.subplots()
 ax.set_title(f"Solving the {problem_name} in {len(x0)} dimensions")
@@ -35,7 +35,7 @@ ax.set_ylabel("Constraint violation")
 ax.set_yscale("log")
 
 # Solve for various max previous steps used in the BFGS update
-tolerances = [1e-3, 1e-6, 1e-9][::-1]
+tolerances = [1e-3, 1e-6, 1e-9, 1e-12][::-1]
 colors = plt.get_cmap("magma")(np.linspace(0.25, 0.8, len(tolerances)))
 for i, tolerance in enumerate(tolerances):
     solver = psv.OptimizationSolver(
@@ -48,6 +48,7 @@ for i, tolerance in enumerate(tolerances):
         update_on="gradient",
         max_iterations=10000,
         tolerance=tolerance,
+        problem_scale=20,
     )
     solver.solve(x0)
     ax.plot(
@@ -59,7 +60,6 @@ for i, tolerance in enumerate(tolerances):
         color=colors[i],
     )
     print(solver.x_final)
-
 
 # Add legend
 ax.legend(loc="upper right", fontsize=10, ncol=1)

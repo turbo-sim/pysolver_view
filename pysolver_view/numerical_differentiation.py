@@ -1,12 +1,7 @@
 import numpy as np
 from scipy.optimize._numdiff import approx_derivative
 
-try:
-    import jax
-    import jax.numpy as jnp
-    USE_JAX = True
-except ImportError:
-    USE_JAX = False
+from . import jax, jnp, JAX_AVAILABLE
 
 DERIVATIVE_METHODS = [
     "2-point",
@@ -245,7 +240,6 @@ def approx_jacobian_hessians(f, x, abs_step=1e-5, lower_triangular=True):
     return Hessians
 
 
-
 def compute_hessians_jax(fitness_function, x, lower_triangular=True):
     """
     Compute the Hessians of a vector-valued fitness function.
@@ -266,7 +260,7 @@ def compute_hessians_jax(fitness_function, x, lower_triangular=True):
         of a component of the fitness function. If lower_triangular is True, the Hessians
         are returned in a flattened lower triangular format.
     """
-    if not USE_JAX:
+    if not JAX_AVAILABLE:
         raise ImportError("JAX is not installed. Install with `pip install pysolver_view[jax]` to use this feature.")
 
     # Compute full Hessians with JAX

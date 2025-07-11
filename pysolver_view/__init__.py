@@ -15,7 +15,24 @@ else:
     else:
         sys.excepthook = IPython.core.ultratb.FormattedTB(color_scheme='linux', call_pdb=False)
 
+# Import JAX in a flexible way
+try:
+    import os
+    os.environ["JAX_PLATFORM_NAME"] = "cpu"
+    import jax
+    import jax.numpy as jnp
+    jax.config.update("jax_enable_x64", True)
+    JAX_AVAILABLE = True
+except ImportError:
+    jax = None
+    jnp = None
+    JAX_AVAILABLE = False
 
+import logging
+logger = logging.getLogger("jax")
+logger.setLevel(logging.WARNING)
+
+# Import submodules
 from .pysolver_utilities import *
 from .numerical_differentiation import *
 from .optimization import *

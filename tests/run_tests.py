@@ -11,5 +11,5 @@ pytest.main(tests_list + ["-vv"])
 
 
 
-# TODO it would be good to use TOX or NOX to test my installation accorss multiple python versions.
+# TODO it would be good to use TOX or NOX to test my installation across multiple python versions.
 # Maybe it is even better to do so through github actions
