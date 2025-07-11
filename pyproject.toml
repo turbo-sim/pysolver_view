@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pysolver_view"
-version = "0.6.2"
+version = "0.6.3"
 description = "Visualization of solver convergence evolution"
 authors = ["Roberto Agromayor"]
 license = "MIT"
