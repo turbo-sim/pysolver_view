@@ -31,7 +31,7 @@ jobs:
 
     
     - name: Install dependencies
-      run: poetry install
+      run: poetry install --extras jax
 
     - name: Run tests
       run: poetry run pytest
