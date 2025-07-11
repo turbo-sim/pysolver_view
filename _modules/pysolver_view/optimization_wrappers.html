@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pysolver_view.optimization_wrappers &#8212; pysolver_view v0.6.2 documentation</title>
+    <title>pysolver_view.optimization_wrappers &#8212; pysolver_view v0.6.8 documentation</title>
   
   
   
@@ -15,30 +15,27 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <script src="../../_static/documentation_options.js?v=e368b39a"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=9053b2ce"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
@@ -47,7 +44,6 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -63,8 +59,19 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../../search.html"
       method="get">
@@ -72,6 +79,7 @@
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -79,8 +87,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -98,8 +106,7 @@
       
         
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -124,16 +131,20 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.6.2 documentation</p>
+    <p class="title logo__title">pysolver_view v0.6.8 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
@@ -210,16 +221,24 @@
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 
 </div></div>
       
@@ -246,19 +265,19 @@
                 <article class="bd-article">
                   
   <h1>Source code for pysolver_view.optimization_wrappers</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">ctypes</span>
-<span class="kn">import</span> <span class="nn">platform</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
 
 
 <span class="c1"># Attempt to import pygmo and pygmo_plugins_nonfree</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">pygmo</span> <span class="k">as</span> <span class="nn">pg</span>
-    <span class="kn">import</span> <span class="nn">pygmo_plugins_nonfree</span> <span class="k">as</span> <span class="nn">ppnf</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pygmo</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pg</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pygmo_plugins_nonfree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ppnf</span>
 
     <span class="n">PYGMO_AVAILABLE</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -328,7 +347,7 @@
 
 <div class="viewcode-block" id="minimize_scipy">
 <a class="viewcode-back" href="../../source/api/pysolver_view.optimization_wrappers.html#pysolver_view.optimization_wrappers.minimize_scipy">[docs]</a>
-<span class="k">def</span> <span class="nf">minimize_scipy</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">solver_options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">minimize_scipy</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">solver_options</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Optimize a given problem using the specified SciPy method.</span>
 
@@ -417,7 +436,7 @@
 
 <div class="viewcode-block" id="minimize_pygmo">
 <a class="viewcode-back" href="../../source/api/pysolver_view.optimization_wrappers.html#pysolver_view.optimization_wrappers.minimize_pygmo">[docs]</a>
-<span class="k">def</span> <span class="nf">minimize_pygmo</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">minimize_pygmo</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Optimize a given problem using the specified Pygmo optimization method.</span>
 
@@ -474,7 +493,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_minimize_pygmo_de</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_minimize_pygmo_de</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve optimization problem using Pygmo&#39;s wrapper to de&quot;&quot;&quot;</span>
 
     <span class="c1"># Define solver options</span>
@@ -502,7 +521,7 @@
 
     <span class="k">return</span> <span class="n">success</span><span class="p">,</span> <span class="n">message</span>
 
-<span class="k">def</span> <span class="nf">_minimize_pygmo_sga</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_minimize_pygmo_sga</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve optimization problem using Pygmo&#39;s wrapper to sga&quot;&quot;&quot;</span>
 
     <span class="c1"># Define solver options</span>
@@ -537,7 +556,7 @@
 
     <span class="k">return</span> <span class="n">success</span><span class="p">,</span> <span class="n">message</span>
 
-<span class="k">def</span> <span class="nf">_minimize_pygmo_pso</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_minimize_pygmo_pso</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve optimization problem using Pygmo&#39;s wrapper to PSO&quot;&quot;&quot;</span>
 
     <span class="c1"># Define solver options</span>
@@ -573,7 +592,7 @@
     <span class="k">return</span> <span class="n">success</span><span class="p">,</span> <span class="n">message</span>
 
 
-<span class="k">def</span> <span class="nf">_minimize_pygmo_ipopt</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_minimize_pygmo_ipopt</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve optimization problem using Pygmo&#39;s wrapper to IPOPT&quot;&quot;&quot;</span>
 
     <span class="c1"># Define mapping from exit flag to status</span>
@@ -654,7 +673,7 @@
     <span class="k">return</span> <span class="n">success</span><span class="p">,</span> <span class="n">message</span>
 
 
-<span class="k">def</span> <span class="nf">_minimize_pygmo_snopt</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_minimize_pygmo_snopt</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve optimization problem using Pygmo&#39;s wrapper to SNOPT&quot;&quot;&quot;</span>
 
     <span class="c1"># Define default solver options</span>
@@ -770,7 +789,7 @@
 
 <div class="viewcode-block" id="minimize_nlopt">
 <a class="viewcode-back" href="../../source/api/pysolver_view.optimization_wrappers.html#pysolver_view.optimization_wrappers.minimize_nlopt">[docs]</a>
-<span class="k">def</span> <span class="nf">minimize_nlopt</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">minimize_nlopt</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Optimize a given problem using the specified NLOpt optimization method.</span>
 
@@ -847,7 +866,7 @@
 
 <div class="viewcode-block" id="convert_pygmo_to_scipy_bounds">
 <a class="viewcode-back" href="../../source/api/pysolver_view.optimization_wrappers.html#pysolver_view.optimization_wrappers.convert_pygmo_to_scipy_bounds">[docs]</a>
-<span class="k">def</span> <span class="nf">convert_pygmo_to_scipy_bounds</span><span class="p">(</span><span class="n">pygmo_bounds</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_pygmo_to_scipy_bounds</span><span class="p">(</span><span class="n">pygmo_bounds</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a function that converts bounds from Pygmo format to SciPy format.</span>
 
@@ -863,7 +882,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">converter</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">converter</span><span class="p">():</span>
         <span class="n">lower_bounds</span><span class="p">,</span> <span class="n">upper_bounds</span> <span class="o">=</span> <span class="n">pygmo_bounds</span><span class="p">()</span>
         <span class="n">scipy_bounds</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">lower_bounds</span><span class="p">,</span> <span class="n">upper_bounds</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">scipy_bounds</span>
@@ -872,7 +891,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_extract_snopt_message</span><span class="p">(</span><span class="n">info_str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_extract_snopt_message</span><span class="p">(</span><span class="n">info_str</span><span class="p">):</span>
     <span class="c1"># Search for the start of the relevant message</span>
     <span class="n">start</span> <span class="o">=</span> <span class="n">info_str</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Last optimisation return code: &quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
@@ -890,7 +909,7 @@
     <span class="k">return</span> <span class="n">info_str</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">_set_pygmo_options</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_set_pygmo_options</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets multiple options on a PyGMO solver handle based on the types of values provided in a dictionary.</span>
 
@@ -1000,8 +1019,8 @@ By Roberto Agromayor
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>
