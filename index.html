@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Welcome to PySolverView documentation! &#8212; pysolver_view v0.6.9 documentation</title>
+    <title>PySolverView documentation &#8212; PySolverView</title>
   
   
   
@@ -32,6 +32,8 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
   <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -39,15 +41,24 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=2baf30d3"></script>
+    <script src="_static/documentation_options.js?v=c62cc9a0"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
+    <link rel="canonical" href="https://turbo-sim.github.io/pysolver_view/index.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Getting started" href="source/introduction.html" />
+    <link rel="next" title="Getting started" href="introduction.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -127,7 +138,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.6.9 documentation</p>
+    <p class="title logo__title">PySolverView</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -139,19 +150,134 @@
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="source/introduction.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="source/tutorial_optimization.html">Tutorial: Optimization problems</a></li>
-<li class="toctree-l1"><a class="reference internal" href="source/tutorial_nonlinear_system.html">Tutorial: Nonlinear systems</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="source/api/modules.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.nonlinear_system.html">Nonlinear systems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.nonlinear_system_problems.html">Nonlinear system problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.optimization.html">Optimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.optimization_wrappers.html">Optimization wrappers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.optimization_problems.html">Optimization problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.numerical_differentiation.html">Numerical differentiation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.pysolver_utilities.html">Package utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_optimization.html">Tutorial: Optimization problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_nonlinear_system.html">Tutorial: Nonlinear systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source_layout.html">Source layout and compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references/bibliography.html">References</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/pysolver_view.html">pysolver_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.diagnostics.html">pysolver_view.diagnostics package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.diagnostics.kkt.html">pysolver_view.diagnostics.kkt module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.diagnostics.slsqp_audit.html">pysolver_view.diagnostics.slsqp_audit module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.differentiation.html">pysolver_view.differentiation package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.differentiation.finite_difference.html">pysolver_view.differentiation.finite_difference module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.differentiation.hessians.html">pysolver_view.differentiation.hessians module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.optimization.html">pysolver_view.optimization package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.optimization.backends.html">pysolver_view.optimization.backends package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.custom.html">pysolver_view.optimization.backends.custom module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.pygmo.html">pysolver_view.optimization.backends.pygmo module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.pygmo_nlopt.html">pysolver_view.optimization.backends.pygmo_nlopt module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.pygmo_nonfree.html">pysolver_view.optimization.backends.pygmo_nonfree module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.registry.html">pysolver_view.optimization.backends.registry module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.scipy.html">pysolver_view.optimization.backends.scipy module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.optimization.problems.html">pysolver_view.optimization.problems package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.base.html">pysolver_view.optimization.problems.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html">pysolver_view.optimization.problems.constrained_rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.hs71.html">pysolver_view.optimization.problems.hs71 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.lorenz.html">pysolver_view.optimization.problems.lorenz module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.rosenbrock.html">pysolver_view.optimization.problems.rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.slsqp_controls.html">pysolver_view.optimization.problems.slsqp_controls module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.optimization.solvers.html">pysolver_view.optimization.solvers package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.solvers.slsqp.html">pysolver_view.optimization.solvers.slsqp package</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.optimization.constraints.html">pysolver_view.optimization.constraints module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.optimization.evaluation.html">pysolver_view.optimization.evaluation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.optimization.kkt_adapter.html">pysolver_view.optimization.kkt_adapter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.optimization.scaling.html">pysolver_view.optimization.scaling module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.optimization.solver.html">pysolver_view.optimization.solver module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.reporting.html">pysolver_view.reporting package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.reporting.logging.html">pysolver_view.reporting.logging module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.reporting.plots.html">pysolver_view.reporting.plots module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.reporting.style.html">pysolver_view.reporting.style module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.reporting.tables.html">pysolver_view.reporting.tables module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.reporting.text.html">pysolver_view.reporting.text module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.roots.html">pysolver_view.roots package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.roots.backends.html">pysolver_view.roots.backends package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.backends.custom.html">pysolver_view.roots.backends.custom module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.backends.registry.html">pysolver_view.roots.backends.registry module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.backends.scipy.html">pysolver_view.roots.backends.scipy module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.roots.problems.html">pysolver_view.roots.problems package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.base.html">pysolver_view.roots.problems.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.brown_almost_linear.html">pysolver_view.roots.problems.brown_almost_linear module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.broyden_tridiagonal.html">pysolver_view.roots.problems.broyden_tridiagonal module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.html">pysolver_view.roots.problems.coupled_overdetermined_rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.discrete_boundary_value.html">pysolver_view.roots.problems.discrete_boundary_value module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.discrete_integral_equation.html">pysolver_view.roots.problems.discrete_integral_equation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.extended_rosenbrock.html">pysolver_view.roots.problems.extended_rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.heated_gas_duct.html">pysolver_view.roots.problems.heated_gas_duct module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.helical_valley.html">pysolver_view.roots.problems.helical_valley module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.logarithmic_domain.html">pysolver_view.roots.problems.logarithmic_domain module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.lorenz.html">pysolver_view.roots.problems.lorenz module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.powell_badly_scaled.html">pysolver_view.roots.problems.powell_badly_scaled module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.powell_singular.html">pysolver_view.roots.problems.powell_singular module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.suites.html">pysolver_view.roots.problems.suites module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.roots.solvers.html">pysolver_view.roots.solvers package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.evaluation.html">pysolver_view.roots.solvers.evaluation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.exceptions.html">pysolver_view.roots.solvers.exceptions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.history.html">pysolver_view.roots.solvers.history module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.line_search.html">pysolver_view.roots.solvers.line_search module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.linear_model.html">pysolver_view.roots.solvers.linear_model module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.options.html">pysolver_view.roots.solvers.options module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.scaling.html">pysolver_view.roots.solvers.scaling module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.solver.html">pysolver_view.roots.solvers.solver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.trial_step.html">pysolver_view.roots.solvers.trial_step module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.trust_region.html">pysolver_view.roots.solvers.trust_region module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.roots.evaluation.html">pysolver_view.roots.evaluation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.roots.methods.html">pysolver_view.roots.methods module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.roots.solver.html">pysolver_view.roots.solver module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.solvers.html">pysolver_view.solvers package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.solvers.root.html">pysolver_view.solvers.root package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.evaluation.html">pysolver_view.solvers.root.evaluation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.exceptions.html">pysolver_view.solvers.root.exceptions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.history.html">pysolver_view.solvers.root.history module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.line_search.html">pysolver_view.solvers.root.line_search module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.linear_model.html">pysolver_view.solvers.root.linear_model module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.options.html">pysolver_view.solvers.root.options module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.scaling.html">pysolver_view.solvers.root.scaling module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.solver.html">pysolver_view.solvers.root.solver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.trial_step.html">pysolver_view.solvers.root.trial_step module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.trust_region.html">pysolver_view.solvers.root.trust_region module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.solvers.exceptions.html">pysolver_view.solvers.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.solvers.slsqp.html">pysolver_view.solvers.slsqp module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.custom_optimization.html">pysolver_view.custom_optimization module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.custom_root.html">pysolver_view.custom_root module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.exceptions.html">pysolver_view.exceptions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.history.html">pysolver_view.history module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.nonlinear_system.html">pysolver_view.nonlinear_system module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.nonlinear_system_problems.html">pysolver_view.nonlinear_system_problems module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.numerical_differentiation.html">pysolver_view.numerical_differentiation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.optimization_problems.html">pysolver_view.optimization_problems module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.optimization_wrappers.html">pysolver_view.optimization_wrappers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.pysolver_utilities.html">pysolver_view.pysolver_utilities module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.results.html">pysolver_view.results module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.validation.html">pysolver_view.validation module</a></li>
 </ul>
 </details></li>
 </ul>
@@ -205,6 +331,70 @@
 
 
 
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/turbo-sim/pysolver_view" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/turbo-sim/pysolver_view/edit/main/docs/source/index.md" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/turbo-sim/pysolver_view/issues/new?title=Issue%20on%20page%20%2Findex.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
 <div class="dropdown dropdown-download-buttons">
   <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
     <i class="fas fa-download"></i>
@@ -213,7 +403,7 @@
       
       
       
-      <li><a href="_sources/index.rst" target="_blank"
+      <li><a href="_sources/index.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -223,7 +413,7 @@
 <span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="btn__text-container">.rst</span>
+<span class="btn__text-container">.md</span>
 </a>
 </li>
       
@@ -287,7 +477,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Welcome to PySolverView documentation!</h1>
+    <h1>PySolverView documentation</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -301,35 +491,44 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="welcome-to-pysolverview-documentation">
-<h1>Welcome to PySolverView documentation!<a class="headerlink" href="#welcome-to-pysolverview-documentation" title="Link to this heading">#</a></h1>
-<p>Use the panel to the left or the table of contents below to navigathe the documentation.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="pysolverview-documentation">
+<h1>PySolverView documentation<a class="headerlink" href="#pysolverview-documentation" title="Link to this heading">#</a></h1>
+<p>PySolverView provides a common interface and convergence histories for
+optimization and nonlinear equation solving with SciPy and custom solvers.</p>
+<p>Start with <a class="reference internal" href="introduction.html"><span class="std std-doc">installation</span></a>, then follow the
+<a class="reference internal" href="tutorial_optimization.html"><span class="std std-doc">optimization tutorial</span></a> or the
+<a class="reference internal" href="tutorial_nonlinear_system.html"><span class="std std-doc">nonlinear systems tutorial</span></a>.
+The <a class="reference internal" href="source_layout.html"><span class="std std-doc">source layout guide</span></a> explains canonical imports,
+compatibility exports, and optional dependencies.</p>
 <div class="toctree-wrapper compound">
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="source/introduction.html">Getting started</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="source/introduction.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/introduction.html#user-installation-guide">User Installation Guide</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/introduction.html#developer-installation-guide">Developer Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#user-installation-guide">User Installation Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#developer-installation-guide">Developer Installation Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#building-the-documentation">Building the documentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="source/tutorial_optimization.html">Tutorial: Optimization problems</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="source/tutorial_optimization.html#example-1-unconstrained-optimization">Example 1: Unconstrained optimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/tutorial_optimization.html#example-2-constrained-optimization">Example 2: Constrained optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_optimization.html">Tutorial: Optimization problems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_optimization.html#example-1-unconstrained-optimization">Example 1: Unconstrained optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_optimization.html#example-2-constrained-optimization">Example 2: Constrained optimization</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="source/tutorial_nonlinear_system.html">Tutorial: Nonlinear systems</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="source/tutorial_nonlinear_system.html#example-1-stationary-point-of-the-lorentz-equations">Example 1: Stationary point of the Lorentz equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_nonlinear_system.html">Tutorial: Nonlinear systems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_nonlinear_system.html#example-1-stationary-point-of-the-lorentz-equations">Example 1: Stationary point of the Lorentz equations</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="source/api/modules.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.nonlinear_system.html">Nonlinear systems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.nonlinear_system_problems.html">Nonlinear system problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.optimization.html">Optimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.optimization_wrappers.html">Optimization wrappers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.optimization_problems.html">Optimization problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.numerical_differentiation.html">Numerical differentiation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.pysolver_utilities.html">Package utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source_layout.html">Source layout and compatibility</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source_layout.html#canonical-modules">Canonical modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source_layout.html#explicit-host-configuration">Explicit host configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source_layout.html#validation-and-packaging">Validation and packaging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references/bibliography.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/pysolver_view.html">pysolver_view package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.html#submodules">Submodules</a></li>
 </ul>
 </li>
 </ul>
@@ -348,7 +547,7 @@
                   
 <div class="prev-next-area">
     <a class="right-next"
-       href="source/introduction.html"
+       href="introduction.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
@@ -382,7 +581,7 @@ By Roberto Agromayor
 
   <p class="copyright">
     
-      © Copyright 2024, Roberto Agromayor.
+      © Copyright 2026, Roberto Agromayor.
       <br/>
     
   </p>

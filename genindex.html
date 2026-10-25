@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; pysolver_view v0.6.9 documentation</title>
+    <title>Index &#8212; PySolverView</title>
   
   
   
@@ -31,6 +31,8 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
   <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -38,11 +40,19 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=2baf30d3"></script>
+    <script src="_static/documentation_options.js?v=c62cc9a0"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
+    <link rel="canonical" href="https://turbo-sim.github.io/pysolver_view/genindex.html" />
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -124,7 +134,7 @@
   
   
   
-    <p class="title logo__title">pysolver_view v0.6.9 documentation</p>
+    <p class="title logo__title">PySolverView</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -136,19 +146,134 @@
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="source/introduction.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="source/tutorial_optimization.html">Tutorial: Optimization problems</a></li>
-<li class="toctree-l1"><a class="reference internal" href="source/tutorial_nonlinear_system.html">Tutorial: Nonlinear systems</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="source/api/modules.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.nonlinear_system.html">Nonlinear systems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.nonlinear_system_problems.html">Nonlinear system problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.optimization.html">Optimization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.optimization_wrappers.html">Optimization wrappers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.optimization_problems.html">Optimization problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.numerical_differentiation.html">Numerical differentiation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/api/pysolver_view.pysolver_utilities.html">Package utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_optimization.html">Tutorial: Optimization problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_nonlinear_system.html">Tutorial: Nonlinear systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source_layout.html">Source layout and compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references/bibliography.html">References</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/pysolver_view.html">pysolver_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.diagnostics.html">pysolver_view.diagnostics package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.diagnostics.kkt.html">pysolver_view.diagnostics.kkt module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.diagnostics.slsqp_audit.html">pysolver_view.diagnostics.slsqp_audit module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.differentiation.html">pysolver_view.differentiation package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.differentiation.finite_difference.html">pysolver_view.differentiation.finite_difference module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.differentiation.hessians.html">pysolver_view.differentiation.hessians module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.optimization.html">pysolver_view.optimization package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.optimization.backends.html">pysolver_view.optimization.backends package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.custom.html">pysolver_view.optimization.backends.custom module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.pygmo.html">pysolver_view.optimization.backends.pygmo module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.pygmo_nlopt.html">pysolver_view.optimization.backends.pygmo_nlopt module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.pygmo_nonfree.html">pysolver_view.optimization.backends.pygmo_nonfree module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.registry.html">pysolver_view.optimization.backends.registry module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.scipy.html">pysolver_view.optimization.backends.scipy module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.optimization.problems.html">pysolver_view.optimization.problems package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.base.html">pysolver_view.optimization.problems.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html">pysolver_view.optimization.problems.constrained_rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.hs71.html">pysolver_view.optimization.problems.hs71 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.lorenz.html">pysolver_view.optimization.problems.lorenz module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.rosenbrock.html">pysolver_view.optimization.problems.rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.slsqp_controls.html">pysolver_view.optimization.problems.slsqp_controls module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.optimization.solvers.html">pysolver_view.optimization.solvers package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.solvers.slsqp.html">pysolver_view.optimization.solvers.slsqp package</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.optimization.constraints.html">pysolver_view.optimization.constraints module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.optimization.evaluation.html">pysolver_view.optimization.evaluation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.optimization.kkt_adapter.html">pysolver_view.optimization.kkt_adapter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.optimization.scaling.html">pysolver_view.optimization.scaling module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.optimization.solver.html">pysolver_view.optimization.solver module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.reporting.html">pysolver_view.reporting package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.reporting.logging.html">pysolver_view.reporting.logging module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.reporting.plots.html">pysolver_view.reporting.plots module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.reporting.style.html">pysolver_view.reporting.style module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.reporting.tables.html">pysolver_view.reporting.tables module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.reporting.text.html">pysolver_view.reporting.text module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.roots.html">pysolver_view.roots package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.roots.backends.html">pysolver_view.roots.backends package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.backends.custom.html">pysolver_view.roots.backends.custom module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.backends.registry.html">pysolver_view.roots.backends.registry module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.backends.scipy.html">pysolver_view.roots.backends.scipy module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.roots.problems.html">pysolver_view.roots.problems package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.base.html">pysolver_view.roots.problems.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.brown_almost_linear.html">pysolver_view.roots.problems.brown_almost_linear module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.broyden_tridiagonal.html">pysolver_view.roots.problems.broyden_tridiagonal module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.html">pysolver_view.roots.problems.coupled_overdetermined_rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.discrete_boundary_value.html">pysolver_view.roots.problems.discrete_boundary_value module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.discrete_integral_equation.html">pysolver_view.roots.problems.discrete_integral_equation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.extended_rosenbrock.html">pysolver_view.roots.problems.extended_rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.heated_gas_duct.html">pysolver_view.roots.problems.heated_gas_duct module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.helical_valley.html">pysolver_view.roots.problems.helical_valley module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.logarithmic_domain.html">pysolver_view.roots.problems.logarithmic_domain module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.lorenz.html">pysolver_view.roots.problems.lorenz module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.powell_badly_scaled.html">pysolver_view.roots.problems.powell_badly_scaled module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.powell_singular.html">pysolver_view.roots.problems.powell_singular module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.problems.suites.html">pysolver_view.roots.problems.suites module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.roots.solvers.html">pysolver_view.roots.solvers package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.evaluation.html">pysolver_view.roots.solvers.evaluation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.exceptions.html">pysolver_view.roots.solvers.exceptions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.history.html">pysolver_view.roots.solvers.history module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.line_search.html">pysolver_view.roots.solvers.line_search module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.linear_model.html">pysolver_view.roots.solvers.linear_model module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.options.html">pysolver_view.roots.solvers.options module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.scaling.html">pysolver_view.roots.solvers.scaling module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.solver.html">pysolver_view.roots.solvers.solver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.trial_step.html">pysolver_view.roots.solvers.trial_step module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.roots.solvers.trust_region.html">pysolver_view.roots.solvers.trust_region module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.roots.evaluation.html">pysolver_view.roots.evaluation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.roots.methods.html">pysolver_view.roots.methods module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.roots.solver.html">pysolver_view.roots.solver module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.solvers.html">pysolver_view.solvers package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.solvers.root.html">pysolver_view.solvers.root package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.evaluation.html">pysolver_view.solvers.root.evaluation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.exceptions.html">pysolver_view.solvers.root.exceptions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.history.html">pysolver_view.solvers.root.history module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.line_search.html">pysolver_view.solvers.root.line_search module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.linear_model.html">pysolver_view.solvers.root.linear_model module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.options.html">pysolver_view.solvers.root.options module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.scaling.html">pysolver_view.solvers.root.scaling module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.solver.html">pysolver_view.solvers.root.solver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.trial_step.html">pysolver_view.solvers.root.trial_step module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.solvers.root.trust_region.html">pysolver_view.solvers.root.trust_region module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.solvers.exceptions.html">pysolver_view.solvers.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.solvers.slsqp.html">pysolver_view.solvers.slsqp module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.custom_optimization.html">pysolver_view.custom_optimization module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.custom_root.html">pysolver_view.custom_root module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.exceptions.html">pysolver_view.exceptions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.history.html">pysolver_view.history module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.nonlinear_system.html">pysolver_view.nonlinear_system module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.nonlinear_system_problems.html">pysolver_view.nonlinear_system_problems module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.numerical_differentiation.html">pysolver_view.numerical_differentiation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.optimization_problems.html">pysolver_view.optimization_problems module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.optimization_wrappers.html">pysolver_view.optimization_wrappers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.pysolver_utilities.html">pysolver_view.pysolver_utilities module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.results.html">pysolver_view.results module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/pysolver_view.validation.html">pysolver_view.validation module</a></li>
 </ul>
 </details></li>
 </ul>
@@ -197,6 +322,53 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/turbo-sim/pysolver_view" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/turbo-sim/pysolver_view/issues/new?title=Issue%20on%20page%20%2Fgenindex.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -255,12 +427,16 @@
 
 <div class="genindex-jumpbox">
  <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
@@ -268,17 +444,64 @@
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
+ | <a href="#X"><strong>X</strong></a>
  
 </div>
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.numerical_differentiation.html#pysolver_view.numerical_differentiation.approx_gradient">approx_gradient() (in module pysolver_view.numerical_differentiation)</a>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.acceptance_ratio">acceptance_ratio (pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootSolverAdapter.accepted">accepted() (pysolver_view.roots.backends.custom.RootSolverAdapter method)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.history.html#pysolver_view.roots.solvers.history.HistoryRecorder.accepted">(pysolver_view.roots.solvers.history.HistoryRecorder method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootRunContext.active">active (pysolver_view.roots.backends.custom.RootRunContext attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.history.html#pysolver_view.history.append_observation">append_observation() (in module pysolver_view.history)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.numerical_differentiation.html#pysolver_view.numerical_differentiation.approx_jacobian_hessians">approx_jacobian_hessians() (in module pysolver_view.numerical_differentiation)</a>
+      <li><a href="api/pysolver_view.differentiation.finite_difference.html#pysolver_view.differentiation.finite_difference.approx_gradient">approx_gradient() (in module pysolver_view.differentiation.finite_difference)</a>
+</li>
+      <li><a href="api/pysolver_view.differentiation.hessians.html#pysolver_view.differentiation.hessians.approx_jacobian_hessians">approx_jacobian_hessians() (in module pysolver_view.differentiation.hessians)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.BacktrackingOptions.armijo_c1">armijo_c1 (pysolver_view.roots.solvers.options.BacktrackingOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.diagnostics.kkt.html#pysolver_view.diagnostics.kkt.assess_kkt">assess_kkt() (in module pysolver_view.diagnostics.kkt)</a>
+</li>
+      <li><a href="api/pysolver_view.diagnostics.kkt.html#pysolver_view.diagnostics.kkt.assess_kkt_nonnegative">assess_kkt_nonnegative() (in module pysolver_view.diagnostics.kkt)</a>
+</li>
+      <li><a href="api/pysolver_view.diagnostics.slsqp_audit.html#pysolver_view.diagnostics.slsqp_audit.audit_solution">audit_solution() (in module pysolver_view.diagnostics.slsqp_audit)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.optimization.evaluation.html#pysolver_view.optimization.evaluation.BackendProblem">BackendProblem (class in pysolver_view.optimization.evaluation)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions.backtrack_factor">backtrack_factor (pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.NewtonOptions.backtracking">backtracking (pysolver_view.roots.solvers.options.NewtonOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.BacktrackingOptions">BacktrackingOptions (class in pysolver_view.roots.solvers.options)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.roots.problems.base.html#pysolver_view.roots.problems.base.BenchmarkProblem">BenchmarkProblem (class in pysolver_view.roots.problems.base)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.problems.brown_almost_linear.html#pysolver_view.roots.problems.brown_almost_linear.BrownAlmostLinearProblem">BrownAlmostLinearProblem (class in pysolver_view.roots.problems.brown_almost_linear)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.problems.broyden_tridiagonal.html#pysolver_view.roots.problems.broyden_tridiagonal.BroydenTridiagonalProblem">BroydenTridiagonalProblem (class in pysolver_view.roots.problems.broyden_tridiagonal)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.exceptions.html#pysolver_view.roots.solvers.exceptions.BudgetExhausted">BudgetExhausted</a>
 </li>
   </ul></td>
 </tr></table>
@@ -286,23 +509,41 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.numerical_differentiation.html#pysolver_view.numerical_differentiation.central_finite_differences">central_finite_differences() (in module pysolver_view.numerical_differentiation)</a>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.cache">cache (pysolver_view.optimization.solver.OptimizationSolver property)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationProblem.clip_to_bounds">clip_to_bounds() (pysolver_view.optimization.OptimizationProblem method)</a>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootRunContext.callback">callback (pysolver_view.roots.backends.custom.RootRunContext attribute)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.combine_objective_and_constraints">combine_objective_and_constraints() (in module pysolver_view.optimization)</a>
+      <li><a href="api/pysolver_view.differentiation.finite_difference.html#pysolver_view.differentiation.finite_difference.central_finite_differences">central_finite_differences() (in module pysolver_view.differentiation.finite_difference)</a>
 </li>
-      <li><a href="source/api/pysolver_view.numerical_differentiation.html#pysolver_view.numerical_differentiation.complex_step_derivative">complex_step_derivative() (in module pysolver_view.numerical_differentiation)</a>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions.check_kkt">check_kkt (pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.scaling.html#pysolver_view.optimization.scaling.clip_to_bounds">clip_to_bounds() (in module pysolver_view.optimization.scaling)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.base.html#pysolver_view.optimization.problems.base.OptimizationProblem.clip_to_bounds">(pysolver_view.optimization.problems.base.OptimizationProblem method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.optimization.constraints.html#pysolver_view.optimization.constraints.combine_objective_and_constraints">combine_objective_and_constraints() (in module pysolver_view.optimization.constraints)</a>
+</li>
+      <li><a href="api/pysolver_view.differentiation.finite_difference.html#pysolver_view.differentiation.finite_difference.complex_step_derivative">complex_step_derivative() (in module pysolver_view.differentiation.finite_difference)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.numerical_differentiation.html#pysolver_view.numerical_differentiation.compute_hessians_jax">compute_hessians_jax() (in module pysolver_view.numerical_differentiation)</a>
+      <li><a href="api/pysolver_view.differentiation.hessians.html#pysolver_view.differentiation.hessians.compute_hessians_jax">compute_hessians_jax() (in module pysolver_view.differentiation.hessians)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization_wrappers.html#pysolver_view.optimization_wrappers.convert_pygmo_to_scipy_bounds">convert_pygmo_to_scipy_bounds() (in module pysolver_view.optimization_wrappers)</a>
+      <li><a href="api/pysolver_view.reporting.tables.html#pysolver_view.reporting.tables.constraint_report">constraint_report() (in module pysolver_view.reporting.tables)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.count_constraints">count_constraints() (in module pysolver_view.optimization)</a>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.BacktrackingOptions.contraction_factor">contraction_factor (pysolver_view.roots.solvers.options.BacktrackingOptions attribute)</a>
 </li>
-      <li><a href="source/api/pysolver_view.pysolver_utilities.html#pysolver_view.pysolver_utilities.create_logger">create_logger() (in module pysolver_view.pysolver_utilities)</a>
+      <li><a href="api/pysolver_view.optimization.backends.scipy.html#pysolver_view.optimization.backends.scipy.convert_pygmo_to_scipy_bounds">convert_pygmo_to_scipy_bounds() (in module pysolver_view.optimization.backends.scipy)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.constraints.html#pysolver_view.optimization.constraints.count_constraints">count_constraints() (in module pysolver_view.optimization.constraints)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.evaluation.html#pysolver_view.roots.solvers.evaluation.ModelEvaluator.counts">counts() (pysolver_view.roots.solvers.evaluation.ModelEvaluator method)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.html#pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.CoupledOverdeterminedRosenbrockProblem">CoupledOverdeterminedRosenbrockProblem (class in pysolver_view.roots.problems.coupled_overdetermined_rosenbrock)</a>
+</li>
+      <li><a href="api/pysolver_view.reporting.logging.html#pysolver_view.reporting.logging.create_logger">create_logger() (in module pysolver_view.reporting.logging)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -310,7 +551,41 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.pysolver_utilities.html#pysolver_view.pysolver_utilities.DictionaryValidationError">DictionaryValidationError</a>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.NewtonOptions.derivative_abs_step">derivative_abs_step (pysolver_view.roots.solvers.options.NewtonOptions attribute)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.derivative_abs_step">(pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.derivative_func_count">derivative_func_count (pysolver_view.optimization.solver.OptimizationSolver property)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solver.html#pysolver_view.roots.solver.NonlinearSystemSolver.derivative_func_count">(pysolver_view.roots.solver.NonlinearSystemSolver property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.NewtonOptions.derivative_method">derivative_method (pysolver_view.roots.solvers.options.NewtonOptions attribute)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.derivative_method">(pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.diagnostic_func_count">diagnostic_func_count (pysolver_view.optimization.solver.OptimizationSolver property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.diagnostic_grad_count">diagnostic_grad_count (pysolver_view.optimization.solver.OptimizationSolver property)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.scaling.html#pysolver_view.roots.solvers.scaling.JacobianScaling.diagnostics">diagnostics() (pysolver_view.roots.solvers.scaling.JacobianScaling method)</a>
+</li>
+      <li><a href="api/pysolver_view.validation.html#pysolver_view.validation.DictionaryValidationError">DictionaryValidationError</a>
+</li>
+      <li><a href="api/pysolver_view.roots.problems.discrete_boundary_value.html#pysolver_view.roots.problems.discrete_boundary_value.DiscreteBoundaryValueProblem">DiscreteBoundaryValueProblem (class in pysolver_view.roots.problems.discrete_boundary_value)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.problems.discrete_integral_equation.html#pysolver_view.roots.problems.discrete_integral_equation.DiscreteIntegralEquationProblem">DiscreteIntegralEquationProblem (class in pysolver_view.roots.problems.discrete_integral_equation)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions.domain_backtracking">domain_backtracking (pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.exceptions.html#pysolver_view.exceptions.DomainError">DomainError</a>
 </li>
   </ul></td>
 </tr></table>
@@ -318,7 +593,21 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.evaluate_kkt_conditions">evaluate_kkt_conditions() (pysolver_view.optimization.OptimizationSolver method)</a>
+      <li><a href="api/pysolver_view.reporting.text.html#pysolver_view.reporting.text.emit">emit() (in module pysolver_view.reporting.text)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.Evaluation.equalities">equalities (pysolver_view.optimization.solvers.slsqp.options.Evaluation attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.evaluate_kkt_conditions">evaluate_kkt_conditions() (pysolver_view.optimization.solver.OptimizationSolver method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.diagnostics.kkt.html#pysolver_view.diagnostics.kkt.evaluate_kkt_residuals">evaluate_kkt_residuals() (in module pysolver_view.diagnostics.kkt)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.Evaluation">Evaluation (class in pysolver_view.optimization.solvers.slsqp.options)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootRunContext.evaluation">evaluation (pysolver_view.roots.backends.custom.RootRunContext attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.problems.extended_rosenbrock.html#pysolver_view.roots.problems.extended_rosenbrock.ExtendedRosenbrockProblem">ExtendedRosenbrockProblem (class in pysolver_view.roots.problems.extended_rosenbrock)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -326,99 +615,277 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationProblem.fitness">fitness() (pysolver_view.optimization.OptimizationProblem method)</a>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.failed_grad_count">failed_grad_count (pysolver_view.optimization.solver.OptimizationSolver property)</a>
 
       <ul>
-        <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.fitness">(pysolver_view.optimization.OptimizationSolver method)</a>
+        <li><a href="api/pysolver_view.roots.solver.html#pysolver_view.roots.solver.NonlinearSystemSolver.failed_grad_count">(pysolver_view.roots.solver.NonlinearSystemSolver property)</a>
 </li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.HS71Problem.fitness">(pysolver_view.optimization_problems.HS71Problem method)</a>
+      </ul></li>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions.feasibility_tol">feasibility_tol (pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions attribute)</a>
 </li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.LorentzEquationsOpt.fitness">(pysolver_view.optimization_problems.LorentzEquationsOpt method)</a>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions.finite_diff_step">finite_diff_step (pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions attribute)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.NewtonOptions.finite_diff_step">(pysolver_view.roots.solvers.options.NewtonOptions attribute)</a>
 </li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.RosenbrockProblem.fitness">(pysolver_view.optimization_problems.RosenbrockProblem method)</a>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.finite_diff_step">(pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
 </li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.RosenbrockProblemConstrained.fitness">(pysolver_view.optimization_problems.RosenbrockProblemConstrained method)</a>
+      </ul></li>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions.first_step_fraction">first_step_fraction (pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.problems.base.html#pysolver_view.optimization.problems.base.OptimizationProblem.fitness">fitness() (pysolver_view.optimization.problems.base.OptimizationProblem method)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained.fitness">(pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained method)</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.hs71.html#pysolver_view.optimization.problems.hs71.HS71Problem.fitness">(pysolver_view.optimization.problems.hs71.HS71Problem method)</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.lorenz.html#pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt.fitness">(pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt method)</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.rosenbrock.html#pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem.fitness">(pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.slsqp_controls.html#pysolver_view.optimization.problems.slsqp_controls.StudyProblem.fitness">(pysolver_view.optimization.problems.slsqp_controls.StudyProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.fitness">(pysolver_view.optimization.solver.OptimizationSolver method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationProblem.fitness_normalized_input">fitness_normalized_input() (pysolver_view.optimization.OptimizationProblem method)</a>
+      <li><a href="api/pysolver_view.optimization.scaling.html#pysolver_view.optimization.scaling.fitness_normalized_input">fitness_normalized_input() (in module pysolver_view.optimization.scaling)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.base.html#pysolver_view.optimization.problems.base.OptimizationProblem.fitness_normalized_input">(pysolver_view.optimization.problems.base.OptimizationProblem method)</a>
 </li>
-      <li><a href="source/api/pysolver_view.numerical_differentiation.html#pysolver_view.numerical_differentiation.forward_finite_differences">forward_finite_differences() (in module pysolver_view.numerical_differentiation)</a>
+      </ul></li>
+      <li><a href="api/pysolver_view.differentiation.finite_difference.html#pysolver_view.differentiation.finite_difference.forward_finite_differences">forward_finite_differences() (in module pysolver_view.differentiation.finite_difference)</a>
 </li>
+      <li><a href="api/pysolver_view.diagnostics.slsqp_audit.html#pysolver_view.diagnostics.slsqp_audit.fresh_jacobian">fresh_jacobian() (in module pysolver_view.diagnostics.slsqp_audit)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootRunContext.from_solver">from_solver() (pysolver_view.roots.backends.custom.RootRunContext class method)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions.ftol">ftol (pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.func_count">func_count (pysolver_view.optimization.solver.OptimizationSolver property)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solver.html#pysolver_view.roots.solver.NonlinearSystemSolver.func_count">(pysolver_view.roots.solver.NonlinearSystemSolver property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.func_count_tot">func_count_tot (pysolver_view.optimization.solver.OptimizationSolver property)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solver.html#pysolver_view.roots.solver.NonlinearSystemSolver.func_count_tot">(pysolver_view.roots.solver.NonlinearSystemSolver property)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationProblem.get_bounds">get_bounds() (pysolver_view.optimization.OptimizationProblem method)</a>
+      <li><a href="api/pysolver_view.roots.solvers.linear_model.html#pysolver_view.roots.solvers.linear_model.LinearModel.gauss_newton">gauss_newton (pysolver_view.roots.solvers.linear_model.LinearModel property)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.problems.base.html#pysolver_view.optimization.problems.base.OptimizationProblem.get_bounds">get_bounds() (pysolver_view.optimization.problems.base.OptimizationProblem method)</a>
 
       <ul>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.HS71Problem.get_bounds">(pysolver_view.optimization_problems.HS71Problem method)</a>
+        <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained.get_bounds">(pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained method)</a>
 </li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.LorentzEquationsOpt.get_bounds">(pysolver_view.optimization_problems.LorentzEquationsOpt method)</a>
+        <li><a href="api/pysolver_view.optimization.problems.hs71.html#pysolver_view.optimization.problems.hs71.HS71Problem.get_bounds">(pysolver_view.optimization.problems.hs71.HS71Problem method)</a>
 </li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.RosenbrockProblem.get_bounds">(pysolver_view.optimization_problems.RosenbrockProblem method)</a>
+        <li><a href="api/pysolver_view.optimization.problems.lorenz.html#pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt.get_bounds">(pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt method)</a>
 </li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.RosenbrockProblemConstrained.get_bounds">(pysolver_view.optimization_problems.RosenbrockProblemConstrained method)</a>
+        <li><a href="api/pysolver_view.optimization.problems.rosenbrock.html#pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem.get_bounds">(pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.slsqp_controls.html#pysolver_view.optimization.problems.slsqp_controls.StudyProblem.get_bounds">(pysolver_view.optimization.problems.slsqp_controls.StudyProblem method)</a>
 </li>
       </ul></li>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationProblem.get_bounds_normalized">get_bounds_normalized() (pysolver_view.optimization.OptimizationProblem method)</a>
-</li>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.get_constraint_data">get_constraint_data() (pysolver_view.optimization.OptimizationSolver method)</a>
-</li>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationProblem.get_nec">get_nec() (pysolver_view.optimization.OptimizationProblem method)</a>
+      <li><a href="api/pysolver_view.optimization.scaling.html#pysolver_view.optimization.scaling.get_bounds_normalized">get_bounds_normalized() (in module pysolver_view.optimization.scaling)</a>
 
       <ul>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.HS71Problem.get_nec">(pysolver_view.optimization_problems.HS71Problem method)</a>
-</li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.LorentzEquationsOpt.get_nec">(pysolver_view.optimization_problems.LorentzEquationsOpt method)</a>
-</li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.RosenbrockProblem.get_nec">(pysolver_view.optimization_problems.RosenbrockProblem method)</a>
-</li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.RosenbrockProblemConstrained.get_nec">(pysolver_view.optimization_problems.RosenbrockProblemConstrained method)</a>
+        <li><a href="api/pysolver_view.optimization.problems.base.html#pysolver_view.optimization.problems.base.OptimizationProblem.get_bounds_normalized">(pysolver_view.optimization.problems.base.OptimizationProblem method)</a>
 </li>
       </ul></li>
+      <li><a href="api/pysolver_view.optimization.constraints.html#pysolver_view.optimization.constraints.get_constraint_data">get_constraint_data() (in module pysolver_view.optimization.constraints)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.get_constraint_data">(pysolver_view.optimization.solver.OptimizationSolver method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.roots.problems.suites.html#pysolver_view.roots.problems.suites.get_extension_problems">get_extension_problems() (in module pysolver_view.roots.problems.suites)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.problems.suites.html#pysolver_view.roots.problems.suites.get_large_problems">get_large_problems() (in module pysolver_view.roots.problems.suites)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.problems.base.html#pysolver_view.optimization.problems.base.OptimizationProblem.get_nec">get_nec() (pysolver_view.optimization.problems.base.OptimizationProblem method)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained.get_nec">(pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained method)</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.hs71.html#pysolver_view.optimization.problems.hs71.HS71Problem.get_nec">(pysolver_view.optimization.problems.hs71.HS71Problem method)</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.lorenz.html#pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt.get_nec">(pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt method)</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.rosenbrock.html#pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem.get_nec">(pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.slsqp_controls.html#pysolver_view.optimization.problems.slsqp_controls.StudyProblem.get_nec">(pysolver_view.optimization.problems.slsqp_controls.StudyProblem method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.optimization.problems.base.html#pysolver_view.optimization.problems.base.OptimizationProblem.get_nic">get_nic() (pysolver_view.optimization.problems.base.OptimizationProblem method)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained.get_nic">(pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained method)</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.hs71.html#pysolver_view.optimization.problems.hs71.HS71Problem.get_nic">(pysolver_view.optimization.problems.hs71.HS71Problem method)</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.lorenz.html#pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt.get_nic">(pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt method)</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.rosenbrock.html#pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem.get_nic">(pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.slsqp_controls.html#pysolver_view.optimization.problems.slsqp_controls.StudyProblem.get_nic">(pysolver_view.optimization.problems.slsqp_controls.StudyProblem method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.roots.problems.suites.html#pysolver_view.roots.problems.suites.get_problems">get_problems() (in module pysolver_view.roots.problems.suites)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationProblem.get_nic">get_nic() (pysolver_view.optimization.OptimizationProblem method)</a>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.grad_count">grad_count (pysolver_view.optimization.solver.OptimizationSolver property)</a>
 
       <ul>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.HS71Problem.get_nic">(pysolver_view.optimization_problems.HS71Problem method)</a>
-</li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.LorentzEquationsOpt.get_nic">(pysolver_view.optimization_problems.LorentzEquationsOpt method)</a>
-</li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.RosenbrockProblem.get_nic">(pysolver_view.optimization_problems.RosenbrockProblem method)</a>
-</li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.RosenbrockProblemConstrained.get_nic">(pysolver_view.optimization_problems.RosenbrockProblemConstrained method)</a>
+        <li><a href="api/pysolver_view.roots.solver.html#pysolver_view.roots.solver.NonlinearSystemSolver.grad_count">(pysolver_view.roots.solver.NonlinearSystemSolver property)</a>
 </li>
       </ul></li>
-      <li><a href="source/api/pysolver_view.nonlinear_system.html#pysolver_view.nonlinear_system.NonlinearSystemSolver.gradient">gradient() (pysolver_view.nonlinear_system.NonlinearSystemSolver method)</a>
+      <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained.gradient">gradient() (pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained method)</a>
 
       <ul>
-        <li><a href="source/api/pysolver_view.nonlinear_system_problems.html#pysolver_view.nonlinear_system_problems.LorentzEquations.gradient">(pysolver_view.nonlinear_system_problems.LorentzEquations method)</a>
+        <li><a href="api/pysolver_view.optimization.problems.rosenbrock.html#pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem.gradient">(pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem method)</a>
 </li>
-        <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.gradient">(pysolver_view.optimization.OptimizationSolver method)</a>
+        <li><a href="api/pysolver_view.optimization.problems.slsqp_controls.html#pysolver_view.optimization.problems.slsqp_controls.StudyProblem.gradient">(pysolver_view.optimization.problems.slsqp_controls.StudyProblem method)</a>
 </li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.RosenbrockProblem.gradient">(pysolver_view.optimization_problems.RosenbrockProblem method)</a>
+        <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.gradient">(pysolver_view.optimization.solver.OptimizationSolver method)</a>
 </li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.RosenbrockProblemConstrained.gradient">(pysolver_view.optimization_problems.RosenbrockProblemConstrained method)</a>
+        <li><a href="api/pysolver_view.roots.evaluation.html#pysolver_view.roots.evaluation.RootEvaluation.gradient">(pysolver_view.roots.evaluation.RootEvaluation method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.brown_almost_linear.html#pysolver_view.roots.problems.brown_almost_linear.BrownAlmostLinearProblem.gradient">(pysolver_view.roots.problems.brown_almost_linear.BrownAlmostLinearProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.broyden_tridiagonal.html#pysolver_view.roots.problems.broyden_tridiagonal.BroydenTridiagonalProblem.gradient">(pysolver_view.roots.problems.broyden_tridiagonal.BroydenTridiagonalProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.html#pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.CoupledOverdeterminedRosenbrockProblem.gradient">(pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.CoupledOverdeterminedRosenbrockProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.discrete_boundary_value.html#pysolver_view.roots.problems.discrete_boundary_value.DiscreteBoundaryValueProblem.gradient">(pysolver_view.roots.problems.discrete_boundary_value.DiscreteBoundaryValueProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.discrete_integral_equation.html#pysolver_view.roots.problems.discrete_integral_equation.DiscreteIntegralEquationProblem.gradient">(pysolver_view.roots.problems.discrete_integral_equation.DiscreteIntegralEquationProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.extended_rosenbrock.html#pysolver_view.roots.problems.extended_rosenbrock.ExtendedRosenbrockProblem.gradient">(pysolver_view.roots.problems.extended_rosenbrock.ExtendedRosenbrockProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.heated_gas_duct.html#pysolver_view.roots.problems.heated_gas_duct.HeatedGasDuctProblem.gradient">(pysolver_view.roots.problems.heated_gas_duct.HeatedGasDuctProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.helical_valley.html#pysolver_view.roots.problems.helical_valley.HelicalValleyProblem.gradient">(pysolver_view.roots.problems.helical_valley.HelicalValleyProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.logarithmic_domain.html#pysolver_view.roots.problems.logarithmic_domain.LogarithmicDomainProblem.gradient">(pysolver_view.roots.problems.logarithmic_domain.LogarithmicDomainProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.lorenz.html#pysolver_view.roots.problems.lorenz.LorentzEquations.gradient">(pysolver_view.roots.problems.lorenz.LorentzEquations method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.powell_badly_scaled.html#pysolver_view.roots.problems.powell_badly_scaled.PowellBadlyScaledProblem.gradient">(pysolver_view.roots.problems.powell_badly_scaled.PowellBadlyScaledProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.powell_singular.html#pysolver_view.roots.problems.powell_singular.PowellSingularProblem.gradient">(pysolver_view.roots.problems.powell_singular.PowellSingularProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solver.html#pysolver_view.roots.solver.NonlinearSystemSolver.gradient">(pysolver_view.roots.solver.NonlinearSystemSolver method)</a>
 </li>
       </ul></li>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationProblem.gradient_normalized_input">gradient_normalized_input() (pysolver_view.optimization.OptimizationProblem method)</a>
+      <li><a href="api/pysolver_view.optimization.scaling.html#pysolver_view.optimization.scaling.gradient_normalized_input">gradient_normalized_input() (in module pysolver_view.optimization.scaling)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.base.html#pysolver_view.optimization.problems.base.OptimizationProblem.gradient_normalized_input">(pysolver_view.optimization.problems.base.OptimizationProblem method)</a>
 </li>
+      </ul></li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.growth_factor">growth_factor (pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepLimitOptions.growth_factor">(pysolver_view.roots.solvers.options.StepLimitOptions attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.NewtonOptions.gtol">gtol (pysolver_view.roots.solvers.options.NewtonOptions attribute)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.gtol">(pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.RosenbrockProblem.hessians">hessians() (pysolver_view.optimization_problems.RosenbrockProblem method)</a>
+      <li><a href="api/pysolver_view.roots.problems.heated_gas_duct.html#pysolver_view.roots.problems.heated_gas_duct.HeatedGasDuctProblem">HeatedGasDuctProblem (class in pysolver_view.roots.problems.heated_gas_duct)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.problems.helical_valley.html#pysolver_view.roots.problems.helical_valley.HelicalValleyProblem">HelicalValleyProblem (class in pysolver_view.roots.problems.helical_valley)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.problems.rosenbrock.html#pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem.hessians">hessians() (pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.HS71Problem">HS71Problem (class in pysolver_view.optimization_problems)</a>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.NewtonOptions.history_level">history_level (pysolver_view.roots.solvers.options.NewtonOptions attribute)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.history_level">(pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.roots.solvers.history.html#pysolver_view.roots.solvers.history.HistoryRecorder">HistoryRecorder (class in pysolver_view.roots.solvers.history)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.problems.hs71.html#pysolver_view.optimization.problems.hs71.HS71Problem">HS71Problem (class in pysolver_view.optimization.problems.hs71)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.Evaluation.inequalities">inequalities (pysolver_view.optimization.solvers.slsqp.options.Evaluation attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.problems.slsqp_controls.html#pysolver_view.optimization.problems.slsqp_controls.StudyProblem.initial">initial (pysolver_view.optimization.problems.slsqp_controls.StudyProblem property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepLimitOptions.initial_limit">initial_limit (pysolver_view.roots.solvers.options.StepLimitOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.initial_radius">initial_radius (pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootRunContext.iteration_history">iteration_history (pysolver_view.roots.backends.custom.RootRunContext attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootRunContext.jacobian">jacobian (pysolver_view.roots.backends.custom.RootRunContext attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.evaluation.html#pysolver_view.roots.solvers.evaluation.ModelEvaluator.jacobian">jacobian() (pysolver_view.roots.solvers.evaluation.ModelEvaluator method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.NewtonOptions.jacobian_scaling">jacobian_scaling (pysolver_view.roots.solvers.options.NewtonOptions attribute)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.jacobian_scaling">(pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.roots.solvers.scaling.html#pysolver_view.roots.solvers.scaling.JacobianScaling">JacobianScaling (class in pysolver_view.roots.solvers.scaling)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.kkt_count">kkt_count (pysolver_view.optimization.solver.OptimizationSolver property)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.kkt_adapter.html#pysolver_view.optimization.kkt_adapter.kkt_from_cache">kkt_from_cache() (in module pysolver_view.optimization.kkt_adapter)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.reporting.tables.html#pysolver_view.reporting.tables.kkt_report">kkt_report() (in module pysolver_view.reporting.tables)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.kkt_time">kkt_time (pysolver_view.optimization.solver.OptimizationSolver property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -426,11 +893,17 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.nonlinear_system_problems.html#pysolver_view.nonlinear_system_problems.LorentzEquations">LorentzEquations (class in pysolver_view.nonlinear_system_problems)</a>
+      <li><a href="api/pysolver_view.roots.solvers.linear_model.html#pysolver_view.roots.solvers.linear_model.LinearModel.levenberg_marquardt_step">levenberg_marquardt_step() (pysolver_view.roots.solvers.linear_model.LinearModel method)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.linear_model.html#pysolver_view.roots.solvers.linear_model.LinearModel">LinearModel (class in pysolver_view.roots.solvers.linear_model)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.LorentzEquationsOpt">LorentzEquationsOpt (class in pysolver_view.optimization_problems)</a>
+      <li><a href="api/pysolver_view.roots.problems.logarithmic_domain.html#pysolver_view.roots.problems.logarithmic_domain.LogarithmicDomainProblem">LogarithmicDomainProblem (class in pysolver_view.roots.problems.logarithmic_domain)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.problems.lorenz.html#pysolver_view.roots.problems.lorenz.LorentzEquations">LorentzEquations (class in pysolver_view.roots.problems.lorenz)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.problems.lorenz.html#pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt">LorentzEquationsOpt (class in pysolver_view.optimization.problems.lorenz)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -438,54 +911,288 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.make_constraint_report">make_constraint_report() (pysolver_view.optimization.OptimizationSolver method)</a>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.make_constraint_report">make_constraint_report() (pysolver_view.optimization.solver.OptimizationSolver method)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.make_kkt_optimality_report">make_kkt_optimality_report() (pysolver_view.optimization.OptimizationSolver method)</a>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.make_kkt_optimality_report">make_kkt_optimality_report() (pysolver_view.optimization.solver.OptimizationSolver method)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.make_lagrange_multipliers_report">make_lagrange_multipliers_report() (pysolver_view.optimization.OptimizationSolver method)</a>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.make_lagrange_multipliers_report">make_lagrange_multipliers_report() (pysolver_view.optimization.solver.OptimizationSolver method)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.make_variables_report">make_variables_report() (pysolver_view.optimization.OptimizationSolver method)</a>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.make_variables_report">make_variables_report() (pysolver_view.optimization.solver.OptimizationSolver method)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization_wrappers.html#pysolver_view.optimization_wrappers.minimize_nlopt">minimize_nlopt() (in module pysolver_view.optimization_wrappers)</a>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions.max_backtracks">max_backtracks (pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions attribute)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.BacktrackingOptions.max_backtracks">(pysolver_view.roots.solvers.options.BacktrackingOptions attribute)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization_wrappers.html#pysolver_view.optimization_wrappers.minimize_pygmo">minimize_pygmo() (in module pysolver_view.optimization_wrappers)</a>
+      </ul></li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.NewtonOptions.max_iterations">max_iterations (pysolver_view.roots.solvers.options.NewtonOptions attribute)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.max_iterations">(pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization_wrappers.html#pysolver_view.optimization_wrappers.minimize_scipy">minimize_scipy() (in module pysolver_view.optimization_wrappers)</a>
+      </ul></li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepLimitOptions.max_limit">max_limit (pysolver_view.roots.solvers.options.StepLimitOptions attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.NewtonOptions.max_nfev">max_nfev (pysolver_view.roots.solvers.options.NewtonOptions attribute)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.max_nfev">(pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.max_radius">max_radius (pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions.max_step_fraction">max_step_fraction (pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions.maxiter">maxiter (pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootRunContext.method">method (pysolver_view.roots.backends.custom.RootRunContext attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.backends.pygmo_nlopt.html#pysolver_view.optimization.backends.pygmo_nlopt.minimize_nlopt">minimize_nlopt() (in module pysolver_view.optimization.backends.pygmo_nlopt)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.backends.registry.html#pysolver_view.optimization.backends.registry.minimize_nlopt">(in module pysolver_view.optimization.backends.registry)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.optimization.backends.pygmo.html#pysolver_view.optimization.backends.pygmo.minimize_pygmo">minimize_pygmo() (in module pysolver_view.optimization.backends.pygmo)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.backends.registry.html#pysolver_view.optimization.backends.registry.minimize_pygmo">(in module pysolver_view.optimization.backends.registry)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.optimization.backends.custom.html#pysolver_view.optimization.backends.custom.minimize_pysolver">minimize_pysolver() (in module pysolver_view.optimization.backends.custom)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.backends.scipy.html#pysolver_view.optimization.backends.scipy.minimize_scipy">minimize_scipy() (in module pysolver_view.optimization.backends.scipy)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.driver.html#pysolver_view.optimization.solvers.slsqp.driver.minimize_slsqp">minimize_slsqp() (in module pysolver_view.optimization.solvers.slsqp.driver)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.evaluation.html#pysolver_view.roots.solvers.evaluation.ModelEvaluator">ModelEvaluator (class in pysolver_view.roots.solvers.evaluation)</a>
+</li>
       <li>
     module
 
       <ul>
-        <li><a href="source/api/pysolver_view.nonlinear_system.html#module-pysolver_view.nonlinear_system">pysolver_view.nonlinear_system</a>
+        <li><a href="api/pysolver_view.html#module-pysolver_view">pysolver_view</a>
 </li>
-        <li><a href="source/api/pysolver_view.nonlinear_system_problems.html#module-pysolver_view.nonlinear_system_problems">pysolver_view.nonlinear_system_problems</a>
+        <li><a href="api/pysolver_view.custom_optimization.html#module-pysolver_view.custom_optimization">pysolver_view.custom_optimization</a>
 </li>
-        <li><a href="source/api/pysolver_view.numerical_differentiation.html#module-pysolver_view.numerical_differentiation">pysolver_view.numerical_differentiation</a>
+        <li><a href="api/pysolver_view.custom_root.html#module-pysolver_view.custom_root">pysolver_view.custom_root</a>
 </li>
-        <li><a href="source/api/pysolver_view.optimization.html#module-pysolver_view.optimization">pysolver_view.optimization</a>
+        <li><a href="api/pysolver_view.diagnostics.html#module-pysolver_view.diagnostics">pysolver_view.diagnostics</a>
 </li>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#module-pysolver_view.optimization_problems">pysolver_view.optimization_problems</a>
+        <li><a href="api/pysolver_view.diagnostics.kkt.html#module-pysolver_view.diagnostics.kkt">pysolver_view.diagnostics.kkt</a>
 </li>
-        <li><a href="source/api/pysolver_view.optimization_wrappers.html#module-pysolver_view.optimization_wrappers">pysolver_view.optimization_wrappers</a>
+        <li><a href="api/pysolver_view.diagnostics.slsqp_audit.html#module-pysolver_view.diagnostics.slsqp_audit">pysolver_view.diagnostics.slsqp_audit</a>
 </li>
-        <li><a href="source/api/pysolver_view.pysolver_utilities.html#module-pysolver_view.pysolver_utilities">pysolver_view.pysolver_utilities</a>
+        <li><a href="api/pysolver_view.differentiation.html#module-pysolver_view.differentiation">pysolver_view.differentiation</a>
+</li>
+        <li><a href="api/pysolver_view.differentiation.finite_difference.html#module-pysolver_view.differentiation.finite_difference">pysolver_view.differentiation.finite_difference</a>
+</li>
+        <li><a href="api/pysolver_view.differentiation.hessians.html#module-pysolver_view.differentiation.hessians">pysolver_view.differentiation.hessians</a>
+</li>
+        <li><a href="api/pysolver_view.exceptions.html#module-pysolver_view.exceptions">pysolver_view.exceptions</a>
+</li>
+        <li><a href="api/pysolver_view.history.html#module-pysolver_view.history">pysolver_view.history</a>
+</li>
+        <li><a href="api/pysolver_view.nonlinear_system.html#module-pysolver_view.nonlinear_system">pysolver_view.nonlinear_system</a>
+</li>
+        <li><a href="api/pysolver_view.nonlinear_system_problems.html#module-pysolver_view.nonlinear_system_problems">pysolver_view.nonlinear_system_problems</a>
+</li>
+        <li><a href="api/pysolver_view.numerical_differentiation.html#module-pysolver_view.numerical_differentiation">pysolver_view.numerical_differentiation</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.html#module-pysolver_view.optimization">pysolver_view.optimization</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.backends.html#module-pysolver_view.optimization.backends">pysolver_view.optimization.backends</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.backends.custom.html#module-pysolver_view.optimization.backends.custom">pysolver_view.optimization.backends.custom</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.backends.pygmo.html#module-pysolver_view.optimization.backends.pygmo">pysolver_view.optimization.backends.pygmo</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.backends.pygmo_nlopt.html#module-pysolver_view.optimization.backends.pygmo_nlopt">pysolver_view.optimization.backends.pygmo_nlopt</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.backends.pygmo_nonfree.html#module-pysolver_view.optimization.backends.pygmo_nonfree">pysolver_view.optimization.backends.pygmo_nonfree</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.backends.registry.html#module-pysolver_view.optimization.backends.registry">pysolver_view.optimization.backends.registry</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.backends.scipy.html#module-pysolver_view.optimization.backends.scipy">pysolver_view.optimization.backends.scipy</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.constraints.html#module-pysolver_view.optimization.constraints">pysolver_view.optimization.constraints</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.evaluation.html#module-pysolver_view.optimization.evaluation">pysolver_view.optimization.evaluation</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.kkt_adapter.html#module-pysolver_view.optimization.kkt_adapter">pysolver_view.optimization.kkt_adapter</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.html#module-pysolver_view.optimization.problems">pysolver_view.optimization.problems</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.base.html#module-pysolver_view.optimization.problems.base">pysolver_view.optimization.problems.base</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#module-pysolver_view.optimization.problems.constrained_rosenbrock">pysolver_view.optimization.problems.constrained_rosenbrock</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.hs71.html#module-pysolver_view.optimization.problems.hs71">pysolver_view.optimization.problems.hs71</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.lorenz.html#module-pysolver_view.optimization.problems.lorenz">pysolver_view.optimization.problems.lorenz</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.rosenbrock.html#module-pysolver_view.optimization.problems.rosenbrock">pysolver_view.optimization.problems.rosenbrock</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.slsqp_controls.html#module-pysolver_view.optimization.problems.slsqp_controls">pysolver_view.optimization.problems.slsqp_controls</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.scaling.html#module-pysolver_view.optimization.scaling">pysolver_view.optimization.scaling</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.solver.html#module-pysolver_view.optimization.solver">pysolver_view.optimization.solver</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.solvers.html#module-pysolver_view.optimization.solvers">pysolver_view.optimization.solvers</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.solvers.slsqp.html#module-pysolver_view.optimization.solvers.slsqp">pysolver_view.optimization.solvers.slsqp</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.solvers.slsqp.driver.html#module-pysolver_view.optimization.solvers.slsqp.driver">pysolver_view.optimization.solvers.slsqp.driver</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#module-pysolver_view.optimization.solvers.slsqp.options">pysolver_view.optimization.solvers.slsqp.options</a>
+</li>
+        <li><a href="api/pysolver_view.optimization_problems.html#module-pysolver_view.optimization_problems">pysolver_view.optimization_problems</a>
+</li>
+        <li><a href="api/pysolver_view.optimization_wrappers.html#module-pysolver_view.optimization_wrappers">pysolver_view.optimization_wrappers</a>
+</li>
+        <li><a href="api/pysolver_view.pysolver_utilities.html#module-pysolver_view.pysolver_utilities">pysolver_view.pysolver_utilities</a>
+</li>
+        <li><a href="api/pysolver_view.reporting.html#module-pysolver_view.reporting">pysolver_view.reporting</a>
+</li>
+        <li><a href="api/pysolver_view.reporting.logging.html#module-pysolver_view.reporting.logging">pysolver_view.reporting.logging</a>
+</li>
+        <li><a href="api/pysolver_view.reporting.plots.html#module-pysolver_view.reporting.plots">pysolver_view.reporting.plots</a>
+</li>
+        <li><a href="api/pysolver_view.reporting.style.html#module-pysolver_view.reporting.style">pysolver_view.reporting.style</a>
+</li>
+        <li><a href="api/pysolver_view.reporting.tables.html#module-pysolver_view.reporting.tables">pysolver_view.reporting.tables</a>
+</li>
+        <li><a href="api/pysolver_view.reporting.text.html#module-pysolver_view.reporting.text">pysolver_view.reporting.text</a>
+</li>
+        <li><a href="api/pysolver_view.results.html#module-pysolver_view.results">pysolver_view.results</a>
+</li>
+        <li><a href="api/pysolver_view.roots.html#module-pysolver_view.roots">pysolver_view.roots</a>
+</li>
+        <li><a href="api/pysolver_view.roots.backends.html#module-pysolver_view.roots.backends">pysolver_view.roots.backends</a>
+</li>
+        <li><a href="api/pysolver_view.roots.backends.custom.html#module-pysolver_view.roots.backends.custom">pysolver_view.roots.backends.custom</a>
+</li>
+        <li><a href="api/pysolver_view.roots.backends.registry.html#module-pysolver_view.roots.backends.registry">pysolver_view.roots.backends.registry</a>
+</li>
+        <li><a href="api/pysolver_view.roots.backends.scipy.html#module-pysolver_view.roots.backends.scipy">pysolver_view.roots.backends.scipy</a>
+</li>
+        <li><a href="api/pysolver_view.roots.evaluation.html#module-pysolver_view.roots.evaluation">pysolver_view.roots.evaluation</a>
+</li>
+        <li><a href="api/pysolver_view.roots.methods.html#module-pysolver_view.roots.methods">pysolver_view.roots.methods</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.html#module-pysolver_view.roots.problems">pysolver_view.roots.problems</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.base.html#module-pysolver_view.roots.problems.base">pysolver_view.roots.problems.base</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.brown_almost_linear.html#module-pysolver_view.roots.problems.brown_almost_linear">pysolver_view.roots.problems.brown_almost_linear</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.broyden_tridiagonal.html#module-pysolver_view.roots.problems.broyden_tridiagonal">pysolver_view.roots.problems.broyden_tridiagonal</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.html#module-pysolver_view.roots.problems.coupled_overdetermined_rosenbrock">pysolver_view.roots.problems.coupled_overdetermined_rosenbrock</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.discrete_boundary_value.html#module-pysolver_view.roots.problems.discrete_boundary_value">pysolver_view.roots.problems.discrete_boundary_value</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.discrete_integral_equation.html#module-pysolver_view.roots.problems.discrete_integral_equation">pysolver_view.roots.problems.discrete_integral_equation</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.extended_rosenbrock.html#module-pysolver_view.roots.problems.extended_rosenbrock">pysolver_view.roots.problems.extended_rosenbrock</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.heated_gas_duct.html#module-pysolver_view.roots.problems.heated_gas_duct">pysolver_view.roots.problems.heated_gas_duct</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.helical_valley.html#module-pysolver_view.roots.problems.helical_valley">pysolver_view.roots.problems.helical_valley</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.logarithmic_domain.html#module-pysolver_view.roots.problems.logarithmic_domain">pysolver_view.roots.problems.logarithmic_domain</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.lorenz.html#module-pysolver_view.roots.problems.lorenz">pysolver_view.roots.problems.lorenz</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.powell_badly_scaled.html#module-pysolver_view.roots.problems.powell_badly_scaled">pysolver_view.roots.problems.powell_badly_scaled</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.powell_singular.html#module-pysolver_view.roots.problems.powell_singular">pysolver_view.roots.problems.powell_singular</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.suites.html#module-pysolver_view.roots.problems.suites">pysolver_view.roots.problems.suites</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solver.html#module-pysolver_view.roots.solver">pysolver_view.roots.solver</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solvers.html#module-pysolver_view.roots.solvers">pysolver_view.roots.solvers</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solvers.evaluation.html#module-pysolver_view.roots.solvers.evaluation">pysolver_view.roots.solvers.evaluation</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solvers.exceptions.html#module-pysolver_view.roots.solvers.exceptions">pysolver_view.roots.solvers.exceptions</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solvers.history.html#module-pysolver_view.roots.solvers.history">pysolver_view.roots.solvers.history</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solvers.line_search.html#module-pysolver_view.roots.solvers.line_search">pysolver_view.roots.solvers.line_search</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solvers.linear_model.html#module-pysolver_view.roots.solvers.linear_model">pysolver_view.roots.solvers.linear_model</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#module-pysolver_view.roots.solvers.options">pysolver_view.roots.solvers.options</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solvers.scaling.html#module-pysolver_view.roots.solvers.scaling">pysolver_view.roots.solvers.scaling</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solvers.solver.html#module-pysolver_view.roots.solvers.solver">pysolver_view.roots.solvers.solver</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solvers.trial_step.html#module-pysolver_view.roots.solvers.trial_step">pysolver_view.roots.solvers.trial_step</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solvers.trust_region.html#module-pysolver_view.roots.solvers.trust_region">pysolver_view.roots.solvers.trust_region</a>
+</li>
+        <li><a href="api/pysolver_view.solvers.html#module-pysolver_view.solvers">pysolver_view.solvers</a>
+</li>
+        <li><a href="api/pysolver_view.solvers.exceptions.html#module-pysolver_view.solvers.exceptions">pysolver_view.solvers.exceptions</a>
+</li>
+        <li><a href="api/pysolver_view.solvers.root.html#module-pysolver_view.solvers.root">pysolver_view.solvers.root</a>
+</li>
+        <li><a href="api/pysolver_view.solvers.root.evaluation.html#module-pysolver_view.solvers.root.evaluation">pysolver_view.solvers.root.evaluation</a>
+</li>
+        <li><a href="api/pysolver_view.solvers.root.exceptions.html#module-pysolver_view.solvers.root.exceptions">pysolver_view.solvers.root.exceptions</a>
+</li>
+        <li><a href="api/pysolver_view.solvers.root.history.html#module-pysolver_view.solvers.root.history">pysolver_view.solvers.root.history</a>
+</li>
+        <li><a href="api/pysolver_view.solvers.root.line_search.html#module-pysolver_view.solvers.root.line_search">pysolver_view.solvers.root.line_search</a>
+</li>
+        <li><a href="api/pysolver_view.solvers.root.linear_model.html#module-pysolver_view.solvers.root.linear_model">pysolver_view.solvers.root.linear_model</a>
+</li>
+        <li><a href="api/pysolver_view.solvers.root.options.html#module-pysolver_view.solvers.root.options">pysolver_view.solvers.root.options</a>
+</li>
+        <li><a href="api/pysolver_view.solvers.root.scaling.html#module-pysolver_view.solvers.root.scaling">pysolver_view.solvers.root.scaling</a>
+</li>
+        <li><a href="api/pysolver_view.solvers.root.solver.html#module-pysolver_view.solvers.root.solver">pysolver_view.solvers.root.solver</a>
+</li>
+        <li><a href="api/pysolver_view.solvers.root.trial_step.html#module-pysolver_view.solvers.root.trial_step">pysolver_view.solvers.root.trial_step</a>
+</li>
+        <li><a href="api/pysolver_view.solvers.root.trust_region.html#module-pysolver_view.solvers.root.trust_region">pysolver_view.solvers.root.trust_region</a>
+</li>
+        <li><a href="api/pysolver_view.solvers.slsqp.html#module-pysolver_view.solvers.slsqp">pysolver_view.solvers.slsqp</a>
+</li>
+        <li><a href="api/pysolver_view.validation.html#module-pysolver_view.validation">pysolver_view.validation</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.reporting.tables.html#pysolver_view.reporting.tables.multipliers_report">multipliers_report() (in module pysolver_view.reporting.tables)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.optimization_wrappers.html#pysolver_view.optimization_wrappers.NLOPT_SOLVERS">NLOPT_SOLVERS (in module pysolver_view.optimization_wrappers)</a>
+      <li><a href="api/pysolver_view.roots.solvers.linear_model.html#pysolver_view.roots.solvers.linear_model.LinearModel.newton_raphson">newton_raphson (pysolver_view.roots.solvers.linear_model.LinearModel property)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.NewtonOptions">NewtonOptions (class in pysolver_view.roots.solvers.options)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.backends.registry.html#pysolver_view.optimization.backends.registry.NLOPT_SOLVERS">NLOPT_SOLVERS (in module pysolver_view.optimization.backends.registry)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.problems.base.html#pysolver_view.roots.problems.base.NonlinearSystemProblem">NonlinearSystemProblem (class in pysolver_view.roots.problems.base)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.nonlinear_system.html#pysolver_view.nonlinear_system.NonlinearSystemProblem">NonlinearSystemProblem (class in pysolver_view.nonlinear_system)</a>
+      <li><a href="api/pysolver_view.roots.solver.html#pysolver_view.roots.solver.NonlinearSystemSolver">NonlinearSystemSolver (class in pysolver_view.roots.solver)</a>
 </li>
-      <li><a href="source/api/pysolver_view.nonlinear_system.html#pysolver_view.nonlinear_system.NonlinearSystemSolver">NonlinearSystemSolver (class in pysolver_view.nonlinear_system)</a>
+      <li><a href="api/pysolver_view.roots.methods.html#pysolver_view.roots.methods.normalize_method">normalize_method() (in module pysolver_view.roots.methods)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.evaluation.html#pysolver_view.roots.solvers.evaluation.ModelEvaluator.numerical_jacobian">numerical_jacobian() (pysolver_view.roots.solvers.evaluation.ModelEvaluator method)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.linear_model.html#pysolver_view.roots.solvers.linear_model.LinearModel.numerical_rank">numerical_rank (pysolver_view.roots.solvers.linear_model.LinearModel property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -493,11 +1200,33 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationProblem">OptimizationProblem (class in pysolver_view.optimization)</a>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.Evaluation.objective">objective (pysolver_view.optimization.solvers.slsqp.options.Evaluation attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootSolverAdapter.observe">observe() (pysolver_view.roots.backends.custom.RootSolverAdapter method)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.evaluation.html#pysolver_view.roots.solvers.evaluation.ModelEvaluator.observe">(pysolver_view.roots.solvers.evaluation.ModelEvaluator method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions.optimality_tol">optimality_tol (pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.reporting.text.html#pysolver_view.reporting.text.optimization_footer">optimization_footer() (in module pysolver_view.reporting.text)</a>
+</li>
+      <li><a href="api/pysolver_view.reporting.text.html#pysolver_view.reporting.text.optimization_header">optimization_header() (in module pysolver_view.reporting.text)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver">OptimizationSolver (class in pysolver_view.optimization)</a>
+      <li><a href="api/pysolver_view.reporting.text.html#pysolver_view.reporting.text.optimization_progress">optimization_progress() (in module pysolver_view.reporting.text)</a>
+</li>
+      <li><a href="api/pysolver_view.results.html#pysolver_view.results.optimization_result">optimization_result() (in module pysolver_view.results)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.evaluation.html#pysolver_view.optimization.evaluation.OptimizationEvaluation">OptimizationEvaluation (class in pysolver_view.optimization.evaluation)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.problems.base.html#pysolver_view.optimization.problems.base.OptimizationProblem">OptimizationProblem (class in pysolver_view.optimization.problems.base)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver">OptimizationSolver (class in pysolver_view.optimization.solver)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootRunContext.options">options (pysolver_view.roots.backends.custom.RootRunContext attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -505,79 +1234,735 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.nonlinear_system.html#pysolver_view.nonlinear_system.NonlinearSystemSolver.plot_convergence_history">plot_convergence_history() (pysolver_view.nonlinear_system.NonlinearSystemSolver method)</a>
+      <li><a href="api/pysolver_view.roots.problems.heated_gas_duct.html#pysolver_view.roots.problems.heated_gas_duct.HeatedGasDuctProblem.physical_residuals">physical_residuals() (pysolver_view.roots.problems.heated_gas_duct.HeatedGasDuctProblem method)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.plot_convergence_history">plot_convergence_history() (pysolver_view.optimization.solver.OptimizationSolver method)</a>
 
       <ul>
-        <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.plot_convergence_history">(pysolver_view.optimization.OptimizationSolver method)</a>
+        <li><a href="api/pysolver_view.roots.solver.html#pysolver_view.roots.solver.NonlinearSystemSolver.plot_convergence_history">(pysolver_view.roots.solver.NonlinearSystemSolver method)</a>
 </li>
       </ul></li>
-      <li><a href="source/api/pysolver_view.nonlinear_system.html#pysolver_view.nonlinear_system.NonlinearSystemSolver.print_convergence_history">print_convergence_history() (pysolver_view.nonlinear_system.NonlinearSystemSolver method)</a>
+      <li><a href="api/pysolver_view.reporting.plots.html#pysolver_view.reporting.plots.plot_optimization_history">plot_optimization_history() (in module pysolver_view.reporting.plots)</a>
+</li>
+      <li><a href="api/pysolver_view.reporting.plots.html#pysolver_view.reporting.plots.plot_root_history">plot_root_history() (in module pysolver_view.reporting.plots)</a>
+</li>
+      <li><a href="api/pysolver_view.reporting.plots.html#pysolver_view.reporting.plots.PlotView">PlotView (class in pysolver_view.reporting.plots)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.linear_model.html#pysolver_view.roots.solvers.linear_model.LinearModel.powell_hybrid_step">powell_hybrid_step() (pysolver_view.roots.solvers.linear_model.LinearModel method)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.problems.powell_badly_scaled.html#pysolver_view.roots.problems.powell_badly_scaled.PowellBadlyScaledProblem">PowellBadlyScaledProblem (class in pysolver_view.roots.problems.powell_badly_scaled)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.problems.powell_singular.html#pysolver_view.roots.problems.powell_singular.PowellSingularProblem">PowellSingularProblem (class in pysolver_view.roots.problems.powell_singular)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.trial_step.html#pysolver_view.roots.solvers.trial_step.prepare_equilibrated_trial">prepare_equilibrated_trial() (in module pysolver_view.roots.solvers.trial_step)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.evaluation.html#pysolver_view.roots.solvers.evaluation.prepare_inputs">prepare_inputs() (in module pysolver_view.roots.solvers.evaluation)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.trial_step.html#pysolver_view.roots.solvers.trial_step.prepare_trial">prepare_trial() (in module pysolver_view.roots.solvers.trial_step)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.trial_step.html#pysolver_view.roots.solvers.trial_step.prepare_trust_region_trial">prepare_trust_region_trial() (in module pysolver_view.roots.solvers.trial_step)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.print_convergence_history">print_convergence_history() (pysolver_view.optimization.solver.OptimizationSolver method)</a>
 
       <ul>
-        <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.print_convergence_history">(pysolver_view.optimization.OptimizationSolver method)</a>
+        <li><a href="api/pysolver_view.roots.solver.html#pysolver_view.roots.solver.NonlinearSystemSolver.print_convergence_history">(pysolver_view.roots.solver.NonlinearSystemSolver method)</a>
 </li>
       </ul></li>
-      <li><a href="source/api/pysolver_view.pysolver_utilities.html#pysolver_view.pysolver_utilities.print_dict">print_dict() (in module pysolver_view.pysolver_utilities)</a>
+      <li><a href="api/pysolver_view.reporting.text.html#pysolver_view.reporting.text.print_dict">print_dict() (in module pysolver_view.reporting.text)</a>
 </li>
-      <li><a href="source/api/pysolver_view.pysolver_utilities.html#pysolver_view.pysolver_utilities.print_installed_fonts">print_installed_fonts() (in module pysolver_view.pysolver_utilities)</a>
+      <li><a href="api/pysolver_view.reporting.style.html#pysolver_view.reporting.style.print_installed_fonts">print_installed_fonts() (in module pysolver_view.reporting.style)</a>
 </li>
-      <li><a href="source/api/pysolver_view.pysolver_utilities.html#pysolver_view.pysolver_utilities.print_object">print_object() (in module pysolver_view.pysolver_utilities)</a>
+      <li><a href="api/pysolver_view.reporting.text.html#pysolver_view.reporting.text.print_object">print_object() (in module pysolver_view.reporting.text)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.print_optimization_report">print_optimization_report() (pysolver_view.optimization.OptimizationSolver method)</a>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.print_optimization_report">print_optimization_report() (pysolver_view.optimization.solver.OptimizationSolver method)</a>
 </li>
-      <li><a href="source/api/pysolver_view.pysolver_utilities.html#pysolver_view.pysolver_utilities.print_rc_parameters">print_rc_parameters() (in module pysolver_view.pysolver_utilities)</a>
+      <li><a href="api/pysolver_view.reporting.style.html#pysolver_view.reporting.style.print_rc_parameters">print_rc_parameters() (in module pysolver_view.reporting.style)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization_wrappers.html#pysolver_view.optimization_wrappers.PYGMO_SOLVERS">PYGMO_SOLVERS (in module pysolver_view.optimization_wrappers)</a>
+      <li><a href="api/pysolver_view.optimization.kkt_adapter.html#pysolver_view.optimization.kkt_adapter.public_driver_kkt">public_driver_kkt() (in module pysolver_view.optimization.kkt_adapter)</a>
 </li>
+      <li><a href="api/pysolver_view.optimization.backends.registry.html#pysolver_view.optimization.backends.registry.PYGMO_SOLVERS">PYGMO_SOLVERS (in module pysolver_view.optimization.backends.registry)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.backends.pygmo.html#pysolver_view.optimization.backends.pygmo.PygmoProblem">PygmoProblem (class in pysolver_view.optimization.backends.pygmo)</a>
+</li>
+      <li>
+    pysolver_view
+
+      <ul>
+        <li><a href="api/pysolver_view.html#module-pysolver_view">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.custom_optimization
+
+      <ul>
+        <li><a href="api/pysolver_view.custom_optimization.html#module-pysolver_view.custom_optimization">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.custom_root
+
+      <ul>
+        <li><a href="api/pysolver_view.custom_root.html#module-pysolver_view.custom_root">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.diagnostics
+
+      <ul>
+        <li><a href="api/pysolver_view.diagnostics.html#module-pysolver_view.diagnostics">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.diagnostics.kkt
+
+      <ul>
+        <li><a href="api/pysolver_view.diagnostics.kkt.html#module-pysolver_view.diagnostics.kkt">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.diagnostics.slsqp_audit
+
+      <ul>
+        <li><a href="api/pysolver_view.diagnostics.slsqp_audit.html#module-pysolver_view.diagnostics.slsqp_audit">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.differentiation
+
+      <ul>
+        <li><a href="api/pysolver_view.differentiation.html#module-pysolver_view.differentiation">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.differentiation.finite_difference
+
+      <ul>
+        <li><a href="api/pysolver_view.differentiation.finite_difference.html#module-pysolver_view.differentiation.finite_difference">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.differentiation.hessians
+
+      <ul>
+        <li><a href="api/pysolver_view.differentiation.hessians.html#module-pysolver_view.differentiation.hessians">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.exceptions
+
+      <ul>
+        <li><a href="api/pysolver_view.exceptions.html#module-pysolver_view.exceptions">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.history
+
+      <ul>
+        <li><a href="api/pysolver_view.history.html#module-pysolver_view.history">module</a>
+</li>
+      </ul></li>
       <li>
     pysolver_view.nonlinear_system
 
       <ul>
-        <li><a href="source/api/pysolver_view.nonlinear_system.html#module-pysolver_view.nonlinear_system">module</a>
+        <li><a href="api/pysolver_view.nonlinear_system.html#module-pysolver_view.nonlinear_system">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     pysolver_view.nonlinear_system_problems
 
       <ul>
-        <li><a href="source/api/pysolver_view.nonlinear_system_problems.html#module-pysolver_view.nonlinear_system_problems">module</a>
+        <li><a href="api/pysolver_view.nonlinear_system_problems.html#module-pysolver_view.nonlinear_system_problems">module</a>
 </li>
       </ul></li>
       <li>
     pysolver_view.numerical_differentiation
 
       <ul>
-        <li><a href="source/api/pysolver_view.numerical_differentiation.html#module-pysolver_view.numerical_differentiation">module</a>
+        <li><a href="api/pysolver_view.numerical_differentiation.html#module-pysolver_view.numerical_differentiation">module</a>
 </li>
       </ul></li>
       <li>
     pysolver_view.optimization
 
       <ul>
-        <li><a href="source/api/pysolver_view.optimization.html#module-pysolver_view.optimization">module</a>
+        <li><a href="api/pysolver_view.optimization.html#module-pysolver_view.optimization">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.backends
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.backends.html#module-pysolver_view.optimization.backends">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.backends.custom
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.backends.custom.html#module-pysolver_view.optimization.backends.custom">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.backends.pygmo
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.backends.pygmo.html#module-pysolver_view.optimization.backends.pygmo">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.backends.pygmo_nlopt
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.backends.pygmo_nlopt.html#module-pysolver_view.optimization.backends.pygmo_nlopt">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.backends.pygmo_nonfree
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.backends.pygmo_nonfree.html#module-pysolver_view.optimization.backends.pygmo_nonfree">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.backends.registry
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.backends.registry.html#module-pysolver_view.optimization.backends.registry">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.backends.scipy
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.backends.scipy.html#module-pysolver_view.optimization.backends.scipy">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.constraints
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.constraints.html#module-pysolver_view.optimization.constraints">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.evaluation
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.evaluation.html#module-pysolver_view.optimization.evaluation">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.kkt_adapter
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.kkt_adapter.html#module-pysolver_view.optimization.kkt_adapter">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.problems
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.html#module-pysolver_view.optimization.problems">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.problems.base
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.base.html#module-pysolver_view.optimization.problems.base">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.problems.constrained_rosenbrock
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#module-pysolver_view.optimization.problems.constrained_rosenbrock">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.problems.hs71
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.hs71.html#module-pysolver_view.optimization.problems.hs71">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.problems.lorenz
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.lorenz.html#module-pysolver_view.optimization.problems.lorenz">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.problems.rosenbrock
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.rosenbrock.html#module-pysolver_view.optimization.problems.rosenbrock">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.problems.slsqp_controls
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.slsqp_controls.html#module-pysolver_view.optimization.problems.slsqp_controls">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.scaling
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.scaling.html#module-pysolver_view.optimization.scaling">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.solver
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.solver.html#module-pysolver_view.optimization.solver">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.solvers
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.solvers.html#module-pysolver_view.optimization.solvers">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.solvers.slsqp
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.solvers.slsqp.html#module-pysolver_view.optimization.solvers.slsqp">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.solvers.slsqp.driver
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.solvers.slsqp.driver.html#module-pysolver_view.optimization.solvers.slsqp.driver">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.solvers.slsqp.options
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#module-pysolver_view.optimization.solvers.slsqp.options">module</a>
 </li>
       </ul></li>
       <li>
     pysolver_view.optimization_problems
 
       <ul>
-        <li><a href="source/api/pysolver_view.optimization_problems.html#module-pysolver_view.optimization_problems">module</a>
+        <li><a href="api/pysolver_view.optimization_problems.html#module-pysolver_view.optimization_problems">module</a>
 </li>
       </ul></li>
       <li>
     pysolver_view.optimization_wrappers
 
       <ul>
-        <li><a href="source/api/pysolver_view.optimization_wrappers.html#module-pysolver_view.optimization_wrappers">module</a>
+        <li><a href="api/pysolver_view.optimization_wrappers.html#module-pysolver_view.optimization_wrappers">module</a>
 </li>
       </ul></li>
       <li>
     pysolver_view.pysolver_utilities
 
       <ul>
-        <li><a href="source/api/pysolver_view.pysolver_utilities.html#module-pysolver_view.pysolver_utilities">module</a>
+        <li><a href="api/pysolver_view.pysolver_utilities.html#module-pysolver_view.pysolver_utilities">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.reporting
+
+      <ul>
+        <li><a href="api/pysolver_view.reporting.html#module-pysolver_view.reporting">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.reporting.logging
+
+      <ul>
+        <li><a href="api/pysolver_view.reporting.logging.html#module-pysolver_view.reporting.logging">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    pysolver_view.reporting.plots
+
+      <ul>
+        <li><a href="api/pysolver_view.reporting.plots.html#module-pysolver_view.reporting.plots">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.reporting.style
+
+      <ul>
+        <li><a href="api/pysolver_view.reporting.style.html#module-pysolver_view.reporting.style">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.reporting.tables
+
+      <ul>
+        <li><a href="api/pysolver_view.reporting.tables.html#module-pysolver_view.reporting.tables">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.reporting.text
+
+      <ul>
+        <li><a href="api/pysolver_view.reporting.text.html#module-pysolver_view.reporting.text">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.results
+
+      <ul>
+        <li><a href="api/pysolver_view.results.html#module-pysolver_view.results">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.html#module-pysolver_view.roots">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.backends
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.backends.html#module-pysolver_view.roots.backends">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.backends.custom
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.backends.custom.html#module-pysolver_view.roots.backends.custom">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.backends.registry
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.backends.registry.html#module-pysolver_view.roots.backends.registry">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.backends.scipy
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.backends.scipy.html#module-pysolver_view.roots.backends.scipy">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.evaluation
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.evaluation.html#module-pysolver_view.roots.evaluation">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.methods
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.methods.html#module-pysolver_view.roots.methods">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.html#module-pysolver_view.roots.problems">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems.base
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.base.html#module-pysolver_view.roots.problems.base">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems.brown_almost_linear
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.brown_almost_linear.html#module-pysolver_view.roots.problems.brown_almost_linear">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems.broyden_tridiagonal
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.broyden_tridiagonal.html#module-pysolver_view.roots.problems.broyden_tridiagonal">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems.coupled_overdetermined_rosenbrock
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.html#module-pysolver_view.roots.problems.coupled_overdetermined_rosenbrock">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems.discrete_boundary_value
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.discrete_boundary_value.html#module-pysolver_view.roots.problems.discrete_boundary_value">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems.discrete_integral_equation
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.discrete_integral_equation.html#module-pysolver_view.roots.problems.discrete_integral_equation">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems.extended_rosenbrock
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.extended_rosenbrock.html#module-pysolver_view.roots.problems.extended_rosenbrock">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems.heated_gas_duct
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.heated_gas_duct.html#module-pysolver_view.roots.problems.heated_gas_duct">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems.helical_valley
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.helical_valley.html#module-pysolver_view.roots.problems.helical_valley">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems.logarithmic_domain
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.logarithmic_domain.html#module-pysolver_view.roots.problems.logarithmic_domain">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems.lorenz
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.lorenz.html#module-pysolver_view.roots.problems.lorenz">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems.powell_badly_scaled
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.powell_badly_scaled.html#module-pysolver_view.roots.problems.powell_badly_scaled">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems.powell_singular
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.powell_singular.html#module-pysolver_view.roots.problems.powell_singular">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.problems.suites
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.problems.suites.html#module-pysolver_view.roots.problems.suites">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.solver
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solver.html#module-pysolver_view.roots.solver">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.solvers
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.html#module-pysolver_view.roots.solvers">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.solvers.evaluation
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.evaluation.html#module-pysolver_view.roots.solvers.evaluation">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.solvers.exceptions
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.exceptions.html#module-pysolver_view.roots.solvers.exceptions">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.solvers.history
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.history.html#module-pysolver_view.roots.solvers.history">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.solvers.line_search
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.line_search.html#module-pysolver_view.roots.solvers.line_search">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.solvers.linear_model
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.linear_model.html#module-pysolver_view.roots.solvers.linear_model">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.solvers.options
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#module-pysolver_view.roots.solvers.options">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.solvers.scaling
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.scaling.html#module-pysolver_view.roots.solvers.scaling">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.solvers.solver
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.solver.html#module-pysolver_view.roots.solvers.solver">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.solvers.trial_step
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.trial_step.html#module-pysolver_view.roots.solvers.trial_step">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.roots.solvers.trust_region
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.trust_region.html#module-pysolver_view.roots.solvers.trust_region">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.solvers
+
+      <ul>
+        <li><a href="api/pysolver_view.solvers.html#module-pysolver_view.solvers">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.solvers.exceptions
+
+      <ul>
+        <li><a href="api/pysolver_view.solvers.exceptions.html#module-pysolver_view.solvers.exceptions">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.solvers.root
+
+      <ul>
+        <li><a href="api/pysolver_view.solvers.root.html#module-pysolver_view.solvers.root">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.solvers.root.evaluation
+
+      <ul>
+        <li><a href="api/pysolver_view.solvers.root.evaluation.html#module-pysolver_view.solvers.root.evaluation">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.solvers.root.exceptions
+
+      <ul>
+        <li><a href="api/pysolver_view.solvers.root.exceptions.html#module-pysolver_view.solvers.root.exceptions">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.solvers.root.history
+
+      <ul>
+        <li><a href="api/pysolver_view.solvers.root.history.html#module-pysolver_view.solvers.root.history">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.solvers.root.line_search
+
+      <ul>
+        <li><a href="api/pysolver_view.solvers.root.line_search.html#module-pysolver_view.solvers.root.line_search">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.solvers.root.linear_model
+
+      <ul>
+        <li><a href="api/pysolver_view.solvers.root.linear_model.html#module-pysolver_view.solvers.root.linear_model">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.solvers.root.options
+
+      <ul>
+        <li><a href="api/pysolver_view.solvers.root.options.html#module-pysolver_view.solvers.root.options">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.solvers.root.scaling
+
+      <ul>
+        <li><a href="api/pysolver_view.solvers.root.scaling.html#module-pysolver_view.solvers.root.scaling">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.solvers.root.solver
+
+      <ul>
+        <li><a href="api/pysolver_view.solvers.root.solver.html#module-pysolver_view.solvers.root.solver">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.solvers.root.trial_step
+
+      <ul>
+        <li><a href="api/pysolver_view.solvers.root.trial_step.html#module-pysolver_view.solvers.root.trial_step">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.solvers.root.trust_region
+
+      <ul>
+        <li><a href="api/pysolver_view.solvers.root.trust_region.html#module-pysolver_view.solvers.root.trust_region">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.solvers.slsqp
+
+      <ul>
+        <li><a href="api/pysolver_view.solvers.slsqp.html#module-pysolver_view.solvers.slsqp">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.validation
+
+      <ul>
+        <li><a href="api/pysolver_view.validation.html#module-pysolver_view.validation">module</a>
 </li>
       </ul></li>
   </ul></td>
@@ -586,19 +1971,79 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.nonlinear_system.html#pysolver_view.nonlinear_system.NonlinearSystemProblem.residual">residual() (pysolver_view.nonlinear_system.NonlinearSystemProblem method)</a>
+      <li><a href="api/pysolver_view.diagnostics.slsqp_audit.html#pysolver_view.diagnostics.slsqp_audit.reconstruct">reconstruct() (in module pysolver_view.diagnostics.slsqp_audit)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootRunContext.record">record (pysolver_view.roots.backends.custom.RootRunContext attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootRunContext.requested_method">requested_method (pysolver_view.roots.backends.custom.RootRunContext attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootRunContext.residual">residual (pysolver_view.roots.backends.custom.RootRunContext attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.evaluation.html#pysolver_view.roots.evaluation.RootEvaluation.residual">residual() (pysolver_view.roots.evaluation.RootEvaluation method)</a>
 
       <ul>
-        <li><a href="source/api/pysolver_view.nonlinear_system.html#pysolver_view.nonlinear_system.NonlinearSystemSolver.residual">(pysolver_view.nonlinear_system.NonlinearSystemSolver method)</a>
+        <li><a href="api/pysolver_view.roots.problems.base.html#pysolver_view.roots.problems.base.NonlinearSystemProblem.residual">(pysolver_view.roots.problems.base.NonlinearSystemProblem method)</a>
 </li>
-        <li><a href="source/api/pysolver_view.nonlinear_system_problems.html#pysolver_view.nonlinear_system_problems.LorentzEquations.residual">(pysolver_view.nonlinear_system_problems.LorentzEquations method)</a>
+        <li><a href="api/pysolver_view.roots.problems.brown_almost_linear.html#pysolver_view.roots.problems.brown_almost_linear.BrownAlmostLinearProblem.residual">(pysolver_view.roots.problems.brown_almost_linear.BrownAlmostLinearProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.broyden_tridiagonal.html#pysolver_view.roots.problems.broyden_tridiagonal.BroydenTridiagonalProblem.residual">(pysolver_view.roots.problems.broyden_tridiagonal.BroydenTridiagonalProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.html#pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.CoupledOverdeterminedRosenbrockProblem.residual">(pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.CoupledOverdeterminedRosenbrockProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.discrete_boundary_value.html#pysolver_view.roots.problems.discrete_boundary_value.DiscreteBoundaryValueProblem.residual">(pysolver_view.roots.problems.discrete_boundary_value.DiscreteBoundaryValueProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.discrete_integral_equation.html#pysolver_view.roots.problems.discrete_integral_equation.DiscreteIntegralEquationProblem.residual">(pysolver_view.roots.problems.discrete_integral_equation.DiscreteIntegralEquationProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.extended_rosenbrock.html#pysolver_view.roots.problems.extended_rosenbrock.ExtendedRosenbrockProblem.residual">(pysolver_view.roots.problems.extended_rosenbrock.ExtendedRosenbrockProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.heated_gas_duct.html#pysolver_view.roots.problems.heated_gas_duct.HeatedGasDuctProblem.residual">(pysolver_view.roots.problems.heated_gas_duct.HeatedGasDuctProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.helical_valley.html#pysolver_view.roots.problems.helical_valley.HelicalValleyProblem.residual">(pysolver_view.roots.problems.helical_valley.HelicalValleyProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.logarithmic_domain.html#pysolver_view.roots.problems.logarithmic_domain.LogarithmicDomainProblem.residual">(pysolver_view.roots.problems.logarithmic_domain.LogarithmicDomainProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.lorenz.html#pysolver_view.roots.problems.lorenz.LorentzEquations.residual">(pysolver_view.roots.problems.lorenz.LorentzEquations method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.powell_badly_scaled.html#pysolver_view.roots.problems.powell_badly_scaled.PowellBadlyScaledProblem.residual">(pysolver_view.roots.problems.powell_badly_scaled.PowellBadlyScaledProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.powell_singular.html#pysolver_view.roots.problems.powell_singular.PowellSingularProblem.residual">(pysolver_view.roots.problems.powell_singular.PowellSingularProblem method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solver.html#pysolver_view.roots.solver.NonlinearSystemSolver.residual">(pysolver_view.roots.solver.NonlinearSystemSolver method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solvers.evaluation.html#pysolver_view.roots.solvers.evaluation.ModelEvaluator.residual">(pysolver_view.roots.solvers.evaluation.ModelEvaluator method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.RosenbrockProblem">RosenbrockProblem (class in pysolver_view.optimization_problems)</a>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.NewtonOptions.residual_tol">residual_tol (pysolver_view.roots.solvers.options.NewtonOptions attribute)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.residual_tol">(pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization_problems.html#pysolver_view.optimization_problems.RosenbrockProblemConstrained">RosenbrockProblemConstrained (class in pysolver_view.optimization_problems)</a>
+      </ul></li>
+      <li><a href="api/pysolver_view.roots.solver.html#pysolver_view.roots.solver.NonlinearSystemSolver.residuals_last">residuals_last (pysolver_view.roots.solver.NonlinearSystemSolver property)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.resolve_root_options">resolve_root_options() (in module pysolver_view.roots.backends.custom)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.history.html#pysolver_view.roots.solvers.history.HistoryRecorder.result">result() (pysolver_view.roots.solvers.history.HistoryRecorder method)</a>
+</li>
+      <li><a href="api/pysolver_view.reporting.text.html#pysolver_view.reporting.text.root_footer">root_footer() (in module pysolver_view.reporting.text)</a>
+</li>
+      <li><a href="api/pysolver_view.reporting.text.html#pysolver_view.reporting.text.root_header">root_header() (in module pysolver_view.reporting.text)</a>
+</li>
+      <li><a href="api/pysolver_view.reporting.text.html#pysolver_view.reporting.text.root_progress">root_progress() (in module pysolver_view.reporting.text)</a>
+</li>
+      <li><a href="api/pysolver_view.results.html#pysolver_view.results.root_result">root_result() (in module pysolver_view.results)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.evaluation.html#pysolver_view.roots.evaluation.RootEvaluation">RootEvaluation (class in pysolver_view.roots.evaluation)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootRunContext">RootRunContext (class in pysolver_view.roots.backends.custom)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootSolverAdapter">RootSolverAdapter (class in pysolver_view.roots.backends.custom)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.problems.rosenbrock.html#pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem">RosenbrockProblem (class in pysolver_view.optimization.problems.rosenbrock)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained">RosenbrockProblemConstrained (class in pysolver_view.optimization.problems.constrained_rosenbrock)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -606,32 +2051,150 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.pysolver_utilities.html#pysolver_view.pysolver_utilities.savefig_in_formats">savefig_in_formats() (in module pysolver_view.pysolver_utilities)</a>
+      <li><a href="api/pysolver_view.reporting.style.html#pysolver_view.reporting.style.savefig_in_formats">savefig_in_formats() (in module pysolver_view.reporting.style)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationProblem.scale_normalized_to_physical">scale_normalized_to_physical() (pysolver_view.optimization.OptimizationProblem method)</a>
+      <li><a href="api/pysolver_view.optimization.scaling.html#pysolver_view.optimization.scaling.scale_normalized_to_physical">scale_normalized_to_physical() (in module pysolver_view.optimization.scaling)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.base.html#pysolver_view.optimization.problems.base.OptimizationProblem.scale_normalized_to_physical">(pysolver_view.optimization.problems.base.OptimizationProblem method)</a>
 </li>
-      <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationProblem.scale_physical_to_normalized">scale_physical_to_normalized() (pysolver_view.optimization.OptimizationProblem method)</a>
+      </ul></li>
+      <li><a href="api/pysolver_view.optimization.scaling.html#pysolver_view.optimization.scaling.scale_physical_to_normalized">scale_physical_to_normalized() (in module pysolver_view.optimization.scaling)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.base.html#pysolver_view.optimization.problems.base.OptimizationProblem.scale_physical_to_normalized">(pysolver_view.optimization.problems.base.OptimizationProblem method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.optimization.backends.registry.html#pysolver_view.optimization.backends.registry.SCIPY_SOLVERS">SCIPY_SOLVERS (in module pysolver_view.optimization.backends.registry)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootRunContext.set_iteration">set_iteration (pysolver_view.roots.backends.custom.RootRunContext attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.reporting.style.html#pysolver_view.reporting.style.set_plot_options">set_plot_options() (in module pysolver_view.reporting.style)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.shrink_factor">shrink_factor (pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions">SLSQPOptions (class in pysolver_view.optimization.solvers.slsqp.options)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.problems.heated_gas_duct.html#pysolver_view.roots.problems.heated_gas_duct.HeatedGasDuctProblem.solution_diagnostics">solution_diagnostics() (pysolver_view.roots.problems.heated_gas_duct.HeatedGasDuctProblem method)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.solve">solve() (pysolver_view.optimization.solver.OptimizationSolver method)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootSolverAdapter.solve">(pysolver_view.roots.backends.custom.RootSolverAdapter method)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.solver.html#pysolver_view.roots.solver.NonlinearSystemSolver.solve">(pysolver_view.roots.solver.NonlinearSystemSolver method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/pysolver_view.roots.backends.registry.html#pysolver_view.roots.backends.registry.solve_backend">solve_backend() (in module pysolver_view.roots.backends.registry)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.optimization_wrappers.html#pysolver_view.optimization_wrappers.SCIPY_SOLVERS">SCIPY_SOLVERS (in module pysolver_view.optimization_wrappers)</a>
+      <li><a href="api/pysolver_view.roots.solvers.line_search.html#pysolver_view.roots.solvers.line_search.solve_gauss_newton">solve_gauss_newton() (in module pysolver_view.roots.solvers.line_search)</a>
 </li>
-      <li><a href="source/api/pysolver_view.pysolver_utilities.html#pysolver_view.pysolver_utilities.set_plot_options">set_plot_options() (in module pysolver_view.pysolver_utilities)</a>
+      <li><a href="api/pysolver_view.roots.solvers.trust_region.html#pysolver_view.roots.solvers.trust_region.solve_levenberg_marquardt">solve_levenberg_marquardt() (in module pysolver_view.roots.solvers.trust_region)</a>
 </li>
-      <li><a href="source/api/pysolver_view.nonlinear_system.html#pysolver_view.nonlinear_system.NonlinearSystemSolver.solve">solve() (pysolver_view.nonlinear_system.NonlinearSystemSolver method)</a>
+      <li><a href="api/pysolver_view.roots.solvers.line_search.html#pysolver_view.roots.solvers.line_search.solve_newton_raphson">solve_newton_raphson() (in module pysolver_view.roots.solvers.line_search)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.trust_region.html#pysolver_view.roots.solvers.trust_region.solve_powell_hybrid">solve_powell_hybrid() (in module pysolver_view.roots.solvers.trust_region)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.solver.html#pysolver_view.roots.solvers.solver.solve_root">solve_root() (in module pysolver_view.roots.solvers.solver)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.scipy.html#pysolver_view.roots.backends.scipy.solve_scipy">solve_scipy() (in module pysolver_view.roots.backends.scipy)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.problems.base.html#pysolver_view.roots.problems.base.BenchmarkProblem.source">source (pysolver_view.roots.problems.base.BenchmarkProblem attribute)</a>
 
       <ul>
-        <li><a href="source/api/pysolver_view.optimization.html#pysolver_view.optimization.OptimizationSolver.solve">(pysolver_view.optimization.OptimizationSolver method)</a>
+        <li><a href="api/pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.html#pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.CoupledOverdeterminedRosenbrockProblem.source">(pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.CoupledOverdeterminedRosenbrockProblem attribute)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.heated_gas_duct.html#pysolver_view.roots.problems.heated_gas_duct.HeatedGasDuctProblem.source">(pysolver_view.roots.problems.heated_gas_duct.HeatedGasDuctProblem attribute)</a>
+</li>
+        <li><a href="api/pysolver_view.roots.problems.logarithmic_domain.html#pysolver_view.roots.problems.logarithmic_domain.LogarithmicDomainProblem.source">(pysolver_view.roots.problems.logarithmic_domain.LogarithmicDomainProblem attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api/pysolver_view.roots.solvers.linear_model.html#pysolver_view.roots.solvers.linear_model.LinearModel.step">step() (pysolver_view.roots.solvers.linear_model.LinearModel method)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions.step_growth_factor">step_growth_factor (pysolver_view.optimization.solvers.slsqp.options.SLSQPOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.BacktrackingOptions.step_limits">step_limits (pysolver_view.roots.solvers.options.BacktrackingOptions attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions">StepControlOptions (class in pysolver_view.roots.solvers.options)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepLimitOptions">StepLimitOptions (class in pysolver_view.roots.solvers.options)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.problems.slsqp_controls.html#pysolver_view.optimization.problems.slsqp_controls.StudyProblem">StudyProblem (class in pysolver_view.optimization.problems.slsqp_controls)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.exceptions.html#pysolver_view.exceptions.DomainError.to_dict">to_dict() (pysolver_view.exceptions.DomainError method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.roots.solvers.history.html#pysolver_view.roots.solvers.history.HistoryRecorder.trial">trial() (pysolver_view.roots.solvers.history.HistoryRecorder method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.roots.solvers.exceptions.html#pysolver_view.roots.solvers.exceptions.UnrepresentableProbe">UnrepresentableProbe</a>
+</li>
+      <li><a href="api/pysolver_view.roots.solvers.linear_model.html#pysolver_view.roots.solvers.linear_model.LinearModel.update">update() (pysolver_view.roots.solvers.linear_model.LinearModel method)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.scaling.html#pysolver_view.roots.solvers.scaling.JacobianScaling.update">(pysolver_view.roots.solvers.scaling.JacobianScaling method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootSolverAdapter.update_counts">update_counts() (pysolver_view.roots.backends.custom.RootSolverAdapter method)</a>
+</li>
+      <li><a href="api/pysolver_view.roots.backends.custom.html#pysolver_view.roots.backends.custom.RootRunContext.update_on">update_on (pysolver_view.roots.backends.custom.RootRunContext attribute)</a>
+</li>
+      <li><a href="api/pysolver_view.reporting.plots.html#pysolver_view.reporting.plots.update_optimization_plot">update_optimization_plot() (in module pysolver_view.reporting.plots)</a>
+</li>
+      <li><a href="api/pysolver_view.reporting.plots.html#pysolver_view.reporting.plots.update_root_plot">update_root_plot() (in module pysolver_view.reporting.plots)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/api/pysolver_view.pysolver_utilities.html#pysolver_view.pysolver_utilities.validate_keys">validate_keys() (in module pysolver_view.pysolver_utilities)</a>
+      <li><a href="api/pysolver_view.validation.html#pysolver_view.validation.validate_keys">validate_keys() (in module pysolver_view.validation)</a>
 </li>
+      <li><a href="api/pysolver_view.optimization.problems.slsqp_controls.html#pysolver_view.optimization.problems.slsqp_controls.StudyProblem.values">values() (pysolver_view.optimization.problems.slsqp_controls.StudyProblem method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.reporting.tables.html#pysolver_view.reporting.tables.variables_report">variables_report() (in module pysolver_view.reporting.tables)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.Evaluation.vector">vector() (pysolver_view.optimization.solvers.slsqp.options.Evaluation method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="X">X</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.NewtonOptions.x_scale">x_scale (pysolver_view.roots.solvers.options.NewtonOptions attribute)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.x_scale">(pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.NewtonOptions.xtol">xtol (pysolver_view.roots.solvers.options.NewtonOptions attribute)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepControlOptions.xtol">(pysolver_view.roots.solvers.options.StepControlOptions attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -673,7 +2236,7 @@ By Roberto Agromayor
 
   <p class="copyright">
     
-      © Copyright 2024, Roberto Agromayor.
+      © Copyright 2026, Roberto Agromayor.
       <br/>
     
   </p>

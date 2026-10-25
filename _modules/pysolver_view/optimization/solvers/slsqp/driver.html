@@ -1,0 +1,1159 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pysolver_view.optimization.solvers.slsqp.driver &#8212; PySolverView</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../../_static/documentation_options.js?v=c62cc9a0"></script>
+    <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../../../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pysolver_view/optimization/solvers/slsqp/driver';</script>
+    <link rel="canonical" href="https://turbo-sim.github.io/pysolver_view/_modules/pysolver_view/optimization/solvers/slsqp/driver.html" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PySolverView</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../introduction.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorial_optimization.html">Tutorial: Optimization problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorial_nonlinear_system.html">Tutorial: Nonlinear systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../source_layout.html">Source layout and compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../references/bibliography.html">References</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../api/pysolver_view.html">pysolver_view package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/pysolver_view.diagnostics.html">pysolver_view.diagnostics package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.diagnostics.kkt.html">pysolver_view.diagnostics.kkt module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.diagnostics.slsqp_audit.html">pysolver_view.diagnostics.slsqp_audit module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/pysolver_view.differentiation.html">pysolver_view.differentiation package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.differentiation.finite_difference.html">pysolver_view.differentiation.finite_difference module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.differentiation.hessians.html">pysolver_view.differentiation.hessians module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.html">pysolver_view.optimization package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.backends.html">pysolver_view.optimization.backends package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.backends.custom.html">pysolver_view.optimization.backends.custom module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.backends.pygmo.html">pysolver_view.optimization.backends.pygmo module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.backends.pygmo_nlopt.html">pysolver_view.optimization.backends.pygmo_nlopt module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.backends.pygmo_nonfree.html">pysolver_view.optimization.backends.pygmo_nonfree module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.backends.registry.html">pysolver_view.optimization.backends.registry module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.backends.scipy.html">pysolver_view.optimization.backends.scipy module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.problems.html">pysolver_view.optimization.problems package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.problems.base.html">pysolver_view.optimization.problems.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.problems.constrained_rosenbrock.html">pysolver_view.optimization.problems.constrained_rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.problems.hs71.html">pysolver_view.optimization.problems.hs71 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.problems.lorenz.html">pysolver_view.optimization.problems.lorenz module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.problems.rosenbrock.html">pysolver_view.optimization.problems.rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.problems.slsqp_controls.html">pysolver_view.optimization.problems.slsqp_controls module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.solvers.html">pysolver_view.optimization.solvers package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.solvers.slsqp.html">pysolver_view.optimization.solvers.slsqp package</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.constraints.html">pysolver_view.optimization.constraints module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.evaluation.html">pysolver_view.optimization.evaluation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.kkt_adapter.html">pysolver_view.optimization.kkt_adapter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.scaling.html">pysolver_view.optimization.scaling module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.optimization.solver.html">pysolver_view.optimization.solver module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/pysolver_view.reporting.html">pysolver_view.reporting package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.reporting.logging.html">pysolver_view.reporting.logging module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.reporting.plots.html">pysolver_view.reporting.plots module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.reporting.style.html">pysolver_view.reporting.style module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.reporting.tables.html">pysolver_view.reporting.tables module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.reporting.text.html">pysolver_view.reporting.text module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/pysolver_view.roots.html">pysolver_view.roots package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/pysolver_view.roots.backends.html">pysolver_view.roots.backends package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.backends.custom.html">pysolver_view.roots.backends.custom module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.backends.registry.html">pysolver_view.roots.backends.registry module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.backends.scipy.html">pysolver_view.roots.backends.scipy module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.html">pysolver_view.roots.problems package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.base.html">pysolver_view.roots.problems.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.brown_almost_linear.html">pysolver_view.roots.problems.brown_almost_linear module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.broyden_tridiagonal.html">pysolver_view.roots.problems.broyden_tridiagonal module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.html">pysolver_view.roots.problems.coupled_overdetermined_rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.discrete_boundary_value.html">pysolver_view.roots.problems.discrete_boundary_value module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.discrete_integral_equation.html">pysolver_view.roots.problems.discrete_integral_equation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.extended_rosenbrock.html">pysolver_view.roots.problems.extended_rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.heated_gas_duct.html">pysolver_view.roots.problems.heated_gas_duct module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.helical_valley.html">pysolver_view.roots.problems.helical_valley module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.logarithmic_domain.html">pysolver_view.roots.problems.logarithmic_domain module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.lorenz.html">pysolver_view.roots.problems.lorenz module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.powell_badly_scaled.html">pysolver_view.roots.problems.powell_badly_scaled module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.powell_singular.html">pysolver_view.roots.problems.powell_singular module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.problems.suites.html">pysolver_view.roots.problems.suites module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/pysolver_view.roots.solvers.html">pysolver_view.roots.solvers package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.solvers.evaluation.html">pysolver_view.roots.solvers.evaluation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.solvers.exceptions.html">pysolver_view.roots.solvers.exceptions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.solvers.history.html">pysolver_view.roots.solvers.history module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.solvers.line_search.html">pysolver_view.roots.solvers.line_search module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.solvers.linear_model.html">pysolver_view.roots.solvers.linear_model module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.solvers.options.html">pysolver_view.roots.solvers.options module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.solvers.scaling.html">pysolver_view.roots.solvers.scaling module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.solvers.solver.html">pysolver_view.roots.solvers.solver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.solvers.trial_step.html">pysolver_view.roots.solvers.trial_step module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.roots.solvers.trust_region.html">pysolver_view.roots.solvers.trust_region module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.roots.evaluation.html">pysolver_view.roots.evaluation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.roots.methods.html">pysolver_view.roots.methods module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.roots.solver.html">pysolver_view.roots.solver module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/pysolver_view.solvers.html">pysolver_view.solvers package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/pysolver_view.solvers.root.html">pysolver_view.solvers.root package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.solvers.root.evaluation.html">pysolver_view.solvers.root.evaluation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.solvers.root.exceptions.html">pysolver_view.solvers.root.exceptions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.solvers.root.history.html">pysolver_view.solvers.root.history module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.solvers.root.line_search.html">pysolver_view.solvers.root.line_search module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.solvers.root.linear_model.html">pysolver_view.solvers.root.linear_model module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.solvers.root.options.html">pysolver_view.solvers.root.options module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.solvers.root.scaling.html">pysolver_view.solvers.root.scaling module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.solvers.root.solver.html">pysolver_view.solvers.root.solver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.solvers.root.trial_step.html">pysolver_view.solvers.root.trial_step module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/pysolver_view.solvers.root.trust_region.html">pysolver_view.solvers.root.trust_region module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.solvers.exceptions.html">pysolver_view.solvers.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/pysolver_view.solvers.slsqp.html">pysolver_view.solvers.slsqp module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api/pysolver_view.custom_optimization.html">pysolver_view.custom_optimization module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api/pysolver_view.custom_root.html">pysolver_view.custom_root module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api/pysolver_view.exceptions.html">pysolver_view.exceptions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api/pysolver_view.history.html">pysolver_view.history module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api/pysolver_view.nonlinear_system.html">pysolver_view.nonlinear_system module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api/pysolver_view.nonlinear_system_problems.html">pysolver_view.nonlinear_system_problems module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api/pysolver_view.numerical_differentiation.html">pysolver_view.numerical_differentiation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api/pysolver_view.optimization_problems.html">pysolver_view.optimization_problems module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api/pysolver_view.optimization_wrappers.html">pysolver_view.optimization_wrappers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api/pysolver_view.pysolver_utilities.html">pysolver_view.pysolver_utilities module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api/pysolver_view.results.html">pysolver_view.results module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api/pysolver_view.validation.html">pysolver_view.validation module</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/turbo-sim/pysolver_view" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/turbo-sim/pysolver_view/issues/new?title=Issue%20on%20page%20%2F_modules/pysolver_view/optimization/solvers/slsqp/driver.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for pysolver_view.optimization.solvers.slsqp.driver</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Run SciPy&#39;s SLSQP with controlled trial steps and explicit domain recovery.</span>
+
+<span class="sd">This driver manages the evaluation loop around SciPy&#39;s compiled optimizer. A</span>
+<span class="sd">model can be undefined at a trial point even when every variable satisfies its</span>
+<span class="sd">bounds. On a recognized ``DomainError``, the driver can shorten the pending step</span>
+<span class="sd">and retry the actual model. Successful recovery can also limit the next step,</span>
+<span class="sd">with gradual growth toward the configured maximum fraction. SciPy&#39;s own merit</span>
+<span class="sd">line search remains active, and its accumulated solver state is retained.</span>
+
+<span class="sd">In the supported SciPy version, ``minimize(method=&#39;SLSQP&#39;)`` exposes neither</span>
+<span class="sd">these step fractions nor a hook to reject an undefined pending trial and retry</span>
+<span class="sd">it with consistent internal state. An iteration callback cannot supply that</span>
+<span class="sd">control, and an exception from a model evaluation would otherwise escape the</span>
+<span class="sd">public wrapper. The private interaction is isolated in ``_scipy_backend``;</span>
+<span class="sd">this module chooses when to evaluate, shorten, recover, or stop. It uses the</span>
+<span class="sd">existing SLSQP algorithm rather than implementing another optimizer.</span>
+
+<span class="sd">Bound-aware finite differences use one probe per variable. An invalid probe</span>
+<span class="sd">stops the solve with a diagnostic instead of retrying or inventing a derivative. Histories and callbacks describe the initial and accepted designs,</span>
+<span class="sd">and ``kkt`` supplies independent first-order diagnostics at those points.</span>
+<span class="sd">Final success requires native success and the configured feasibility and</span>
+<span class="sd">optimality limits by default. Disabling check_kkt skips the optimality gate.</span>
+<span class="sd">These derivative and reporting features could also surround</span>
+<span class="sd">the public interface; pending-trial control is the reason for the private bridge.</span>
+
+<span class="sd">The numerical driver requires NumPy and SciPy and has no application or UI assumptions.</span>
+<span class="sd">The caller owns coordinates and scaling and returns an ``Evaluation`` containing</span>
+<span class="sd">a minimized objective, equalities == 0, and inequalities &gt;= 0. Only explicitly</span>
+<span class="sd">identified ``DomainError`` failures are recoverable. No artificial objective</span>
+<span class="sd">values or modifications to the model equations are used, and programming errors</span>
+<span class="sd">propagate to the caller. Recovery has finite retry limits and cannot guarantee</span>
+<span class="sd">that a feasible continuation exists.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.options</span><span class="w"> </span><span class="kn">import</span> <span class="n">Evaluation</span><span class="p">,</span> <span class="n">SLSQPOptions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">perf_counter</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptimizeResult</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._scipy_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">Backend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">....diagnostics.kkt</span><span class="w"> </span><span class="kn">import</span> <span class="n">assess_kkt_nonnegative</span> <span class="k">as</span> <span class="n">assess_kkt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">....exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DomainError</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_CallbackStop</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Distinguish explicit callback cancellation from model exceptions.&quot;&quot;&quot;</span>
+
+
+<span class="n">MESSAGES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;Optimization terminated successfully&quot;</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;More equality constraints than independent variables&quot;</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;More than 3*n iterations in LSQ subproblem&quot;</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;Inequality constraints incompatible&quot;</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;Singular matrix E in LSQ subproblem&quot;</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="s2">&quot;Singular matrix C in LSQ subproblem&quot;</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;Rank-deficient equality constraint subproblem HFTI&quot;</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="s2">&quot;Positive directional derivative for linesearch&quot;</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="s2">&quot;Iteration limit reached&quot;</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="s2">&quot;Initial point is outside the model domain&quot;</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="s2">&quot;No valid line-search trial found&quot;</span><span class="p">,</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="s2">&quot;No valid finite-difference probe found&quot;</span><span class="p">,</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="s2">&quot;Stopped by callback&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_tolerance_pair</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Keep nearby failing residuals visibly distinct from their tolerance.&quot;&quot;&quot;</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">residual</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tolerance</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="n">residual</span> <span class="o">!=</span> <span class="n">tolerance</span> <span class="ow">and</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">residual</span><span class="si">:</span><span class="s2">.17g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tolerance</span><span class="si">:</span><span class="s2">.17g</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">values</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_grow_step_fraction</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">fraction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Restore a step cap without overflowing for a large growth factor.&quot;&quot;&quot;</span>
+    <span class="n">cap</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">max_step_fraction</span>
+    <span class="n">growth</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">step_growth_factor</span>
+    <span class="k">if</span> <span class="n">growth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cap</span>
+    <span class="k">if</span> <span class="n">fraction</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+    <span class="k">if</span> <span class="n">fraction</span> <span class="o">&gt;=</span> <span class="n">cap</span> <span class="o">/</span> <span class="n">growth</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cap</span>
+    <span class="k">return</span> <span class="n">fraction</span> <span class="o">*</span> <span class="n">growth</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_relative_step_fraction</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">original_step</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Measure cumulative shortening, including native merit backtracking.</span>
+
+<span class="sd">    The stored step stays collinear with its original QP direction. Using its</span>
+<span class="sd">    largest component avoids squaring/norm overflow and tiny denominators.</span>
+<span class="sd">    SciPy&#39;s state alpha is only the last incremental shortening factor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">original_step</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">original_step</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">step</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">/</span> <span class="n">original_step</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="minimize_slsqp">
+<a class="viewcode-back" href="../../../../../api/pysolver_view.optimization.solvers.slsqp.driver.html#pysolver_view.optimization.solvers.slsqp.driver.minimize_slsqp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">minimize_slsqp</span><span class="p">(</span>
+    <span class="n">evaluate</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Minimize a combined model evaluation through SciPy&#39;s compiled SLSQP.</span>
+
+<span class="sd">    ``jac`` optionally returns rows [objective, equalities, inequalities].</span>
+<span class="sd">    Otherwise use bounded, one-sided differences with one probe per variable.</span>
+<span class="sd">    Choose the direction from the available bound distance before evaluating;</span>
+<span class="sd">    a DomainError stops differentiation without retrying. No artificial</span>
+<span class="sd">    objective/constraint penalties are used.</span>
+
+<span class="sd">    The two step fractions scale the QP direction before its first trial: the</span>
+<span class="sd">    first major iteration uses min(first_step_fraction, max_step_fraction), and</span>
+<span class="sd">    later initial caps grow by step_growth_factor up to max_step_fraction.</span>
+<span class="sd">    After a domain-recovered iteration, growth restarts from the actual accepted</span>
+<span class="sd">    fraction of that iteration&#39;s original QP direction, including any native</span>
+<span class="sd">    merit shortening. Further recoveries reset it again. Growth 1 holds the current/recovered cap; None</span>
+<span class="sd">    restores max_step_fraction immediately on each iteration after the first.</span>
+<span class="sd">    Native merit backtracking remains active in both cases.</span>
+<span class="sd">    Domain backtracking is applied to every native function request. A final</span>
+<span class="sd">    first-order stationarity check prevents tiny imposed steps from being</span>
+<span class="sd">    mistaken for convergence merely because SciPy&#39;s step tolerance is met.</span>
+
+<span class="sd">    Callback/history contain initial and accepted points (not derivative probes</span>
+<span class="sd">    or rejected trials). StopIteration from callback gives status 13. Failure</span>
+<span class="sd">    during domain recovery returns the last accepted point with success=False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="n">SLSQPOptions</span><span class="p">()</span> <span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">options</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">SLSQPOptions</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">SLSQPOptions</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;options must be SLSQPOptions or a dictionary.&quot;</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x0 must be a nonempty finite vector.&quot;</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">if</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pairs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pairs</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">pairs</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;bounds must have shape (n, 2), using infinities for absent bounds.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="n">pairs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">pairs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">lower</span> <span class="o">&gt;=</span> <span class="n">upper</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Each lower bound must be below its upper bound; omit fixed variables.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">lower</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">upper</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x0 must lie within its bounds.&quot;</span><span class="p">)</span>
+    <span class="n">started</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
+    <span class="n">history</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">cache</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nfev</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">njev</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">valid_evaluations</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">sizes</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">backend</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">last_x</span><span class="p">,</span> <span class="n">last_eval</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="kc">None</span>
+    <span class="n">derivative_cache</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">next_step_fraction</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">first_step_fraction</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">max_step_fraction</span><span class="p">)</span>
+    <span class="n">iteration_step_fraction</span> <span class="o">=</span> <span class="n">next_step_fraction</span>
+    <span class="n">original_step</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">recovered_iteration</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">accepted_fraction</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a formatted diagnostic to the optional application logger.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="p">(</span><span class="s2">&quot;Starting pysolver SLSQP optimization (SciPy backend)&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="p">(</span><span class="s2">&quot;Func-value is the signed, normalized minimized objective.&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="p">(</span>
+        <span class="s2">&quot;Step-norm is the accepted displacement in solver coordinates; KKT uses derivatives at the reported point.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">log</span><span class="p">(</span>
+        <span class="s2">&quot;Tolerances: native ftol=</span><span class="si">%g</span><span class="s2">; feasibility=</span><span class="si">%g</span><span class="s2">; KKT optimality=</span><span class="si">%g</span><span class="s2">. KKT/tol &lt;= 1 passes the independent check.&quot;</span><span class="p">,</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">ftol</span><span class="p">,</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">feasibility_tol</span><span class="p">,</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">optimality_tol</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">log</span><span class="p">(</span>
+        <span class="s2">&quot;</span><span class="si">%5s</span><span class="s2"> </span><span class="si">%9s</span><span class="s2"> </span><span class="si">%9s</span><span class="s2"> </span><span class="si">%14s</span><span class="s2"> </span><span class="si">%12s</span><span class="s2"> </span><span class="si">%12s</span><span class="s2"> </span><span class="si">%12s</span><span class="s2"> </span><span class="si">%12s</span><span class="s2"> </span><span class="si">%10s</span><span class="s2"> </span><span class="si">%8s</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Iter&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Grad-eval&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Func-eval&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Func-value&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Infeasibility&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Step-norm&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Optimality&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Complement.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;KKT/tol&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Recoveries&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">record_event</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retain trial or derivative rejection metadata and log its cause.&quot;&quot;&quot;</span>
+        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;trial_rejection&quot;</span><span class="p">,</span> <span class="s2">&quot;derivative_rejection&quot;</span><span class="p">):</span>
+
+            <span class="n">log</span><span class="p">(</span>
+                <span class="s2">&quot;Rejected </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;trial&quot;</span> <span class="k">if</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;trial_rejection&quot;</span> <span class="k">else</span> <span class="s2">&quot;derivative probe&quot;</span><span class="p">,</span>
+                <span class="n">event</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate one exact point, validate responses, and cache detached values.&quot;&quot;&quot;</span>
+        <span class="k">nonlocal</span> <span class="n">sizes</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
+            <span class="n">cache</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;nfev&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">Evaluation</span><span class="p">(</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">objective</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">equalities</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">inequalities</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">equalities</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">result</span><span class="o">.</span><span class="n">inequalities</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Constraints must be one-dimensional arrays.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">vector</span><span class="p">())):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Model returned nonfinite values; use DomainError for known domain failures.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">current_sizes</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">equalities</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">inequalities</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sizes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sizes</span> <span class="o">!=</span> <span class="n">current_sizes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Constraint sizes changed during optimization.&quot;</span><span class="p">)</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="n">current_sizes</span>
+        <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;valid_evaluations&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">128</span><span class="p">:</span>
+            <span class="n">cache</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">violation</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute maximum equality, inequality, and finite-bound infeasibility.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">equalities</span><span class="p">),</span> <span class="n">initial</span><span class="o">=</span><span class="mi">0</span><span class="p">)),</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="o">-</span><span class="n">value</span><span class="o">.</span><span class="n">inequalities</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="mi">0</span><span class="p">)),</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">lower</span> <span class="o">-</span> <span class="n">point</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="mi">0</span><span class="p">)),</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">point</span> <span class="o">-</span> <span class="n">upper</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="mi">0</span><span class="p">)),</span>
+        <span class="p">)</span>
+
+    <span class="n">kkt_stats</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">evaluations</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">timed_assessment</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Measure independent KKT work separately from numerical solver work.&quot;&quot;&quot;</span>
+        <span class="n">started_check</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">assess_kkt</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">kkt_stats</span><span class="p">[</span><span class="s2">&quot;evaluations&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">kkt_stats</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">started_check</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">report</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Record one accepted point and its independent same-point KKT assessment.&quot;&quot;&quot;</span>
+        <span class="k">nonlocal</span> <span class="n">last_x</span><span class="p">,</span> <span class="n">last_eval</span>
+        <span class="n">last_x</span><span class="p">,</span> <span class="n">last_eval</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">value</span>
+        <span class="k">if</span> <span class="n">history</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">point</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="n">kkt</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">matrix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">check_kkt</span>
+            <span class="k">else</span> <span class="n">timed_assessment</span><span class="p">(</span>
+                <span class="n">point</span><span class="p">,</span>
+                <span class="n">matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">equalities</span><span class="p">,</span>
+                <span class="n">matrix</span><span class="p">[</span><span class="mi">1</span> <span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">value</span><span class="o">.</span><span class="n">equalities</span><span class="o">.</span><span class="n">size</span><span class="p">],</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">inequalities</span><span class="p">,</span>
+                <span class="n">matrix</span><span class="p">[</span><span class="mi">1</span> <span class="o">+</span> <span class="n">value</span><span class="o">.</span><span class="n">equalities</span><span class="o">.</span><span class="n">size</span> <span class="p">:],</span>
+                <span class="n">lower</span><span class="p">,</span>
+                <span class="n">upper</span><span class="p">,</span>
+                <span class="n">feasibility_tol</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">feasibility_tol</span><span class="p">,</span>
+                <span class="n">optimality_tol</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">optimality_tol</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">available</span> <span class="o">=</span> <span class="n">kkt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kkt</span><span class="p">[</span><span class="s2">&quot;available&quot;</span><span class="p">]</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">iteration</span><span class="o">=</span><span class="mi">0</span> <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;iter&quot;</span><span class="p">]),</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">point</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="n">objective</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">objective</span><span class="p">,</span>
+            <span class="n">fitness</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="n">max_constraint_violation</span><span class="o">=</span><span class="n">violation</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">value</span><span class="p">),</span>
+            <span class="n">step_norm</span><span class="o">=</span><span class="p">(</span>
+                <span class="mf">0.0</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">history</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">point</span> <span class="o">-</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;x&quot;</span><span class="p">]))</span>
+            <span class="p">),</span>
+            <span class="n">objective_change</span><span class="o">=</span><span class="p">(</span>
+                <span class="mf">0.0</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">history</span>
+                <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">objective</span> <span class="o">-</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;objective&quot;</span><span class="p">])</span>
+            <span class="p">),</span>
+            <span class="n">diagnostics_available</span><span class="o">=</span><span class="n">available</span><span class="p">,</span>
+            <span class="n">kkt</span><span class="o">=</span><span class="n">kkt</span><span class="p">,</span>
+            <span class="o">**</span><span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">kkt</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">if</span> <span class="n">available</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span>
+                    <span class="s2">&quot;optimality&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;stationarity&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;complementarity&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;dual_feasibility&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;kkt_residual&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;kkt_ratio&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">},</span>
+            <span class="n">domain_rejections</span><span class="o">=</span><span class="nb">sum</span><span class="p">(</span>
+                <span class="n">event</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;trial_rejection&quot;</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span>
+            <span class="p">),</span>
+            <span class="n">derivative_rejections</span><span class="o">=</span><span class="nb">sum</span><span class="p">(</span>
+                <span class="n">event</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;derivative_rejection&quot;</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span>
+            <span class="p">),</span>
+            <span class="o">**</span><span class="n">counts</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">display</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Format an available metric or explicitly label missing diagnostics.&quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="s2">&quot;unavailable&quot;</span> <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="n">log</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%5d</span><span class="s2"> </span><span class="si">%9d</span><span class="s2"> </span><span class="si">%9d</span><span class="s2"> </span><span class="si">%+14.6e</span><span class="s2"> </span><span class="si">%12.4e</span><span class="s2"> </span><span class="si">%12.4e</span><span class="s2"> </span><span class="si">%12s</span><span class="s2"> </span><span class="si">%12s</span><span class="s2"> </span><span class="si">%10s</span><span class="s2"> </span><span class="si">%8d</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">],</span>
+            <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;njev&quot;</span><span class="p">],</span>
+            <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;nfev&quot;</span><span class="p">],</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">objective</span><span class="p">,</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;max_constraint_violation&quot;</span><span class="p">],</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;step_norm&quot;</span><span class="p">],</span>
+            <span class="n">display</span><span class="p">(</span><span class="s2">&quot;optimality&quot;</span><span class="p">),</span>
+            <span class="n">display</span><span class="p">(</span><span class="s2">&quot;complementarity&quot;</span><span class="p">),</span>
+            <span class="n">display</span><span class="p">(</span><span class="s2">&quot;kkt_ratio&quot;</span><span class="p">),</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;domain_rejections&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">callback</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">entry</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">_CallbackStop</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">derivative</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Obtain one combined Jacobian with bounded, nonrecovering probes.&quot;&quot;&quot;</span>
+        <span class="k">nonlocal</span> <span class="n">derivative_cache</span>
+        <span class="k">if</span> <span class="n">derivative_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">derivative_cache</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">point</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">derivative_cache</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;njev&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">expected_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">jac</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">jac</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">copy</span><span class="p">()),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">DomainError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                <span class="c1"># An external derivative owner may include the exact failed</span>
+                <span class="c1"># probe. Retain its provenance without retrying the derivative.</span>
+                <span class="n">record_event</span><span class="p">(</span>
+                    <span class="nb">dict</span><span class="p">(</span>
+                        <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;derivative_rejection&quot;</span><span class="p">,</span>
+                        <span class="n">column</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;column&quot;</span><span class="p">),</span>
+                        <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;probe&quot;</span><span class="p">,</span> <span class="n">point</span><span class="p">))</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                        <span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">),</span>
+                        <span class="n">failure</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">expected_shape</span><span class="p">)</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="n">length</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">finite_diff_step</span>
+                <span class="n">forward_room</span> <span class="o">=</span> <span class="n">upper</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">-</span> <span class="n">point</span><span class="p">[</span><span class="n">column</span><span class="p">]</span>
+                <span class="n">backward_room</span> <span class="o">=</span> <span class="n">point</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">-</span> <span class="n">lower</span><span class="p">[</span><span class="n">column</span><span class="p">]</span>
+                <span class="c1"># Choose a bound-admissible direction before evaluating. This</span>
+                <span class="c1"># is ordinary one-sided differentiation, not a domain retry.</span>
+                <span class="n">direction</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="mi">1</span> <span class="k">if</span> <span class="n">forward_room</span> <span class="o">&gt;=</span> <span class="n">length</span> <span class="ow">or</span> <span class="n">forward_room</span> <span class="o">&gt;=</span> <span class="n">backward_room</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="p">)</span>
+                <span class="n">room</span> <span class="o">=</span> <span class="n">forward_room</span> <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">backward_room</span>
+                <span class="n">probe</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">probe</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+                    <span class="n">point</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">+</span> <span class="n">direction</span> <span class="o">*</span> <span class="nb">min</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">room</span><span class="p">),</span>
+                    <span class="n">lower</span><span class="p">[</span><span class="n">column</span><span class="p">],</span>
+                    <span class="n">upper</span><span class="p">[</span><span class="n">column</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">step</span> <span class="o">=</span> <span class="n">probe</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">-</span> <span class="n">point</span><span class="p">[</span><span class="n">column</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="n">column</span><span class="p">])):</span>
+                    <span class="k">raise</span> <span class="n">DomainError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;No representable derivative perturbation for variable </span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">sampled</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">probe</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">DomainError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                    <span class="n">record_event</span><span class="p">(</span>
+                        <span class="nb">dict</span><span class="p">(</span>
+                            <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;derivative_rejection&quot;</span><span class="p">,</span>
+                            <span class="n">column</span><span class="o">=</span><span class="n">column</span><span class="p">,</span>
+                            <span class="n">x</span><span class="o">=</span><span class="n">probe</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                            <span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">),</span>
+                            <span class="n">failure</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">DomainError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Derivative probe for variable </span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2"> failed; probes are not retried: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;column&quot;</span><span class="p">:</span> <span class="n">column</span><span class="p">,</span>
+                            <span class="s2">&quot;probe&quot;</span><span class="p">:</span> <span class="n">probe</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                            <span class="s2">&quot;cause&quot;</span><span class="p">:</span> <span class="n">error</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+                        <span class="p">},</span>
+                    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+                <span class="n">matrix</span><span class="p">[:,</span> <span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sampled</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span> <span class="o">-</span> <span class="n">base</span><span class="p">)</span> <span class="o">/</span> <span class="n">step</span>
+        <span class="k">if</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">expected_shape</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">matrix</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Jacobian must be finite with shape </span><span class="si">{</span><span class="n">expected_shape</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">derivative_cache</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">matrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">matrix</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">finish</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the authoritative last-accepted result and strict acceptance status.&quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">last_eval</span>
+        <span class="n">infeasibility</span> <span class="o">=</span> <span class="n">violation</span><span class="p">(</span><span class="n">last_x</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">feasible</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">infeasibility</span> <span class="o">&lt;=</span> <span class="n">options</span><span class="o">.</span><span class="n">feasibility_tol</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">MESSAGES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;SLSQP exit mode </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">detail</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;: </span><span class="si">{</span><span class="n">detail</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">feasible</span><span class="p">:</span>
+            <span class="n">residual_text</span><span class="p">,</span> <span class="n">tolerance_text</span> <span class="o">=</span> <span class="n">_format_tolerance_pair</span><span class="p">(</span>
+                <span class="n">infeasibility</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">feasibility_tol</span>
+            <span class="p">)</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;; final constraint violation </span><span class="si">{</span><span class="n">residual_text</span><span class="si">}</span><span class="s2"> exceeds tolerance &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tolerance_text</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">last_record</span> <span class="o">=</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">history</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="n">kkt</span> <span class="o">=</span> <span class="n">last_record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kkt&quot;</span><span class="p">)</span>
+        <span class="n">available</span> <span class="o">=</span> <span class="n">kkt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kkt</span><span class="p">[</span><span class="s2">&quot;available&quot;</span><span class="p">]</span>
+        <span class="n">optimality</span> <span class="o">=</span> <span class="n">kkt</span><span class="p">[</span><span class="s2">&quot;optimality&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">available</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="n">stationarity</span> <span class="o">=</span> <span class="n">kkt</span><span class="p">[</span><span class="s2">&quot;stationarity&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">available</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="n">complementarity</span> <span class="o">=</span> <span class="n">kkt</span><span class="p">[</span><span class="s2">&quot;complementarity&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">available</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="n">stationary</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">available</span> <span class="ow">and</span> <span class="n">optimality</span> <span class="o">&lt;=</span> <span class="n">options</span><span class="o">.</span><span class="n">optimality_tol</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">check_kkt</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="n">final_jacobian</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">derivative_cache</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">derivative_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">derivative_cache</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">last_x</span><span class="p">)</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">options</span><span class="o">.</span><span class="n">check_kkt</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">available</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;; final KKT check unavailable&quot;</span>
+                <span class="k">if</span> <span class="n">kkt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;: </span><span class="si">{</span><span class="n">kkt</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">stationary</span><span class="p">:</span>
+                <span class="n">residual_text</span><span class="p">,</span> <span class="n">tolerance_text</span> <span class="o">=</span> <span class="n">_format_tolerance_pair</span><span class="p">(</span>
+                    <span class="n">optimality</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">optimality_tol</span>
+                <span class="p">)</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;; final first-order residual </span><span class="si">{</span><span class="n">residual_text</span><span class="si">}</span><span class="s2"> exceeds &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tolerance_text</span><span class="si">}</span><span class="s2"> (small steps alone do not establish convergence).&quot;</span>
+                <span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">OptimizeResult</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">last_x</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="n">fun</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">value</span><span class="o">.</span><span class="n">objective</span><span class="p">,</span>
+            <span class="n">fitness</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">value</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="n">success</span><span class="o">=</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">feasible</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">check_kkt</span> <span class="ow">or</span> <span class="n">stationary</span><span class="p">),</span>
+            <span class="n">kkt_enabled</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">check_kkt</span><span class="p">,</span>
+            <span class="n">kkt_passed</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">available</span> <span class="ow">and</span> <span class="n">kkt</span><span class="p">[</span><span class="s2">&quot;passed&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">check_kkt</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">kkt_evaluations</span><span class="o">=</span><span class="n">kkt_stats</span><span class="p">[</span><span class="s2">&quot;evaluations&quot;</span><span class="p">],</span>
+            <span class="n">kkt_time</span><span class="o">=</span><span class="n">kkt_stats</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span>
+            <span class="n">solver_success</span><span class="o">=</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">feasible</span><span class="o">=</span><span class="n">feasible</span><span class="p">,</span>
+            <span class="n">stationary</span><span class="o">=</span><span class="n">stationary</span><span class="p">,</span>
+            <span class="n">optimality</span><span class="o">=</span><span class="n">optimality</span> <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">check_kkt</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">stationarity</span><span class="o">=</span><span class="n">stationarity</span> <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">check_kkt</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">complementarity</span><span class="o">=</span><span class="n">complementarity</span> <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">check_kkt</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">dual_feasibility</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">kkt</span><span class="p">[</span><span class="s2">&quot;dual_feasibility&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">available</span>
+                <span class="k">else</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">check_kkt</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">kkt_residual</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">kkt</span><span class="p">[</span><span class="s2">&quot;kkt_residual&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">available</span>
+                <span class="k">else</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">check_kkt</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">kkt_ratio</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">kkt</span><span class="p">[</span><span class="s2">&quot;kkt_ratio&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">available</span>
+                <span class="k">else</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">check_kkt</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">kkt</span><span class="o">=</span><span class="n">kkt</span><span class="p">,</span>
+            <span class="n">kkt_multipliers</span><span class="o">=</span><span class="n">kkt</span><span class="p">[</span><span class="s2">&quot;multipliers&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">available</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">diagnostics_available</span><span class="o">=</span><span class="n">available</span><span class="p">,</span>
+            <span class="n">step_norm</span><span class="o">=</span><span class="n">last_record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;step_norm&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">objective_change</span><span class="o">=</span><span class="n">last_record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;objective_change&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">jac</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">final_jacobian</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">final_jacobian</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+            <span class="n">nit</span><span class="o">=</span><span class="mi">0</span> <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">backend</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;iter&quot;</span><span class="p">],</span>
+            <span class="n">history</span><span class="o">=</span><span class="n">history</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">max_constraint_violation</span><span class="o">=</span><span class="n">infeasibility</span><span class="p">,</span>
+            <span class="n">elapsed_time</span><span class="o">=</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">started</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">counts</span><span class="p">,</span>
+            <span class="n">domain_rejections</span><span class="o">=</span><span class="nb">sum</span><span class="p">(</span>
+                <span class="n">event</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;trial_rejection&quot;</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span>
+            <span class="p">),</span>
+            <span class="n">derivative_rejections</span><span class="o">=</span><span class="nb">sum</span><span class="p">(</span>
+                <span class="n">event</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;derivative_rejection&quot;</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span>
+            <span class="p">),</span>
+            <span class="n">multipliers</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="n">backend</span><span class="o">.</span><span class="n">multipliers</span><span class="p">[:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sizes</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">log</span><span class="p">(</span><span class="s2">&quot;Success: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">)</span>
+        <span class="n">log</span><span class="p">(</span><span class="s2">&quot;Exit message: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">available</span><span class="p">:</span>
+            <span class="n">log</span><span class="p">(</span>
+                <span class="s2">&quot;Final KKT: stationarity=</span><span class="si">%.4e</span><span class="s2">; primal=</span><span class="si">%.4e</span><span class="s2">; dual=</span><span class="si">%.4e</span><span class="s2">; complementarity=</span><span class="si">%.4e</span><span class="s2">; KKT/tol=</span><span class="si">%.4e</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span>
+                <span class="n">stationarity</span><span class="p">,</span>
+                <span class="n">kkt</span><span class="p">[</span><span class="s2">&quot;primal_feasibility&quot;</span><span class="p">],</span>
+                <span class="n">kkt</span><span class="p">[</span><span class="s2">&quot;dual_feasibility&quot;</span><span class="p">],</span>
+                <span class="n">complementarity</span><span class="p">,</span>
+                <span class="n">kkt</span><span class="p">[</span><span class="s2">&quot;kkt_ratio&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;pass&quot;</span> <span class="k">if</span> <span class="n">kkt</span><span class="p">[</span><span class="s2">&quot;passed&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;fail&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">options</span><span class="o">.</span><span class="n">check_kkt</span><span class="p">:</span>
+            <span class="n">log</span><span class="p">(</span><span class="s2">&quot;Final KKT: unavailable (no valid same-point derivative certificate)&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="p">(</span><span class="s2">&quot;Final KKT: disabled (native termination and feasibility only)&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="p">(</span><span class="s2">&quot;Solution time: </span><span class="si">%.3f</span><span class="s2"> seconds&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">elapsed_time</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">DomainError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="n">record_event</span><span class="p">(</span>
+            <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;initial_rejection&quot;</span><span class="p">,</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                <span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">),</span>
+                <span class="n">failure</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">finish</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">meq</span><span class="p">,</span> <span class="n">mineq</span> <span class="o">=</span> <span class="n">sizes</span>
+        <span class="k">if</span> <span class="n">meq</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="n">report</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">finish</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">backend</span> <span class="o">=</span> <span class="n">Backend</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">meq</span><span class="p">,</span> <span class="n">mineq</span><span class="p">,</span> <span class="n">ftol</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">ftol</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">maxiter</span>
+        <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">derivative</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DomainError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="n">report</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">finish</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+        <span class="n">report</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;line&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">fraction</span> <span class="o">=</span> <span class="n">next_step_fraction</span>
+                    <span class="n">iteration_step_fraction</span> <span class="o">=</span> <span class="n">fraction</span>
+                    <span class="n">original_step</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">step</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="n">recovered_iteration</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">accepted_fraction</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">if</span> <span class="n">fraction</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">before</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                        <span class="n">backend</span><span class="o">.</span><span class="n">shorten_trial</span><span class="p">(</span><span class="n">fraction</span><span class="p">)</span>
+                        <span class="n">record_event</span><span class="p">(</span>
+                            <span class="nb">dict</span><span class="p">(</span>
+                                <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;step_cap&quot;</span><span class="p">,</span>
+                                <span class="n">iteration</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;iter&quot;</span><span class="p">],</span>
+                                <span class="n">fraction</span><span class="o">=</span><span class="n">fraction</span><span class="p">,</span>
+                                <span class="n">original_x</span><span class="o">=</span><span class="n">before</span><span class="p">,</span>
+                                <span class="n">x</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">max_backtracks</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="n">recovered_iteration</span>
+                            <span class="ow">and</span> <span class="n">options</span><span class="o">.</span><span class="n">step_growth_factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                        <span class="p">):</span>
+                            <span class="c1"># Snapshot before advance(), which may overwrite the</span>
+                            <span class="c1"># workspace when it starts a subsequent QP iteration.</span>
+                            <span class="n">accepted_fraction</span> <span class="o">=</span> <span class="n">_relative_step_fraction</span><span class="p">(</span>
+                                <span class="n">backend</span><span class="o">.</span><span class="n">step</span><span class="p">,</span> <span class="n">original_step</span>
+                            <span class="p">)</span>
+                        <span class="k">break</span>
+                    <span class="k">except</span> <span class="n">DomainError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                        <span class="n">record_event</span><span class="p">(</span>
+                            <span class="nb">dict</span><span class="p">(</span>
+                                <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;trial_rejection&quot;</span><span class="p">,</span>
+                                <span class="n">iteration</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;iter&quot;</span><span class="p">],</span>
+                                <span class="n">native_line</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;line&quot;</span><span class="p">],</span>
+                                <span class="n">backtrack</span><span class="o">=</span><span class="n">attempt</span><span class="p">,</span>
+                                <span class="n">x</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                                <span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">),</span>
+                                <span class="n">failure</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">domain_backtracking</span>
+                            <span class="ow">or</span> <span class="n">attempt</span> <span class="o">==</span> <span class="n">options</span><span class="o">.</span><span class="n">max_backtracks</span>
+                        <span class="p">):</span>
+                            <span class="k">return</span> <span class="n">finish</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+                        <span class="n">before</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                        <span class="n">backend</span><span class="o">.</span><span class="n">shorten_trial</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">backtrack_factor</span><span class="p">)</span>
+                        <span class="n">recovered_iteration</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">before</span><span class="p">,</span> <span class="n">backend</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span>
+                            <span class="n">backend</span><span class="o">.</span><span class="n">base</span><span class="p">,</span> <span class="n">backend</span><span class="o">.</span><span class="n">x</span>
+                        <span class="p">):</span>
+                            <span class="k">return</span> <span class="n">finish</span><span class="p">(</span>
+                                <span class="mi">11</span><span class="p">,</span>
+                                <span class="s2">&quot;Step cannot be shortened further at machine precision.&quot;</span><span class="p">,</span>
+                            <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">next_step_fraction</span> <span class="o">=</span> <span class="n">_grow_step_fraction</span><span class="p">(</span>
+                    <span class="n">options</span><span class="p">,</span>
+                    <span class="p">(</span>
+                        <span class="n">accepted_fraction</span>
+                        <span class="k">if</span> <span class="n">accepted_fraction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                        <span class="k">else</span> <span class="n">iteration_step_fraction</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">accepted_fraction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">record_event</span><span class="p">(</span>
+                        <span class="nb">dict</span><span class="p">(</span>
+                            <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;step_restoration&quot;</span><span class="p">,</span>
+                            <span class="n">iteration</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;iter&quot;</span><span class="p">],</span>
+                            <span class="n">accepted_fraction</span><span class="o">=</span><span class="n">accepted_fraction</span><span class="p">,</span>
+                            <span class="n">next_fraction</span><span class="o">=</span><span class="n">next_step_fraction</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">matrix</span> <span class="o">=</span> <span class="n">derivative</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">DomainError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                    <span class="n">report</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">finish</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+                <span class="n">report</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">check_kkt</span><span class="p">:</span>
+                    <span class="n">report</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">finish</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+                <span class="c1"># Native convergence may precede a gradient request at this</span>
+                <span class="c1"># accepted point. Obtain its own derivatives for the final row.</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">matrix</span> <span class="o">=</span> <span class="n">derivative</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">DomainError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                    <span class="n">report</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">finish</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Final KKT derivative unavailable: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">report</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">finish</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">_CallbackStop</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">finish</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Roberto Agromayor
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026, Roberto Agromayor.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
