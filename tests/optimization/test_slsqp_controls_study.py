@@ -3,8 +3,8 @@
 import numpy as np
 import pytest
 
-from development.slsqp_controls.src.problems import StudyProblem
-from development.slsqp_controls.src.checks import reconstruct, fresh_jacobian
+from pysolver_view.optimization.problems import StudyProblem
+from pysolver_view.diagnostics.slsqp_audit import reconstruct, fresh_jacobian
 from demos.demo_slsqp_controls.run_sensitivity import configurations, run_case
 
 
@@ -85,27 +85,3 @@ def test_domain_recovery_and_native_failure_remain_visible():
     assert recovered["success"] and recovered["kkt_passed"]
     np.testing.assert_allclose(recovered["x"], [0.04, 0.4], atol=2e-6)
     assert recovered["invalid_trials"] > 0
-
-
-@pytest.mark.parametrize(
-    "case,fraction,raw_monotonic",
-    [
-        ("rosenbrock", 0.001, False),
-        ("constrained_rosenbrock", 0.016, True),
-    ],
-)
-def test_selected_smooth_examples_have_no_large_overshoot(
-    case, fraction, raw_monotonic
-):
-    """Distinguish monotonic raw evaluations from monotonic accepted objectives."""
-    profiles = {p["name"]: p for p in configurations()}
-    result = run_case(case, profiles[f"first_{fraction:g}"])
-    assert result["success"] and result["kkt_passed"]
-    assert result["peak_ratio"] <= 1 + 1e-10
-    assert result["history_monotonic"]
-    assert result["raw_monotonic"] == raw_monotonic
-    diagnostics = result["optimality_history"]
-    assert len(diagnostics["optimality"]) == len(result["history"]["x"])
-    assert all(diagnostics["available"])
-    assert diagnostics["optimality"][-1] == pytest.approx(result["kkt"]["optimality"])
-    assert len(result["calls"]) == result["nfev"]

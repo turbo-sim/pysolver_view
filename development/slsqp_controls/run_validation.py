@@ -1,18 +1,23 @@
 """Audit tolerance gates and inconsistent constraints without turbine models."""
 
+import argparse
 import json
 from pathlib import Path
-import sys
 
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT))
 import pysolver_view as psv
-from development.slsqp_controls.src.problems import StudyProblem
-from development.slsqp_controls.src.checks import audit_solution
+from pysolver_view.optimization.problems import StudyProblem
+from pysolver_view.diagnostics.slsqp_audit import audit_solution
 
 
 def main():
     """Run five distinct stopping/acceptance profiles on four mathematical cases."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path(__file__).resolve().parent / "results_validation",
+    )
+    args = parser.parse_args()
     profiles = {
         "loose": (1e-5, 1e-3, 1e-2),
         "standard": (1e-12, 1e-6, 1e-4),
@@ -64,8 +69,8 @@ def main():
             assert audit["passed"], row
             if case == "inconsistent":
                 assert not solver.success
-    output = Path(__file__).resolve().parent / "results_validation"
-    output.mkdir(exist_ok=True)
+    output = args.output
+    output.mkdir(parents=True, exist_ok=True)
     (output / "results.json").write_text(
         json.dumps(records, indent=2, allow_nan=False), encoding="utf-8"
     )

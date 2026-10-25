@@ -2,10 +2,8 @@
 
 import unittest
 
-import numpy as np
 
-from pysolver_view.nonlinear_system import NonlinearSystemProblem
-from ..run_convergence_benchmark import (
+from development.root_step_control.run_convergence_benchmark import (
     audit_custom_steps,
     display_label,
     run_custom_case,
@@ -16,9 +14,6 @@ from pysolver_view.roots.problems import (
     ExtendedRosenbrockProblem,
     LogarithmicDomainProblem,
 )
-
-
-
 
 
 class ConvergencePolicyTests(unittest.TestCase):

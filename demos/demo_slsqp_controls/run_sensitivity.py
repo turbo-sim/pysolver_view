@@ -8,16 +8,13 @@ import argparse
 import csv
 import json
 from pathlib import Path
-import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT))
 import pysolver_view as psv
-from development.slsqp_controls.src.problems import StudyProblem
-from development.slsqp_controls.src.checks import audit_solution
+from pysolver_view.optimization.problems import StudyProblem
+from pysolver_view.diagnostics.slsqp_audit import audit_solution
 
 
 def configurations():
@@ -355,7 +352,7 @@ def main():
     parser.add_argument(
         "--output",
         type=Path,
-        default=ROOT / "development/slsqp_controls/results_sensitivity",
+        default=Path(__file__).resolve().parent / "results_sensitivity",
     )
     args = parser.parse_args()
     rows = []

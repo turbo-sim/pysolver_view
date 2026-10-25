@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy
 
-ROOT = Path(__file__).resolve().parents[2]
 import pysolver_view as psv
 
 
@@ -176,7 +175,7 @@ def main():
     parser.add_argument(
         "--output",
         type=Path,
-        default=ROOT / "development/slsqp_controls/results_kkt_timing",
+        default=Path(__file__).resolve().parent / "results_kkt_timing",
     )
     args = parser.parse_args()
     if args.repeats < 1:

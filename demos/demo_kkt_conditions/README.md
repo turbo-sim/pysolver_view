@@ -119,7 +119,7 @@ seconds; `result.kkt_evaluations` counts assessments. Explicit later audits do
 not change these result snapshots. Disabled checks report zero for both.
 
 Use `--output PATH` to choose a results folder. The
-[generated report](../../development/slsqp_controls/results_kkt_timing/REPORT.md)
+[generated report](results_kkt_timing/REPORT.md)
 contains measurements; samples, versions, and the timing plot accompany it.
 Cheap mathematical models emphasize percentage overhead compared with expensive
 physical property evaluations.

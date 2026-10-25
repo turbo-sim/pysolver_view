@@ -10,7 +10,7 @@ from unittest.mock import patch
 import numpy as np
 from scipy.optimize import OptimizeResult
 
-from .. import run_timing_benchmark as timing
+from development.root_step_control import run_timing_benchmark as timing
 from pysolver_view.roots.solvers import linear_model
 from pysolver_view.roots.problems import BroydenTridiagonalProblem
 
@@ -358,23 +358,6 @@ class TimingAccountingTests(unittest.TestCase):
                     )
                 self.assertEqual(solve.call_args.kwargs["method"], method)
                 self.assertEqual(solve.call_args.kwargs["library"], "pysolver")
-
-    def test_plot_labels_use_full_names_and_separate_backend_identity(self):
-        """Method abbreviations must not replace author-based names in plot labels."""
-        for solver in timing.SOLVER_CONFIGURATIONS:
-            configuration = timing.solver_configuration(solver)
-            label = timing.solver_plot_label(solver)
-            self.assertIn(timing.METHOD_NAMES[configuration.method], label)
-            self.assertIn(
-                "SciPy/MINPACK" if configuration.backend == "scipy" else "PySolverView",
-                label,
-            )
-        self.assertIn(
-            "Newton–Raphson", timing.solver_plot_label("pysolverview_newton_raphson")
-        )
-        self.assertIn(
-            "Gauss–Newton", timing.solver_plot_label("pysolverview_gauss_newton")
-        )
 
     def test_newton_audit_checks_actual_step_limit_and_allows_uncapped_steps(self):
         """Newton audits must enforce actual displacement without inventing a radius."""

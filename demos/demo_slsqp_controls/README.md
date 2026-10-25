@@ -9,14 +9,14 @@ python demos/demo_slsqp_controls/run_sensitivity.py
 Use `--no-show` to save figures without opening windows, or `--output PATH` to
 choose another results directory. The script prints one summary per run, opens
 two figures (one per Rosenbrock problem), and saves the complete data and sensitivity
-figures in [results_sensitivity](../../development/slsqp_controls/results_sensitivity/REPORT.md).
+figures in [results_sensitivity](results_sensitivity/REPORT.md).
 It does not change the solvers or any Turbodash file.
 
 ## Problems
 
 All models have **two variables**, exact analytical gradients, and explicit
 `OptimizationProblem` definitions in the shared
-[problems.py](../../development/slsqp_controls/src/problems.py).
+[slsqp_controls.py](../../src/pysolver_view/optimization/problems/slsqp_controls.py).
 
 1. Unconstrained Rosenbrock, $f=100(y-x^2)^2+(1-x)^2$, starting at $(-1.2,1)$.
    There are no artificial box bounds to hide its large initial QP direction.

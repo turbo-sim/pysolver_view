@@ -73,8 +73,9 @@ derivatives, preserving model precision without changing global configuration.
 CoolProp loads only when constructing `HeatedGasDuctProblem`. Install it with
 `python -m pip install 'pysolver_view[thermodynamics]'`. Mathematical models,
 problem contracts and numerical solvers work without it. Study orchestration,
-timing instrumentation and results remain under `development`. Development
-problem modules temporarily forward to the packaged classes.
+timing instrumentation and results remain under `development`. The former
+development forwarding modules have been removed. All reusable models and the
+SLSQP benchmark audit helpers are installed in the package.
 
 PyGMO availability is independent of its nonfree plugin; SNOPT loads that plugin
 only when requested. The NLOpt adapter accepts the common `tolerance` and
@@ -87,9 +88,9 @@ is outside this migration's validation scope.
 Run `poetry run python tests/run_tests.py` locally and in CI. This master script
 owns the test paths, enabled suites, default pytest options, cache location and
 headless plotting default. Edit `TEST_SUITES`, `ENABLED_SUITES` and
-`PYTEST_OPTIONS` there to control testing. It runs the full package and
-development checks by default. Use `--suite package` or `--suite development`
-to select one group; additional arguments are forwarded to pytest.
+`PYTEST_OPTIONS` there to control testing. It discovers all checks under `tests/`
+by default. Use `--suite studies` to select the benchmark and study checks;
+additional arguments are forwarded to pytest.
 Hessian helpers retain their implementation and remain outside the agreed
 migration validation scope.
 

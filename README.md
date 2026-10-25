@@ -45,7 +45,7 @@ native methods and custom roots; the full test suite needs Python 3.11 or newer.
 poetry run python tests/run_tests.py
 # Run just one of the configured suites:
 poetry run python tests/run_tests.py --suite package
-poetry run python tests/run_tests.py --suite development
+poetry run python tests/run_tests.py --suite studies
 poetry run python docs/build_docs.py --no-autobuild
 ```
 
@@ -55,9 +55,9 @@ for a live preview. See the [documentation build guide](docs/README.md) for
 the source structure, authoring conventions, and additional build options.
 
 Control test paths and default pytest options in
-[`tests/run_tests.py`](tests/run_tests.py). By default it runs the package and
-development checks, excluding Hessian validation from the agreed migration
-scope. Both existing CI test jobs call this same script.
+[`tests/run_tests.py`](tests/run_tests.py). By default it runs the complete
+`tests/` tree, including study checks, with Hessian validation excluded from the
+agreed migration scope. Both existing CI test jobs call this same script.
 
 The [source-layout migration guide](docs/source/source_layout.md) documents
 canonical imports, compatibility exports, optional dependencies and the explicit

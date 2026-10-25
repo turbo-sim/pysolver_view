@@ -8,10 +8,6 @@ linearized subproblem illustration, not a nonlinear convergence benchmark.
 import json
 from pathlib import Path
 import argparse
-import sys
-
-if __name__ == "__main__":
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import matplotlib
 

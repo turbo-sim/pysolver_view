@@ -15,12 +15,13 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 TEST_SUITES = {
     "package": ["tests"],
-    "development": [
-        "development/root_step_control/tests",
-        "development/slsqp_controls/tests",
+    "studies": [
+        "tests/roots/test_convergence_benchmark.py",
+        "tests/roots/test_timing_benchmark.py",
+        "tests/optimization/test_slsqp_controls_study.py",
     ],
 }
-ENABLED_SUITES = ["package", "development"]
+ENABLED_SUITES = ["package"]
 # Hessian validation remains outside the agreed migration scope.
 PYTEST_OPTIONS = ["-q", "-k", "not hessian"]
 CACHE_DIR = REPO_ROOT / "build" / "pytest_cache"
