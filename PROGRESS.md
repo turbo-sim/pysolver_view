@@ -7,7 +7,8 @@ improvements. Update it as implementation and validation proceed.
 
 **Current position:** Phase 1 result/history fixes and Phase 2 shared KKT
 assessment are implemented. The generic custom SLSQP driver is packaged and
-available through `library="pysolver"`. Phase 5 root development remains separate.
+available through `library="pysolver"`. Phase 4 now integrates all four custom
+root methods through the same backend name. Root benchmarks remain in development.
 
 **Next integration milestone:** Release/consumer preparation, then update
 Turbodash's imports and dependency when explicitly requested. Its existing files
@@ -205,24 +206,55 @@ using custom SLSQP. Wheel construction remains unverified because poetry-core
 is unavailable from this environment's configured package source. Turbine
 acceptance/consumer checks await the separately authorized application migration.
 
-## 4. Public integration of custom LM and Powell hybrid
+## 4. Public integration of all four custom root methods
 
-- [ ] Promote reusable numerical code from development into the installable package.
-- [ ] Add root backend selection without shifting existing positional arguments.
-- [ ] Integrate authoritative results, histories, callbacks, domain errors, and budgets.
-- [ ] Give numerical derivatives one owner and preserve scaled probe accounting.
-- [ ] Integrate and test canonical author names and their short aliases in the public root frontend.
-- [ ] Keep custom and SciPy/MINPACK provenance explicit.
-- [ ] Update study imports so they exercise packaged code.
-- [ ] Rerun root unit tests and convergence/step audits, including 100-variable
+- [x] Promote reusable numerical code from development into the installable package.
+- [x] Add root backend selection without shifting existing positional arguments.
+- [x] Integrate authoritative results, histories, callbacks, domain errors, and budgets.
+- [x] Give numerical derivatives one owner and preserve scaled probe accounting.
+- [x] Integrate and test canonical author names and their short aliases in the public root frontend.
+- [x] Keep custom and SciPy/MINPACK provenance explicit.
+- [x] Update study imports so they exercise packaged code.
+- [x] Rerun root unit tests and convergence/step audits, including 100-variable
   dense and thermodynamic problems.
-- [ ] Measure adapter overhead separately from model, derivative, and numerical work.
+- [x] Measure adapter overhead separately from model, derivative, and numerical work.
+- [x] Add one four-solver demo with full author names and solid/dashed overlap styling.
+- [x] Add optional, default-enabled Jacobian column scaling to all four methods,
+  preserving physical step limits and derivative probes; verify the 500-node heat case.
 
-**Outcome:** Development implementations exist; public integration has not started.
+**Outcome:** Implemented in `pysolver_view/solvers/root/`, with public integration
+through `NonlinearSystemSolver(library="pysolver")`. Native SciPy remains the
+default. Benchmark problems/runners remain under development; compatibility
+imports re-export the packaged implementation. Roots and custom SLSQP share one
+`DomainError`. The [usage note](development/root_step_control/notes/10_public_interface.md)
+documents options, callback differences, accepted observations and counters.
 
-**Validation / remaining issues:** Verify convergence and the documented solver
-contracts. Changed histories or call counts alone are not failures; investigate
-lost convergence, incorrect controls, or material performance regressions.
+**Jacobian-scaling follow-up:** `jacobian_scaling=True` is now the default for
+all four custom methods. Numerical equilibration updates with fresh Jacobians
+and stays fixed during hybrid secant updates. Physical `x_scale`, step caps,
+derivative probes, and the residual-root target retain their meanings. Full-rank
+Newton/Gauss-Newton directions are mathematically unchanged. The 500-node,
+1000-variable radiation demo now converges in all six configurations; controlled
+LM uses 12 accepted iterations and 13 model calls without reweighting equations.
+Controlled hybrid also converges, but takes more calls than with scaling disabled.
+
+The follow-up check passes 455 package/root tests (10 Hessian cases excluded),
+including 27 new scaling cases. Fresh convergence sweeps retain 100/100 eligible
+backend roots, 98/101 eligible custom roots, and 51/51 controlled successes.
+The three undamped failures, six unsupported configurations, and five inconsistent
+controls remain explicitly reported. Historical timing measurements below
+predate numerical scaling and were not repeated for this feature.
+
+**Validation / remaining issues:** Combined package/development check: 418 passed,
+10 Hessian tests deselected, including 29 public-root regressions. All 100
+native/custom convergence cases pass; the custom study retains 98/101 eligible
+roots and 51/51 eligible controlled successes, with expected unsupported and
+inconsistent cases. All 11,760 benchmark solves and 3,168 direct/public interface
+timing solves reach the target. Adapter counts agree with direct core counts.
+Full-history interface cost is measurable on cheap problems and is reported
+separately, including timing noise. All eight demo solves and an isolated
+package-copy smoke check pass without development imports. This is not a wheel
+installation check: poetry-core remains unavailable; Phase 7 release checks remain.
 
 ## 5. Newton–Raphson and Gauss–Newton
 
@@ -240,8 +272,8 @@ lost convergence, incorrect controls, or material performance regressions.
 - [x] Run multidimensional convergence and timing studies; retain failed cases.
 - [x] Update usage/math notes with measured results and limitations.
 
-**Outcome:** Implemented and validated under `development/root_step_control/`,
-independently of production integration. All four methods have canonical author
+**Outcome:** Initially implemented and validated under `development/root_step_control/`,
+then promoted through Phase 4. All four methods have canonical author
 names and dedicated entry functions backed by two shared iteration engines.
 Short aliases remain accepted. All 51 eligible protected comparison cases converged;
 undamped methods had three failures, retained in the report.
@@ -359,3 +391,11 @@ the evaluated coordinates. Source changes for this phase are development-only.
 | 2026-10-25 | Consolidated KKT assessment, custom SLSQP, package integration, demos, studies, tracked plot updates and project notes into topic commits. Fresh combined check: 387 passed, 10 Hessian cases deselected, covering package tests, SLSQP study tests and all 94 root development tests. Canonical root author names and four explicit entry functions are implemented in development; public root integration and installed-wheel validation remain pending. |
 
 | 2026-10-25 | Consolidated KKT demos to named tutorial, timing benchmark, and README. Removed three older scripts and generated logs/reports/cache/empty figures. Added final-only audit, scaled coordinates with transformed bound multiplier checks, explicit report export and headless mode to the main tutorial. Sixteen relevant tests pass; default/combined tutorial commands and timing smoke run verified. |
+
+| 2026-10-25 public roots | Phase 4 complete: all four custom roots packaged; common frontend, shared domain errors, numerical-derivative ownership, and single demo integrated. 418 tests passed, 10 Hessian tests deselected; 212 convergence configurations, 11,760 main timed solves and 3,168 interface timed solves rerun. All eligible controlled cases pass. Isolated package-copy import/solve smoke passes; wheel installation and consumer migration remain open. |
+
+| 2026-10-25 radiative heat demo | Added a 98-unknown Chebyshev collocation problem inspired by Nozzlex, with constant conductivity and distributed radiation. Newton, LM and hybrid compare full/large initial steps with a 0.1 initial limit using the public interface. All six converge and agree with an independent adaptive BVP within 3e-10 in temperature; 19 tests cover derivatives, spatial refinement, energy balance, controls and accounting. Small starts reduce residual excursions; hybrid uses fewer iterations while LM uses more. Solution/history figures use white-faced markers above the lines; ASCII summaries, saved numerical histories and a folder guide explain the comparison. The nonradiating limit also runs successfully. |
+
+| 2026-10-25 LM mesh investigation | Reproduced LM failure after increasing the heat demo to 500 nodes: boundary temperatures approach zero while the summed residual decreases. Independent trust-region step audits agree within 5e-12 relative error; the principal causes are mesh-dependent residual weighting and fixed variable scaling, not an identified damping bug. Native LM with default scaling converges; forcing identity scaling attempts invalid temperatures. Boundary reweighting, exact boundary elimination, quadrature weighting, and fixed Jacobian-column scaling each restore custom convergence and pass the original residual target. Reproducible scripts, saved evidence, and recommendations are in development/radiative_heat_investigation/. Production solvers and the user's 500-node example remain unchanged by this investigation; improvements are proposed, not implemented. |
+
+| 2026-10-25 Jacobian scaling | Implemented default-enabled `jacobian_scaling` for all four custom root methods, separate from physical `x_scale`. Fresh-Jacobian running column norms shape LM/hybrid steps; physical caps and numerical probes remain unchanged. All six 500-node heat runs converge; controlled LM reaches 4.5e-11 in 12 accepted iterations / 13 calls. Controlled hybrid converges in 26 / 30, versus 20 / 22 unscaled. Updated source/usage/math notes and regenerated demo figures/data. 455 tests pass (10 Hessian cases excluded); 212 convergence configurations retain 100/100 backend roots, 98/101 eligible custom roots, and 51/51 controlled successes. Historical investigation runners explicitly disable scaling to preserve their evidence. |

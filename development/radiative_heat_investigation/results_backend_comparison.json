@@ -1,0 +1,2426 @@
+{
+  "points": 500,
+  "unknowns": 1000,
+  "numpy": "2.4.4",
+  "scipy": "1.17.1",
+  "root_residual_target": 1e-08,
+  "note": "Native default and identity scaling use MINPACK's factor=100; radii/metrics are not identical to custom LM.",
+  "results": [
+    {
+      "configuration": "scipy_default_scaling",
+      "native_success": true,
+      "root_success": true,
+      "residual_norm": 2.693088600974598e-12,
+      "minimum_final_temperature": 1.0,
+      "minimum_attempted_temperature": 0.3,
+      "nfev": 30,
+      "njev": 21,
+      "elapsed_seconds": 7.312120600006892,
+      "message": "The relative error between two consecutive iterates is at most 0.000000",
+      "evaluations": [
+        {
+          "call": 1,
+          "minimum_temperature": 0.3,
+          "valid": true,
+          "residual_norm": 26.76126086250795
+        },
+        {
+          "call": 2,
+          "minimum_temperature": 0.3,
+          "valid": true,
+          "residual_norm": 26.76126086250795
+        },
+        {
+          "call": 3,
+          "minimum_temperature": 0.3,
+          "valid": true,
+          "residual_norm": 26.76126086250795
+        },
+        {
+          "call": 4,
+          "minimum_temperature": 1.0,
+          "valid": true,
+          "residual_norm": 7057.146450778706
+        },
+        {
+          "call": 5,
+          "minimum_temperature": 0.46635249501950815,
+          "valid": true,
+          "residual_norm": 2045.4021127016165
+        },
+        {
+          "call": 6,
+          "minimum_temperature": 0.3025480100140787,
+          "valid": true,
+          "residual_norm": 104.88323591039952
+        },
+        {
+          "call": 7,
+          "minimum_temperature": 0.30001432494462454,
+          "valid": true,
+          "residual_norm": 25.91414326264578
+        },
+        {
+          "call": 8,
+          "minimum_temperature": 0.3000797317549226,
+          "valid": true,
+          "residual_norm": 24.499657985521747
+        },
+        {
+          "call": 9,
+          "minimum_temperature": 0.3001656622350798,
+          "valid": true,
+          "residual_norm": 76.96941780813187
+        },
+        {
+          "call": 10,
+          "minimum_temperature": 0.3000827716147264,
+          "valid": true,
+          "residual_norm": 23.57277795211249
+        },
+        {
+          "call": 11,
+          "minimum_temperature": 0.30008803964235753,
+          "valid": true,
+          "residual_norm": 20.58792344510514
+        },
+        {
+          "call": 12,
+          "minimum_temperature": 0.30011347223701035,
+          "valid": true,
+          "residual_norm": 17.080225588093757
+        },
+        {
+          "call": 13,
+          "minimum_temperature": 0.30025874425047466,
+          "valid": true,
+          "residual_norm": 13.089940944902262
+        },
+        {
+          "call": 14,
+          "minimum_temperature": 0.3038605248174552,
+          "valid": true,
+          "residual_norm": 4.584295163450465
+        },
+        {
+          "call": 15,
+          "minimum_temperature": 0.42721838469437223,
+          "valid": true,
+          "residual_norm": 3.634914007007816
+        },
+        {
+          "call": 16,
+          "minimum_temperature": 0.6845682578744706,
+          "valid": true,
+          "residual_norm": 2.7914900935546174
+        },
+        {
+          "call": 17,
+          "minimum_temperature": 1.187305945305932,
+          "valid": true,
+          "residual_norm": 3.0721072845372586
+        },
+        {
+          "call": 18,
+          "minimum_temperature": 0.9018046651859981,
+          "valid": true,
+          "residual_norm": 2.128972373196674
+        },
+        {
+          "call": 19,
+          "minimum_temperature": 1.3168243678321148,
+          "valid": true,
+          "residual_norm": 2.7242953106568355
+        },
+        {
+          "call": 20,
+          "minimum_temperature": 1.0519699993809195,
+          "valid": true,
+          "residual_norm": 1.6035901139787396
+        },
+        {
+          "call": 21,
+          "minimum_temperature": 1.336763693476432,
+          "valid": true,
+          "residual_norm": 1.557567745103083
+        },
+        {
+          "call": 22,
+          "minimum_temperature": 1.3554728780329814,
+          "valid": true,
+          "residual_norm": 0.5429427814752302
+        },
+        {
+          "call": 23,
+          "minimum_temperature": 1.2800354274502657,
+          "valid": true,
+          "residual_norm": 0.4345666836986
+        },
+        {
+          "call": 24,
+          "minimum_temperature": 1.1107451811210884,
+          "valid": true,
+          "residual_norm": 0.5356248208999328
+        },
+        {
+          "call": 25,
+          "minimum_temperature": 1.2184292646561887,
+          "valid": true,
+          "residual_norm": 0.3360048011029213
+        },
+        {
+          "call": 26,
+          "minimum_temperature": 1.0948884446035327,
+          "valid": true,
+          "residual_norm": 0.2926116195672355
+        },
+        {
+          "call": 27,
+          "minimum_temperature": 1.0,
+          "valid": true,
+          "residual_norm": 0.13360779730833616
+        },
+        {
+          "call": 28,
+          "minimum_temperature": 1.0,
+          "valid": true,
+          "residual_norm": 1.6494613386395978e-05
+        },
+        {
+          "call": 29,
+          "minimum_temperature": 1.0,
+          "valid": true,
+          "residual_norm": 9.70494172112272e-12
+        },
+        {
+          "call": 30,
+          "minimum_temperature": 1.0,
+          "valid": true,
+          "residual_norm": 2.693088600974598e-12
+        }
+      ]
+    },
+    {
+      "configuration": "scipy_identity_scaling",
+      "native_success": false,
+      "root_success": false,
+      "residual_norm": null,
+      "minimum_final_temperature": null,
+      "minimum_attempted_temperature": -0.3850763959451328,
+      "nfev": 5,
+      "njev": 2,
+      "elapsed_seconds": 0.4011915000010049,
+      "message": "DomainError: Absolute temperature must remain positive.",
+      "evaluations": [
+        {
+          "call": 1,
+          "minimum_temperature": 0.3,
+          "valid": true,
+          "residual_norm": 26.76126086250795
+        },
+        {
+          "call": 2,
+          "minimum_temperature": 0.3,
+          "valid": true,
+          "residual_norm": 26.76126086250795
+        },
+        {
+          "call": 3,
+          "minimum_temperature": 0.3,
+          "valid": true,
+          "residual_norm": 26.76126086250795
+        },
+        {
+          "call": 4,
+          "minimum_temperature": 1.0,
+          "valid": true,
+          "residual_norm": 7057.146450778706
+        },
+        {
+          "call": 5,
+          "minimum_temperature": -0.3850763959451328,
+          "valid": false,
+          "residual_norm": null
+        }
+      ]
+    },
+    {
+      "configuration": "custom_identity_initial_0.1",
+      "root_success": false,
+      "residual_norm": 7.375416149993653,
+      "minimum_final_temperature": 9.280380220487854e-13,
+      "minimum_attempted_temperature": -0.344839262288803,
+      "nfev": 68,
+      "njev": 34,
+      "nit": 33,
+      "rejected": 34,
+      "invalid": 34,
+      "scale_minimum": 1.0,
+      "scale_maximum": 1.0,
+      "initial_radius": 0.1,
+      "max_radius": 100.0,
+      "elapsed_seconds": 13.976936299994122,
+      "message": "Step stagnation above residual tolerance.",
+      "linear_algebra": {
+        "qr_factorizations": 34,
+        "qr_updates": 0,
+        "svd_factorizations": 34,
+        "triangular_solves": 34,
+        "condition_checks": 34,
+        "factorizations_refreshed": 0,
+        "lm_secular_iterations": 518
+      },
+      "history": [
+        {
+          "iteration": 0,
+          "residual_norm": 26.76126086250798,
+          "step_norm": 0.0,
+          "scaled_step_norm": 0.0,
+          "radius": 0.1,
+          "nfev": 1
+        },
+        {
+          "iteration": 1,
+          "residual_norm": 24.425462271102234,
+          "step_norm": 0.09999999999999999,
+          "scaled_step_norm": 0.09999999999999999,
+          "radius": 0.2,
+          "nfev": 2
+        },
+        {
+          "iteration": 2,
+          "residual_norm": 23.10312132889628,
+          "step_norm": 0.2,
+          "scaled_step_norm": 0.2,
+          "radius": 0.4,
+          "nfev": 3
+        },
+        {
+          "iteration": 3,
+          "residual_norm": 21.51094259172561,
+          "step_norm": 0.3999999999999999,
+          "scaled_step_norm": 0.3999999999999999,
+          "radius": 0.8,
+          "nfev": 4
+        },
+        {
+          "iteration": 4,
+          "residual_norm": 19.30655897864029,
+          "step_norm": 0.7999999999999998,
+          "scaled_step_norm": 0.7999999999999998,
+          "radius": 1.6,
+          "nfev": 5
+        },
+        {
+          "iteration": 5,
+          "residual_norm": 15.708550685751362,
+          "step_norm": 1.5999999999999999,
+          "scaled_step_norm": 1.5999999999999999,
+          "radius": 3.2,
+          "nfev": 6
+        },
+        {
+          "iteration": 6,
+          "residual_norm": 9.736863264709813,
+          "step_norm": 3.2,
+          "scaled_step_norm": 3.2,
+          "radius": 6.4,
+          "nfev": 7
+        },
+        {
+          "iteration": 7,
+          "residual_norm": 7.94749698170173,
+          "step_norm": 1.5999999999999983,
+          "scaled_step_norm": 1.5999999999999983,
+          "radius": 3.2,
+          "nfev": 9
+        },
+        {
+          "iteration": 8,
+          "residual_norm": 7.524089449950641,
+          "step_norm": 0.7999999999999999,
+          "scaled_step_norm": 0.7999999999999999,
+          "radius": 1.6,
+          "nfev": 11
+        },
+        {
+          "iteration": 9,
+          "residual_norm": 7.398265892623311,
+          "step_norm": 0.39999999999999997,
+          "scaled_step_norm": 0.39999999999999997,
+          "radius": 0.8,
+          "nfev": 13
+        },
+        {
+          "iteration": 10,
+          "residual_norm": 7.384800062707735,
+          "step_norm": 0.05000000000000002,
+          "scaled_step_norm": 0.05000000000000002,
+          "radius": 0.1,
+          "nfev": 16
+        },
+        {
+          "iteration": 11,
+          "residual_norm": 7.3782310470364605,
+          "step_norm": 0.02500000000000002,
+          "scaled_step_norm": 0.02500000000000002,
+          "radius": 0.05,
+          "nfev": 18
+        },
+        {
+          "iteration": 12,
+          "residual_norm": 7.377417126036233,
+          "step_norm": 0.003124999999999993,
+          "scaled_step_norm": 0.003124999999999993,
+          "radius": 0.00625,
+          "nfev": 21
+        },
+        {
+          "iteration": 13,
+          "residual_norm": 7.375794014986326,
+          "step_norm": 0.006249999999996357,
+          "scaled_step_norm": 0.006249999999996357,
+          "radius": 0.0125,
+          "nfev": 22
+        },
+        {
+          "iteration": 14,
+          "residual_norm": 7.37559156375557,
+          "step_norm": 0.0007812499999999874,
+          "scaled_step_norm": 0.0007812499999999874,
+          "radius": 0.0015625,
+          "nfev": 25
+        },
+        {
+          "iteration": 15,
+          "residual_norm": 7.375490374523708,
+          "step_norm": 0.00039062499999999135,
+          "scaled_step_norm": 0.00039062499999999135,
+          "radius": 0.00078125,
+          "nfev": 27
+        },
+        {
+          "iteration": 16,
+          "residual_norm": 7.37543978899348,
+          "step_norm": 0.00019531249999999763,
+          "scaled_step_norm": 0.00019531249999999763,
+          "radius": 0.000390625,
+          "nfev": 29
+        },
+        {
+          "iteration": 17,
+          "residual_norm": 7.375433466227745,
+          "step_norm": 2.441406249999469e-05,
+          "scaled_step_norm": 2.441406249999469e-05,
+          "radius": 4.8828125e-05,
+          "nfev": 32
+        },
+        {
+          "iteration": 18,
+          "residual_norm": 7.375420820980327,
+          "step_norm": 4.882812499997969e-05,
+          "scaled_step_norm": 4.882812499997969e-05,
+          "radius": 9.765625e-05,
+          "nfev": 33
+        },
+        {
+          "iteration": 19,
+          "residual_norm": 7.375419240350994,
+          "step_norm": 6.1035156249834205e-06,
+          "scaled_step_norm": 6.1035156249834205e-06,
+          "radius": 1.220703125e-05,
+          "nfev": 36
+        },
+        {
+          "iteration": 20,
+          "residual_norm": 7.37541845003851,
+          "step_norm": 3.0517578088689825e-06,
+          "scaled_step_norm": 3.0517578088689825e-06,
+          "radius": 6.103515625e-06,
+          "nfev": 38
+        },
+        {
+          "iteration": 21,
+          "residual_norm": 7.375416869418073,
+          "step_norm": 6.103515621369538e-06,
+          "scaled_step_norm": 6.103515621369538e-06,
+          "radius": 1.220703125e-05,
+          "nfev": 39
+        },
+        {
+          "iteration": 22,
+          "residual_norm": 7.375416671840895,
+          "step_norm": 7.629394494937763e-07,
+          "scaled_step_norm": 7.629394494937763e-07,
+          "radius": 1.52587890625e-06,
+          "nfev": 42
+        },
+        {
+          "iteration": 23,
+          "residual_norm": 7.375416276686867,
+          "step_norm": 1.5258789062475104e-06,
+          "scaled_step_norm": 1.5258789062475104e-06,
+          "radius": 3.0517578125e-06,
+          "nfev": 43
+        },
+        {
+          "iteration": 24,
+          "residual_norm": 7.375416227292656,
+          "step_norm": 1.9073485965036694e-07,
+          "scaled_step_norm": 1.9073485965036694e-07,
+          "radius": 3.814697265625e-07,
+          "nfev": 46
+        },
+        {
+          "iteration": 25,
+          "residual_norm": 7.375416202595606,
+          "step_norm": 9.536743162257821e-08,
+          "scaled_step_norm": 9.536743162257821e-08,
+          "radius": 1.9073486328125e-07,
+          "nfev": 48
+        },
+        {
+          "iteration": 26,
+          "residual_norm": 7.375416153201404,
+          "step_norm": 1.907348596460694e-07,
+          "scaled_step_norm": 1.907348596460694e-07,
+          "radius": 3.814697265625e-07,
+          "nfev": 49
+        },
+        {
+          "iteration": 27,
+          "residual_norm": 7.37541615165779,
+          "step_norm": 5.96046083973704e-09,
+          "scaled_step_norm": 5.96046083973704e-09,
+          "radius": 1.1920928955078126e-08,
+          "nfev": 53
+        },
+        {
+          "iteration": 28,
+          "residual_norm": 7.375416150886056,
+          "step_norm": 2.980232235034001e-09,
+          "scaled_step_norm": 2.980232235034001e-09,
+          "radius": 5.960464477539063e-09,
+          "nfev": 55
+        },
+        {
+          "iteration": 29,
+          "residual_norm": 7.375416150500126,
+          "step_norm": 1.4901124892044957e-09,
+          "scaled_step_norm": 1.4901124892044957e-09,
+          "radius": 2.9802322387695314e-09,
+          "nfev": 57
+        },
+        {
+          "iteration": 30,
+          "residual_norm": 7.375416150307156,
+          "step_norm": 7.450580281801419e-10,
+          "scaled_step_norm": 7.450580281801419e-10,
+          "radius": 1.4901161193847657e-09,
+          "nfev": 59
+        },
+        {
+          "iteration": 31,
+          "residual_norm": 7.37541615021062,
+          "step_norm": 3.725253991747236e-10,
+          "scaled_step_norm": 3.725253991747236e-10,
+          "radius": 7.450580596923829e-10,
+          "nfev": 61
+        },
+        {
+          "iteration": 32,
+          "residual_norm": 7.375416150017726,
+          "step_norm": 7.450580382715786e-10,
+          "scaled_step_norm": 7.450580382715786e-10,
+          "radius": 1.4901161193847657e-09,
+          "nfev": 62
+        },
+        {
+          "iteration": 33,
+          "residual_norm": 7.375416149993652,
+          "step_norm": 9.313225464897342e-11,
+          "scaled_step_norm": 9.313225464897342e-11,
+          "radius": 1.8626451492309571e-10,
+          "nfev": 65
+        }
+      ],
+      "evaluations": [
+        {
+          "call": 1,
+          "minimum_temperature": 0.3,
+          "valid": true,
+          "residual_norm": 26.76126086250795
+        },
+        {
+          "call": 2,
+          "minimum_temperature": 0.29987989832929207,
+          "valid": true,
+          "residual_norm": 24.425462271102234
+        },
+        {
+          "call": 3,
+          "minimum_temperature": 0.29930663687246356,
+          "valid": true,
+          "residual_norm": 23.10312132889628
+        },
+        {
+          "call": 4,
+          "minimum_temperature": 0.297232464609575,
+          "valid": true,
+          "residual_norm": 21.51094259172561
+        },
+        {
+          "call": 5,
+          "minimum_temperature": 0.2905495031125573,
+          "valid": true,
+          "residual_norm": 19.306558978640286
+        },
+        {
+          "call": 6,
+          "minimum_temperature": 0.270402394267951,
+          "valid": true,
+          "residual_norm": 15.708550685751362
+        },
+        {
+          "call": 7,
+          "minimum_temperature": 0.18775902314470533,
+          "valid": true,
+          "residual_norm": 9.736863264709813
+        },
+        {
+          "call": 8,
+          "minimum_temperature": -0.344839262288803,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 9,
+          "minimum_temperature": 0.10874747940424112,
+          "valid": true,
+          "residual_norm": 7.947496981701731
+        },
+        {
+          "call": 10,
+          "minimum_temperature": -0.1800058640277975,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 11,
+          "minimum_temperature": 0.045436737204644445,
+          "valid": true,
+          "residual_norm": 7.524089449950642
+        },
+        {
+          "call": 12,
+          "minimum_temperature": -0.10275259152658349,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 13,
+          "minimum_temperature": 0.008131502511480045,
+          "valid": true,
+          "residual_norm": 7.398265892623312
+        },
+        {
+          "call": 14,
+          "minimum_temperature": -0.06677979724611297,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 15,
+          "minimum_temperature": -0.011077953557041047,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 16,
+          "minimum_temperature": 0.0034068381405774817,
+          "valid": true,
+          "residual_norm": 7.384800062707734
+        },
+        {
+          "call": 17,
+          "minimum_temperature": -0.006191378747391073,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 18,
+          "minimum_temperature": 0.001031101279903579,
+          "valid": true,
+          "residual_norm": 7.378231047036462
+        },
+        {
+          "call": 19,
+          "minimum_temperature": -0.0037597619550570525,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 20,
+          "minimum_temperature": -0.0001597543401434759,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 21,
+          "minimum_temperature": 0.0007339546111792619,
+          "valid": true,
+          "residual_norm": 7.377417126036234
+        },
+        {
+          "call": 22,
+          "minimum_temperature": 0.00013888744039863767,
+          "valid": true,
+          "residual_norm": 7.375794014986327
+        },
+        {
+          "call": 23,
+          "minimum_temperature": -0.001054085264212069,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 24,
+          "minimum_temperature": -0.00015882934948010076,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 25,
+          "minimum_temperature": 6.449355948288757e-05,
+          "valid": true,
+          "residual_norm": 7.37559156375557
+        },
+        {
+          "call": 26,
+          "minimum_temperature": -8.434128849509267e-05,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 27,
+          "minimum_temperature": 2.7293726187368272e-05,
+          "valid": true,
+          "residual_norm": 7.375490374523709
+        },
+        {
+          "call": 28,
+          "minimum_temperature": -4.7117731249621805e-05,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 29,
+          "minimum_temperature": 8.693087750299583e-06,
+          "valid": true,
+          "residual_norm": 7.375439788993481
+        },
+        {
+          "call": 30,
+          "minimum_temperature": -2.8511139260264692e-05,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 31,
+          "minimum_temperature": -6.074117378316746e-07,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 32,
+          "minimum_temperature": 6.367997784169268e-06,
+          "valid": true,
+          "residual_norm": 7.375433466227744
+        },
+        {
+          "call": 33,
+          "minimum_temperature": 1.7177716692996255e-06,
+          "valid": true,
+          "residual_norm": 7.375420820980327
+        },
+        {
+          "call": 34,
+          "minimum_temperature": -7.582865164663453e-06,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 35,
+          "minimum_temperature": -6.073526534008511e-07,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 36,
+          "minimum_temperature": 1.1364927701890885e-06,
+          "valid": true,
+          "residual_norm": 7.375419240350995
+        },
+        {
+          "call": 37,
+          "minimum_temperature": -2.6067913468499873e-08,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 38,
+          "minimum_temperature": 8.458531449529907e-07,
+          "valid": true,
+          "residual_norm": 7.375418450038509
+        },
+        {
+          "call": 39,
+          "minimum_temperature": 2.645731726695522e-07,
+          "valid": true,
+          "residual_norm": 7.375416869418072
+        },
+        {
+          "call": 40,
+          "minimum_temperature": -8.979896581726848e-07,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 41,
+          "minimum_temperature": -2.6066989662628955e-08,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 42,
+          "minimum_temperature": 1.919131665231155e-07,
+          "valid": true,
+          "residual_norm": 7.375416671840895
+        },
+        {
+          "call": 43,
+          "minimum_temperature": 4.6593108443708595e-08,
+          "valid": true,
+          "residual_norm": 7.375416276686867
+        },
+        {
+          "call": 44,
+          "minimum_temperature": -2.4404718807670294e-07,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 45,
+          "minimum_temperature": -2.6066931251627633e-08,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 46,
+          "minimum_temperature": 2.8428100909601323e-08,
+          "valid": true,
+          "residual_norm": 7.375416227292655
+        },
+        {
+          "call": 47,
+          "minimum_temperature": -7.90191767042589e-09,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 48,
+          "minimum_temperature": 1.9345596796171706e-08,
+          "valid": true,
+          "residual_norm": 7.375416202595605
+        },
+        {
+          "call": 49,
+          "minimum_temperature": 1.1805882181699455e-09,
+          "valid": true,
+          "residual_norm": 7.375416153201405
+        },
+        {
+          "call": 50,
+          "minimum_temperature": -3.514943245602994e-08,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 51,
+          "minimum_temperature": -7.901916068422421e-09,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 52,
+          "minimum_temperature": -1.0900375563517472e-09,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 53,
+          "minimum_temperature": 6.129320392259395e-10,
+          "valid": true,
+          "residual_norm": 7.375416151657791
+        },
+        {
+          "call": 54,
+          "minimum_temperature": -5.223806747090854e-10,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 55,
+          "minimum_temperature": 3.2910377432181286e-10,
+          "valid": true,
+          "residual_norm": 7.375416150886055
+        },
+        {
+          "call": 56,
+          "minimum_temperature": -2.3855240574376346e-10,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 57,
+          "minimum_temperature": 1.871899892859501e-10,
+          "valid": true,
+          "residual_norm": 7.375416150500128
+        },
+        {
+          "call": 58,
+          "minimum_temperature": -9.663792766872981e-11,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 59,
+          "minimum_temperature": 1.16232923057177e-10,
+          "valid": true,
+          "residual_norm": 7.3754161503071565
+        },
+        {
+          "call": 60,
+          "minimum_temperature": -2.5681209426603914e-11,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 61,
+          "minimum_temperature": 8.075473756456604e-11,
+          "valid": true,
+          "residual_norm": 7.375416150210622
+        },
+        {
+          "call": 62,
+          "minimum_temperature": 9.797671307665823e-12,
+          "valid": true,
+          "residual_norm": 7.375416150017726
+        },
+        {
+          "call": 63,
+          "minimum_temperature": -1.3211646130184415e-10,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 64,
+          "minimum_temperature": -2.5680514216636e-11,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 65,
+          "minimum_temperature": 9.280380220487854e-13,
+          "valid": true,
+          "residual_norm": 7.375416149993653
+        },
+        {
+          "call": 66,
+          "minimum_temperature": -1.681122854254307e-11,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 67,
+          "minimum_temperature": -3.5064312489606055e-12,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 68,
+          "minimum_temperature": -1.8031692838146045e-13,
+          "valid": false,
+          "residual_norm": null
+        }
+      ]
+    },
+    {
+      "configuration": "custom_fixed_column_scaling",
+      "root_success": true,
+      "residual_norm": 7.781703215926683e-12,
+      "minimum_final_temperature": 1.0,
+      "minimum_attempted_temperature": 0.3,
+      "nfev": 20,
+      "njev": 17,
+      "nit": 17,
+      "rejected": 2,
+      "invalid": 0,
+      "scale_minimum": 0.010979813010718582,
+      "scale_maximum": 50.01343587147567,
+      "initial_radius": 0.1,
+      "max_radius": 100.0,
+      "elapsed_seconds": 6.370239600000787,
+      "message": "Residual tolerance satisfied.",
+      "linear_algebra": {
+        "qr_factorizations": 17,
+        "qr_updates": 0,
+        "svd_factorizations": 14,
+        "triangular_solves": 17,
+        "condition_checks": 17,
+        "factorizations_refreshed": 0,
+        "lm_secular_iterations": 178
+      },
+      "history": [
+        {
+          "iteration": 0,
+          "residual_norm": 26.76126086250798,
+          "step_norm": 0.0,
+          "scaled_step_norm": 0.0,
+          "radius": 0.1,
+          "nfev": 1
+        },
+        {
+          "iteration": 1,
+          "residual_norm": 26.04969942045864,
+          "step_norm": 0.7583035936870332,
+          "scaled_step_norm": 0.09999999999999998,
+          "radius": 0.2,
+          "nfev": 2
+        },
+        {
+          "iteration": 2,
+          "residual_norm": 25.22586382477087,
+          "step_norm": 3.61780768063178,
+          "scaled_step_norm": 0.19999999999999996,
+          "radius": 0.4,
+          "nfev": 3
+        },
+        {
+          "iteration": 3,
+          "residual_norm": 24.116317147973273,
+          "step_norm": 4.292775857269421,
+          "scaled_step_norm": 0.09999999999999999,
+          "radius": 0.2,
+          "nfev": 5
+        },
+        {
+          "iteration": 4,
+          "residual_norm": 19.98600781275946,
+          "step_norm": 9.037010314367677,
+          "scaled_step_norm": 0.19999999999999998,
+          "radius": 0.4,
+          "nfev": 6
+        },
+        {
+          "iteration": 5,
+          "residual_norm": 18.956806992905662,
+          "step_norm": 10.242207674852976,
+          "scaled_step_norm": 0.4,
+          "radius": 0.4,
+          "nfev": 7
+        },
+        {
+          "iteration": 6,
+          "residual_norm": 9.950774469010822,
+          "step_norm": 5.731855484553066,
+          "scaled_step_norm": 0.4,
+          "radius": 0.8,
+          "nfev": 8
+        },
+        {
+          "iteration": 7,
+          "residual_norm": 4.227498292093074,
+          "step_norm": 1.7649402344390521,
+          "scaled_step_norm": 0.7999999999999999,
+          "radius": 1.6,
+          "nfev": 9
+        },
+        {
+          "iteration": 8,
+          "residual_norm": 3.6766563244717165,
+          "step_norm": 1.8163850743346668,
+          "scaled_step_norm": 1.5999999999999999,
+          "radius": 3.2,
+          "nfev": 10
+        },
+        {
+          "iteration": 9,
+          "residual_norm": 2.9802523073677234,
+          "step_norm": 2.381415789807998,
+          "scaled_step_norm": 3.1999999999999993,
+          "radius": 6.4,
+          "nfev": 11
+        },
+        {
+          "iteration": 10,
+          "residual_norm": 2.3173348275412944,
+          "step_norm": 5.078506870678989,
+          "scaled_step_norm": 6.4,
+          "radius": 6.4,
+          "nfev": 12
+        },
+        {
+          "iteration": 11,
+          "residual_norm": 1.7630625310230232,
+          "step_norm": 3.7422256437821,
+          "scaled_step_norm": 6.399999999999999,
+          "radius": 6.4,
+          "nfev": 13
+        },
+        {
+          "iteration": 12,
+          "residual_norm": 0.41785017254889045,
+          "step_norm": 1.1960128572094775,
+          "scaled_step_norm": 6.3999999999999995,
+          "radius": 12.8,
+          "nfev": 14
+        },
+        {
+          "iteration": 13,
+          "residual_norm": 0.29461172184971146,
+          "step_norm": 0.7016767095391233,
+          "scaled_step_norm": 3.1999999999999997,
+          "radius": 6.4,
+          "nfev": 16
+        },
+        {
+          "iteration": 14,
+          "residual_norm": 0.24696524962347585,
+          "step_norm": 1.3603812436894724,
+          "scaled_step_norm": 6.4,
+          "radius": 6.4,
+          "nfev": 17
+        },
+        {
+          "iteration": 15,
+          "residual_norm": 0.08090280545812374,
+          "step_norm": 0.886579610936029,
+          "scaled_step_norm": 3.705826359268097,
+          "radius": 6.4,
+          "nfev": 18
+        },
+        {
+          "iteration": 16,
+          "residual_norm": 6.354481885810773e-06,
+          "step_norm": 0.007312867747892734,
+          "scaled_step_norm": 0.08228487389737547,
+          "radius": 6.4,
+          "nfev": 19
+        },
+        {
+          "iteration": 17,
+          "residual_norm": 7.781703215926683e-12,
+          "step_norm": 1.3688335895465568e-06,
+          "scaled_step_norm": 7.324691177096413e-06,
+          "radius": 6.4,
+          "nfev": 20
+        }
+      ],
+      "evaluations": [
+        {
+          "call": 1,
+          "minimum_temperature": 0.3,
+          "valid": true,
+          "residual_norm": 26.76126086250795
+        },
+        {
+          "call": 2,
+          "minimum_temperature": 0.3000090693156276,
+          "valid": true,
+          "residual_norm": 26.04969942045864
+        },
+        {
+          "call": 3,
+          "minimum_temperature": 0.30004970176524015,
+          "valid": true,
+          "residual_norm": 25.22586382477087
+        },
+        {
+          "call": 4,
+          "minimum_temperature": 0.30011198948441153,
+          "valid": true,
+          "residual_norm": 27.86940560297929
+        },
+        {
+          "call": 5,
+          "minimum_temperature": 0.300060596229778,
+          "valid": true,
+          "residual_norm": 24.116317147973273
+        },
+        {
+          "call": 6,
+          "minimum_temperature": 0.3000741734795047,
+          "valid": true,
+          "residual_norm": 19.98600781275946
+        },
+        {
+          "call": 7,
+          "minimum_temperature": 0.3001582725643934,
+          "valid": true,
+          "residual_norm": 18.956806992905662
+        },
+        {
+          "call": 8,
+          "minimum_temperature": 0.3003450599314651,
+          "valid": true,
+          "residual_norm": 9.950774469010822
+        },
+        {
+          "call": 9,
+          "minimum_temperature": 0.3067687268496725,
+          "valid": true,
+          "residual_norm": 4.227498292093074
+        },
+        {
+          "call": 10,
+          "minimum_temperature": 0.4068523285107626,
+          "valid": true,
+          "residual_norm": 3.676656324471717
+        },
+        {
+          "call": 11,
+          "minimum_temperature": 0.6194665730045165,
+          "valid": true,
+          "residual_norm": 2.9802523073677225
+        },
+        {
+          "call": 12,
+          "minimum_temperature": 1.0389886054582,
+          "valid": true,
+          "residual_norm": 2.3173348275412944
+        },
+        {
+          "call": 13,
+          "minimum_temperature": 1.3451589918225813,
+          "valid": true,
+          "residual_norm": 1.7630625310230235
+        },
+        {
+          "call": 14,
+          "minimum_temperature": 1.2505486730791258,
+          "valid": true,
+          "residual_norm": 0.41785017254889056
+        },
+        {
+          "call": 15,
+          "minimum_temperature": 1.0238459835831148,
+          "valid": true,
+          "residual_norm": 0.8648512675658568
+        },
+        {
+          "call": 16,
+          "minimum_temperature": 1.1908469225222007,
+          "valid": true,
+          "residual_norm": 0.29461172184971146
+        },
+        {
+          "call": 17,
+          "minimum_temperature": 1.0743852861081613,
+          "valid": true,
+          "residual_norm": 0.24696524962347582
+        },
+        {
+          "call": 18,
+          "minimum_temperature": 1.0,
+          "valid": true,
+          "residual_norm": 0.08090280545812374
+        },
+        {
+          "call": 19,
+          "minimum_temperature": 1.0,
+          "valid": true,
+          "residual_norm": 6.3544818858107725e-06
+        },
+        {
+          "call": 20,
+          "minimum_temperature": 1.0,
+          "valid": true,
+          "residual_norm": 7.781703215926683e-12
+        }
+      ]
+    },
+    {
+      "configuration": "custom_identity_mesh_radii",
+      "root_success": false,
+      "residual_norm": 7.381517701166689,
+      "minimum_final_temperature": 2.319243376523148e-12,
+      "minimum_attempted_temperature": -0.36985899369146,
+      "nfev": 59,
+      "njev": 28,
+      "nit": 27,
+      "rejected": 31,
+      "invalid": 31,
+      "scale_minimum": 1.0,
+      "scale_maximum": 1.0,
+      "initial_radius": 0.31943828249996997,
+      "max_radius": 319.43828249997,
+      "elapsed_seconds": 11.063224400000763,
+      "message": "Step stagnation above residual tolerance.",
+      "linear_algebra": {
+        "qr_factorizations": 28,
+        "qr_updates": 0,
+        "svd_factorizations": 28,
+        "triangular_solves": 28,
+        "condition_checks": 28,
+        "factorizations_refreshed": 0,
+        "lm_secular_iterations": 484
+      },
+      "history": [
+        {
+          "iteration": 0,
+          "residual_norm": 26.76126086250798,
+          "step_norm": 0.0,
+          "scaled_step_norm": 0.0,
+          "radius": 0.31943828249996997,
+          "nfev": 1
+        },
+        {
+          "iteration": 1,
+          "residual_norm": 22.923054660929896,
+          "step_norm": 0.31943828249996986,
+          "scaled_step_norm": 0.31943828249996986,
+          "radius": 0.6388765649999399,
+          "nfev": 2
+        },
+        {
+          "iteration": 2,
+          "residual_norm": 20.637674476477674,
+          "step_norm": 0.6388765649999396,
+          "scaled_step_norm": 0.6388765649999396,
+          "radius": 1.2777531299998799,
+          "nfev": 3
+        },
+        {
+          "iteration": 3,
+          "residual_norm": 17.50927630777643,
+          "step_norm": 1.2777531299998797,
+          "scaled_step_norm": 1.2777531299998797,
+          "radius": 2.5555062599997598,
+          "nfev": 4
+        },
+        {
+          "iteration": 4,
+          "residual_norm": 12.220416536570927,
+          "step_norm": 2.5555062599997593,
+          "scaled_step_norm": 2.5555062599997593,
+          "radius": 5.1110125199995196,
+          "nfev": 5
+        },
+        {
+          "iteration": 5,
+          "residual_norm": 10.024800739122403,
+          "step_norm": 1.2777531299998788,
+          "scaled_step_norm": 1.2777531299998788,
+          "radius": 2.5555062599997598,
+          "nfev": 7
+        },
+        {
+          "iteration": 6,
+          "residual_norm": 7.521412594729844,
+          "step_norm": 2.555506259999759,
+          "scaled_step_norm": 2.555506259999759,
+          "radius": 5.1110125199995196,
+          "nfev": 8
+        },
+        {
+          "iteration": 7,
+          "residual_norm": 7.4019211826104865,
+          "step_norm": 0.3194382824999699,
+          "scaled_step_norm": 0.3194382824999699,
+          "radius": 0.6388765649999399,
+          "nfev": 11
+        },
+        {
+          "iteration": 8,
+          "residual_norm": 7.389455768009733,
+          "step_norm": 0.039929785312496205,
+          "scaled_step_norm": 0.039929785312496205,
+          "radius": 0.07985957062499249,
+          "nfev": 14
+        },
+        {
+          "iteration": 9,
+          "residual_norm": 7.383412599638627,
+          "step_norm": 0.019964892656248113,
+          "scaled_step_norm": 0.019964892656248113,
+          "radius": 0.039929785312496247,
+          "nfev": 16
+        },
+        {
+          "iteration": 10,
+          "residual_norm": 7.382665729647356,
+          "step_norm": 0.002495611582027484,
+          "scaled_step_norm": 0.002495611582027484,
+          "radius": 0.004991223164062031,
+          "nfev": 19
+        },
+        {
+          "iteration": 11,
+          "residual_norm": 7.382293000884063,
+          "step_norm": 0.0012478057910119693,
+          "scaled_step_norm": 0.0012478057910119693,
+          "radius": 0.0024956115820310154,
+          "nfev": 21
+        },
+        {
+          "iteration": 12,
+          "residual_norm": 7.38154894899764,
+          "step_norm": 0.0024956115820274614,
+          "scaled_step_norm": 0.0024956115820274614,
+          "radius": 0.004991223164062031,
+          "nfev": 22
+        },
+        {
+          "iteration": 13,
+          "residual_norm": 7.381525727443751,
+          "step_norm": 7.798786193845016e-05,
+          "scaled_step_norm": 7.798786193845016e-05,
+          "radius": 0.00015597572387693846,
+          "nfev": 26
+        },
+        {
+          "iteration": 14,
+          "residual_norm": 7.3815228248776075,
+          "step_norm": 9.748482742307307e-06,
+          "scaled_step_norm": 9.748482742307307e-06,
+          "radius": 1.9496965484617308e-05,
+          "nfev": 29
+        },
+        {
+          "iteration": 15,
+          "residual_norm": 7.38152137360517,
+          "step_norm": 4.874241371145441e-06,
+          "scaled_step_norm": 4.874241371145441e-06,
+          "radius": 9.748482742308654e-06,
+          "nfev": 31
+        },
+        {
+          "iteration": 16,
+          "residual_norm": 7.38151847108176,
+          "step_norm": 9.748482742299094e-06,
+          "scaled_step_norm": 9.748482742299094e-06,
+          "radius": 1.9496965484617308e-05,
+          "nfev": 32
+        },
+        {
+          "iteration": 17,
+          "residual_norm": 7.381518108268342,
+          "step_norm": 1.2185603427829466e-06,
+          "scaled_step_norm": 1.2185603427829466e-06,
+          "radius": 2.4371206855771635e-06,
+          "nfev": 35
+        },
+        {
+          "iteration": 18,
+          "residual_norm": 7.381517926861768,
+          "step_norm": 6.09280167837256e-07,
+          "scaled_step_norm": 6.09280167837256e-07,
+          "radius": 1.2185603427885817e-06,
+          "nfev": 37
+        },
+        {
+          "iteration": 19,
+          "residual_norm": 7.381517836158472,
+          "step_norm": 3.0464008213779907e-07,
+          "scaled_step_norm": 3.0464008213779907e-07,
+          "radius": 6.092801713942909e-07,
+          "nfev": 39
+        },
+        {
+          "iteration": 20,
+          "residual_norm": 7.381517790806945,
+          "step_norm": 1.5232003929588225e-07,
+          "scaled_step_norm": 1.5232003929588225e-07,
+          "radius": 3.0464008569714544e-07,
+          "nfev": 41
+        },
+        {
+          "iteration": 21,
+          "residual_norm": 7.381517768131118,
+          "step_norm": 7.6160021411846e-08,
+          "scaled_step_norm": 7.6160021411846e-08,
+          "radius": 1.5232004284857272e-07,
+          "nfev": 43
+        },
+        {
+          "iteration": 22,
+          "residual_norm": 7.38151772277958,
+          "step_norm": 1.523200392948471e-07,
+          "scaled_step_norm": 1.523200392948471e-07,
+          "radius": 3.0464008569714544e-07,
+          "nfev": 44
+        },
+        {
+          "iteration": 23,
+          "residual_norm": 7.381517717110556,
+          "step_norm": 1.9040001803012586e-08,
+          "scaled_step_norm": 1.9040001803012586e-08,
+          "radius": 3.808001071214318e-08,
+          "nfev": 47
+        },
+        {
+          "iteration": 24,
+          "residual_norm": 7.381517705772655,
+          "step_norm": 3.808001071111365e-08,
+          "scaled_step_norm": 3.808001071111365e-08,
+          "radius": 7.616002142428636e-08,
+          "nfev": 48
+        },
+        {
+          "iteration": 25,
+          "residual_norm": 7.381517704355368,
+          "step_norm": 4.760001335992498e-09,
+          "scaled_step_norm": 4.760001335992498e-09,
+          "radius": 9.520002678035795e-09,
+          "nfev": 51
+        },
+        {
+          "iteration": 26,
+          "residual_norm": 7.38151770152095,
+          "step_norm": 9.519999122066284e-09,
+          "scaled_step_norm": 9.519999122066284e-09,
+          "radius": 1.904000535607159e-08,
+          "nfev": 52
+        },
+        {
+          "iteration": 27,
+          "residual_norm": 7.381517701166688,
+          "step_norm": 1.1899967828395609e-09,
+          "scaled_step_norm": 1.1899967828395609e-09,
+          "radius": 2.3800006695089487e-09,
+          "nfev": 55
+        }
+      ],
+      "evaluations": [
+        {
+          "call": 1,
+          "minimum_temperature": 0.3,
+          "valid": true,
+          "residual_norm": 26.76126086250795
+        },
+        {
+          "call": 2,
+          "minimum_temperature": 0.29908793990219446,
+          "valid": true,
+          "residual_norm": 22.9230546609299
+        },
+        {
+          "call": 3,
+          "minimum_temperature": 0.2950182010710325,
+          "valid": true,
+          "residual_norm": 20.63767447647767
+        },
+        {
+          "call": 4,
+          "minimum_temperature": 0.28169900057548386,
+          "valid": true,
+          "residual_norm": 17.509276307776428
+        },
+        {
+          "call": 5,
+          "minimum_temperature": 0.2355859350073648,
+          "valid": true,
+          "residual_norm": 12.220416536570925
+        },
+        {
+          "call": 6,
+          "minimum_temperature": -0.1464054217752892,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 7,
+          "minimum_temperature": 0.20308495769437962,
+          "valid": true,
+          "residual_norm": 10.024800739122405
+        },
+        {
+          "call": 8,
+          "minimum_temperature": 0.03242827677520979,
+          "valid": true,
+          "residual_norm": 7.521412594729844
+        },
+        {
+          "call": 9,
+          "minimum_temperature": -0.36985899369146,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 10,
+          "minimum_temperature": -0.0861813604396149,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 11,
+          "minimum_temperature": 0.005718660824326021,
+          "valid": true,
+          "residual_norm": 7.4019211826104865
+        },
+        {
+          "call": 12,
+          "minimum_temperature": -0.054680705610664654,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 13,
+          "minimum_temperature": -0.008776204023854305,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 14,
+          "minimum_temperature": 0.002289719645744632,
+          "valid": true,
+          "residual_norm": 7.389455768009734
+        },
+        {
+          "call": 15,
+          "minimum_temperature": -0.004875367121551192,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 16,
+          "minimum_temperature": 0.0005532440290583777,
+          "valid": true,
+          "residual_norm": 7.3834125996386275
+        },
+        {
+          "call": 17,
+          "minimum_temperature": -0.002999800766917561,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 18,
+          "minimum_temperature": -0.0003203606664979417,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 19,
+          "minimum_temperature": 0.00033585016800875676,
+          "valid": true,
+          "residual_norm": 7.382665729647356
+        },
+        {
+          "call": 20,
+          "minimum_temperature": -0.00010029454718919848,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 21,
+          "minimum_temperature": 0.00022706809903679588,
+          "valid": true,
+          "residual_norm": 7.3822930008840615
+        },
+        {
+          "call": 22,
+          "minimum_temperature": 9.16369402734378e-06,
+          "valid": true,
+          "residual_norm": 7.38154894899764
+        },
+        {
+          "call": 23,
+          "minimum_temperature": -0.00042798906621591343,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 24,
+          "minimum_temperature": -9.987283290014138e-05,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 25,
+          "minimum_temperature": -1.8079522991296708e-05,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 26,
+          "minimum_temperature": 2.3538873510986395e-06,
+          "valid": true,
+          "residual_norm": 7.381525727443751
+        },
+        {
+          "call": 27,
+          "minimum_temperature": -1.12670541907217e-05,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 28,
+          "minimum_temperature": -1.0510985678469135e-06,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 29,
+          "minimum_temperature": 1.5026564685588756e-06,
+          "valid": true,
+          "residual_norm": 7.381522824877608
+        },
+        {
+          "call": 30,
+          "minimum_temperature": -1.998260556370278e-07,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 31,
+          "minimum_temperature": 1.0770397368887237e-06,
+          "valid": true,
+          "residual_norm": 7.381521373605171
+        },
+        {
+          "call": 32,
+          "minimum_temperature": 2.2580108362136604e-07,
+          "valid": true,
+          "residual_norm": 7.381518471081761
+        },
+        {
+          "call": 33,
+          "minimum_temperature": -1.4766969812964833e-06,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 34,
+          "minimum_temperature": -1.9981953337132415e-07,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 35,
+          "minimum_temperature": 1.193961730886147e-07,
+          "valid": true,
+          "residual_norm": 7.3815181082683425
+        },
+        {
+          "call": 36,
+          "minimum_temperature": -9.34139720131163e-08,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 37,
+          "minimum_temperature": 6.619369798409156e-08,
+          "valid": true,
+          "residual_norm": 7.381517926861767
+        },
+        {
+          "call": 38,
+          "minimum_temperature": -4.0211333962664133e-08,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 39,
+          "minimum_temperature": 3.9592455546729364e-08,
+          "valid": true,
+          "residual_norm": 7.38151783615847
+        },
+        {
+          "call": 40,
+          "minimum_temperature": -1.361005023417946e-08,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 41,
+          "minimum_temperature": 2.6291833224236618e-08,
+          "valid": true,
+          "residual_norm": 7.381517790806944
+        },
+        {
+          "call": 42,
+          "minimum_temperature": -3.0941711744854645e-10,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 43,
+          "minimum_temperature": 1.964152159068631e-08,
+          "valid": true,
+          "residual_norm": 7.381517768131118
+        },
+        {
+          "call": 44,
+          "minimum_temperature": 6.3408973709887285e-09,
+          "valid": true,
+          "residual_norm": 7.381517722779581
+        },
+        {
+          "call": 45,
+          "minimum_temperature": -2.026035676342258e-08,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 46,
+          "minimum_temperature": -3.0941489287214535e-10,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 47,
+          "minimum_temperature": 4.678319600145059e-09,
+          "valid": true,
+          "residual_norm": 7.381517717110556
+        },
+        {
+          "call": 48,
+          "minimum_temperature": 1.353163349425266e-09,
+          "valid": true,
+          "residual_norm": 7.381517705772653
+        },
+        {
+          "call": 49,
+          "minimum_temperature": -5.29714946987941e-09,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 50,
+          "minimum_temperature": -3.0941447946464723e-10,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 51,
+          "minimum_temperature": 9.37518816827623e-10,
+          "valid": true,
+          "residual_norm": 7.3815177043553675
+        },
+        {
+          "call": 52,
+          "minimum_temperature": 1.0623006148675718e-10,
+          "valid": true,
+          "residual_norm": 7.381517701520949
+        },
+        {
+          "call": 53,
+          "minimum_temperature": -1.5563480989284439e-09,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 54,
+          "minimum_temperature": -3.0941447491127935e-10,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 55,
+          "minimum_temperature": 2.319243376523148e-12,
+          "valid": true,
+          "residual_norm": 7.381517701166689
+        },
+        {
+          "call": 56,
+          "minimum_temperature": -2.0550270900300483e-10,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 57,
+          "minimum_temperature": -4.9636323578247334e-11,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 58,
+          "minimum_temperature": -1.0669648358526857e-11,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 59,
+          "minimum_temperature": -9.279795570099865e-13,
+          "valid": false,
+          "residual_norm": null
+        }
+      ]
+    },
+    {
+      "configuration": "custom_identity_large_radius",
+      "root_success": false,
+      "residual_norm": 7.388591831638496,
+      "minimum_final_temperature": 1.1128741377547509e-12,
+      "minimum_attempted_temperature": -0.6621927014115749,
+      "nfev": 58,
+      "njev": 23,
+      "nit": 22,
+      "rejected": 35,
+      "invalid": 33,
+      "scale_minimum": 1.0,
+      "scale_maximum": 1.0,
+      "initial_radius": 1000.0,
+      "max_radius": 1000.0,
+      "elapsed_seconds": 9.189288699999452,
+      "message": "Step stagnation above residual tolerance.",
+      "linear_algebra": {
+        "qr_factorizations": 23,
+        "qr_updates": 0,
+        "svd_factorizations": 23,
+        "triangular_solves": 23,
+        "condition_checks": 23,
+        "factorizations_refreshed": 0,
+        "lm_secular_iterations": 461
+      },
+      "history": [
+        {
+          "iteration": 0,
+          "residual_norm": 26.76126086250798,
+          "step_norm": 0.0,
+          "scaled_step_norm": 0.0,
+          "radius": 1000.0,
+          "nfev": 1
+        },
+        {
+          "iteration": 1,
+          "residual_norm": 13.46053575915325,
+          "step_norm": 3.906249999999996,
+          "scaled_step_norm": 3.906249999999996,
+          "radius": 7.8125,
+          "nfev": 6
+        },
+        {
+          "iteration": 2,
+          "residual_norm": 9.953559382139975,
+          "step_norm": 1.9531249999999976,
+          "scaled_step_norm": 1.9531249999999976,
+          "radius": 3.90625,
+          "nfev": 8
+        },
+        {
+          "iteration": 3,
+          "residual_norm": 8.656895146121807,
+          "step_norm": 0.9765624999999994,
+          "scaled_step_norm": 0.9765624999999994,
+          "radius": 1.953125,
+          "nfev": 10
+        },
+        {
+          "iteration": 4,
+          "residual_norm": 7.390448189531215,
+          "step_norm": 1.9531249999999998,
+          "scaled_step_norm": 1.9531249999999998,
+          "radius": 3.90625,
+          "nfev": 11
+        },
+        {
+          "iteration": 5,
+          "residual_norm": 7.389212913204332,
+          "step_norm": 0.0038146972656249866,
+          "scaled_step_norm": 0.0038146972656249866,
+          "radius": 0.00762939453125,
+          "nfev": 17
+        },
+        {
+          "iteration": 6,
+          "residual_norm": 7.388598556007292,
+          "step_norm": 0.0019073486328091253,
+          "scaled_step_norm": 0.0019073486328091253,
+          "radius": 0.003814697265625,
+          "nfev": 19
+        },
+        {
+          "iteration": 7,
+          "residual_norm": 7.388593761858836,
+          "step_norm": 1.490116119384073e-05,
+          "scaled_step_norm": 1.490116119384073e-05,
+          "radius": 2.9802322387695312e-05,
+          "nfev": 24
+        },
+        {
+          "iteration": 8,
+          "residual_norm": 7.388593162596318,
+          "step_norm": 1.8626451458565667e-06,
+          "scaled_step_norm": 1.8626451458565667e-06,
+          "radius": 3.725290298461914e-06,
+          "nfev": 27
+        },
+        {
+          "iteration": 9,
+          "residual_norm": 7.388591964075215,
+          "step_norm": 3.7252902950874796e-06,
+          "scaled_step_norm": 3.7252902950874796e-06,
+          "radius": 7.450580596923828e-06,
+          "nfev": 28
+        },
+        {
+          "iteration": 10,
+          "residual_norm": 7.388591926621467,
+          "step_norm": 1.1641531845236157e-07,
+          "scaled_step_norm": 1.1641531845236157e-07,
+          "radius": 2.3283064365386963e-07,
+          "nfev": 32
+        },
+        {
+          "iteration": 11,
+          "residual_norm": 7.388591851714115,
+          "step_norm": 2.3283064027936205e-07,
+          "scaled_step_norm": 2.3283064027936205e-07,
+          "radius": 4.6566128730773926e-07,
+          "nfev": 33
+        },
+        {
+          "iteration": 12,
+          "residual_norm": 7.388591842350722,
+          "step_norm": 2.9103827081150575e-08,
+          "scaled_step_norm": 2.9103827081150575e-08,
+          "radius": 5.820766091346741e-08,
+          "nfev": 36
+        },
+        {
+          "iteration": 13,
+          "residual_norm": 7.388591837669018,
+          "step_norm": 1.4551911867066223e-08,
+          "scaled_step_norm": 1.4551911867066223e-08,
+          "radius": 2.9103830456733704e-08,
+          "nfev": 38
+        },
+        {
+          "iteration": 14,
+          "residual_norm": 7.388591835328094,
+          "step_norm": 7.275954239913914e-09,
+          "scaled_step_norm": 7.275954239913914e-09,
+          "radius": 1.4551915228366852e-08,
+          "nfev": 40
+        },
+        {
+          "iteration": 15,
+          "residual_norm": 7.388591834157732,
+          "step_norm": 3.637978788529402e-09,
+          "scaled_step_norm": 3.637978788529402e-09,
+          "radius": 7.275957614183426e-09,
+          "nfev": 42
+        },
+        {
+          "iteration": 16,
+          "residual_norm": 7.388591831816914,
+          "step_norm": 7.275954241587048e-09,
+          "scaled_step_norm": 7.275954241587048e-09,
+          "radius": 1.4551915228366852e-08,
+          "nfev": 43
+        },
+        {
+          "iteration": 17,
+          "residual_norm": 7.388591831743747,
+          "step_norm": 2.27370300090631e-10,
+          "scaled_step_norm": 2.27370300090631e-10,
+          "radius": 4.547473508864641e-10,
+          "nfev": 47
+        },
+        {
+          "iteration": 18,
+          "residual_norm": 7.388591831707142,
+          "step_norm": 1.1368347473074988e-10,
+          "scaled_step_norm": 1.1368347473074988e-10,
+          "radius": 2.2737367544323206e-10,
+          "nfev": 49
+        },
+        {
+          "iteration": 19,
+          "residual_norm": 7.388591831688756,
+          "step_norm": 5.6843397440920745e-11,
+          "scaled_step_norm": 5.6843397440920745e-11,
+          "radius": 1.1368683772161603e-10,
+          "nfev": 51
+        },
+        {
+          "iteration": 20,
+          "residual_norm": 7.388591831652263,
+          "step_norm": 1.136834747478004e-10,
+          "scaled_step_norm": 1.136834747478004e-10,
+          "radius": 2.2737367544323206e-10,
+          "nfev": 52
+        },
+        {
+          "iteration": 21,
+          "residual_norm": 7.388591831647674,
+          "step_norm": 1.4210808922202741e-11,
+          "scaled_step_norm": 1.4210808922202741e-11,
+          "radius": 2.8421709430404007e-11,
+          "nfev": 55
+        },
+        {
+          "iteration": 22,
+          "residual_norm": 7.388591831638494,
+          "step_norm": 2.8421675093567835e-11,
+          "scaled_step_norm": 2.8421675093567835e-11,
+          "radius": 5.6843418860808015e-11,
+          "nfev": 56
+        }
+      ],
+      "evaluations": [
+        {
+          "call": 1,
+          "minimum_temperature": 0.3,
+          "valid": true,
+          "residual_norm": 26.76126086250795
+        },
+        {
+          "call": 2,
+          "minimum_temperature": 1.0000000000000002,
+          "valid": true,
+          "residual_norm": 7057.146450780395
+        },
+        {
+          "call": 3,
+          "minimum_temperature": 1.0000000000000002,
+          "valid": true,
+          "residual_norm": 7057.146450780395
+        },
+        {
+          "call": 4,
+          "minimum_temperature": -0.14970606997384922,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 5,
+          "minimum_temperature": -0.6621927014115749,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 6,
+          "minimum_temperature": 0.24306880158044553,
+          "valid": true,
+          "residual_norm": 13.46053575915325
+        },
+        {
+          "call": 7,
+          "minimum_temperature": -0.3564581980580853,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 8,
+          "minimum_temperature": 0.194610108443751,
+          "valid": true,
+          "residual_norm": 9.953559382139975
+        },
+        {
+          "call": 9,
+          "minimum_temperature": -0.12745200653005467,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 10,
+          "minimum_temperature": 0.1598677698572901,
+          "valid": true,
+          "residual_norm": 8.656895146121807
+        },
+        {
+          "call": 11,
+          "minimum_temperature": 0.00046913311765692245,
+          "valid": true,
+          "residual_norm": 7.390448189531216
+        },
+        {
+          "call": 12,
+          "minimum_temperature": -0.3127467977030243,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 13,
+          "minimum_temperature": -0.09025681458588058,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 14,
+          "minimum_temperature": -0.02188049563742029,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 15,
+          "minimum_temperature": -0.0047229993328033485,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 16,
+          "minimum_temperature": -0.0007882230789579415,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 17,
+          "minimum_temperature": 0.00015769598498836416,
+          "valid": true,
+          "residual_norm": 7.3892129132043305
+        },
+        {
+          "call": 18,
+          "minimum_temperature": -0.0004691617597012262,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 19,
+          "minimum_temperature": 1.709322351494232e-06,
+          "valid": true,
+          "residual_norm": 7.388598556007291
+        },
+        {
+          "call": 20,
+          "minimum_temperature": -0.0003112483060601791,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 21,
+          "minimum_temperature": -7.634685876259901e-05,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 22,
+          "minimum_temperature": -1.779295128971497e-05,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 23,
+          "minimum_temperature": -3.1654964524882788e-06,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 24,
+          "minimum_temperature": 4.90665013464449e-07,
+          "valid": true,
+          "residual_norm": 7.388593761858835
+        },
+        {
+          "call": 25,
+          "minimum_temperature": -1.9467128645721475e-06,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 26,
+          "minimum_temperature": -1.1866759904984759e-07,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 27,
+          "minimum_temperature": 3.3833260309499433e-07,
+          "valid": true,
+          "residual_norm": 7.388593162596318
+        },
+        {
+          "call": 28,
+          "minimum_temperature": 3.366679284390927e-08,
+          "valid": true,
+          "residual_norm": 7.3885919640752125
+        },
+        {
+          "call": 29,
+          "minimum_temperature": -5.756687826424289e-07,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 30,
+          "minimum_temperature": -1.1866635889622705e-07,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 31,
+          "minimum_temperature": -4.416448682049228e-09,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 32,
+          "minimum_temperature": 2.4145985655001468e-08,
+          "valid": true,
+          "residual_norm": 7.388591926621465
+        },
+        {
+          "call": 33,
+          "minimum_temperature": 5.104367123742916e-09,
+          "valid": true,
+          "residual_norm": 7.388591851714116
+        },
+        {
+          "call": 34,
+          "minimum_temperature": -3.2978885688914945e-08,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 35,
+          "minimum_temperature": -4.416442959460188e-09,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 36,
+          "minimum_temperature": 2.7241650025841947e-09,
+          "valid": true,
+          "residual_norm": 7.388591842350722
+        },
+        {
+          "call": 37,
+          "minimum_temperature": -2.0362400636926214e-09,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 38,
+          "minimum_temperature": 1.5340640751958065e-09,
+          "valid": true,
+          "residual_norm": 7.388591837669018
+        },
+        {
+          "call": 39,
+          "minimum_temperature": -8.461384279836045e-10,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 40,
+          "minimum_temperature": 9.39013752821016e-10,
+          "valid": true,
+          "residual_norm": 7.3885918353280955
+        },
+        {
+          "call": 41,
+          "minimum_temperature": -2.5108749098856313e-10,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 42,
+          "minimum_temperature": 6.414884447046347e-10,
+          "valid": true,
+          "residual_norm": 7.388591834157732
+        },
+        {
+          "call": 43,
+          "minimum_temperature": 4.6438116857953406e-11,
+          "valid": true,
+          "residual_norm": 7.388591831816914
+        },
+        {
+          "call": 44,
+          "minimum_temperature": -1.1436631384192722e-09,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 45,
+          "minimum_temperature": -2.510871941310657e-10,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 46,
+          "minimum_temperature": -2.7942917471629285e-11,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 47,
+          "minimum_temperature": 2.7843076553947188e-11,
+          "valid": true,
+          "residual_norm": 7.3885918317437485
+        },
+        {
+          "call": 48,
+          "minimum_temperature": -9.347587217269543e-12,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 49,
+          "minimum_temperature": 1.854570419554413e-11,
+          "valid": true,
+          "residual_norm": 7.388591831707144
+        },
+        {
+          "call": 50,
+          "minimum_temperature": -4.93361124458181e-14,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 51,
+          "minimum_temperature": 1.3896871225018058e-11,
+          "valid": true,
+          "residual_norm": 7.388591831688757
+        },
+        {
+          "call": 52,
+          "minimum_temperature": 4.599498866237165e-12,
+          "valid": true,
+          "residual_norm": 7.388591831652263
+        },
+        {
+          "call": 53,
+          "minimum_temperature": -1.3995541445468357e-11,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 54,
+          "minimum_temperature": -4.933410468346118e-14,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 55,
+          "minimum_temperature": 3.437290623550395e-12,
+          "valid": true,
+          "residual_norm": 7.388591831647675
+        },
+        {
+          "call": 56,
+          "minimum_temperature": 1.1128741377547509e-12,
+          "valid": true,
+          "residual_norm": 7.388591831638496
+        },
+        {
+          "call": 57,
+          "minimum_temperature": -3.5359588337518576e-12,
+          "valid": false,
+          "residual_norm": null
+        },
+        {
+          "call": 58,
+          "minimum_temperature": -4.933410507857806e-14,
+          "valid": false,
+          "residual_norm": null
+        }
+      ]
+    }
+  ]
+}
