@@ -212,6 +212,7 @@ SOLVERS_AND_MAXITER = [
 
 @pytest.mark.parametrize("library,method,max_iter", SOLVERS_AND_MAXITER)
 def test_max_iter(library, method, max_iter):
+    """Check the native iteration budget without treating derivatives as iterations."""
     # Set up problem and solver
     x0 = 1.5 * np.array([1, 1, 1, 1])
     extra_options = {"tol": 1e-6} if method == "ipopt" else {}
@@ -232,12 +233,14 @@ def test_max_iter(library, method, max_iter):
     # Perform the optimization
     solver.solve(x0)
 
-    # Check if iterations are within the expected range
-    iter_margin = 4  # For some reason the solvers do not end exactly when they should
-    assert max_iter - iter_margin <= solver.grad_count <= max_iter + iter_margin, (
-        f"Solver {library}/{method} stopped at {solver.grad_count} iterations, which is not within "
-        f"±2 iterations of the max limit {max_iter}."
-    )
+    # Native iterations own this budget; Jacobian/probe counts are different work.
+    assert solver.iteration_count == solver.backend_result.nit
+    assert solver.iteration_count <= max_iter
+    if solver.backend_result.status == 9:
+        assert solver.iteration_count == max_iter
+    else:
+        assert solver.success
+
 
 
 if __name__ == "__main__":

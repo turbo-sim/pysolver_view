@@ -31,7 +31,7 @@ for problem, x0 in PROBLEMS_AND_X0:
     # Initialize figure
     fig, ax = plt.subplots()
     ax.set_title(f"Solving the {problem_name} in {len(x0)} dimensions")
-    ax.set_xlabel("Number of iterations")
+    ax.set_xlabel("Gradient evaluations")
     ax.set_ylabel("Objective function")
     ax.set_yscale("log")
     # ax2 = ax.twinx()

@@ -6,6 +6,7 @@ import warnings
 import numpy as np
 import matplotlib.pyplot as plt
 
+from scipy.optimize import OptimizeResult
 from datetime import datetime
 from abc import ABC, abstractmethod
 from matplotlib.ticker import MaxNLocator
@@ -107,9 +108,9 @@ class OptimizationSolver:
     logger : logging.Logger, optional
         Logger object to which logging messages will be directed. Logging is disabled if `logger` is None.
     update_on : str, optional
-        Specifies if the convergence report should be updated based on new function evaluations or gradient evaluations (default is 'gradient', alternative is 'function').
+        Selects the observation stream: 'gradient' (default), 'function', or native SciPy SLSQP 'iteration' events. Derivative probes never generate observations.
     callback_functions : list of callable or callable, optional
-        Optional list of callback functions to pass to the solver.
+        Optional callbacks receiving (copied_solver_coordinates, observation_count). The count is not a solver iteration number. Final synchronization does not invoke callbacks.
     plot_improvement_only : bool, optional
         If True, plots only display iterations that improve the objective function value (useful for gradient-free optimizers) (default is False).
 
@@ -146,7 +147,7 @@ class OptimizationSolver:
         update_on="gradient",
         callback_functions=None,
         plot_improvement_only=False,
-        tolerance_check_cache=None
+        tolerance_check_cache=None,
     ):
         # Initialize class variables
         self.problem = problem
@@ -162,10 +163,10 @@ class OptimizationSolver:
         self.callback_functions = self._validate_callback(callback_functions)
         self.callback_function_call_count = 0
         self.plot_improvement_only = plot_improvement_only
-        
+
         # Tolerance to check if design variables are the same as in previous fitness call
         if tolerance_check_cache is None:
-            self.tolerance_cache = 10 * np.finfo(float).eps
+            self.tolerance_cache = 0.0
         else:
             self.tolerance_cache = tolerance_check_cache
 
@@ -195,15 +196,30 @@ class OptimizationSolver:
 
         # Check for valid display_on value
         self.update_on = update_on
-        if update_on not in ["function", "gradient"]:
+        if update_on not in ["function", "gradient", "iteration"]:
             raise ValueError(
-                "Invalid value for 'update_on'. It should be either 'function' or 'gradient'."
+                "Invalid value for 'update_on'. Use 'function', 'gradient', or 'iteration'."
             )
 
         # Rename number of constraints
         self.N_eq = self.problem.get_nec()
         self.N_ineq = self.problem.get_nic()
 
+        self._reset_run_state()
+
+    def _reset_run_state(self):
+        """Reset results, observations, and counters before an independent solve."""
+        self.result = None
+        self.backend_result = None
+        self.x_final_norm = None
+        self.iteration_count = None
+        self.iteration_history = []
+        self.derivative_func_count = 0
+        self.diagnostic_func_count = 0
+        self.diagnostic_grad_count = 0
+        self.failed_grad_count = 0
+        self.callback_function_call_count = 0
+        self._in_callback = False
         # Initialize variables for convergence report
         self.f_final = None
         self.x_final = None
@@ -217,6 +233,11 @@ class OptimizationSolver:
         self.elapsed_time = None
         self.convergence_history = {
             "x": [],
+            "event_kind": [],
+            "iteration": [],
+            "derivative_func_count": [],
+            "diagnostic_func_count": [],
+            "optimality": [],
             "grad_count": [],
             "func_count": [],
             "func_count_total": [],
@@ -237,6 +258,8 @@ class OptimizationSolver:
             "c_ineq_jac": None,
             "fitness": None,
             "gradient": None,
+            "constraint_data": None,
+            "has_constraint_data": False,
         }
 
     def _validate_library_and_method(self):
@@ -276,192 +299,203 @@ class OptimizationSolver:
             raise TypeError(error_msg)
 
     def solve(self, x0):
+        """Solve from physical coordinates and return the backend's final point.
+
+        ``backend_result`` retains native fields in solver coordinates. ``result``
+        adds the physical solution, explicit solver coordinates, and facade call
+        counts. Observation caches and callbacks never select the solution.
         """
-        Solve the optimization problem using the specified library and solver.
-
-        This method initializes the optimization process, manages the flow of the optimization,
-        and handles the results, utilizing the solver from a specified library such as scipy or pygmo.
-
-        Parameters
-        ----------
-        x0 : array-like, optional
-            Initial guess for the solution of the optimization problem.
-
-        Returns
-        -------
-        x_final : array-like
-            An array with the optimal vector of design variables
-
-        """
-        # Initialize convergence plot
+        self._reset_run_state()
+        self.start_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        start_time = time.perf_counter()
         if self.plot:
             self._plot_convergence_callback([], [], initialize=True)
-
-        # Get start datetime
-        self.start_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-
-        # Start timing with high-resolution timer
-        start_time = time.perf_counter()
-
-        # Normalize the problem as the very first thing
+        x0 = np.asarray(x0, dtype=float).copy()
         if self.problem.get_bounds() is not None:
             x0 = self.problem.clip_to_bounds(x0, logger=self.logger)
         x0 = self.problem.scale_physical_to_normalized(x0)
-
-        # Print report header
         self._write_header()
-
-        # Define new problem with anonymous methods (avoid problems when Pygmo creates a deep copy)
+        if self.library == "scipy" and self.method == "slsqp":
+            self.iteration_count = 0
+        if self.update_on == "iteration" and self.iteration_count is None:
+            raise ValueError("Iteration observations currently require SciPy SLSQP.")
+        self._print_convergence_progress(x0, event_kind="initial")
         problem = _PygmoProblem(self)
-
-        # Print initial guess evaluation when using gradient
-        if self.update_on == "gradient":
-            self._print_convergence_progress(x0)
-
-        # Solve the problem
-        lib_wrapper = OPTIMIZATION_LIBRARIES[self.library]
-        solution = lib_wrapper(problem, x0, self.method, self.options)
-
-        # Retrieve last solution (also works for gradient-free solvers when updating on gradient)
-        x_final_norm = self.x_last_norm if self.x_last_norm is not None else self.cache["x"]
-        self.fitness(x_final_norm)
-        self.gradient(x_final_norm)
-
-        # Store final solution
-        self.f_final = copy.deepcopy(self.cache["f"])
-        self.success, self.message = solution
-
-        # Calculate elapsed time
+        solution = OPTIMIZATION_LIBRARIES[self.library](
+            problem, x0, self.method, self.options
+        )
+        self.backend_result = copy.deepcopy(solution)
+        self.x_final_norm = np.asarray(solution.x, dtype=float).copy()
+        self.x_final = np.array(
+            self.problem.scale_normalized_to_physical(self.x_final_norm), copy=True
+        )
+        final_values = self._evaluate_fitness(self.x_final_norm, diagnostic=True)
+        self.f_final = copy.deepcopy(final_values[0])
+        self.success = solution.success
+        self.message = solution.message
+        native_iterations = solution.get("nit")
+        if native_iterations is not None:
+            self.iteration_count = int(native_iterations)
+        final_snapshot = self._observation_snapshot(self.x_final_norm, "final")
+        if self.x_last_norm is None or not np.array_equal(
+            self.x_final_norm, self.x_last_norm
+        ):
+            self._publish_observation(final_snapshot, notify=False)
         self.elapsed_time = time.perf_counter() - start_time
-
-        # Print report footer
-        self._print_convergence_progress(x_final_norm)
+        self.result = OptimizeResult(
+            x=self.x_final.copy(),
+            x_solver=self.x_final_norm.copy(),
+            fun=self.f_final,
+            fitness=final_values.copy(),
+            optimality=final_snapshot["optimality"],
+            constraint_violation=final_snapshot["constraint_violation"],
+            success=self.success,
+            solver_success=solution.success,
+            status=solution.get("status"),
+            message=self.message,
+            nit=self.iteration_count,
+            nfev=self.func_count_tot,
+            njev=self.grad_count,
+            derivative_func_count=self.derivative_func_count,
+            diagnostic_func_count=self.diagnostic_func_count,
+            diagnostic_grad_count=self.diagnostic_grad_count,
+            failed_grad_count=self.failed_grad_count,
+            func_count=self.func_count,
+            func_count_total=self.func_count_tot,
+            iteration_count=self.iteration_count,
+            elapsed_time=self.elapsed_time,
+        )
         self._write_footer()
-
-        # Save variable in physical scale
-        self.x_final_norm = copy.deepcopy(x_final_norm)
-        self.x_final = self.problem.scale_normalized_to_physical(self.x_final_norm)
-
-        return self.x_final
+        return self.x_final.copy()
 
     def fitness(self, x_norm, called_from_grad=False):
+        """Evaluate combined responses; derivative probes never publish observations.
+
+        Inputs use solver coordinates. Total model calls include numerical
+        derivative work; ``func_count`` includes ordinary model calls only.
         """
-        Evaluates the optimization problem values at a given point x.
-
-        This method queries the `fitness` method of the OptimizationProblem class to
-        compute the objective function value and constraint values. It first checks the cache
-        to avoid redundant evaluations. If no matching cached result exists, it proceeds to
-        evaluate the objective function and constraints.
-
-        Parameters
-        ----------
-        x : array-like
-            Vector of independent variables (i.e., degrees of freedom).
-        called_from_grad : bool, optional
-            Flag used to indicate if the method is called during gradient evaluation.
-            This helps in preventing redundant increments in evaluation counts during
-            finite-differences gradient calculations. Default is False.
-
-        Returns
-        -------
-        fitness : numpy.ndarray
-            A 1D array containing the objective function, equality constraints, and inequality constraints at `x`.
-
-        """
-        # If x hasn't changed, use cached values
-        if self.cache["x"] is not None and np.allclose(x_norm, self.cache["x"], rtol=0, atol=self.tolerance_cache):
-            return self.cache["fitness"]
-
-        # Increase total counter (includes finite differences)
-        self.func_count_tot += 1
-
-        # Evaluate objective function and constraints at once
-        fitness = self.problem.fitness_normalized_input(x_norm)
-
-        # Does not include finite differences
-        if not called_from_grad:
-            # Update cached variabled
-            self.cache.update(
-                {
-                    "x": x_norm.copy(),  # Needed for finite differences
-                    "f": fitness[0],
-                    "c_eq": fitness[1 : 1 + self.N_eq],
-                    "c_ineq": fitness[1 + self.N_eq :],
-                    "fitness": fitness,
-                }
+        if called_from_grad:
+            return self._evaluate_fitness(
+                x_norm, derivative=True, use_cache=False, cache_result=False
             )
+        before = self.func_count_tot
+        values = self._evaluate_fitness(x_norm)
+        if self.func_count_tot != before and self.update_on == "function":
+            self._print_convergence_progress(x_norm, event_kind="function")
+        return values
 
-            # Increase minor iteration counter (line search)
+    def _evaluate_fitness(
+        self,
+        x_norm,
+        *,
+        derivative=False,
+        diagnostic=False,
+        use_cache=True,
+        cache_result=True,
+    ):
+        """Obtain a detached same-point value without recording or calling observers.
+
+        Exact keys protect tiny representable steps and complex-step probes.
+        ``tolerance_check_cache`` is retained as an input for compatibility but
+        is not used to substitute values at a different point.
+        """
+        point = np.asarray(x_norm).copy()
+        if (
+            use_cache
+            and self.cache["x"] is not None
+            and np.array_equal(point, self.cache["x"])
+        ):
+            return self.cache["fitness"].copy()
+        self.func_count_tot += 1
+        if derivative:
+            self.derivative_func_count += 1
+        elif not diagnostic:
             self.func_count += 1
-
-            # Update progress report
-            if self.update_on == "function":
-                self._print_convergence_progress(x_norm)
-
-        return fitness
+        if diagnostic:
+            self.diagnostic_func_count += 1
+        values = np.atleast_1d(
+            np.asarray(self.problem.fitness_normalized_input(point.copy()))
+        ).copy()
+        if values.shape != (1 + self.N_eq + self.N_ineq,):
+            raise ValueError(
+                "Fitness must contain the objective and declared constraints."
+            )
+        if cache_result:
+            self.cache.update(
+                x=point,
+                f=values[0],
+                c_eq=values[1 : 1 + self.N_eq].copy(),
+                c_ineq=values[1 + self.N_eq :].copy(),
+                fitness=values.copy(),
+                constraint_data=copy.deepcopy(
+                    getattr(self.problem, "constraint_data", None)
+                ),
+                has_constraint_data=hasattr(self.problem, "constraint_data"),
+            )
+        return values
 
     def gradient(self, x_norm):
-        """
-        Evaluates the Jacobian matrix of the optimization problem at the given point x.
+        """Obtain one full Jacobian and optionally record its base-point observation."""
+        before = self.grad_count
+        grad = self._evaluate_gradient(x_norm)
+        if self.grad_count != before and self.update_on == "gradient":
+            self._print_convergence_progress(x_norm, event_kind="gradient")
+        return grad
 
-        This method utilizes the `gradient` method of the OptimizationProblem class if implemented.
-        If the `gradient` method is not implemented, the Jacobian is approximated using forward finite differences.
-
-        To prevent redundant calculations, cached results are checked first. If a matching
-        cached result is found, it is returned; otherwise, a fresh calculation is performed.
-
-        Parameters
-        ----------
-        x : array-like
-            Vector of independent variables (i.e., degrees of freedom).
-
-        Returns
-        -------
-        numpy.ndarray
-            A 2D array representing the Jacobian matrix of the optimization problem at `x`.
-            The Jacobian matrix includes:
-            - Gradient of the objective function
-            - Jacobian of equality constraints
-            - Jacobian of inequality constraints
-        """
-
-        # If x hasn't changed, use cached values
-        if self.cache["x_jac"] is not None and np.allclose(x_norm, self.cache["x_jac"], rtol=0, atol=self.tolerance_cache):
-            return self.cache["gradient"]
-
-        # Use problem gradient method if it exists
-        if hasattr(self.problem, "gradient"):
-            grad = self.problem.gradient_normalized_input(x_norm)
-        else:
-            # Fall back to finite differences
-            fun = lambda x: self.fitness(x, called_from_grad=True)
-            grad = numerical_differentiation.approx_gradient(
-                fun,
-                x_norm,
-                f0=fun(x_norm),
-                method=self.derivative_method,
-                abs_step=self.derivative_abs_step,
-            )
-
-        # Reshape gradient for unconstrained problems
-        grad = np.atleast_2d(grad)
-
-        # Update cache
-        self.cache.update(
-            {
-                "x_jac": x_norm.copy(),
-                "f_jac": grad[0, :],
-                "c_eq_jac": grad[1 : 1 + self.N_eq, :],
-                "c_ineq_jac": grad[1 + self.N_eq :, :],
-                "gradient": grad,
-            }
-        )
-
-        # Update progress report
+    def _evaluate_gradient(self, x_norm, *, diagnostic=False):
+        """Compute/cache a full Jacobian without iteration events or probe callbacks."""
+        point = np.asarray(x_norm, dtype=float).copy()
+        if self.cache["x_jac"] is not None and np.array_equal(
+            point, self.cache["x_jac"]
+        ):
+            return self.cache["gradient"].copy()
         self.grad_count += 1
-        if self.update_on == "gradient":
-            self._print_convergence_progress(x_norm)
+        if diagnostic:
+            self.diagnostic_grad_count += 1
+        try:
+            # The unperturbed base is an ordinary model point even when SciPy
+            # requests its Jacobian first. Only perturbed samples are probes.
+            base = (
+                self._evaluate_fitness(point, diagnostic=True)
+                if diagnostic
+                else self.fitness(point)
+            )
+            if hasattr(self.problem, "gradient"):
+                grad = self.problem.gradient_normalized_input(point.copy())
+            else:
 
+                def evaluate_probe(probe):
+                    """Count derivative model work without disturbing the base snapshot."""
+                    if np.array_equal(probe, point):
+                        return base.copy()
+                    return self._evaluate_fitness(
+                        probe,
+                        derivative=True,
+                        diagnostic=diagnostic,
+                        use_cache=False,
+                        cache_result=False,
+                    )
+
+                grad = numerical_differentiation.approx_gradient(
+                    evaluate_probe,
+                    point,
+                    f0=base,
+                    method=self.derivative_method,
+                    abs_step=self.derivative_abs_step,
+                )
+            grad = (
+                np.asarray(grad).reshape(1 + self.N_eq + self.N_ineq, point.size).copy()
+            )
+        except Exception:
+            self.failed_grad_count += 1
+            raise
+        self.cache.update(
+            x_jac=point,
+            f_jac=grad[0].copy(),
+            c_eq_jac=grad[1 : 1 + self.N_eq].copy(),
+            c_ineq_jac=grad[1 + self.N_eq :].copy(),
+            gradient=grad.copy(),
+        )
         return grad
 
     def _handle_output(self, text: str, savefile: bool = False, filename: str = None, to_console=False):
@@ -526,76 +560,95 @@ class OptimizationSolver:
         # Store text in memory
         self.convergence_report.extend(lines_to_output)
 
-    def _print_convergence_progress(self, x):
-        """
-        Print the current optimization status and update convergence history.
-
-        This method captures and prints the following metrics:
-        - Number of gradient evaluations
-        - Number of function evaluations
-        - Objective function value
-        - Maximum constraint violation
-        - Norm of the update step
-
-        The method also updates the stored convergence history for potential future analysis.
-
-        Parameters
-        ----------
-        x : array-like
-            The current solution (i.e., vector of independent variable values)
-
-        Notes
-        -----
-        The norm of the update step is calculated as the two-norm of the difference
-        between the current and the last independent variables. Constraints violation is
-        computed as the infinity norm of the active constraints.
-        """
-
-        # Ensure fitness is computed at least once before printing
-        if self.cache["fitness"] is None:
-            self.fitness(x)
-
-        # Compute the norm of the last step
-        norm_step = (
-            np.linalg.norm(x - self.x_last_norm) if self.x_last_norm is not None else 0
+    def _observation_snapshot(self, x, event_kind):
+        """Build one detached point-consistent record without forcing derivatives."""
+        point = np.asarray(x, dtype=float).copy()
+        values = self._evaluate_fitness(point, diagnostic=True)
+        equalities = values[1 : 1 + self.N_eq]
+        inequalities = values[1 + self.N_eq :]
+        violations = [0.0, *np.abs(equalities), *np.maximum(inequalities, 0.0)]
+        bounds = self.problem.get_bounds_normalized()
+        if bounds is not None:
+            lower, upper = np.asarray(bounds[0]), np.asarray(bounds[1])
+            violations.extend(np.maximum(lower - point, 0.0))
+            violations.extend(np.maximum(point - upper, 0.0))
+        optimality = float("nan")
+        if self.cache["x_jac"] is not None and np.array_equal(
+            point, self.cache["x_jac"]
+        ):
+            # This is a pure reconstruction from already available values/derivatives.
+            optimality = self._kkt_from_cache(point, 50 * self.options["tolerance"])[
+                "first_order_optimality"
+            ]
+        return dict(
+            x=point,
+            event_kind=event_kind,
+            iteration=self.iteration_count,
+            grad_count=self.grad_count,
+            func_count=self.func_count,
+            func_count_total=self.func_count_tot,
+            derivative_func_count=self.derivative_func_count,
+            diagnostic_func_count=self.diagnostic_func_count,
+            objective_value=values[0],
+            constraint_violation=float(max(violations)),
+            norm_step=(
+                0.0
+                if self.x_last_norm is None
+                else float(np.linalg.norm(point - self.x_last_norm))
+            ),
+            optimality=optimality,
         )
-        self.x_last_norm = x.copy()
 
-        # Compute the maximun constraint violation
-        c_eq = self.cache["c_eq"]
-        c_ineq = self.cache["c_ineq"]
-        violation_all = np.concatenate((c_eq, np.maximum(c_ineq, 0)))
-        violation_max = np.max(np.abs(violation_all)) if len(violation_all) > 0 else 0.0
-        kkt_data = self.evaluate_kkt_conditions(x, 50*self.options["tolerance"])
-        optimality = kkt_data["first_order_optimality"]
+    def _record_iteration(self, x):
+        """Capture a native SLSQP major-iteration event, not assumed acceptance.
 
-        # Store convergence status
-        self.convergence_history["x"].append(self.x_last_norm)
-        self.convergence_history["grad_count"].append(self.grad_count)
-        self.convergence_history["func_count"].append(self.func_count)
-        self.convergence_history["func_count_total"].append(self.func_count_tot)
-        self.convergence_history["objective_value"].append(self.cache["f"])
-        self.convergence_history["constraint_violation"].append(violation_max)
-        self.convergence_history["norm_step"].append(norm_step)
+        SciPy's callback may precede further merit-search work. Its point is an
+        observation, while the native returned result owns the final solution.
+        """
+        self.iteration_count = (self.iteration_count or 0) + 1
+        snapshot = self._observation_snapshot(x, "iteration")
+        snapshot["accepted"] = None
+        previous = self.iteration_history[-1]["x"] if self.iteration_history else None
+        snapshot["norm_step"] = (
+            0.0 if previous is None else float(np.linalg.norm(snapshot["x"] - previous))
+        )
+        self.iteration_history.append(copy.deepcopy(snapshot))
+        if self.update_on == "iteration":
+            self._publish_observation(snapshot)
 
-        # Current convergence message
-        status = f" {self.grad_count:13d}{self.func_count:13d}{self.cache['f']:+16.3e}{violation_max:+18.3e}{norm_step:+18.3e}{optimality:+18.3e} "
-        # status = f" {self.grad_count:13d}{self.func_count:13d}{self.cache['f']:+16.3e}{violation_max:+18.3e}{norm_step:+18.3e} "
+    def _print_convergence_progress(self, x, event_kind="observation", notify=True):
+        """Record and render a base-point observation without recursive evaluations."""
+        self._publish_observation(
+            self._observation_snapshot(x, event_kind), notify=notify
+        )
+
+    def _publish_observation(self, snapshot, notify=True):
+        """Store a copied snapshot, render it, and notify legacy observation callbacks."""
+        if self._in_callback:
+            return
+        record = copy.deepcopy(snapshot)
+        self.x_last_norm = record["x"].copy()
+        for name in self.convergence_history:
+            self.convergence_history[name].append(copy.deepcopy(record[name]))
+        status = (
+            f" {record['grad_count']:13d}{record['func_count']:13d}"
+            f"{record['objective_value']:+16.3e}{record['constraint_violation']:+18.3e}"
+            f"{record['norm_step']:+18.3e}{record['optimality']:+18.3e} "
+        )
+        if record["event_kind"] == "final":
+            status += " Final solution"
         self._handle_output(status, to_console=True)
-
-        # Store text in memory
         self.convergence_report.append(status)
-
-        # Refresh the plot with current values
-        # TODO for some reason convergence plot and thermodynamic cycle are not being plotten when options set to true
         if self.plot:
             self._plot_convergence_callback([], [])
-
-        # Evaluate callback functions
-        if self.callback_functions:
+        if notify and self.callback_functions:
             self.callback_function_call_count += 1
-            for func in self.callback_functions:
-                func(x, self.callback_function_call_count)
+            self._in_callback = True
+            try:
+                for callback in self.callback_functions:
+                    callback(record["x"].copy(), self.callback_function_call_count)
+            finally:
+                self._in_callback = False
 
     def _write_footer(self):
         """
@@ -615,6 +668,13 @@ class OptimizationSolver:
         success_status = f" Success: {self.success}"
         time_message = f" Solution time: {self.elapsed_time:.3f} seconds"
         lines_to_output = [separator, success_status, exit_message, time_message]
+        lines_to_output += [
+            f" Final objective: {self.result.fun:+.6e}",
+            f" Final constraint violation: {self.result.constraint_violation:+.6e}",
+            f" Final optimality (cached derivatives): {self.result.optimality:+.6e}",
+            f" Total model calls: {self.result.nfev}; "
+            f"gradient evaluations: {self.result.njev}",
+        ]
         lines_to_output += [separator]
 
         # Print or log content
@@ -623,6 +683,12 @@ class OptimizationSolver:
 
         # Store text in memory
         self.convergence_report.extend(lines_to_output)
+
+    def _has_constraint_plot(self):
+        """Show feasibility whenever nonlinear constraints or finite bounds exist."""
+        bounds = self.problem.get_bounds_normalized()
+        has_bounds = bounds is not None and np.any(np.isfinite(np.asarray(bounds)))
+        return self.N_eq > 0 or self.N_ineq > 0 or has_bounds
 
     def _plot_convergence_callback(self, x, iter, initialize=False, showfig=True):
         """
@@ -647,14 +713,20 @@ class OptimizationSolver:
             (self.obj_line_1,) = self.ax_1.plot(
                 [], [], color="#0072BD", marker="o", label="Objective function"
             )
-            self.ax_1.set_xlabel("Number of iterations")
+            self.ax_1.set_xlabel(
+                {
+                    "function": "Function evaluations (excluding derivative/diagnostic calls)",
+                    "gradient": "Gradient evaluations",
+                    "iteration": "Native SLSQP major iterations",
+                }[self.update_on]
+            )
             self.ax_1.set_ylabel("Objective function")
             self.ax_1.set_yscale(self.plot_scale_objective)
             self.ax_1.xaxis.set_major_locator(
                 MaxNLocator(integer=True)
             )  # Integer ticks
             self.ax_1.grid(False)
-            if self.N_eq > 0 or self.N_ineq > 0:
+            if self._has_constraint_plot():
                 self.ax_2 = self.ax_1.twinx()
                 self.ax_2.grid(False)
                 self.ax_2.set_ylabel("Constraint violation")
@@ -671,31 +743,32 @@ class OptimizationSolver:
             self.fig.tight_layout(pad=1)
 
         # Update plot data with current values
-        iteration = (
-            self.convergence_history["func_count"]
-            if self.update_on == "function"
-            else self.convergence_history["grad_count"]
-        )
-        objective_function = self.convergence_history["objective_value"]
+        axis_field = {
+            "function": "func_count",
+            "gradient": "grad_count",
+            "iteration": "iteration",
+        }[self.update_on]
+        iteration = self.convergence_history[axis_field]
+        objective_function = np.asarray(
+            self.convergence_history["objective_value"]
+        ).copy()
         constraint_violation = self.convergence_history["constraint_violation"]
 
-        # Iterate through the objective_function values to create the new series
+        # Derive a display curve without changing the raw observations.
         if self.plot_improvement_only:
-            for i in range(1, len(objective_function)):
-                if objective_function[i] > objective_function[i - 1]:
-                    objective_function[i] = objective_function[i - 1]
+            objective_function = np.minimum.accumulate(objective_function)
 
         # Update graphic objects data
         self.obj_line_1.set_xdata(iteration)
         self.obj_line_1.set_ydata(objective_function)
-        if self.N_eq > 0 or self.N_ineq > 0:
+        if self._has_constraint_plot():
             self.obj_line_2.set_xdata(iteration)
             self.obj_line_2.set_ydata(constraint_violation)
 
         # Adjust the plot limits
         self.ax_1.relim()
         self.ax_1.autoscale_view()
-        if self.N_eq > 0 or self.N_ineq > 0:
+        if self._has_constraint_plot():
             self.ax_2.relim()
             self.ax_2.autoscale_view()
 
@@ -703,7 +776,6 @@ class OptimizationSolver:
         if showfig:
             plt.draw()
             plt.pause(0.01)  # small pause to allow for update
-
 
     def plot_convergence_history(
         self,
@@ -715,11 +787,11 @@ class OptimizationSolver:
         """
         Plot the convergence history of the problem.
 
-        This method plots the optimization progress against the number of iterations:
+        This method plots progress against the selected evaluation or native-iteration count:
             - Objective function value (left y-axis)
             - Maximum constraint violation (right y-axis)
 
-        The constraint violation is only displayed if the problem has nonlinear constraints
+        Constraint violation is displayed for nonlinear constraints or finite variable bounds.
 
         This method should be called only after the optimization problem has been solved, as it relies on data generated by the solving process.
 
@@ -762,7 +834,6 @@ class OptimizationSolver:
             plt.close(self.fig)
 
         return self.fig
-    
 
     def print_convergence_history(self, savefile=False, filename=None, output_dir="output", to_console=True):
         """
@@ -822,7 +893,6 @@ class OptimizationSolver:
 
         # Output the report (either print or save to file)
         self._handle_output(full_text, savefile=savefile, filename=filepath, to_console=to_console)
-
 
     def print_optimization_report(
         self,
@@ -914,8 +984,6 @@ class OptimizationSolver:
         # 5) emit once to console, logger, or file
         self._handle_output(full_text, savefile=savefile, filename=filepath, to_console=to_console)
 
-
-
     # def make_optimization_report(self, x_phys, tol=1e-6):
     #     """
     #     Print or save a complete optimization report, including variables and constraints.
@@ -1000,30 +1068,30 @@ class OptimizationSolver:
         list of dict
             Each dictionary contains:
 
-            - **name** : str  
+            - **name** : str
               Constraint identifier.
 
-            - **type** : str  
+            - **type** : str
               Either "=" for equality or "<" for inequality constraints.
 
-            - **target** : float  
+            - **target** : float
               Desired target value (0.0 for all constraints).
 
-            - **value** : float  
+            - **value** : float
               Actual evaluated constraint value.
 
-            - **satisfied** : bool  
+            - **satisfied** : bool
               Whether the constraint is satisfied (based on `tol`).
 
             Optionally, each dictionary may also include:
 
-            - **normalized_mismatch** : float  
+            - **normalized_mismatch** : float
               Mismatch scaled by the normalization factor.
 
-            - **mismatch** : float  
+            - **mismatch** : float
               Raw constraint violation (value - target).
 
-            - **normalize** : float  
+            - **normalize** : float
               Normalization factor (if defined).
 
         Raises
@@ -1032,23 +1100,23 @@ class OptimizationSolver:
             If `self.problem.constraint_data` exists but is not a list of dictionaries,
             or if required keys are missing from any entry.
         """
-        # Use cached constraint data if available and valid
-        if hasattr(self.problem, "constraint_data"):
-            if not isinstance(self.problem.constraint_data, list) or not all(
-                isinstance(d, dict) for d in self.problem.constraint_data
-            ):
+        # Metadata must belong to the same model evaluation as the requested values.
+        self._evaluate_fitness(x_norm, diagnostic=True)
+        data = copy.deepcopy(self.cache["constraint_data"])
+        if self.cache["has_constraint_data"]:
+            if not isinstance(data, list) or not all(isinstance(d, dict) for d in data):
                 raise TypeError("Expected self.constraint_data to be a list of dicts")
             required = {"name", "type", "target", "value", "satisfied"}
             allowed = required | {"normalized_mismatch", "mismatch", "normalize"}
-            for entry in self.problem.constraint_data:
+            for entry in data:
                 validate_keys(entry, required, allowed)
-            return self.problem.constraint_data
+            return data
 
         # Otherwise evaluate constraints from scratch
         x_norm = np.asarray(x_norm)
-        fitness = self.fitness(x_norm)  # Uses cache if available
+        fitness = self._evaluate_fitness(x_norm, diagnostic=True)
         c_eq = fitness[1 : 1 + self.N_eq]
-        c_ineq = fitness[1 + self.N_eq:]
+        c_ineq = fitness[1 + self.N_eq :]
         data = []
 
         # Equality constraints
@@ -1077,7 +1145,6 @@ class OptimizationSolver:
 
         return data
 
-
     def evaluate_kkt_conditions(self, x_norm, tol):
         """
         Evaluate the raw quantities required for KKT condition checks.
@@ -1097,10 +1164,17 @@ class OptimizationSolver:
             A dictionary containing raw values needed to assess the KKT conditions.
         """
 
-        # Calculate problem values and gradients (possibily retrieving cached values)
-        self.fitness(x_norm)
-        self.gradient(x_norm)
+        point = np.asarray(x_norm, dtype=float).copy()
+        self._evaluate_fitness(point, diagnostic=True)
+        self._evaluate_gradient(point, diagnostic=True)
+        return self._kkt_from_cache(point, tol)
 
+    def _kkt_from_cache(self, x_norm, tol):
+        """Reconstruct legacy KKT metrics from same-point cached arrays only.
+
+        The numerical multiplier estimator is unchanged until the shared KKT
+        phase. This helper performs no evaluations, recording, or callbacks.
+        """
         # Retrieve gradients and Jacobians from cache
         f_jac = self.cache["f_jac"]
         c_eq_jac = self.cache["c_eq_jac"]
@@ -1109,8 +1183,11 @@ class OptimizationSolver:
         c_ineq = self.cache["c_ineq"]
 
         # Re-cast bounds as inequality constraints
-        lb, ub = self.problem.get_bounds_normalized()
-        lb, ub = np.asarray(lb), np.asarray(ub)
+        bounds = self.problem.get_bounds_normalized()
+        if bounds is None:
+            lb, ub = np.full(x_norm.size, -np.inf), np.full(x_norm.size, np.inf)
+        else:
+            lb, ub = np.asarray(bounds[0]), np.asarray(bounds[1])
         c_lb, c_ub = lb - x_norm, x_norm - ub
         n = x_norm.size
         I = np.eye(n)
@@ -1301,7 +1378,6 @@ class OptimizationSolver:
 
         lines.append(sep)
         return "\n".join(lines)
-    
 
     # def make_constraint_report(self, x_norm, tol):
     #     """
@@ -1380,7 +1456,6 @@ class OptimizationSolver:
     #     lines.append(sep)
     #     return "\n".join(lines)
 
-
     # def make_constraint_report(self, x_norm, tol):
     #     """
     #     Generate a compact constraint report that includes:
@@ -1436,7 +1511,6 @@ class OptimizationSolver:
     #     constraint_data = bounds_lower + bounds_upper + constraint_data
     #     print(constraint_data)
 
-
     #     # Build the report
     #     sep = "-" * 80
     #     lines = [
@@ -1489,7 +1563,6 @@ class OptimizationSolver:
     #     lines.append(sep)
     #     return "\n".join(lines)
 
-
     def make_constraint_report(self, x_norm, tol):
         """
         generate a formatted constraint report at x_phys, using get_constraint_data to build/validate the entries.
@@ -1527,7 +1600,6 @@ class OptimizationSolver:
 
         lines.append("-" * 80)
         return "\n".join(lines)
-
 
     def make_lagrange_multipliers_report(self, x_norm, tol):
         """
@@ -1991,6 +2063,7 @@ class _PygmoProblem:
 
     def __init__(self, wrapped_problem):
         # Pygmo requires a flattened Jacobian for gradients, unlike SciPy's two-dimensional array.
+        self.iteration_callback = lambda x: wrapped_problem._record_iteration(x)
         self.fitness = lambda x: wrapped_problem.fitness(x)
         self.gradient = lambda x: wrapped_problem.gradient(x).flatten()
 

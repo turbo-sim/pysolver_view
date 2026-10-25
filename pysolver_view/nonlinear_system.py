@@ -65,6 +65,26 @@ class NonlinearSystemSolver:
         Logger object to which logging messages will be directed. Defaults to None.
     update_on : str, optional
         Specifies if the convergence report should be updated on a new function evaluations ("function") or on gradient evaluations ("gradient"). Defaults to "function".
+    callback_func : callable, optional
+        Observation callback receiving a detached ``(x, observation_count)``.
+        The count describes recorded function/Jacobian observations, not native
+        solver iterations. Numerical derivative probes do not invoke it.
+
+    Attributes
+    ----------
+    backend_result : scipy.optimize.OptimizeResult or None
+        Detached native result, including SciPy's original counters and status.
+    result : scipy.optimize.OptimizeResult or None
+        Final point and residual, package-level call counts, native success,
+        and the residual-based acceptance decision. The existing additional
+        residual check uses ``10 * tolerance``, reported as ``residual_tolerance``.
+    convergence_history : dict
+        Point-consistent function/Jacobian observations and optional final
+        result record. ``norm_step`` is displacement between observed points,
+        not necessarily an accepted solver step.
+    iteration_count : None
+        Native LM/hybrid do not expose accepted-iteration counts. Their
+        ``iteration_history`` is therefore empty.
 
 
     Methods
@@ -137,156 +157,189 @@ class NonlinearSystemSolver:
                 "Invalid value for 'update_on'. It should be either 'function' or 'gradient'."
             )
 
-        # Initialize variables for convergence report
+        self.include_solution_in_footer = False
+        self._reset_run_state()
+        if self.plot:
+            self._plot_callback(initialize=True)
+
+    def _reset_run_state(self):
+        """Start a run with empty results, counters, snapshots, and observations."""
         self.f_final = None
         self.x_final = None
         self.x_last = None
         self.residuals_last = None
+        self._residual_x = None
+        self._residual_value = None
         self.grad_count = 0
+        self.failed_grad_count = 0
         self.func_count = 0
         self.func_count_tot = 0
+        self.derivative_func_count = 0
+        self.callback_func_call_count = 0
+        self.iteration_count = None
+        self.iteration_history = []
         self.success = None
         self.message = None
+        self.backend_result = None
+        self.result = None
         self.solution_report = []
         self.elapsed_time = None
-        self.include_solution_in_footer = False
         self.convergence_history = {
+            "x": [],
+            "residual": [],
+            "event_kind": [],
+            "iteration": [],
             "grad_count": [],
             "func_count": [],
             "func_count_total": [],
+            "derivative_func_count": [],
             "norm_residual": [],
             "norm_step": [],
         }
 
-        # Initialize convergence plot
-        # TODO ??? (convergence_history must be initialized before)
-        if self.plot:
-            self._plot_callback(initialize=True)
-
     def solve(self, x0):
+        """Return the native solver's final point and retain detailed results.
+
+        ``backend_result`` is a detached native SciPy result. ``result`` adds
+        package-level evaluation accounting and residual-based acceptance.
+        Native LM/hybrid iteration counts are unavailable; evaluations and
+        Jacobian requests are never relabeled as iterations. Reusing this
+        solver starts a fresh history and resets its per-run counters.
         """
-        Solve the nonlinear system using the specified solver.
-
-        Parameters
-        ----------
-        x0 : array-like
-            Initial guess for the solution of the nonlinear system.
-
-        Returns
-        -------
-        RootResults
-            A result object from scipy's root detailing the outcome of the solution process.
-
-        """
-        # Get start datetime
+        self._reset_run_state()
         self.start_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-
-        # Start timing with high-resolution timer
         start_time = time.perf_counter()
-
-        # Print report header
         self._write_header()
-
-        # Solve the root finding problem
         solution = root(
             self.residual,
-            x0,
+            np.array(x0, dtype=float, copy=True),
             jac=self.gradient,
             method=self.method,
             tol=self.tol,
-            options=self.options,
+            options=self.options.copy(),
         )
 
-        # Save solution
-        self.x_final = copy.deepcopy(self.x_last)
-        self.f_final = self.residual(self.x_final)
-        self.success = solution.success
-        self.message = solution.message
-
-        # Check if solver actually converged
-        norm_residual = np.linalg.norm(self.f_final)
-        if self.success and norm_residual > 10*self.tol:
+        # The backend's returned point and residual are authoritative, even
+        # when its most recent evaluation was an unsuccessful trial.
+        self.backend_result = copy.deepcopy(solution)
+        self.x_final = np.array(solution.x, copy=True)
+        self.f_final = np.atleast_1d(np.array(solution.fun, copy=True))
+        self.success = bool(solution.success)
+        self.message = str(solution.message)
+        residual_norm = float(np.linalg.norm(self.f_final))
+        residual_tolerance = 10 * self.tol
+        if self.success and (
+            not np.isfinite(residual_norm) or residual_norm > residual_tolerance
+        ):
             self.success = False
-            self.message = f"The equation solver returned a success exit flag.\nHowever, the two-norm of the final residual is higher than tolerance ({norm_residual:0.2e}>{self.tol:0.2e})"
-
-        # Calculate elapsed time
-        self.elapsed_time = time.perf_counter() - start_time
-
-        # Print report footer
-        self._print_convergence_progress(self.x_final)
-        self._write_footer()
-
-        return self.x_final
-
-    def residual(self, x, called_from_jac=False):
-        """
-        Evaluate the nonlinear system residuals.
-
-        Parameters
-        ----------
-        x : array_like
-            Independent variable vector.
-
-        Returns
-        -------
-        array_like
-            Residuals of the problem.
-        """
-
-        # Increase total counter (includes finite differences)
-        self.func_count_tot += 1
-
-        # Compute problem residuals
-        self.residuals_last = self.problem.residual(x)
-
-        # Update progress report
-        if not called_from_jac:
-            self.func_count += 1  # Does not include finite differences
-            if self.update_on == "function":
-                self._print_convergence_progress(x)
-
-        return self.residuals_last
-
-    def gradient(self, x):
-        """
-        Evaluates the Jacobian of the nonlinear system of equations at the specified point x.
-
-        This method will use the `gradient` method of the NonlinearSystemProblem class if it exists.
-        If the `gradient` method is not implemented the Jacobian is appoximated using forward finite differences.
-
-        Parameters
-        ----------
-        x : array-like
-            Vector of independent variables.
-
-        Returns
-        -------
-        array-like
-            Jacobian matrix of the residual vector formatted as a 2D array.
-        """
-
-        # Evaluate the Jacobian of the residual vector
-        self.grad_count += 1
-        if hasattr(self.problem, "gradient"):
-            # If the problem has its own Jacobian method, use it
-            jacobian = self.problem.gradient(x)
-
-        else:
-            # Fall back to finite differences
-            fun = lambda x: self.residual(x, called_from_jac=True)
-            jacobian = numerical_differentiation.approx_gradient(
-                fun,
-                x,
-                f0=self.residuals_last,
-                method=self.derivative_method,
-                abs_step=self.derivative_abs_step,
+            self.message = (
+                "The equation solver returned a success exit flag.\n"
+                "However, the two-norm of the final residual does not satisfy "
+                f"the acceptance tolerance ({residual_norm:0.2e}; "
+                f"target {residual_tolerance:0.2e})."
             )
 
-        # Update progress report
-        if self.update_on == "gradient":
-            self._print_convergence_progress(x)
+        self.residuals_last = self.f_final.copy()
+        self._residual_x = self.x_final.copy()
+        self._residual_value = self.f_final.copy()
+        history = self.convergence_history
+        if not history["x"] or not (
+            np.array_equal(history["x"][-1], self.x_final)
+            and np.array_equal(history["residual"][-1], self.f_final)
+        ):
+            self._print_convergence_progress(
+                self.x_final, self.f_final, event_kind="final", notify=False
+            )
+        self.elapsed_time = time.perf_counter() - start_time
+        self.result = copy.deepcopy(solution)
+        self.result.update(
+            x=self.x_final.copy(),
+            fun=self.f_final.copy(),
+            success=self.success,
+            solver_success=bool(solution.success),
+            message=self.message,
+            residual_norm=residual_norm,
+            residual_tolerance=residual_tolerance,
+            nfev=self.func_count_tot,
+            njev=self.grad_count,
+            nit=None,
+            iteration_count=None,
+            func_count=self.func_count,
+            func_count_total=self.func_count_tot,
+            derivative_func_count=self.derivative_func_count,
+            failed_grad_count=self.failed_grad_count,
+            elapsed_time=self.elapsed_time,
+        )
+        self._write_footer()
+        return self.x_final.copy()
 
-        return np.atleast_1d(jacobian)
+    def residual(self, x, called_from_jac=False):
+        """Evaluate residuals, counting derivative probes without recording them.
+
+        Every actual model evaluation increments ``func_count_tot``. Calls
+        made for numerical derivatives also increment ``derivative_func_count``
+        but never change ordinary observation state or invoke user callbacks.
+        Inputs, returned values, and stored snapshots do not share writable
+        arrays with a model or callback.
+        """
+        point = np.array(x, copy=True)
+        self.func_count_tot += 1
+        if called_from_jac:
+            self.derivative_func_count += 1
+        else:
+            self.func_count += 1
+        value = np.atleast_1d(np.array(self.problem.residual(point.copy()), copy=True))
+        if not called_from_jac:
+            self.residuals_last = value.copy()
+            self._residual_x = point.copy()
+            self._residual_value = value.copy()
+            if self.update_on == "function":
+                self._print_convergence_progress(point, value, event_kind="function")
+        return value
+
+    def gradient(self, x):
+        """Evaluate one Jacobian request at a point-consistent residual base.
+
+        Numerical differences use residual values at the requested point,
+        never the most recent probe or an unrelated observation. A request
+        increments ``grad_count`` once, regardless of how many probes it uses;
+        failed requests also increment ``failed_grad_count``.
+        """
+        point = np.array(x, dtype=float, copy=True)
+        self.grad_count += 1
+        try:
+            if self._residual_x is not None and np.array_equal(point, self._residual_x):
+                base = self._residual_value.copy()
+            else:
+                base = self.residual(point, called_from_jac=True)
+                self._residual_x = point.copy()
+                self._residual_value = base.copy()
+
+            if hasattr(self.problem, "gradient"):
+                jacobian = self.problem.gradient(point.copy())
+            else:
+
+                def evaluate_probe(probe):
+                    """Reuse the known base, evaluating only actual new probes."""
+                    if np.array_equal(probe, point):
+                        return base.copy()
+                    return self.residual(probe, called_from_jac=True)
+
+                jacobian = numerical_differentiation.approx_gradient(
+                    evaluate_probe,
+                    point,
+                    f0=base,
+                    method=self.derivative_method,
+                    abs_step=self.derivative_abs_step,
+                )
+            jacobian = np.asarray(jacobian).reshape(base.size, point.size).copy()
+        except Exception:
+            self.failed_grad_count += 1
+            raise
+
+        if self.update_on == "gradient":
+            self._print_convergence_progress(point, base, event_kind="gradient")
+        return jacobian
 
     def _handle_output(self, message):
         """
@@ -302,7 +355,7 @@ class NonlinearSystemSolver:
         if self.logger:
             for line in message.splitlines():
                 self.logger.info(line)
-                
+
         if self.display and not self.logger:
             print(message)
 
@@ -319,7 +372,7 @@ class NonlinearSystemSolver:
             f" Solve system of equations for {type(self.problem).__name__}\n"
             f" Root-finding algorithm employed: {self.method}"
         )
-        self.header = f" {'Func-eval':>15}{'Grad-eval':>15}{'Norm of residual':>24}{'Norm of step':>24} "
+        self.header = f" {'Func-eval':>15}{'Grad-eval':>15}{'Norm of residual':>24}{'Point displacement':>24} "
         separator = "-" * len(self.header)
         lines_to_output = [
             separator,
@@ -336,60 +389,59 @@ class NonlinearSystemSolver:
         # Store text in memory
         self.solution_report.extend(lines_to_output)
 
-    def _print_convergence_progress(self, x):
+    def _print_convergence_progress(
+        self, x, residual=None, *, event_kind=None, notify=True
+    ):
+        """Record and render a supplied point/residual snapshot without evaluation.
+
+        This history contains observations, not native accepted iterations.
+        ``norm_step`` measures displacement between recorded points. The legacy
+        callback receives ``(x, observation_count)`` with a detached point.
+        Final-result records do not generate an extra callback.
         """
-        Print the current solution status and update convergence history.
-
-        This method captures and prints the following metrics:
-        - Number of function evaluations
-        - Number of gradient evaluations
-        - Two-norm of residual vector
-        - Two-norm of solution step
-
-        The method also updates the stored convergence history for potential future analysis.
-
-        Parameters
-        ----------
-        x : array-like
-            The current solution (i.e., vector of independent variable values)
-
-        Notes
-        -----
-        The norm of the update step is calculated as the two-norm of the difference
-        between the current and the last independent variables. The norm of the residual
-        vector is computed using the two-norm.
-        """
-        # Compute norm of residual vector
-        residual = self.residuals_last
-        norm_residual = np.linalg.norm(residual)
-        # norm_residual = np.max([np.linalg.norm(residual), np.finfo(float).eps])
-
-        # Compute the norm of the last step
-        norm_step = np.linalg.norm(x - self.x_last) if self.x_last is not None else 0
-        self.x_last = x.copy()
-
-        # Store convergence status
-        self.convergence_history["grad_count"].append(self.grad_count)
-        self.convergence_history["func_count"].append(self.func_count)
-        self.convergence_history["func_count_total"].append(self.func_count_tot)
-        self.convergence_history["norm_residual"].append(norm_residual)
-        self.convergence_history["norm_step"].append(norm_step)
-
-        # Current convergence message
-        status = f" {self.func_count:15d}{self.grad_count:15d}{norm_residual:24.6e}{norm_step:24.6e} "
-        self._handle_output(status)
-
-        # Store text in memory
-        self.solution_report.append(status)
-
-        # Refresh the plot with current values
+        point = np.array(x, copy=True)
+        if residual is None:
+            if self._residual_x is None or not np.array_equal(point, self._residual_x):
+                raise ValueError(
+                    "A progress record requires residuals at its exact point."
+                )
+            residual = self._residual_value
+        value = np.array(residual, copy=True)
+        norm_step = (
+            float(np.linalg.norm(point - self.x_last))
+            if self.x_last is not None
+            else 0.0
+        )
+        record = {
+            "x": point.copy(),
+            "residual": value.copy(),
+            "event_kind": self.update_on if event_kind is None else event_kind,
+            "iteration": None,
+            "grad_count": self.grad_count,
+            "func_count": self.func_count,
+            "func_count_total": self.func_count_tot,
+            "derivative_func_count": self.derivative_func_count,
+            "norm_residual": float(np.linalg.norm(value)),
+            "norm_step": norm_step,
+        }
+        self.x_last = point.copy()
+        for key, entry in record.items():
+            self.convergence_history[key].append(entry)
+        self._render_progress(record)
         if self.plot:
             self._plot_callback()
-
-        # Evaluate callback function
-        if self.callback_func:
+        if notify and self.callback_func is not None:
             self.callback_func_call_count += 1
-            self.callback_func(x, self.callback_func_call_count)
+            self.callback_func(point.copy(), self.callback_func_call_count)
+
+    def _render_progress(self, record):
+        """Format an existing observation without changing model or solver state."""
+        status = (
+            f" {record['func_count']:15d}{record['grad_count']:15d}"
+            f"{record['norm_residual']:24.6e}{record['norm_step']:24.6e} "
+        )
+        self._handle_output(status)
+        self.solution_report.append(status)
 
     def _write_footer(self):
         """
@@ -419,17 +471,17 @@ class NonlinearSystemSolver:
         # Print or log content
         for line in lines_to_output:
             self._handle_output(line)
-            
+
         # Store text in memory
         self.solution_report.extend(lines_to_output)
 
-    def _plot_callback(self, initialize=False):
+    def _plot_callback(self, initialize=False, showfig=True):
         """
         Callback function to dynamically update the convergence progress plot.
 
-        This method initializes a matplotlib plot on the first iteration and updates
-        the data for each subsequent iteration. The plot showcases the evolution of
-        the residual vector as a function of number of iterations.
+        Initialize or update a plot of residual observations against their
+        function/Jacobian evaluation counts. Rendering never evaluates the
+        model or modifies the recorded data.
 
         Note:
             This is an internal method, meant to be called within the optimization process.
@@ -439,7 +491,11 @@ class NonlinearSystemSolver:
         if initialize:
             self.fig, self.ax = plt.subplots()
             (self.obj_line,) = self.ax.plot([], [], color="#D95319", marker="o")
-            self.ax.set_xlabel("Number of iterations")
+            self.ax.set_xlabel(
+                "Function evaluations (excluding derivative probes)"
+                if self.update_on == "function"
+                else "Jacobian evaluations"
+            )
             self.ax.set_ylabel("Two-norm of residual vector")
             self.ax.set_yscale(self.plot_scale)
             # self.ax.xaxis.set_major_locator(MultipleLocator(1))
@@ -461,8 +517,9 @@ class NonlinearSystemSolver:
         self.ax.autoscale_view()
 
         # Redraw the plot
-        plt.draw()
-        plt.pause(0.01)  # small pause to allow for update
+        if showfig:
+            plt.draw()
+            plt.pause(0.01)  # allow interactive figure updates
 
     def print_convergence_history(
         self, savefile=False, filename=None, output_dir="output"
@@ -524,10 +581,14 @@ class NonlinearSystemSolver:
             )
 
     def plot_convergence_history(
-        self, savefile=False, filename=None, output_dir="output"
+        self, savefile=False, filename=None, output_dir="output", *, showfig=True
     ):
         """
-        Plot the convergence history of the problem as the two-norm of the residual vector versus the number of iterations.
+        Plot the residual two-norm against function or Jacobian evaluations.
+
+        Numerical derivative probes are excluded from the function-observation
+        axis and remain included in total model-call counters. Native accepted
+        iteration counts are not available from SciPy's LM/hybrid interface.
 
         This method should be called only after the optimization problem has been solved, as it relies on data generated by the solving process.
 
@@ -552,7 +613,7 @@ class NonlinearSystemSolver:
             If this method is called before the problem has been solved.
         """
         if self.x_final is not None:
-            self._plot_callback(initialize=True)
+            self._plot_callback(initialize=True, showfig=showfig)
         else:
             raise ValueError(
                 "This method can only be used after invoking the 'solve()' method."
@@ -573,6 +634,8 @@ class NonlinearSystemSolver:
             fullfile = os.path.join(output_dir, filename)
             savefig_in_formats(self.fig, fullfile, formats=[".png", ".svg"])
 
+        if not showfig:
+            plt.close(self.fig)
         return self.fig
 
 

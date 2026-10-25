@@ -4,6 +4,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pysolver_view as psv
 
+
+class UnboundedRosenbrock(psv.RosenbrockProblem):
+    """Use the Rosenbrock objective without box constraints for BFGS."""
+
+    def get_bounds(self):
+        """Declare unbounded variables because BFGS cannot enforce bounds."""
+        return (-np.full(self.dim, np.inf), np.full(self.dim, np.inf))
+
+
 # Create the folder to save figures
 OUT_DIR = "figures"
 if not os.path.exists(OUT_DIR):
@@ -18,7 +27,7 @@ logger = psv.create_logger("convergence_history", use_datetime=True)
 # Define Rosenbrock problem
 ndim = 10
 x0 = 1.50 * np.ones(ndim)
-problem = psv.RosenbrockProblem(ndim)
+problem = UnboundedRosenbrock(ndim)
 
 
 # -------------------------------------------------------------------- #

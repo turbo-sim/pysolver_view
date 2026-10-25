@@ -22,10 +22,8 @@ problem = psv.RosenbrockProblem(ndim)
 # problem = psv.RosenbrockProblemConstrained(ndim)
 
 # Solve problem
-# library, method = ("scipy", "slsqp")
-library, method = ("pygmo", "ipopt")
 fig, ax = plt.subplots()
-ax.set_xlabel("Number of iterations")
+ax.set_xlabel("Function evaluations (excluding derivative/diagnostic calls)")
 ax.set_ylabel("Objective function")
 ax.set_yscale("log")
 scales = [None, 10, 50, 100, 500, 1000]

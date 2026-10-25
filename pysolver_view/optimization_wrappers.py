@@ -4,7 +4,7 @@ import ctypes
 import platform
 import warnings
 import numpy as np
-from scipy.optimize import minimize
+from scipy.optimize import OptimizeResult, minimize
 
 
 # Attempt to import pygmo and pygmo_plugins_nonfree
@@ -95,8 +95,10 @@ def minimize_scipy(problem, x0, method, solver_options):
 
     Returns
     -------
-    tuple
-        A tuple (success, message) where 'success' is a boolean indicating if the optimization was successful, and 'message' is a string describing the outcome.
+    scipy.optimize.OptimizeResult
+        The backend solution, including its authoritative coordinates, objective,
+        termination status, and any available native diagnostics. Coordinates
+        use the solver-space convention supplied by the caller.
 
     Raises
     ------
@@ -118,6 +120,7 @@ def minimize_scipy(problem, x0, method, solver_options):
     tol = solver_options.pop("tolerance")
     max_iter = solver_options.pop("max_iterations")
     default_options = {
+        "nelder-mead": {"maxiter": max_iter},
         "bfgs": {"gtol": tol, "maxiter": max_iter},
         "l-bfgs-b": {"ftol": tol, "gtol": tol, "maxiter": max_iter},
         "slsqp": {"ftol": tol, "maxiter": max_iter},
@@ -134,6 +137,8 @@ def minimize_scipy(problem, x0, method, solver_options):
         bounds = None
     else:
         bounds = convert_pygmo_to_scipy_bounds(problem.get_bounds)()
+        if not np.any(np.isfinite(np.asarray(bounds, dtype=float))):
+            bounds = None
 
     # Define list of constraint dictionaries
     constr = []
@@ -145,23 +150,46 @@ def minimize_scipy(problem, x0, method, solver_options):
         c_ineq_jac = lambda x: -problem.c_ineq_jac(x)
         constr.append({"type": "ineq", "fun": c_ineq, "jac": c_ineq_jac})
 
-    # Solve the optimization problem
+    # Only SLSQP iteration events are adapted here. Its callback indicates a
+    # native major iteration, not necessarily a line-search-accepted point.
+    iteration_callback = (
+        getattr(problem, "iteration_callback", None) if method == "slsqp" else None
+    )
+
+    # Preserve the returned point and diagnostics, even if a later evaluation
+    # or reporting callback observed a different point.
     solution = minimize(
         problem.f,
         x0,
         tol=tol,
-        jac=problem.f_jac,
+        jac=None if method in {"nelder-mead", "powell", "cobyla"} else problem.f_jac,
         constraints=constr,
         bounds=bounds,
         method=method,
         options=combined_options,
+        callback=iteration_callback,
     )
 
-    # Optimization output
-    success = solution.success
-    message = solution.message
+    return solution
 
-    return success, message
+
+def _population_result(population, *, success, message, status=None, native_info=None):
+    """Copy the evolved champion into a result without reevaluating the model.
+
+    Unknown convergence is represented by ``success=None``. Native iteration
+    or evaluation counts are omitted when the wrapper does not expose them;
+    evaluation observations must not be promoted into inferred iterations.
+    """
+    fitness = np.asarray(population.champion_f).copy()
+    return OptimizeResult(
+        x=np.asarray(population.champion_x).copy(),
+        fun=float(fitness[0]),
+        fitness=fitness,
+        success=success,
+        message=message,
+        status=status,
+        native_info=native_info,
+    )
 
 
 def minimize_pygmo(problem, x0, method, options):
@@ -181,8 +209,10 @@ def minimize_pygmo(problem, x0, method, options):
 
     Returns
     -------
-    tuple
-        A tuple (success, message) where 'success' is a boolean indicating if the optimization was successful, and 'message' is a string describing the outcome.
+    scipy.optimize.OptimizeResult
+        The backend solution, including its authoritative coordinates, objective,
+        termination status, and any available native diagnostics. Coordinates
+        use the solver-space convention supplied by the caller.
 
     Raises
     ------
@@ -242,11 +272,11 @@ def _minimize_pygmo_de(problem, x0, options):
     print("Best solution found:", population.champion_x)
     print("Objective value of the best solution:", population.champion_f)
 
-    # Optimization output
-    success = ""
-    message = ""
-
-    return success, message
+    return _population_result(
+        population,
+        success=None,
+        message="Search budget completed; convergence has not been independently assessed.",
+    )
 
 def _minimize_pygmo_sga(problem, x0, options):
     """Solve optimization problem using Pygmo's wrapper to sga"""
@@ -274,14 +304,11 @@ def _minimize_pygmo_sga(problem, x0, options):
     # print("Best solution found:", population.champion_x)
     # print("Objective value of the best solution:", population.champion_f)
 
-    # Evaluate final solution 
-    final = problem.fitness(population.champion_x)
-
-    # Optimization output
-    success = ""
-    message = ""
-
-    return success, message
+    return _population_result(
+        population,
+        success=None,
+        message="Search budget completed; convergence has not been independently assessed.",
+    )
 
 def _minimize_pygmo_pso(problem, x0, options):
     """Solve optimization problem using Pygmo's wrapper to PSO"""
@@ -309,14 +336,11 @@ def _minimize_pygmo_pso(problem, x0, options):
     # print("Best solution found:", population.champion_x)
     # print("Objective value of the best solution:", population.champion_f)
 
-    # Evaluate final solution 
-    final = problem.fitness(population.champion_x)
-
-    # Optimization output
-    success = ""
-    message = ""
-
-    return success, message
+    return _population_result(
+        population,
+        success=None,
+        message="Search budget completed; convergence has not been independently assessed.",
+    )
 
 
 def _minimize_pygmo_ipopt(problem, x0, options):
@@ -397,7 +421,9 @@ def _minimize_pygmo_ipopt(problem, x0, options):
     message = exitflag_mapping.get(exitflag, "Unknown Status")
     success = exitflag in (0, 1)
 
-    return success, message
+    return _population_result(
+        population, success=success, message=message, status=exitflag
+    )
 
 
 def _minimize_pygmo_snopt(problem, x0, options):
@@ -467,14 +493,17 @@ def _minimize_pygmo_snopt(problem, x0, options):
     population = algorithm.evolve(population)
 
     # Optimization output
-    message = _extract_snopt_message(algorithm.get_extra_info())
+    native_info = algorithm.get_extra_info()
+    message = _extract_snopt_message(native_info)
     success = (
         True
         if message == "Finished successfully - optimality conditions satisfied"
         else False
     )
 
-    return success, message
+    return _population_result(
+        population, success=success, message=message, native_info=native_info
+    )
 
 
 # def _minimize_pygmo_worhp(problem, x0, solver_options):
@@ -531,8 +560,10 @@ def minimize_nlopt(problem, x0, method, options):
 
     Returns
     -------
-    tuple
-        A tuple (success, message) where 'success' is a boolean indicating if the optimization was successful, and 'message' is a string describing the outcome.
+    scipy.optimize.OptimizeResult
+        The backend solution, including its authoritative coordinates, objective,
+        termination status, and any available native diagnostics. Coordinates
+        use the solver-space convention supplied by the caller.
 
     Raises
     ------
@@ -585,7 +616,9 @@ def minimize_nlopt(problem, x0, method, options):
     message = exitflag_mapping.get(exitflag, "Unknown Status")
     success = exitflag in (1, 2, 3, 4)
 
-    return success, message
+    return _population_result(
+        population, success=success, message=message, status=exitflag
+    )
 
 
 def convert_pygmo_to_scipy_bounds(pygmo_bounds):
