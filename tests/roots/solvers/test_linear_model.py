@@ -83,8 +83,12 @@ class LinearModelTests(unittest.TestCase):
                         self.assertGreaterEqual(norm(step), radius * (1 - 2e-10))
                         np.testing.assert_allclose(step, expected, rtol=2e-7, atol=1e-9)
                         stationarity = a.T @ (f + a @ step) + damping * step
+                        # Ill-conditioned cases have steps near 1e10, making this
+                        # residual sensitive to rounding across BLAS/LAPACK builds.
                         self.assertLess(
-                            norm(stationarity), 3e-7 * max(1, norm(model.g))
+                            norm(stationarity),
+                            1e-6 * max(1, norm(model.g)),
+                            msg=f"{m=}, {n=}, {condition=}, {fraction=}",
                         )
                 self.assertEqual(model.stats["svd_factorizations"], 1)
 
