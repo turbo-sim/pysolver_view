@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=7dd04bbd"></script>
+    <script src="../../../_static/documentation_options.js?v=6aa4cbdb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -606,8 +606,35 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Metadata must belong to the same model evaluation as the requested values.</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_fitness</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">diagnostic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;constraint_data&quot;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;has_constraint_data&quot;</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="n">constraint_data_from_values</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;fitness&quot;</span><span class="p">],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N_eq</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N_ineq</span><span class="p">,</span>
+        <span class="n">tol</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;constraint_data&quot;</span><span class="p">],</span>
+        <span class="n">has_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;has_constraint_data&quot;</span><span class="p">],</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="constraint_data_from_values">
+<a class="viewcode-back" href="../../../api/pysolver_view.optimization.constraints.html#pysolver_view.optimization.constraints.constraint_data_from_values">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">constraint_data_from_values</span><span class="p">(</span>
+    <span class="n">fitness</span><span class="p">,</span> <span class="n">equality_count</span><span class="p">,</span> <span class="n">inequality_count</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">has_metadata</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate and annotate detached physical metadata using supplied residuals.</span>
+
+<span class="sd">    Fitness follows public signs: objective, equalities, then nonpositive</span>
+<span class="sd">    inequalities. This helper does no model work and preserves physical names,</span>
+<span class="sd">    values, and targets while computing satisfaction from normalized residuals.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fitness</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">fitness</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fitness</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">equality_count</span> <span class="o">+</span> <span class="n">inequality_count</span><span class="p">,):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Constraint report values do not match declared counts.&quot;</span><span class="p">)</span>
+    <span class="n">c_eq</span> <span class="o">=</span> <span class="n">fitness</span><span class="p">[</span><span class="mi">1</span> <span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">equality_count</span><span class="p">]</span>
+    <span class="n">c_ineq</span> <span class="o">=</span> <span class="n">fitness</span><span class="p">[</span><span class="mi">1</span> <span class="o">+</span> <span class="n">equality_count</span> <span class="p">:]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">has_metadata</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected self.constraint_data to be a list of dicts&quot;</span><span class="p">)</span>
         <span class="n">required</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">}</span>
@@ -621,54 +648,36 @@
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
             <span class="n">validate_keys</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">required</span><span class="p">,</span> <span class="n">allowed</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;=&quot;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">equality_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_eq</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">equality_index</span> <span class="o">&gt;=</span> <span class="n">equality_count</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Too many named equality constraints.&quot;</span><span class="p">)</span>
-                <span class="n">mismatch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;c_eq&quot;</span><span class="p">][</span><span class="n">equality_index</span><span class="p">]</span>
+                <span class="n">mismatch</span> <span class="o">=</span> <span class="n">c_eq</span><span class="p">[</span><span class="n">equality_index</span><span class="p">]</span>
                 <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;satisfied&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">mismatch</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">)</span>
                 <span class="n">equality_index</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">elif</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">}:</span>
-                <span class="k">if</span> <span class="n">inequality_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_ineq</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">inequality_index</span> <span class="o">&gt;=</span> <span class="n">inequality_count</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Too many named inequality constraints.&quot;</span><span class="p">)</span>
-                <span class="n">mismatch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;c_ineq&quot;</span><span class="p">][</span><span class="n">inequality_index</span><span class="p">]</span>
+                <span class="n">mismatch</span> <span class="o">=</span> <span class="n">c_ineq</span><span class="p">[</span><span class="n">inequality_index</span><span class="p">]</span>
                 <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;satisfied&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">mismatch</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">)</span>
                 <span class="n">inequality_index</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Named constraint type must be &#39;=&#39;, &#39;&lt;&#39;, or &#39;&gt;&#39;.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">equality_index</span><span class="p">,</span> <span class="n">inequality_index</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N_eq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_ineq</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">equality_index</span><span class="p">,</span> <span class="n">inequality_index</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">equality_count</span><span class="p">,</span> <span class="n">inequality_count</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Named constraint counts must match the fitness vector.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data</span>
 
-    <span class="c1"># Otherwise evaluate constraints from scratch</span>
-    <span class="n">x_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x_norm</span><span class="p">)</span>
-    <span class="n">fitness</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_fitness</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">diagnostic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">c_eq</span> <span class="o">=</span> <span class="n">fitness</span><span class="p">[</span><span class="mi">1</span> <span class="p">:</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_eq</span><span class="p">]</span>
-    <span class="n">c_ineq</span> <span class="o">=</span> <span class="n">fitness</span><span class="p">[</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_eq</span> <span class="p">:]</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="c1"># Equality constraints</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">c_eq</span><span class="p">):</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;equality_constraint_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;=&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">val</span><span class="p">,</span>
-                <span class="s2">&quot;satisfied&quot;</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">,</span>
-            <span class="p">}</span>
-        <span class="p">)</span>
-
-    <span class="c1"># Inequality constraints</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">c_ineq</span><span class="p">):</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;inequality_constraint_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">val</span><span class="p">,</span>
-                <span class="s2">&quot;satisfied&quot;</span><span class="p">:</span> <span class="n">val</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">,</span>
-            <span class="p">}</span>
-        <span class="p">)</span>
-
+    <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">residuals</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">&quot;equality&quot;</span><span class="p">,</span> <span class="n">c_eq</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;inequality&quot;</span><span class="p">,</span> <span class="n">c_ineq</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">residuals</span><span class="p">):</span>
+            <span class="n">equality</span> <span class="o">=</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;equality&quot;</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">_constraint_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;=&quot;</span> <span class="k">if</span> <span class="n">equality</span> <span class="k">else</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span>
+                    <span class="n">target</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">satisfied</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span> <span class="k">if</span> <span class="n">equality</span> <span class="k">else</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span></div>
 
 </pre></div>

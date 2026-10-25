@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=7dd04bbd"></script>
+    <script src="../../_static/documentation_options.js?v=6aa4cbdb"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -462,6 +462,17 @@
         <span class="n">kkt_time</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">kkt_time</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">run</span><span class="o">.</span><span class="n">library</span> <span class="o">==</span> <span class="s2">&quot;pysolver&quot;</span><span class="p">:</span>
+        <span class="n">metadata</span><span class="p">,</span> <span class="n">has_metadata</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">_evaluation</span><span class="o">.</span><span class="n">final_constraint_metadata</span><span class="p">(</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">x_final_norm</span>
+        <span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">report_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">variable_names</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">variable_names</span><span class="p">),</span>
+            <span class="n">bounds_physical</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_bounds</span><span class="p">()),</span>
+            <span class="n">bounds_solver</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_bounds_normalized</span><span class="p">()),</span>
+            <span class="n">problem_scale</span><span class="o">=</span><span class="n">run</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">problem_scale</span><span class="p">,</span>
+            <span class="n">constraint_data</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+            <span class="n">has_constraint_data</span><span class="o">=</span><span class="n">has_metadata</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;feasible&quot;</span><span class="p">,</span> <span class="s2">&quot;stationary&quot;</span><span class="p">,</span> <span class="s2">&quot;events&quot;</span><span class="p">,</span> <span class="s2">&quot;effective_options&quot;</span><span class="p">):</span>
             <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">solution</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
         <span class="n">assessment</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">_public_driver_kkt</span><span class="p">(</span><span class="n">solution</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kkt&quot;</span><span class="p">))</span>

@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=7dd04bbd"></script>
+    <script src="../../../_static/documentation_options.js?v=6aa4cbdb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -567,6 +567,106 @@
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; Assessment unavailable: &quot;</span> <span class="o">+</span> <span class="n">kkt_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
     <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="final_kkt_report">
+<a class="viewcode-back" href="../../../api/pysolver_view.reporting.tables.html#pysolver_view.reporting.tables.final_kkt_report">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">final_kkt_report</span><span class="p">(</span><span class="n">assessment</span><span class="p">,</span> <span class="n">feasibility_tol</span><span class="p">,</span> <span class="n">optimality_tol</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Render a cached final certificate with its separate acceptance limits.</span>
+
+<span class="sd">    Metrics and multipliers use public signs and solver coordinates. Missing</span>
+<span class="sd">    diagnostics remain unavailable; this formatter never estimates multipliers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">assessment</span> <span class="o">=</span> <span class="n">assessment</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">available</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">enabled</span> <span class="ow">and</span> <span class="n">assessment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+    <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">sep</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39;Karush-Kuhn-Tucker (KKT) conditions&#39;</span><span class="si">:</span><span class="s2">&lt;36</span><span class="si">}{</span><span class="s1">&#39;Value&#39;</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}{</span><span class="s1">&#39;Target&#39;</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}{</span><span class="s1">&#39;Ok?&#39;</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">sep</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;First order optimality&quot;</span><span class="p">,</span> <span class="s2">&quot;optimality&quot;</span><span class="p">,</span> <span class="n">optimality_tol</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;Stationarity&quot;</span><span class="p">,</span> <span class="s2">&quot;stationarity&quot;</span><span class="p">,</span> <span class="n">optimality_tol</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;Equality feasibility&quot;</span><span class="p">,</span> <span class="s2">&quot;equality_feasibility&quot;</span><span class="p">,</span> <span class="n">feasibility_tol</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;Inequality feasibility&quot;</span><span class="p">,</span> <span class="s2">&quot;inequality_feasibility&quot;</span><span class="p">,</span> <span class="n">feasibility_tol</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;Bound feasibility&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_feasibility&quot;</span><span class="p">,</span> <span class="n">feasibility_tol</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;Dual feasibility&quot;</span><span class="p">,</span> <span class="s2">&quot;dual_feasibility&quot;</span><span class="p">,</span> <span class="n">optimality_tol</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;Complementary slackness&quot;</span><span class="p">,</span> <span class="s2">&quot;complementarity&quot;</span><span class="p">,</span> <span class="n">optimality_tol</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">limit</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">assessment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">finite</span> <span class="o">=</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">rendered</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">+.3e</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">finite</span> <span class="k">else</span> <span class="s2">&quot;unavailable&quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;yes&quot;</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="n">limit</span> <span class="k">else</span> <span class="s2">&quot;no&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">finite</span> <span class="k">else</span> <span class="s2">&quot;n/a&quot;</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;36</span><span class="si">}{</span><span class="n">rendered</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}{</span><span class="s1">&#39;&lt;= &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">limit</span><span class="si">:</span><span class="s1">+.3e</span><span class="si">}</span><span class="s1">&#39;</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}{</span><span class="n">status</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; Coordinates: solver; stationarity norm: infinity.&quot;</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="s2">&quot; Source: cached final assessment; no additional diagnostic evaluations.&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">enabled</span><span class="p">:</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; Automatic KKT checks disabled; optimality not assessed.&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">available</span><span class="p">:</span>
+        <span class="n">reason</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">assessment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;No final derivative certificate available.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; Assessment unavailable: &quot;</span> <span class="o">+</span> <span class="n">reason</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="s2">&quot; Cached final KKT check: &quot;</span>
+            <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;passed.&quot;</span> <span class="k">if</span> <span class="n">assessment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;passed&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;failed.&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="final_multipliers_report">
+<a class="viewcode-back" href="../../../api/pysolver_view.reporting.tables.html#pysolver_view.reporting.tables.final_multipliers_report">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">final_multipliers_report</span><span class="p">(</span>
+    <span class="n">assessment</span><span class="p">,</span> <span class="n">constraint_data</span><span class="p">,</span> <span class="n">var_names</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format cached public multipliers through the existing named table.&quot;&quot;&quot;</span>
+    <span class="n">assessment</span> <span class="o">=</span> <span class="n">assessment</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">available</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">enabled</span> <span class="ow">and</span> <span class="n">assessment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;available&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+    <span class="n">multipliers</span> <span class="o">=</span> <span class="n">assessment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;multipliers&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">available</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">equality_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;=&quot;</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">constraint_data</span><span class="p">)</span>
+    <span class="n">inequality_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">constraint_data</span><span class="p">)</span> <span class="o">-</span> <span class="n">equality_count</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">var_names</span><span class="p">)</span>
+    <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">else</span> <span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">,</span> <span class="n">bounds</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">finite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">inequality_count</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">lower</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">upper</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">multipliers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">equality</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">equality_count</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">duals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">inequality_count</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">size</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">equality</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">multipliers</span><span class="p">[</span><span class="s2">&quot;equality&quot;</span><span class="p">])</span>
+        <span class="n">duals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span>
+            <span class="n">multipliers</span><span class="p">[</span><span class="s2">&quot;inequality&quot;</span><span class="p">],</span> <span class="n">multipliers</span><span class="p">[</span><span class="s2">&quot;lower&quot;</span><span class="p">],</span> <span class="n">multipliers</span><span class="p">[</span><span class="s2">&quot;upper&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;Automatic KKT checks disabled; multipliers not assessed.&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">enabled</span>
+        <span class="k">else</span> <span class="n">assessment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;No final multiplier certificate available.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">available</span><span class="o">=</span><span class="n">available</span><span class="p">,</span>
+        <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+        <span class="n">multipliers_eq</span><span class="o">=</span><span class="n">equality</span><span class="p">,</span>
+        <span class="n">multipliers_ineq</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">index</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">duals</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">finite</span><span class="p">)</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">multipliers_report</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">constraint_data</span><span class="p">,</span> <span class="n">var_names</span><span class="p">,</span> <span class="n">bounds</span><span class="p">)</span></div>
 
 
 

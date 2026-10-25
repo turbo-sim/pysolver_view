@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=7dd04bbd"></script>
+    <script src="../../../_static/documentation_options.js?v=6aa4cbdb"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -445,6 +445,7 @@
     <span class="n">count_constraints</span> <span class="k">as</span> <span class="n">count_constraints</span><span class="p">,</span>
     <span class="n">combine_objective_and_constraints</span> <span class="k">as</span> <span class="n">combine_objective_and_constraints</span><span class="p">,</span>
     <span class="n">get_constraint_data</span><span class="p">,</span>
+    <span class="n">constraint_data_from_values</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -546,6 +547,15 @@
 <span class="sd">        Custom SLSQP success then requires native success and feasibility only.</span>
 <span class="sd">        Explicit evaluate_kkt_conditions or requested KKT/multiplier reports still</span>
 <span class="sd">        perform an on-demand assessment, outside the automatic solve policy.</span>
+<span class="sd">    backend_callback : callable, optional</span>
+<span class="sd">        With ``library=&quot;pysolver&quot;``, receive a detached copy of each initial or</span>
+<span class="sd">        accepted SLSQP record, including KKT diagnostics and recovery counters.</span>
+<span class="sd">        Records use normalized solver coordinates and the backend&#39;s constraint</span>
+<span class="sd">        convention: equalities are zero and inequalities are nonnegative, as</span>
+<span class="sd">        in ``backend_result.history``. This differs from the frontend&#39;s public</span>
+<span class="sd">        nonpositive inequalities and equality multiplier signs. Rejected trials,</span>
+<span class="sd">        derivative probes, and final synchronization do not invoke this hook.</span>
+<span class="sd">        Return False or raise StopIteration to stop at the accepted point.</span>
 
 <span class="sd">    Methods</span>
 <span class="sd">    -------</span>
@@ -582,6 +592,7 @@
         <span class="n">plot_improvement_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">tolerance_check_cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">check_kkt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">backend_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># Initialize class variables</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">check_kkt</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
@@ -602,6 +613,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">derivative_method</span> <span class="o">=</span> <span class="n">derivative_method</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">derivative_abs_step</span> <span class="o">=</span> <span class="n">derivative_abs_step</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callback_functions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_callback</span><span class="p">(</span><span class="n">callback_functions</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">backend_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">backend_callback</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;backend_callback must be callable or None.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">backend_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">library</span> <span class="o">!=</span> <span class="s2">&quot;pysolver&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;backend_callback requires library=&#39;pysolver&#39;.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend_callback</span> <span class="o">=</span> <span class="n">backend_callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callback_function_call_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_improvement_only</span> <span class="o">=</span> <span class="n">plot_improvement_only</span>
 
@@ -976,6 +992,7 @@
 <span class="sd">        for this backend always receive accepted points. Raising StopIteration</span>
 <span class="sd">        or returning False stops at that point with a structured failed result.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_evaluation</span><span class="o">.</span><span class="n">record_accepted_metadata</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">])</span>
         <span class="n">initial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_initial_pending</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_custom_initial_pending</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iteration_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">])</span>
@@ -992,10 +1009,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">iteration_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">snapshot</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">initial</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_on</span> <span class="o">==</span> <span class="s2">&quot;iteration&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_publish_observation</span><span class="p">(</span><span class="n">snapshot</span><span class="p">,</span> <span class="n">notify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_functions</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">callback_function_call_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_functions</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_in_callback</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_callback</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">entry</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">(</span><span class="s2">&quot;Stopped by backend callback&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_functions</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">callback_function_call_count</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_functions</span><span class="p">:</span>
                     <span class="k">if</span> <span class="p">(</span>
                         <span class="n">callback</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_function_call_count</span><span class="p">)</span>
@@ -1182,69 +1203,70 @@
         <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">,</span>
         <span class="n">to_console</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Generate and print or save a complete optimization report with customizable content.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print or save selected variables, constraints, KKT and multipliers.</span>
 
-<span class="sd">            This method assembles a detailed summary of the optimization process and results,</span>
-<span class="sd">            allowing fine-grained control over which components to include. It supports</span>
-<span class="sd">            outputting the report to the console or saving it to a file.</span>
+<span class="sd">        With the custom ``pysolver`` backend, omitting both ``x`` and ``tol``</span>
+<span class="sd">        renders detached data for the authoritative final point. Its cached KKT</span>
+<span class="sd">        certificate retains the solve&#39;s separate feasibility and optimality</span>
+<span class="sd">        tolerances. Unavailable or disabled diagnostics remain unassessed; no</span>
+<span class="sd">        model evaluation, derivative probe, or multiplier fit is requested.</span>
 
-<span class="sd">            The report may include the following sections:</span>
-<span class="sd">            - Convergence history: number of function and gradient evaluations, objective function value, maximum constraint violation, and step norm. The report also includes The method provides a detailed report on an exit message, success status, and execution time</span>
-<span class="sd">            - Number of function evaluations</span>
-<span class="sd">            - Number of gradient evaluations</span>
-<span class="sd">            - Objective function value</span>
-<span class="sd">            - Maximum constraint violation</span>
-<span class="sd">            - Two-norm of the update step</span>
+<span class="sd">        Supplying physical ``x`` or an explicit ``tol`` requests a diagnostic</span>
+<span class="sd">        assessment using the legacy common tolerance for feasibility and</span>
+<span class="sd">        optimality. Those explicit requests may add counted diagnostic work.</span>
+<span class="sd">        Other backends retain this diagnostic behavior. When needed, the</span>
+<span class="sd">        default diagnostic tolerance is five times the native solver tolerance.</span>
 
-
-<span class="sd">        Objective value, constraint violation, and step norm over iterations.</span>
-<span class="sd">            - Design variables: Final values, shown in physical units and (if applicable) normalized space.</span>
-<span class="sd">            - Constraints: Numerical values and satisfaction status of all constraints.</span>
-<span class="sd">            - KKT conditions: Checks of the Karush-Kuhn-Tucker optimality conditions.</span>
-<span class="sd">            - Lagrange multipliers: Values of multipliers for equality, inequality, and bound constraints.</span>
-
-<span class="sd">            This method is intended to be called after the `solve()` method has been completed.</span>
-
-
-<span class="sd">            Parameters</span>
-<span class="sd">            ----------</span>
-<span class="sd">            include_convergence_history : bool</span>
-<span class="sd">            include_design_variables_normalized : bool</span>
-<span class="sd">            include_design_variables_physical : bool</span>
-<span class="sd">            include_constraints : bool</span>
-<span class="sd">            include_kkt : bool</span>
-<span class="sd">            include_multipliers : bool</span>
-<span class="sd">            savefile : bool</span>
-<span class="sd">            filename : str or None</span>
-<span class="sd">            tol : float or None  (tolerance for constraints/KKT)</span>
-<span class="sd">            output_dir : str      (directory for saving file)</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : array-like or None</span>
+<span class="sd">            Physical point to assess; None selects the final solution.</span>
+<span class="sd">        tol : float or None</span>
+<span class="sd">            Common tolerance for an explicitly requested diagnostic report.</span>
+<span class="sd">        include_design_variables, include_constraints : bool</span>
+<span class="sd">            Include physical/normalized variables and named constraints.</span>
+<span class="sd">        include_kkt_conditions, include_multipliers : bool</span>
+<span class="sd">            Include KKT residuals and the corresponding public-sign multipliers.</span>
+<span class="sd">        savefile : bool</span>
+<span class="sd">            Save the assembled report as text in ``output_dir``.</span>
+<span class="sd">        filename : str or None</span>
+<span class="sd">            Explicit filename, or None for a generated report filename.</span>
+<span class="sd">        output_dir : str or path-like</span>
+<span class="sd">            Directory receiving the saved report.</span>
+<span class="sd">        to_console : bool</span>
+<span class="sd">            Print the report independently of live convergence display settings.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1"># Define the vector of independent variables</span>
-        <span class="n">x_phys</span> <span class="o">=</span> <span class="n">x</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_final</span>
-        <span class="n">x_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">scale_physical_to_normalized</span><span class="p">(</span><span class="n">x_phys</span><span class="p">)</span>
-
-        <span class="c1"># Use a loose tolerance if not given as argument</span>
-        <span class="n">tol</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">tol</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">tol</span>
-
-        <span class="c1"># Collect each section’s text and soin into a single string</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">include_kkt_conditions</span><span class="p">:</span>
-            <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_kkt_optimality_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">include_design_variables</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">problem_scale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-                <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_phys</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">include_constraints</span><span class="p">:</span>
-            <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_constraint_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">include_multipliers</span><span class="p">:</span>
-            <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_lagrange_multipliers_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">))</span>
-        <span class="n">full_text</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-
-        <span class="c1"># Decide on filename if saving</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_final</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;This report requires a completed solve or an explicit x.&quot;</span><span class="p">)</span>
+        <span class="n">cached_final</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">tol</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">library</span> <span class="o">==</span> <span class="s2">&quot;pysolver&quot;</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">cached_final</span><span class="p">:</span>
+            <span class="n">sections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_final_report_sections</span><span class="p">(</span>
+                <span class="n">include_design_variables</span><span class="p">,</span>
+                <span class="n">include_constraints</span><span class="p">,</span>
+                <span class="n">include_kkt_conditions</span><span class="p">,</span>
+                <span class="n">include_multipliers</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_phys</span> <span class="o">=</span> <span class="n">x</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_final</span>
+            <span class="n">x_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">scale_physical_to_normalized</span><span class="p">(</span><span class="n">x_phys</span><span class="p">)</span>
+            <span class="n">tol</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">tol</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">tol</span>
+            <span class="n">sections</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">include_kkt_conditions</span><span class="p">:</span>
+                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_kkt_optimality_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">include_design_variables</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">problem_scale</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_phys</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">include_constraints</span><span class="p">:</span>
+                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_constraint_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">include_multipliers</span><span class="p">:</span>
+                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_lagrange_multipliers_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">))</span>
+        <span class="n">full_text</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sections</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">savefile</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1255,15 +1277,75 @@
             <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">filepath</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="c1"># Explicit reports honor their own output request, independently of</span>
-        <span class="c1"># the option that controls live convergence printing.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_handle_output</span><span class="p">(</span>
             <span class="n">full_text</span><span class="p">,</span> <span class="n">savefile</span><span class="o">=</span><span class="n">savefile</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filepath</span><span class="p">,</span> <span class="n">to_console</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">to_console</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">full_text</span><span class="p">)</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_final_report_sections</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">include_variables</span><span class="p">,</span> <span class="n">include_constraints</span><span class="p">,</span> <span class="n">include_kkt</span><span class="p">,</span> <span class="n">include_multipliers</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Format detached final custom-solver data without requesting diagnostics.&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;report_data&quot;</span><span class="p">]</span>
+        <span class="n">assessment</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kkt&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;effective_options&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">feasibility_tol</span> <span class="o">=</span> <span class="n">assessment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;feasibility_tol&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;feasibility_tol&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="n">optimality_tol</span> <span class="o">=</span> <span class="n">assessment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;optimality_tol&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;optimality_tol&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="n">enabled</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kkt_enabled&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_kkt</span><span class="p">))</span>
+        <span class="n">sections</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">include_kkt</span><span class="p">:</span>
+            <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">tables</span><span class="o">.</span><span class="n">final_kkt_report</span><span class="p">(</span>
+                    <span class="n">assessment</span><span class="p">,</span> <span class="n">feasibility_tol</span><span class="p">,</span> <span class="n">optimality_tol</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="n">enabled</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">include_variables</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;bounds_solver&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;problem_scale&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">tables</span><span class="o">.</span><span class="n">variables_report</span><span class="p">(</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">x_solver</span><span class="p">,</span>
+                        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;bounds_solver&quot;</span><span class="p">],</span>
+                        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;variable_names&quot;</span><span class="p">],</span>
+                        <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">tables</span><span class="o">.</span><span class="n">variables_report</span><span class="p">(</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+                    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;bounds_physical&quot;</span><span class="p">],</span>
+                    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;variable_names&quot;</span><span class="p">],</span>
+                    <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">include_constraints</span> <span class="ow">or</span> <span class="n">include_multipliers</span><span class="p">:</span>
+            <span class="n">constraints</span> <span class="o">=</span> <span class="n">constraint_data_from_values</span><span class="p">(</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">fitness</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">N_eq</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">N_ineq</span><span class="p">,</span>
+                <span class="n">feasibility_tol</span><span class="p">,</span>
+                <span class="n">data</span><span class="p">[</span><span class="s2">&quot;constraint_data&quot;</span><span class="p">],</span>
+                <span class="n">has_metadata</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;has_constraint_data&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">include_constraints</span><span class="p">:</span>
+                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tables</span><span class="o">.</span><span class="n">constraint_report</span><span class="p">(</span><span class="n">constraints</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">include_multipliers</span><span class="p">:</span>
+                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">tables</span><span class="o">.</span><span class="n">final_multipliers_report</span><span class="p">(</span>
+                        <span class="n">assessment</span><span class="p">,</span>
+                        <span class="n">constraints</span><span class="p">,</span>
+                        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;variable_names&quot;</span><span class="p">],</span>
+                        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;bounds_solver&quot;</span><span class="p">],</span>
+                        <span class="n">enabled</span><span class="o">=</span><span class="n">enabled</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">sections</span>
 
 <div class="viewcode-block" id="OptimizationSolver.make_variables_report">
 <a class="viewcode-back" href="../../../api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.make_variables_report">[docs]</a>

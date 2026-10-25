@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=7dd04bbd"></script>
+    <script src="../_static/documentation_options.js?v=6aa4cbdb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -487,6 +487,7 @@
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.constraints.combine_objective_and_constraints"><code class="docutils literal notranslate"><span class="pre">combine_objective_and_constraints()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.constraints.constraint_data_from_values"><code class="docutils literal notranslate"><span class="pre">constraint_data_from_values()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.constraints.count_constraints"><code class="docutils literal notranslate"><span class="pre">count_constraints()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.constraints.get_constraint_data"><code class="docutils literal notranslate"><span class="pre">get_constraint_data()</span></code></a></li>
 </ul>
@@ -541,6 +542,15 @@ inequality constraints.</p>
 <span class="go">array([1. , 0.5, 0.7])</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pysolver_view.optimization.constraints.constraint_data_from_values">
+<span class="sig-prename descclassname"><span class="pre">pysolver_view.optimization.constraints.</span></span><span class="sig-name descname"><span class="pre">constraint_data_from_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fitness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equality_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inequality_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/constraints.html#constraint_data_from_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.constraints.constraint_data_from_values" title="Link to this definition">#</a></dt>
+<dd><p>Validate and annotate detached physical metadata using supplied residuals.</p>
+<p>Fitness follows public signs: objective, equalities, then nonpositive
+inequalities. This helper does no model work and preserves physical names,
+values, and targets while computing satisfaction from normalized residuals.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -694,6 +704,7 @@ or if required keys are missing from any entry.</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.constraints.combine_objective_and_constraints"><code class="docutils literal notranslate"><span class="pre">combine_objective_and_constraints()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.constraints.constraint_data_from_values"><code class="docutils literal notranslate"><span class="pre">constraint_data_from_values()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.constraints.count_constraints"><code class="docutils literal notranslate"><span class="pre">count_constraints()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.constraints.get_constraint_data"><code class="docutils literal notranslate"><span class="pre">get_constraint_data()</span></code></a></li>
 </ul>

@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=7dd04bbd"></script>
+    <script src="_static/documentation_options.js?v=6aa4cbdb"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -488,6 +488,7 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#controlled-slsqp-callbacks">Controlled SLSQP callbacks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-unconstrained-optimization">Example 1: Unconstrained optimization</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-definition">Problem definition</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-implementation">Problem implementation</a></li>
@@ -500,6 +501,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Problem solution</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#final-reports-and-convergence-plots">Final reports and convergence plots</a></li>
 </ul>
             </nav>
         </div>
@@ -514,6 +516,40 @@
   <section class="tex2jax_ignore mathjax_ignore" id="tutorial-optimization-problems">
 <span id="optimization-tutorial"></span><h1>Tutorial: Optimization problems<a class="headerlink" href="#tutorial-optimization-problems" title="Link to this heading">#</a></h1>
 <p>In this tutorial, we will explore how to utilize the <code class="docutils literal notranslate"><span class="pre">OptimizationSolver</span></code> and <code class="docutils literal notranslate"><span class="pre">OptimizationProblem</span></code> classes to solve optimization problems.</p>
+<section id="controlled-slsqp-callbacks">
+<h2>Controlled SLSQP callbacks<a class="headerlink" href="#controlled-slsqp-callbacks" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">OptimizationSolver(library=&quot;pysolver&quot;,</span> <span class="pre">method=&quot;slsqp&quot;)</span></code> for controlled
+SLSQP through the main frontend. The frontend owns evaluation accounting,
+convergence printing, plotting, and result assembly. Configure <code class="docutils literal notranslate"><span class="pre">logger</span></code> and
+<code class="docutils literal notranslate"><span class="pre">print_convergence</span></code> there to get a single consistent report.</p>
+<p>The usual <code class="docutils literal notranslate"><span class="pre">callback_functions</span></code> receive <code class="docutils literal notranslate"><span class="pre">(normalized_x,</span> <span class="pre">callback_count)</span></code>. For
+integrations that also need recovery counters and complete KKT diagnostics,
+provide a <code class="docutils literal notranslate"><span class="pre">backend_callback</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">records</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">psv</span><span class="o">.</span><span class="n">OptimizationSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="p">,</span>
+    <span class="n">library</span><span class="o">=</span><span class="s2">&quot;pysolver&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;slsqp&quot;</span><span class="p">,</span>
+    <span class="n">problem_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">update_on</span><span class="o">=</span><span class="s2">&quot;iteration&quot;</span><span class="p">,</span>
+    <span class="n">backend_callback</span><span class="o">=</span><span class="n">records</span><span class="o">.</span><span class="n">append</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This hook receives a detached dictionary at the initial and each accepted point.
+Rejected trials, derivative probes, and final synchronization do not invoke it.
+Records have the same coordinates and signs as <code class="docutils literal notranslate"><span class="pre">solver.backend_result.history</span></code>:
+<code class="docutils literal notranslate"><span class="pre">x</span></code> is normalized, equalities are zero, and inequalities in <code class="docutils literal notranslate"><span class="pre">fitness</span></code> are
+nonnegative. Equality KKT multiplier signs therefore differ from the frontend’s
+public <code class="docutils literal notranslate"><span class="pre">solver.result.kkt</span></code> convention. Raw <code class="docutils literal notranslate"><span class="pre">nfev</span></code> and <code class="docutils literal notranslate"><span class="pre">njev</span></code> are backend request
+counts; use <code class="docutils literal notranslate"><span class="pre">solver.result.nfev</span></code> for total model calls including derivative work.
+The callback performs no additional model or KKT evaluations by itself.</p>
+<p>Return <code class="docutils literal notranslate"><span class="pre">False</span></code> or raise <code class="docutils literal notranslate"><span class="pre">StopIteration</span></code> from either callback form to cancel
+controlled SLSQP at its current accepted point. Other callback errors propagate.
+<code class="docutils literal notranslate"><span class="pre">backend_callback</span></code> is available only with <code class="docutils literal notranslate"><span class="pre">library=&quot;pysolver&quot;</span></code>; native SciPy
+callbacks do not certify accepted points.</p>
+</section>
 <section id="example-1-unconstrained-optimization">
 <h2>Example 1: Unconstrained optimization<a class="headerlink" href="#example-1-unconstrained-optimization" title="Link to this heading">#</a></h2>
 <section id="problem-definition">
@@ -800,6 +836,43 @@ x3 = +1.000000e+00
 For more examples, see the <a class="reference external" href="https://github.com/turbo-sim/pysolver_view/tree/main/demos/tutorials">optimization demos</a>.</p>
 </section>
 </section>
+<section id="final-reports-and-convergence-plots">
+<h2>Final reports and convergence plots<a class="headerlink" href="#final-reports-and-convergence-plots" title="Link to this heading">#</a></h2>
+<p>After a solve, use the frontend to save its convergence history and render the
+final design, constraints, KKT conditions, and Lagrange multipliers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span><span class="o">.</span><span class="n">plot_convergence_history</span><span class="p">(</span>
+    <span class="n">savefile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;convergence_history&quot;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="n">showfig</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">print_convergence_history</span><span class="p">(</span>
+    <span class="n">savefile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;convergence_history.txt&quot;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">,</span>
+    <span class="n">to_console</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">print_optimization_report</span><span class="p">(</span>
+    <span class="n">include_design_variables</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">include_constraints</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">include_kkt_conditions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">include_multipliers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">savefile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;optimization_report.txt&quot;</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Convergence plots use detached recorded observations and save PNG and SVG.
+For <code class="docutils literal notranslate"><span class="pre">library=&quot;pysolver&quot;</span></code>, leaving both <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">tol</span></code> unspecified in the final
+report uses the authoritative saved solution and cached public KKT certificate.
+It retains the solve’s separate <code class="docutils literal notranslate"><span class="pre">feasibility_tol</span></code> and <code class="docutils literal notranslate"><span class="pre">optimality_tol</span></code>, including
+for rejected solutions. This rendering performs no new model evaluations,
+derivative probes, or multiplier fitting. Named physical constraints and bounds
+are detached with the result, so later diagnostic evaluations cannot replace
+its final design metadata. Disabled or unavailable KKT metrics remain explicitly
+unassessed rather than triggering another probe.</p>
+<p>Supplying <code class="docutils literal notranslate"><span class="pre">x</span></code> (physical coordinates) or <code class="docutils literal notranslate"><span class="pre">tol</span></code> requests an explicit diagnostic
+assessment instead. That path may perform additional counted model/derivative
+work and uses a single <code class="docutils literal notranslate"><span class="pre">tol</span></code> for feasibility and optimality. Other optimization
+backends retain their diagnostic report behavior. Convergence history is saved
+separately; it is not repeated in <code class="docutils literal notranslate"><span class="pre">print_optimization_report</span></code>.</p>
+</section>
 </section>
 
 
@@ -849,6 +922,7 @@ For more examples, see the <a class="reference external" href="https://github.co
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#controlled-slsqp-callbacks">Controlled SLSQP callbacks</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-unconstrained-optimization">Example 1: Unconstrained optimization</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-definition">Problem definition</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-implementation">Problem implementation</a></li>
@@ -861,6 +935,7 @@ For more examples, see the <a class="reference external" href="https://github.co
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Problem solution</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#final-reports-and-convergence-plots">Final reports and convergence plots</a></li>
 </ul>
   </nav></div>
 

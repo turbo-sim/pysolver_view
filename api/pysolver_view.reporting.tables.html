@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=7dd04bbd"></script>
+    <script src="../_static/documentation_options.js?v=6aa4cbdb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -489,6 +489,8 @@
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.reporting.tables.constraint_report"><code class="docutils literal notranslate"><span class="pre">constraint_report()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.reporting.tables.final_kkt_report"><code class="docutils literal notranslate"><span class="pre">final_kkt_report()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.reporting.tables.final_multipliers_report"><code class="docutils literal notranslate"><span class="pre">final_multipliers_report()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.reporting.tables.kkt_report"><code class="docutils literal notranslate"><span class="pre">kkt_report()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.reporting.tables.multipliers_report"><code class="docutils literal notranslate"><span class="pre">multipliers_report()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.reporting.tables.variables_report"><code class="docutils literal notranslate"><span class="pre">variables_report()</span></code></a></li>
@@ -510,6 +512,20 @@
 <dt class="sig sig-object py" id="pysolver_view.reporting.tables.constraint_report">
 <span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">constraint_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#constraint_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.constraint_report" title="Link to this definition">#</a></dt>
 <dd><p>generate a formatted constraint report at x_phys, using get_constraint_data to build/validate the entries.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pysolver_view.reporting.tables.final_kkt_report">
+<span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">final_kkt_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assessment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feasibility_tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimality_tol</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#final_kkt_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.final_kkt_report" title="Link to this definition">#</a></dt>
+<dd><p>Render a cached final certificate with its separate acceptance limits.</p>
+<p>Metrics and multipliers use public signs and solver coordinates. Missing
+diagnostics remain unavailable; this formatter never estimates multipliers.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pysolver_view.reporting.tables.final_multipliers_report">
+<span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">final_multipliers_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assessment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#final_multipliers_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.final_multipliers_report" title="Link to this definition">#</a></dt>
+<dd><p>Format cached public multipliers through the existing named table.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -638,6 +654,8 @@
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.reporting.tables.constraint_report"><code class="docutils literal notranslate"><span class="pre">constraint_report()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.reporting.tables.final_kkt_report"><code class="docutils literal notranslate"><span class="pre">final_kkt_report()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.reporting.tables.final_multipliers_report"><code class="docutils literal notranslate"><span class="pre">final_multipliers_report()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.reporting.tables.kkt_report"><code class="docutils literal notranslate"><span class="pre">kkt_report()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.reporting.tables.multipliers_report"><code class="docutils literal notranslate"><span class="pre">multipliers_report()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.reporting.tables.variables_report"><code class="docutils literal notranslate"><span class="pre">variables_report()</span></code></a></li>

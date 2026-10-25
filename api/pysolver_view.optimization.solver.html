@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=7dd04bbd"></script>
+    <script src="../_static/documentation_options.js?v=6aa4cbdb"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -528,7 +528,7 @@
 <span id="pysolver-view-optimization-solver-module"></span><h1>pysolver_view.optimization.solver module<a class="headerlink" href="#module-pysolver_view.optimization.solver" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="pysolver_view.optimization.solver.OptimizationSolver">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysolver_view.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">OptimizationSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scipy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'slsqp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2-point'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative_abs_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_scale_objective</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_scale_constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gradient'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_functions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_improvement_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance_check_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_kkt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/solver.html#OptimizationSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.solver.OptimizationSolver" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysolver_view.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">OptimizationSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scipy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'slsqp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2-point'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative_abs_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_scale_objective</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_scale_constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gradient'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback_functions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_improvement_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance_check_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_kkt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/solver.html#OptimizationSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.solver.OptimizationSolver" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Solver class for general nonlinear programming problems.</p>
 <p>The solver is designed to handle constrained optimization problems of the form:</p>
@@ -616,6 +616,15 @@ unavailable optimality and no multiplier estimation runs automatically.
 Custom SLSQP success then requires native success and feasibility only.
 Explicit evaluate_kkt_conditions or requested KKT/multiplier reports still
 perform an on-demand assessment, outside the automatic solve policy.</p>
+</dd>
+<dt><strong>backend_callback</strong><span class="classifier">callable, optional</span></dt><dd><p>With <code class="docutils literal notranslate"><span class="pre">library=&quot;pysolver&quot;</span></code>, receive a detached copy of each initial or
+accepted SLSQP record, including KKT diagnostics and recovery counters.
+Records use normalized solver coordinates and the backend’s constraint
+convention: equalities are zero and inequalities are nonnegative, as
+in <code class="docutils literal notranslate"><span class="pre">backend_result.history</span></code>. This differs from the frontend’s public
+nonpositive inequalities and equality multiplier signs. Rejected trials,
+derivative probes, and final synchronization do not invoke this hook.
+Return False or raise StopIteration to stop at the accepted point.</p>
 </dd>
 </dl>
 </dd>
@@ -956,42 +965,36 @@ problem class name and the optimization start datetime.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.solver.OptimizationSolver.print_optimization_report">
 <span class="sig-name descname"><span class="pre">print_optimization_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_design_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_kkt_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_multipliers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'output'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_console</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/solver.html#OptimizationSolver.print_optimization_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.solver.OptimizationSolver.print_optimization_report" title="Link to this definition">#</a></dt>
-<dd><blockquote>
-<div><p>Generate and print or save a complete optimization report with customizable content.</p>
-<p>This method assembles a detailed summary of the optimization process and results,
-allowing fine-grained control over which components to include. It supports
-outputting the report to the console or saving it to a file.</p>
-<p>The report may include the following sections:
-- Convergence history: number of function and gradient evaluations, objective function value, maximum constraint violation, and step norm. The report also includes The method provides a detailed report on an exit message, success status, and execution time
-- Number of function evaluations
-- Number of gradient evaluations
-- Objective function value
-- Maximum constraint violation
-- Two-norm of the update step</p>
-</div></blockquote>
-<dl>
-<dt>Objective value, constraint violation, and step norm over iterations.</dt><dd><ul class="simple">
-<li><p>Design variables: Final values, shown in physical units and (if applicable) normalized space.</p></li>
-<li><p>Constraints: Numerical values and satisfaction status of all constraints.</p></li>
-<li><p>KKT conditions: Checks of the Karush-Kuhn-Tucker optimality conditions.</p></li>
-<li><p>Lagrange multipliers: Values of multipliers for equality, inequality, and bound constraints.</p></li>
-</ul>
-<p>This method is intended to be called after the <cite>solve()</cite> method has been completed.</p>
-</dd>
-</dl>
+<dd><p>Print or save selected variables, constraints, KKT and multipliers.</p>
+<p>With the custom <code class="docutils literal notranslate"><span class="pre">pysolver</span></code> backend, omitting both <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">tol</span></code>
+renders detached data for the authoritative final point. Its cached KKT
+certificate retains the solve’s separate feasibility and optimality
+tolerances. Unavailable or disabled diagnostics remain unassessed; no
+model evaluation, derivative probe, or multiplier fit is requested.</p>
+<p>Supplying physical <code class="docutils literal notranslate"><span class="pre">x</span></code> or an explicit <code class="docutils literal notranslate"><span class="pre">tol</span></code> requests a diagnostic
+assessment using the legacy common tolerance for feasibility and
+optimality. Those explicit requests may add counted diagnostic work.
+Other backends retain this diagnostic behavior. When needed, the
+default diagnostic tolerance is five times the native solver tolerance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>include_convergence_history</strong><span class="classifier">bool</span></dt><dd></dd>
-<dt><strong>include_design_variables_normalized</strong><span class="classifier">bool</span></dt><dd></dd>
-<dt><strong>include_design_variables_physical</strong><span class="classifier">bool</span></dt><dd></dd>
-<dt><strong>include_constraints</strong><span class="classifier">bool</span></dt><dd></dd>
-<dt><strong>include_kkt</strong><span class="classifier">bool</span></dt><dd></dd>
-<dt><strong>include_multipliers</strong><span class="classifier">bool</span></dt><dd></dd>
-<dt><strong>savefile</strong><span class="classifier">bool</span></dt><dd></dd>
-<dt><strong>filename</strong><span class="classifier">str or None</span></dt><dd></dd>
-<dt><strong>tol</strong><span class="classifier">float or None  (tolerance for constraints/KKT)</span></dt><dd></dd>
-<dt><strong>output_dir</strong><span class="classifier">str      (directory for saving file)</span></dt><dd></dd>
+<dt><strong>x</strong><span class="classifier">array-like or None</span></dt><dd><p>Physical point to assess; None selects the final solution.</p>
+</dd>
+<dt><strong>tol</strong><span class="classifier">float or None</span></dt><dd><p>Common tolerance for an explicitly requested diagnostic report.</p>
+</dd>
+<dt><strong>include_design_variables, include_constraints</strong><span class="classifier">bool</span></dt><dd><p>Include physical/normalized variables and named constraints.</p>
+</dd>
+<dt><strong>include_kkt_conditions, include_multipliers</strong><span class="classifier">bool</span></dt><dd><p>Include KKT residuals and the corresponding public-sign multipliers.</p>
+</dd>
+<dt><strong>savefile</strong><span class="classifier">bool</span></dt><dd><p>Save the assembled report as text in <code class="docutils literal notranslate"><span class="pre">output_dir</span></code>.</p>
+</dd>
+<dt><strong>filename</strong><span class="classifier">str or None</span></dt><dd><p>Explicit filename, or None for a generated report filename.</p>
+</dd>
+<dt><strong>output_dir</strong><span class="classifier">str or path-like</span></dt><dd><p>Directory receiving the saved report.</p>
+</dd>
+<dt><strong>to_console</strong><span class="classifier">bool</span></dt><dd><p>Print the report independently of live convergence display settings.</p>
+</dd>
 </dl>
 </dd>
 </dl>
