@@ -35,6 +35,17 @@ def optimization_result(run, solution, final_values, final_snapshot):
         kkt_time=run.kkt_time,
     )
     if run.library == "pysolver":
+        metadata, has_metadata = run._evaluation.final_constraint_metadata(
+            run.x_final_norm
+        )
+        result.report_data = dict(
+            variable_names=copy.deepcopy(run.problem.variable_names),
+            bounds_physical=copy.deepcopy(run.problem.get_bounds()),
+            bounds_solver=copy.deepcopy(run.problem.get_bounds_normalized()),
+            problem_scale=run.problem.problem_scale,
+            constraint_data=metadata,
+            has_constraint_data=has_metadata,
+        )
         for name in ("feasible", "stationary", "events", "effective_options"):
             result[name] = copy.deepcopy(solution.get(name))
         assessment = run._public_driver_kkt(solution.get("kkt"))

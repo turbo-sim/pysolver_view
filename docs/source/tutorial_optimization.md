@@ -4,6 +4,44 @@
 
 In this tutorial, we will explore how to utilize the `OptimizationSolver` and `OptimizationProblem` classes to solve optimization problems.
 
+## Controlled SLSQP callbacks
+
+Use `OptimizationSolver(library="pysolver", method="slsqp")` for controlled
+SLSQP through the main frontend. The frontend owns evaluation accounting,
+convergence printing, plotting, and result assembly. Configure `logger` and
+`print_convergence` there to get a single consistent report.
+
+The usual `callback_functions` receive `(normalized_x, callback_count)`. For
+integrations that also need recovery counters and complete KKT diagnostics,
+provide a `backend_callback`:
+
+```python
+records = []
+solver = psv.OptimizationSolver(
+    problem,
+    library="pysolver",
+    method="slsqp",
+    problem_scale=1.0,
+    update_on="iteration",
+    backend_callback=records.append,
+)
+solver.solve(x0)
+```
+
+This hook receives a detached dictionary at the initial and each accepted point.
+Rejected trials, derivative probes, and final synchronization do not invoke it.
+Records have the same coordinates and signs as `solver.backend_result.history`:
+`x` is normalized, equalities are zero, and inequalities in `fitness` are
+nonnegative. Equality KKT multiplier signs therefore differ from the frontend's
+public `solver.result.kkt` convention. Raw `nfev` and `njev` are backend request
+counts; use `solver.result.nfev` for total model calls including derivative work.
+The callback performs no additional model or KKT evaluations by itself.
+
+Return `False` or raise `StopIteration` from either callback form to cancel
+controlled SLSQP at its current accepted point. Other callback errors propagate.
+`backend_callback` is available only with `library="pysolver"`; native SciPy
+callbacks do not certify accepted points.
+
 ## Example 1: Unconstrained optimization
 
 ### Problem definition
@@ -316,3 +354,43 @@ Optimization Convergence History for the constrained Rosenbrock's problem
 
 Congratulations! You've now successfully set up and solved the constrained Rosenbrock problem using PySolverView.
 For more examples, see the [optimization demos](https://github.com/turbo-sim/pysolver_view/tree/main/demos/tutorials).
+
+## Final reports and convergence plots
+
+After a solve, use the frontend to save its convergence history and render the
+final design, constraints, KKT conditions, and Lagrange multipliers:
+
+```python
+solver.plot_convergence_history(
+    savefile=True, filename="convergence_history", output_dir="output", showfig=False
+)
+solver.print_convergence_history(
+    savefile=True, filename="convergence_history.txt", output_dir="output",
+    to_console=False,
+)
+solver.print_optimization_report(
+    include_design_variables=True,
+    include_constraints=True,
+    include_kkt_conditions=True,
+    include_multipliers=True,
+    savefile=True,
+    filename="optimization_report.txt",
+    output_dir="output",
+)
+```
+
+Convergence plots use detached recorded observations and save PNG and SVG.
+For `library="pysolver"`, leaving both `x` and `tol` unspecified in the final
+report uses the authoritative saved solution and cached public KKT certificate.
+It retains the solve's separate `feasibility_tol` and `optimality_tol`, including
+for rejected solutions. This rendering performs no new model evaluations,
+derivative probes, or multiplier fitting. Named physical constraints and bounds
+are detached with the result, so later diagnostic evaluations cannot replace
+its final design metadata. Disabled or unavailable KKT metrics remain explicitly
+unassessed rather than triggering another probe.
+
+Supplying `x` (physical coordinates) or `tol` requests an explicit diagnostic
+assessment instead. That path may perform additional counted model/derivative
+work and uses a single `tol` for feasibility and optimality. Other optimization
+backends retain their diagnostic report behavior. Convergence history is saved
+separately; it is not repeated in `print_optimization_report`.

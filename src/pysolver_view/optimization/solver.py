@@ -20,6 +20,7 @@ from .constraints import (
     count_constraints as count_constraints,
     combine_objective_and_constraints as combine_objective_and_constraints,
     get_constraint_data,
+    constraint_data_from_values,
 )
 
 
@@ -119,6 +120,15 @@ class OptimizationSolver:
         Custom SLSQP success then requires native success and feasibility only.
         Explicit evaluate_kkt_conditions or requested KKT/multiplier reports still
         perform an on-demand assessment, outside the automatic solve policy.
+    backend_callback : callable, optional
+        With ``library="pysolver"``, receive a detached copy of each initial or
+        accepted SLSQP record, including KKT diagnostics and recovery counters.
+        Records use normalized solver coordinates and the backend's constraint
+        convention: equalities are zero and inequalities are nonnegative, as
+        in ``backend_result.history``. This differs from the frontend's public
+        nonpositive inequalities and equality multiplier signs. Rejected trials,
+        derivative probes, and final synchronization do not invoke this hook.
+        Return False or raise StopIteration to stop at the accepted point.
 
     Methods
     -------
@@ -155,6 +165,7 @@ class OptimizationSolver:
         plot_improvement_only=False,
         tolerance_check_cache=None,
         check_kkt=True,
+        backend_callback=None,
     ):
         # Initialize class variables
         if not isinstance(check_kkt, bool):
@@ -175,6 +186,11 @@ class OptimizationSolver:
         self.derivative_method = derivative_method
         self.derivative_abs_step = derivative_abs_step
         self.callback_functions = self._validate_callback(callback_functions)
+        if backend_callback is not None and not callable(backend_callback):
+            raise TypeError("backend_callback must be callable or None.")
+        if backend_callback is not None and library != "pysolver":
+            raise ValueError("backend_callback requires library='pysolver'.")
+        self.backend_callback = backend_callback
         self.callback_function_call_count = 0
         self.plot_improvement_only = plot_improvement_only
 
@@ -540,6 +556,7 @@ class OptimizationSolver:
         for this backend always receive accepted points. Raising StopIteration
         or returning False stops at that point with a structured failed result.
         """
+        self._evaluation.record_accepted_metadata(entry["x"])
         initial = self._custom_initial_pending
         self._custom_initial_pending = False
         self.iteration_count = int(entry["iteration"])
@@ -556,10 +573,14 @@ class OptimizationSolver:
             self.iteration_history.append(copy.deepcopy(snapshot))
         if initial or self.update_on == "iteration":
             self._publish_observation(snapshot, notify=False)
-        if self.callback_functions:
-            self.callback_function_call_count += 1
+        if self.backend_callback is not None or self.callback_functions:
             self._in_callback = True
             try:
+                if self.backend_callback is not None:
+                    if self.backend_callback(copy.deepcopy(entry)) is False:
+                        raise StopIteration("Stopped by backend callback")
+                if self.callback_functions:
+                    self.callback_function_call_count += 1
                 for callback in self.callback_functions:
                     if (
                         callback(entry["x"].copy(), self.callback_function_call_count)
@@ -738,69 +759,70 @@ class OptimizationSolver:
         output_dir="output",
         to_console=True,
     ):
+        """Print or save selected variables, constraints, KKT and multipliers.
+
+        With the custom ``pysolver`` backend, omitting both ``x`` and ``tol``
+        renders detached data for the authoritative final point. Its cached KKT
+        certificate retains the solve's separate feasibility and optimality
+        tolerances. Unavailable or disabled diagnostics remain unassessed; no
+        model evaluation, derivative probe, or multiplier fit is requested.
+
+        Supplying physical ``x`` or an explicit ``tol`` requests a diagnostic
+        assessment using the legacy common tolerance for feasibility and
+        optimality. Those explicit requests may add counted diagnostic work.
+        Other backends retain this diagnostic behavior. When needed, the
+        default diagnostic tolerance is five times the native solver tolerance.
+
+        Parameters
+        ----------
+        x : array-like or None
+            Physical point to assess; None selects the final solution.
+        tol : float or None
+            Common tolerance for an explicitly requested diagnostic report.
+        include_design_variables, include_constraints : bool
+            Include physical/normalized variables and named constraints.
+        include_kkt_conditions, include_multipliers : bool
+            Include KKT residuals and the corresponding public-sign multipliers.
+        savefile : bool
+            Save the assembled report as text in ``output_dir``.
+        filename : str or None
+            Explicit filename, or None for a generated report filename.
+        output_dir : str or path-like
+            Directory receiving the saved report.
+        to_console : bool
+            Print the report independently of live convergence display settings.
         """
-            Generate and print or save a complete optimization report with customizable content.
-
-            This method assembles a detailed summary of the optimization process and results,
-            allowing fine-grained control over which components to include. It supports
-            outputting the report to the console or saving it to a file.
-
-            The report may include the following sections:
-            - Convergence history: number of function and gradient evaluations, objective function value, maximum constraint violation, and step norm. The report also includes The method provides a detailed report on an exit message, success status, and execution time
-            - Number of function evaluations
-            - Number of gradient evaluations
-            - Objective function value
-            - Maximum constraint violation
-            - Two-norm of the update step
-
-
-        Objective value, constraint violation, and step norm over iterations.
-            - Design variables: Final values, shown in physical units and (if applicable) normalized space.
-            - Constraints: Numerical values and satisfaction status of all constraints.
-            - KKT conditions: Checks of the Karush-Kuhn-Tucker optimality conditions.
-            - Lagrange multipliers: Values of multipliers for equality, inequality, and bound constraints.
-
-            This method is intended to be called after the `solve()` method has been completed.
-
-
-            Parameters
-            ----------
-            include_convergence_history : bool
-            include_design_variables_normalized : bool
-            include_design_variables_physical : bool
-            include_constraints : bool
-            include_kkt : bool
-            include_multipliers : bool
-            savefile : bool
-            filename : str or None
-            tol : float or None  (tolerance for constraints/KKT)
-            output_dir : str      (directory for saving file)
-        """
-
-        # Define the vector of independent variables
-        x_phys = x if x is not None else self.x_final
-        x_norm = self.problem.scale_physical_to_normalized(x_phys)
-
-        # Use a loose tolerance if not given as argument
-        tol = 5 * self.options["tolerance"] if tol is None else tol
-
-        # Collect each section’s text and soin into a single string
-        r = []
-        if include_kkt_conditions:
-            r.append(self.make_kkt_optimality_report(x_norm, tol))
-        if include_design_variables:
-            if self.problem.problem_scale is None:
-                r.append(self.make_variables_report(x_norm, normalized=False))
-            else:
-                r.append(self.make_variables_report(x_norm, normalized=True))
-                r.append(self.make_variables_report(x_phys, normalized=False))
-        if include_constraints:
-            r.append(self.make_constraint_report(x_norm, tol))
-        if include_multipliers:
-            r.append(self.make_lagrange_multipliers_report(x_norm, tol))
-        full_text = "\n".join(r)
-
-        # Decide on filename if saving
+        if x is None and self.x_final is None:
+            raise ValueError("This report requires a completed solve or an explicit x.")
+        cached_final = (
+            x is None
+            and tol is None
+            and self.library == "pysolver"
+            and self.result is not None
+        )
+        if cached_final:
+            sections = self._final_report_sections(
+                include_design_variables,
+                include_constraints,
+                include_kkt_conditions,
+                include_multipliers,
+            )
+        else:
+            x_phys = x if x is not None else self.x_final
+            x_norm = self.problem.scale_physical_to_normalized(x_phys)
+            tol = 5 * self.options["tolerance"] if tol is None else tol
+            sections = []
+            if include_kkt_conditions:
+                sections.append(self.make_kkt_optimality_report(x_norm, tol))
+            if include_design_variables:
+                if self.problem.problem_scale is not None:
+                    sections.append(self.make_variables_report(x_norm, normalized=True))
+                sections.append(self.make_variables_report(x_phys, normalized=False))
+            if include_constraints:
+                sections.append(self.make_constraint_report(x_norm, tol))
+            if include_multipliers:
+                sections.append(self.make_lagrange_multipliers_report(x_norm, tol))
+        full_text = "\n".join(sections)
         if savefile:
             os.makedirs(output_dir, exist_ok=True)
             if filename is None:
@@ -811,14 +833,74 @@ class OptimizationSolver:
             filepath = os.path.join(output_dir, filename)
         else:
             filepath = None
-
-        # Explicit reports honor their own output request, independently of
-        # the option that controls live convergence printing.
         self._handle_output(
             full_text, savefile=savefile, filename=filepath, to_console=False
         )
         if to_console:
             print(full_text)
+
+    def _final_report_sections(
+        self, include_variables, include_constraints, include_kkt, include_multipliers
+    ):
+        """Format detached final custom-solver data without requesting diagnostics."""
+        result = self.result
+        data = result["report_data"]
+        assessment = result.get("kkt") or {}
+        options = result.get("effective_options") or {}
+        feasibility_tol = assessment.get(
+            "feasibility_tol", options.get("feasibility_tol", self.options["tolerance"])
+        )
+        optimality_tol = assessment.get(
+            "optimality_tol", options.get("optimality_tol", self.options["tolerance"])
+        )
+        enabled = bool(result.get("kkt_enabled", self.check_kkt))
+        sections = []
+        if include_kkt:
+            sections.append(
+                tables.final_kkt_report(
+                    assessment, feasibility_tol, optimality_tol, enabled=enabled
+                )
+            )
+        if include_variables:
+            if data["bounds_solver"] is not None and data["problem_scale"] is not None:
+                sections.append(
+                    tables.variables_report(
+                        result.x_solver,
+                        data["bounds_solver"],
+                        data["variable_names"],
+                        normalized=True,
+                    )
+                )
+            sections.append(
+                tables.variables_report(
+                    result.x,
+                    data["bounds_physical"],
+                    data["variable_names"],
+                    normalized=False,
+                )
+            )
+        if include_constraints or include_multipliers:
+            constraints = constraint_data_from_values(
+                result.fitness,
+                self.N_eq,
+                self.N_ineq,
+                feasibility_tol,
+                data["constraint_data"],
+                has_metadata=data["has_constraint_data"],
+            )
+            if include_constraints:
+                sections.append(tables.constraint_report(constraints))
+            if include_multipliers:
+                sections.append(
+                    tables.final_multipliers_report(
+                        assessment,
+                        constraints,
+                        data["variable_names"],
+                        data["bounds_solver"],
+                        enabled=enabled,
+                    )
+                )
+        return sections
 
     def make_variables_report(self, x_norm, normalized=True):
         """

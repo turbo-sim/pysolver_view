@@ -173,8 +173,32 @@ def get_constraint_data(self, x_norm, tol):
     """
     # Metadata must belong to the same model evaluation as the requested values.
     self._evaluate_fitness(x_norm, diagnostic=True)
-    data = copy.deepcopy(self.cache["constraint_data"])
-    if self.cache["has_constraint_data"]:
+    return constraint_data_from_values(
+        self.cache["fitness"],
+        self.N_eq,
+        self.N_ineq,
+        tol,
+        self.cache["constraint_data"],
+        has_metadata=self.cache["has_constraint_data"],
+    )
+
+
+def constraint_data_from_values(
+    fitness, equality_count, inequality_count, tol, metadata=None, *, has_metadata=False
+):
+    """Validate and annotate detached physical metadata using supplied residuals.
+
+    Fitness follows public signs: objective, equalities, then nonpositive
+    inequalities. This helper does no model work and preserves physical names,
+    values, and targets while computing satisfaction from normalized residuals.
+    """
+    fitness = np.asarray(fitness)
+    if fitness.shape != (1 + equality_count + inequality_count,):
+        raise ValueError("Constraint report values do not match declared counts.")
+    c_eq = fitness[1 : 1 + equality_count]
+    c_ineq = fitness[1 + equality_count :]
+    data = copy.deepcopy(metadata)
+    if has_metadata:
         if not isinstance(data, list) or not all(isinstance(d, dict) for d in data):
             raise TypeError("Expected self.constraint_data to be a list of dicts")
         required = {"name", "type", "target", "value"}
@@ -188,52 +212,34 @@ def get_constraint_data(self, x_norm, tol):
         for entry in data:
             validate_keys(entry, required, allowed)
             if entry["type"] == "=":
-                if equality_index >= self.N_eq:
+                if equality_index >= equality_count:
                     raise ValueError("Too many named equality constraints.")
-                mismatch = self.cache["c_eq"][equality_index]
+                mismatch = c_eq[equality_index]
                 entry["satisfied"] = bool(abs(mismatch) <= tol)
                 equality_index += 1
             elif entry["type"] in {"<", ">"}:
-                if inequality_index >= self.N_ineq:
+                if inequality_index >= inequality_count:
                     raise ValueError("Too many named inequality constraints.")
-                mismatch = self.cache["c_ineq"][inequality_index]
+                mismatch = c_ineq[inequality_index]
                 entry["satisfied"] = bool(mismatch <= tol)
                 inequality_index += 1
             else:
                 raise ValueError("Named constraint type must be '=', '<', or '>'.")
-        if (equality_index, inequality_index) != (self.N_eq, self.N_ineq):
+        if (equality_index, inequality_index) != (equality_count, inequality_count):
             raise ValueError("Named constraint counts must match the fitness vector.")
         return data
 
-    # Otherwise evaluate constraints from scratch
-    x_norm = np.asarray(x_norm)
-    fitness = self._evaluate_fitness(x_norm, diagnostic=True)
-    c_eq = fitness[1 : 1 + self.N_eq]
-    c_ineq = fitness[1 + self.N_eq :]
     data = []
-
-    # Equality constraints
-    for i, val in enumerate(c_eq):
-        data.append(
-            {
-                "name": f"equality_constraint_{i}",
-                "type": "=",
-                "target": 0.0,
-                "value": val,
-                "satisfied": abs(val) <= tol,
-            }
-        )
-
-    # Inequality constraints
-    for i, val in enumerate(c_ineq):
-        data.append(
-            {
-                "name": f"inequality_constraint_{i}",
-                "type": "<",
-                "target": 0.0,
-                "value": val,
-                "satisfied": val <= tol,
-            }
-        )
-
+    for kind, residuals in (("equality", c_eq), ("inequality", c_ineq)):
+        for index, value in enumerate(residuals):
+            equality = kind == "equality"
+            data.append(
+                dict(
+                    name=f"{kind}_constraint_{index}",
+                    type="=" if equality else "<",
+                    target=0.0,
+                    value=value,
+                    satisfied=bool(abs(value) <= tol if equality else value <= tol),
+                )
+            )
     return data

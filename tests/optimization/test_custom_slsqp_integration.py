@@ -1,5 +1,7 @@
 """Independent high-level checks for signs, scaling, accounting, and domain recovery."""
 
+from copy import deepcopy
+
 import numpy as np
 import pytest
 from scipy.optimize import OptimizeResult
@@ -327,3 +329,139 @@ def test_disabled_domain_recovery_returns_last_accepted_point_and_its_kkt():
     assert solver.result.optimality == pytest.approx(
         max(np.linalg.norm(stationarity, np.inf), complementarity)
     )
+
+
+def test_backend_callback_exposes_complete_raw_accepted_records():
+    """Detailed normalized records preserve backend signs and exclude probes."""
+    problem = MixedConstraints()
+    observed = []
+    solver = make_solver(problem, problem_scale=1.0, backend_callback=observed.append)
+    solver.solve([0.5, 2.5, 0.5])
+    assert solver.success, solver.message
+    assert observed[0]["iteration"] == 0
+    assert len(observed) == len(solver.backend_result.history)
+    assert solver.derivative_func_count > 0
+    assert len(observed) < len(problem.calls)
+    assert solver.callback_function_call_count == 0
+    for record, native in zip(observed, solver.backend_result.history):
+        assert {
+            "iteration",
+            "fitness",
+            "kkt",
+            "step_norm",
+            "objective_change",
+            "domain_rejections",
+            "derivative_rejections",
+            "nfev",
+            "njev",
+        } <= record.keys()
+        np.testing.assert_array_equal(record["x"], native["x"])
+        np.testing.assert_array_equal(record["fitness"], native["fitness"])
+        x = problem.scale_normalized_to_physical(record["x"])
+        assert record["fitness"][1] == pytest.approx(x[0] + x[1] - 3)
+        assert record["fitness"][2] == pytest.approx(1 - x[0])
+    raw_multipliers = observed[-1]["kkt"]["multipliers"]
+    public_multipliers = solver.result.kkt["multipliers"]
+    np.testing.assert_allclose(
+        raw_multipliers["equality"], -public_multipliers["equality"]
+    )
+    np.testing.assert_allclose(
+        raw_multipliers["inequality"], public_multipliers["inequality"]
+    )
+
+
+def test_backend_callback_mutation_does_not_change_solver_or_legacy_callbacks(capsys):
+    """Mutating nested diagnostic arrays cannot steer a solve or another observer."""
+    original_records, legacy_points = [], []
+
+    def mutate(record):
+        """Modify all mutable payload layers after keeping a clean observation."""
+        original_records.append(deepcopy(record))
+        record["x"][:] = 999
+        record["fitness"][:] = 999
+        if record["kkt"] is not None and record["kkt"]["multipliers"] is not None:
+            record["kkt"]["multipliers"]["equality"][:] = 999
+        record.clear()
+
+    solver = make_solver(
+        AnalyticMixedConstraints(),
+        backend_callback=mutate,
+        callback_functions=lambda x, count: legacy_points.append((x, count)),
+        print_convergence=True,
+    )
+    solver.solve([0.5, 2.5, 0.5])
+    assert solver.success, solver.message
+    np.testing.assert_allclose(solver.x_final, [1, 2, 0], atol=2e-6)
+    assert len(legacy_points) == len(original_records)
+    assert solver.callback_function_call_count == len(legacy_points)
+    for expected_count, ((point, count), record, native) in enumerate(
+        zip(legacy_points, original_records, solver.backend_result.history), start=1
+    ):
+        assert count == expected_count
+        np.testing.assert_array_equal(point, record["x"])
+        np.testing.assert_array_equal(point, native["x"])
+    assert solver.result.kkt["multipliers"]["equality"][0] == pytest.approx(-4)
+    output = capsys.readouterr().out
+    assert output.count("Starting optimization process") == 1
+    assert output.count("Success:") == 1
+    assert "Starting pysolver SLSQP" not in output
+
+
+@pytest.mark.parametrize("how", ["false", "exception"])
+def test_backend_callback_cancellation_preserves_point_and_solver_reuse(how):
+    """Both cancellation forms stop at an accepted point and reset on a new solve."""
+    observed = []
+    cancel = True
+
+    def callback(record):
+        """Cancel only the first solve at its first post-initial accepted point."""
+        observed.append(record)
+        if cancel and len(observed) == 2:
+            if how == "exception":
+                raise StopIteration
+            return False
+
+    solver = make_solver(FragileCoupledProblem(), backend_callback=callback)
+    solver.solve([0.36, 0.9])
+    assert not solver.success
+    assert solver.result.status == 13
+    assert len(observed) == 2
+    np.testing.assert_array_equal(solver.x_final_norm, observed[-1]["x"])
+    cancel = False
+    observed.clear()
+    solver.solve([0.64, 0.8])
+    assert solver.success, solver.message
+    assert observed[0]["iteration"] == 0
+    np.testing.assert_array_equal(observed[0]["x"], [0.64, 0.8])
+    assert len(observed) == len(solver.backend_result.history)
+    assert solver.callback_function_call_count == 0
+
+
+def test_backend_callback_keeps_recovery_counters_without_rejected_states():
+    """Physical trial failures update accepted diagnostics without becoming points."""
+    observed = []
+    solver = make_solver(FragileCoupledProblem(), backend_callback=observed.append)
+    solver.solve([0.36, 0.9])
+    assert solver.success, solver.message
+    assert solver.backend_result.domain_rejections > 0
+    assert max(record["domain_rejections"] for record in observed) > 0
+    assert len(observed) == len(solver.backend_result.history)
+    assert all(record["x"][0] > 0 for record in observed)
+
+
+def test_backend_callback_rejects_unsupported_configuration_and_propagates_errors():
+    """Callback misuse fails early and unrelated observer errors remain visible."""
+    with pytest.raises(TypeError, match="backend_callback"):
+        make_solver(MixedConstraints(), backend_callback=2)
+    with pytest.raises(ValueError, match="library='pysolver'"):
+        make_solver(
+            MixedConstraints(), library="scipy", backend_callback=lambda _: None
+        )
+
+    def fail(record):
+        """An observer programming error is not a cancellation request."""
+        raise RuntimeError("observer failed")
+
+    solver = make_solver(MixedConstraints(), backend_callback=fail)
+    with pytest.raises(RuntimeError, match="observer failed"):
+        solver.solve([0.5, 2.5, 0.5])

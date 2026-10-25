@@ -37,6 +37,7 @@ class OptimizationEvaluation:
         self.grad_count = 0
         self.func_count = 0
         self.func_count_tot = 0
+        self.accepted_constraint_metadata = None
         self.cache = {
             "x": None,
             "f": None,
@@ -102,6 +103,28 @@ class OptimizationEvaluation:
                 has_constraint_data=hasattr(self.problem, "constraint_data"),
             )
         return values
+
+    def record_accepted_metadata(self, x):
+        """Detach named metadata only when it belongs to the accepted point."""
+        point = np.asarray(x).copy()
+        if self.cache["x"] is not None and np.array_equal(point, self.cache["x"]):
+            self.accepted_constraint_metadata = dict(
+                x=point,
+                data=copy.deepcopy(self.cache["constraint_data"]),
+                present=self.cache["has_constraint_data"],
+            )
+
+    def final_constraint_metadata(self, x):
+        """Return detached final metadata without evaluating the model."""
+        point = np.asarray(x)
+        accepted = self.accepted_constraint_metadata
+        if accepted is not None and np.array_equal(point, accepted["x"]):
+            return copy.deepcopy(accepted["data"]), bool(accepted["present"])
+        if self.cache["x"] is not None and np.array_equal(point, self.cache["x"]):
+            return copy.deepcopy(self.cache["constraint_data"]), bool(
+                self.cache["has_constraint_data"]
+            )
+        return None, False
 
     def _evaluate_gradient(self, x_norm, *, diagnostic=False):
         """Compute/cache a full Jacobian without iteration events or probe callbacks."""

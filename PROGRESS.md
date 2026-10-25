@@ -11,6 +11,10 @@ notes and reproduction commands live in [docs/development](docs/development/READ
 - [x] Separate iteration, model-call, derivative-probe, and diagnostic accounting.
 - [x] Consolidate KKT assessment, multiplier handling, bounds, and acceptance diagnostics.
 - [x] Package custom SLSQP with recovery, step controls, cancellation, and its SciPy license.
+- [x] Expose detached accepted backend records through the optimization frontend
+  for consumer diagnostics, preserving standard reporting and callback cancellation.
+- [x] Render custom optimization final reports from detached solved data, preserving
+  distinct feasibility/optimality limits and unavailable KKT without diagnostic work.
 - [x] Integrate LM, Powell hybrid, Newton-Raphson, and Gauss-Newton through
   `library="pysolver"`, including aliases, backtracking, and Jacobian scaling.
 - [x] Reorganize the package under `src/`, retaining compatible public imports.

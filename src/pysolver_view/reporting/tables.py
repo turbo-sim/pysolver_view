@@ -139,6 +139,100 @@ def kkt_report(kkt_data, tol):
     return "\n".join(lines)
 
 
+def final_kkt_report(assessment, feasibility_tol, optimality_tol, *, enabled=True):
+    """Render a cached final certificate with its separate acceptance limits.
+
+    Metrics and multipliers use public signs and solver coordinates. Missing
+    diagnostics remain unavailable; this formatter never estimates multipliers.
+    """
+    assessment = assessment or {}
+    available = bool(enabled and assessment.get("available", False))
+    sep = "-" * 80
+    lines = [
+        "",
+        sep,
+        f" {'Karush-Kuhn-Tucker (KKT) conditions':<36}{'Value':>16}{'Target':>16}{'Ok?':>10}",
+        sep,
+    ]
+    rows = [
+        ("First order optimality", "optimality", optimality_tol),
+        ("Stationarity", "stationarity", optimality_tol),
+        ("Equality feasibility", "equality_feasibility", feasibility_tol),
+        ("Inequality feasibility", "inequality_feasibility", feasibility_tol),
+        ("Bound feasibility", "bound_feasibility", feasibility_tol),
+        ("Dual feasibility", "dual_feasibility", optimality_tol),
+        ("Complementary slackness", "complementarity", optimality_tol),
+    ]
+    for name, key, limit in rows:
+        value = assessment.get(key)
+        finite = value is not None and np.isfinite(value)
+        rendered = f"{value:+.3e}" if finite else "unavailable"
+        status = ("yes" if value <= limit else "no") if finite else "n/a"
+        lines.append(
+            f" {name:<36}{rendered:>16}{'<= ' + f'{limit:+.3e}':>16}{status:>10}"
+        )
+    lines.append(" Coordinates: solver; stationarity norm: infinity.")
+    lines.append(
+        " Source: cached final assessment; no additional diagnostic evaluations."
+    )
+    if not enabled:
+        lines.append(" Automatic KKT checks disabled; optimality not assessed.")
+    elif not available:
+        reason = (
+            assessment.get("message") or "No final derivative certificate available."
+        )
+        lines.append(" Assessment unavailable: " + reason)
+    else:
+        lines.append(
+            " Cached final KKT check: "
+            + ("passed." if assessment.get("passed") else "failed.")
+        )
+    lines.append(sep)
+    return "\n".join(lines)
+
+
+def final_multipliers_report(
+    assessment, constraint_data, var_names, bounds, *, enabled=True
+):
+    """Format cached public multipliers through the existing named table."""
+    assessment = assessment or {}
+    available = bool(enabled and assessment.get("available", False))
+    multipliers = assessment.get("multipliers") if available else None
+    equality_count = sum(entry["type"] == "=" for entry in constraint_data)
+    inequality_count = len(constraint_data) - equality_count
+    size = len(var_names)
+    lower, upper = (
+        (np.full(size, -np.inf), np.full(size, np.inf))
+        if bounds is None
+        else map(np.asarray, bounds)
+    )
+    finite = np.r_[
+        np.ones(inequality_count, dtype=bool), np.isfinite(lower), np.isfinite(upper)
+    ]
+    if multipliers is None:
+        equality = np.full(equality_count, np.nan)
+        duals = np.full(inequality_count + 2 * size, np.nan)
+    else:
+        equality = np.asarray(multipliers["equality"])
+        duals = np.r_[
+            multipliers["inequality"], multipliers["lower"], multipliers["upper"]
+        ]
+    message = (
+        "Automatic KKT checks disabled; multipliers not assessed."
+        if not enabled
+        else assessment.get("message") or "No final multiplier certificate available."
+    )
+    data = dict(
+        available=available,
+        message=message,
+        multipliers_eq=equality,
+        multipliers_ineq={
+            index: float(duals[index]) for index in np.flatnonzero(finite)
+        },
+    )
+    return multipliers_report(data, constraint_data, var_names, bounds)
+
+
 def constraint_report(constraint_data):
     """
     generate a formatted constraint report at x_phys, using get_constraint_data to build/validate the entries.
