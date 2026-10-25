@@ -70,6 +70,11 @@ venv/
 env/
 
 
-# Results folders
+# Current exports and generated results
 **/output/
+**/output*/
 **/results/
+**/results*/
+**/figures/
+**/figures*/
+**/logs/
