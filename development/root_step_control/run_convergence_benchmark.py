@@ -35,12 +35,19 @@ from development.root_step_control.src.problems import (
 from development.root_step_control.src.solver import (
     BacktrackingOptions,
     DomainError,
-    METHOD_DISPLAY_NAMES as METHOD_NAMES,
+    METHOD_DISPLAY_NAMES,
     NewtonOptions,
     StepLimitOptions,
     StepControlOptions,
+    normalize_method,
     solve_root,
 )
+
+# Preserve saved study identifiers; display names come from canonical solver names.
+METHOD_NAMES = {
+    method: METHOD_DISPLAY_NAMES[normalize_method(method)]
+    for method in ("lm", "hybr", "newton_raphson", "gauss_newton")
+}
 
 RESIDUAL_TOL = 1e-8
 MAX_NFEV = 2000

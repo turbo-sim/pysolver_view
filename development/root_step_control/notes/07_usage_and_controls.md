@@ -35,8 +35,10 @@ The same `solve_root` entry point also accepts `newton_raphson` and
 The [Newton-family mathematics and examples](08_newton_and_gauss_newton.md)
 describe their separate options and rank requirements.
 
-The aliases `levenberg_marquardt`, `powell_hybrid`, `newton`, and `gn` resolve
-to `lm`, `hybr`, `newton_raphson`, and `gauss_newton` respectively.
+The aliases `lm`, `hybr`, `newton`, and `gn` resolve to `levenberg_marquardt`,
+`powell_hybrid`, `newton_raphson`, and `gauss_newton` respectively.
+The result's `method` contains the canonical author name; `requested_method`
+retains the supplied spelling. The default is `levenberg_marquardt`.
 Legends use Levenberg–Marquardt, Powell hybrid, Newton–Raphson, and
 Gauss–Newton. Aliases do not create extra algorithms or change the backend.
 

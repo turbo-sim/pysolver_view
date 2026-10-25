@@ -53,8 +53,8 @@ Result directories contain outputs rather than implementation or tests.
 | [solver.py](src/solver.py) | Public `solve_root`, method aliases and driver dispatch; configuration re-exports |
 | [options.py](src/options.py) | All validated options, keeping trust-region and backtracking policies distinct |
 | [exceptions.py](src/exceptions.py) | Recognized model-domain failures and internal budget/probe signals |
-| [trust_region.py](src/solvers/trust_region.py) | LM/Powell hybrid iteration, trust-radius adaptation, model refresh decisions |
-| [line_search.py](src/solvers/line_search.py) | Newton–Raphson/Gauss–Newton iteration, Armijo acceptance, full-step modes |
+| [trust_region.py](src/solvers/trust_region.py) | Named LM and Powell hybrid functions, explicit step/update choices, shared trust-region engine |
+| [line_search.py](src/solvers/line_search.py) | Named Newton–Raphson and Gauss–Newton functions, explicit direction/rank choices, shared line-search engine |
 | [linear_model.py](src/solvers/linear_model.py) | QR/SVD factors, LM damping, dogleg steps and Broyden updates |
 | [evaluation.py](src/solvers/evaluation.py) | Residual validation, analytic/numerical Jacobians and model-call budgets |
 | [history.py](src/solvers/history.py) | Histories, copied callbacks and accepted-state result assembly |
@@ -69,6 +69,11 @@ stopping and Jacobian-refresh decisions remain explicit in their respective
 modules. `linear_model.py` retains the cached factors and secant updates as well
 as computing directions. `trial_step.py` bounds actual displacements; variable
 scales remain fixed caller inputs.
+
+`solve_root()` dispatches directly to four named functions: `solve_levenberg_marquardt`,
+`solve_powell_hybrid`, `solve_newton_raphson` and `solve_gauss_newton`. Each binds its
+numerical choices before entering one of two shared iteration engines. The
+engines do not branch on method names.
 
 The package-level imports, `src.solver` API and `src.problems` exports remain
 available. Internal implementation imports use the paths above. The
@@ -146,7 +151,7 @@ result = solve_root(
     problem.residual,
     problem.x0,
     jac=problem.gradient,
-    method="hybr",  # or "lm"
+    method="powell_hybrid",  # or "levenberg_marquardt"
     options=StepControlOptions(
         initial_radius=0.1,
         max_radius=1.0,
@@ -160,8 +165,17 @@ For Newton–Raphson or Gauss–Newton, import `NewtonOptions`,
 `BacktrackingOptions`, and `StepLimitOptions` from the same package.
 Both default to protected backtracking; `NewtonOptions(backtracking=None)`
 selects full steps. The [Newton usage example](notes/08_newton_and_gauss_newton.md)
-shows a conservative configuration. Method aliases are
-`levenberg_marquardt`, `powell_hybrid`, `newton`, and `gn`.
+shows a conservative configuration. Canonical names are `levenberg_marquardt`,
+`powell_hybrid`, `newton_raphson`, and `gauss_newton`. The short aliases `lm`,
+`hybr`, `newton`, and `gn` remain accepted. Results report the canonical name in
+`method` and the original spelling in `requested_method`.
+
+The four named functions can also be imported directly from
+`development.root_step_control`. Each accepts `fun, x0, jac=None, options=None,
+callback=None`, with the last two arguments keyword-only. Direct calls return
+the same numerical results and histories, including the canonical `method`.
+`solve_root()` additionally normalizes aliases and supplies `requested_method`
+and the display label `method_name`.
 
 ## Read the explanations and results
 

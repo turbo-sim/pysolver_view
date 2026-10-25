@@ -9,8 +9,10 @@ from ..src.solvers.linear_model import LinearModel
 from ..src.solver import (
     BacktrackingOptions,
     DomainError,
+    METHOD_DISPLAY_NAMES,
     NewtonOptions,
     StepLimitOptions,
+    normalize_method,
     solve_root,
 )
 
@@ -41,6 +43,20 @@ def logarithmic_jacobian(x):
 
 class NewtonSolverTests(unittest.TestCase):
     """Verify direction, policy, counting and recovery contracts from actual calls."""
+
+    def test_author_names_are_canonical_in_registry_and_default_result(self):
+        """Public names and returned metadata use authors, including normalized aliases."""
+        self.assertEqual(
+            set(METHOD_DISPLAY_NAMES),
+            {"levenberg_marquardt", "powell_hybrid", "newton_raphson", "gauss_newton"},
+        )
+        result = solve_root(lambda x: x - [2, 3], [0, 0], lambda x: np.eye(2))
+        self.assertTrue(result.success)
+        self.assertEqual(result.method, "levenberg_marquardt")
+        self.assertEqual(result.requested_method, "levenberg_marquardt")
+        self.assertEqual(result.method_name, "Levenberg–Marquardt")
+        self.assertEqual(normalize_method(" LM "), "levenberg_marquardt")
+        self.assertEqual(normalize_method(" Powell_Hybrid "), "powell_hybrid")
 
     def test_full_linear_step_matches_independent_square_solve(self):
         """Both full-step directions solve a nonsymmetric square system in one move."""
@@ -370,8 +386,8 @@ class NewtonSolverTests(unittest.TestCase):
     def test_aliases_and_explicit_none_have_consistent_defaults(self):
         """Aliases only select names; dictionary and dataclass policies remain equivalent."""
         for canonical, alias in (
-            ("lm", "levenberg_marquardt"),
-            ("hybr", "powell_hybrid"),
+            ("levenberg_marquardt", "lm"),
+            ("powell_hybrid", "hybr"),
             ("newton_raphson", "newton"),
             ("gauss_newton", "gn"),
         ):
@@ -381,6 +397,7 @@ class NewtonSolverTests(unittest.TestCase):
                 )
                 for name in (canonical, alias)
             ]
+            self.assertEqual(results[0].method, canonical)
             self.assertEqual(results[1].method, canonical)
             self.assertEqual(results[1].requested_method, alias)
             np.testing.assert_array_equal(results[0].x, results[1].x)

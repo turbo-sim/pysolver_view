@@ -141,12 +141,12 @@ lines, make the scopes concrete:
 
 | Source scope | Lines |
 | --- | ---: |
-| PySolverView public dispatcher, options and exceptions | 303 |
-| PySolverView [trust_region.py](../src/solvers/trust_region.py), LM/hybrid driver | 278 |
-| PySolverView [line_search.py](../src/solvers/line_search.py), Newton-family driver | 275 |
+| PySolverView public dispatcher, options and exceptions | 313 |
+| PySolverView [trust_region.py](../src/solvers/trust_region.py), LM/hybrid driver | 355 |
+| PySolverView [line_search.py](../src/solvers/line_search.py), Newton-family driver | 341 |
 | Shared evaluation, histories and trial-coordinate handling | 230 |
-| PySolverView [linear_model.py](../src/solvers/linear_model.py), subproblems and factor management | 332 |
-| Combined numerical modules for all four custom methods, excluding package initializers | 1,418 |
+| PySolverView [linear_model.py](../src/solvers/linear_model.py), subproblems and factor management | 346 |
+| Combined numerical modules for all four custom methods, excluding package initializers | 1,585 |
 | MINPACK analytic-Jacobian [LMDER](https://netlib.org/minpack/lmder.f), main routine | 452 |
 | LMDER plus its numerical helper closure | 1,358 |
 | MINPACK analytic-Jacobian [HYBRJ](https://netlib.org/minpack/hybrj.f), main routine | 440 |

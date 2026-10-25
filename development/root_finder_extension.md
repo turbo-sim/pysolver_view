@@ -136,8 +136,8 @@ Use the following explicit root-method registry:
 | --- | --- | --- |
 | `newton_raphson` | `newton` | Newton–Raphson |
 | `gauss_newton` | `gn` | Gauss–Newton |
-| `lm` | `levenberg_marquardt` | Levenberg–Marquardt |
-| `hybr` | `powell_hybrid` | Powell hybrid |
+| `levenberg_marquardt` | `lm` | Levenberg–Marquardt |
+| `powell_hybrid` | `hybr` | Powell hybrid |
 
 The correct spellings are **Levenberg–Marquardt** and **Powell hybrid**.
 SciPy identifies `hybr` as a modification of the Powell hybrid method and
@@ -146,9 +146,10 @@ Powell attribution.
 [SciPy root documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html),
 [MINPACK HYBRD documentation](https://www.math.utah.edu/software/minpack/minpack/hybrd.html)
 
-Keep `lm` and `hybr` as canonical identifiers for compatibility with existing
-results and scripts. Their longer aliases call exactly the same implementation
-with identical defaults, counters, and stopping behavior. An alias identifies
+Use the author names as canonical identifiers, retaining `lm` and `hybr` as
+short aliases for existing scripts. Both spellings call the same implementation
+with identical defaults, counters, and stopping behavior. Results report the
+canonical name and retain the requested spelling separately. An alias identifies
 the method family; it does not make the custom implementation identical to
 SciPy/MINPACK. Keep backend provenance separate.
 

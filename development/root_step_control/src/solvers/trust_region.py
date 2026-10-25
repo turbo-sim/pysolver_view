@@ -21,8 +21,91 @@ from .history import HistoryRecorder
 from .trial_step import prepare_trust_region_trial
 
 
-def solve_trust_region(fun, x0, jac=None, *, method="lm", options=None, callback=None):
-    """Solve a square or overdetermined system using controlled LM or hybrid.
+def solve_levenberg_marquardt(fun, x0, jac=None, *, options=None, callback=None):
+    """Solve with damped least-squares steps and a fresh Jacobian after acceptance.
+
+    StepControlOptions (or a matching dictionary) controls the trust region.
+    Rejected trials reuse the same factorized model; successful moves request
+    a fresh Jacobian. Shared evaluation/history and residual-root contracts
+    are implemented by _solve_trust_region().
+    """
+    return _solve_trust_region(
+        fun,
+        x0,
+        jac,
+        method="levenberg_marquardt",
+        compute_step=LinearModel.levenberg_marquardt_step,
+        update_jacobian=None,
+        options=options,
+        callback=callback,
+    )
+
+
+def solve_powell_hybrid(fun, x0, jac=None, *, options=None, callback=None):
+    """Solve with dogleg steps and Broyden updates from valid trials.
+
+    StepControlOptions (or a matching dictionary) controls the trust region.
+    Valid rejected trials can also update the model. Two consecutive poor
+    agreements or an unusable factor update request a fresh Jacobian; suspect
+    models are refreshed before declaring stationarity or stagnation.
+    """
+    return _solve_trust_region(
+        fun,
+        x0,
+        jac,
+        method="powell_hybrid",
+        compute_step=LinearModel.powell_hybrid_step,
+        update_jacobian=_update_powell_jacobian,
+        options=options,
+        callback=callback,
+    )
+
+
+def _update_powell_jacobian(
+    model,
+    *,
+    previous_residual,
+    trial_residual,
+    accepted_residual,
+    model_change,
+    scaled_step,
+    scaled_norm,
+    ratio,
+    poor_agreements,
+):
+    """Apply Powell's secant update or request a fresh Jacobian after poor agreement.
+
+    Both accepted and rejected valid trials use the displacement and residual
+    difference from the previous accepted base. Return the reusable model (or
+    None), the poor-agreement count, and the number of successful updates.
+    """
+    poor_agreements = poor_agreements + 1 if ratio < 0.1 else 0
+    if poor_agreements >= 2:
+        return None, poor_agreements, 0
+    with np.errstate(over="ignore", invalid="ignore"):
+        correction = (trial_residual - previous_residual - model_change) / scaled_norm
+    if model.update(correction, scaled_step / scaled_norm, accepted_residual):
+        return model, poor_agreements, 1
+    return None, poor_agreements, 0
+
+
+def _solve_trust_region(
+    fun,
+    x0,
+    jac,
+    *,
+    method,
+    compute_step,
+    update_jacobian,
+    options,
+    callback,
+):
+    """Execute trust-region acceptance and recovery with supplied numerical choices.
+
+    compute_step(model, radius) supplies the chosen subproblem solution.
+    update_jacobian=None refreshes the Jacobian after each accepted move;
+    otherwise the supplied update function processes valid secant pairs.
+    method identifies results only; it does not select an algorithm here.
 
     ``fun(x)`` returns a nonempty residual vector and ``jac(x)`` its m-by-n
     Jacobian, with m >= n. Without ``jac`` forward differences are used.
@@ -43,18 +126,12 @@ def solve_trust_region(fun, x0, jac=None, *, method="lm", options=None, callback
     accepted records. Counts, maxima, and numerical behavior are independent of
     the history setting. ``linear_algebra`` reports factorization/update counts.
 
-    ``method='hybr'`` uses dogleg steps and scaled Broyden rank-one Jacobian
-    updates from valid trials, including rejected trials. Two consecutive poor
-    agreements trigger a new Jacobian. A suspect approximate model is refreshed
-    before declaring stationarity/stagnation. Unlike native MINPACK HYBRJ, this
-    variant uses QR factors with SVD fallback, a configurable radius/acceptance policy, and
-    residual-based success; it deliberately omits native slow-progress cutoffs
-    that would penalize intentionally small steps. ``nupdates`` counts Broyden
-    updates; ``njev`` counts full Jacobian evaluations. It accepts m >= n, whereas
-    SciPy root('hybr') requires square systems.
+    Unlike native MINPACK HYBRJ, the Powell hybrid entry point uses QR factors
+    with SVD fallback, configurable radius/acceptance policies and residual-based
+    success. Native slow-progress cutoffs are omitted to allow deliberately small
+    steps. nupdates counts Broyden updates; njev counts full Jacobian evaluations.
+    Both entry points accept m >= n; SciPy root('hybr') requires square systems.
     """
-    if method not in ("lm", "hybr"):
-        raise ValueError("method must be 'lm' or 'hybr'.")
     if options is None:
         options = StepControlOptions()
     elif isinstance(options, dict):
@@ -174,7 +251,7 @@ def solve_trust_region(fun, x0, jac=None, *, method="lm", options=None, callback
                 continue
             return finish(2, "Stationary least-squares point above residual tolerance.")
 
-        scaled_step = model.step(method, radius)
+        scaled_step = compute_step(model, radius)
         try:
             trial_x, step, scaled_step, scaled_norm = prepare_trust_region_trial(
                 x, scale, scaled_step, radius
@@ -256,22 +333,22 @@ def solve_trust_region(fun, x0, jac=None, *, method="lm", options=None, callback
                 return finish(5, "Stopped by callback.")
             if f_norm <= options.residual_tol:
                 return finish(0, "Residual tolerance satisfied.")
-        if method == "hybr" and valid:
-            # Broyden's secant update uses the displacement and residual
-            # difference from the OLD accepted base, even on a rejected trial.
-            # In fixed scaled coordinates this is MINPACK's weighted update.
-            poor_agreements = poor_agreements + 1 if ratio < 0.1 else 0
-            if poor_agreements >= 2:
-                model = None
-            else:
-                with np.errstate(over="ignore", invalid="ignore"):
-                    correction = (trial_f - old_f - model_change) / scaled_norm
-                if model.update(correction, scaled_step / scaled_norm, f):
-                    model_is_fresh = False
-                    nupdates += 1
-                else:
-                    model = None
-        elif method == "lm" and accepted:
+        if update_jacobian is not None and valid:
+            model, poor_agreements, updates = update_jacobian(
+                model,
+                previous_residual=old_f,
+                trial_residual=trial_f,
+                accepted_residual=f,
+                model_change=model_change,
+                scaled_step=scaled_step,
+                scaled_norm=scaled_norm,
+                ratio=ratio,
+                poor_agreements=poor_agreements,
+            )
+            if updates:
+                model_is_fresh = False
+                nupdates += updates
+        elif update_jacobian is None and accepted:
             model = None
         if radius <= np.finfo(float).tiny:
             return finish(3, "Trust radius underflow above residual tolerance.")

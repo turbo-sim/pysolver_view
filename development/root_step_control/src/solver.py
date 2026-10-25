@@ -7,14 +7,18 @@ from .options import (
     StepControlOptions,
     StepLimitOptions,
 )
-from .solvers.line_search import solve_newton
-from .solvers.trust_region import solve_trust_region
+from .solvers import (
+    solve_gauss_newton,
+    solve_levenberg_marquardt,
+    solve_newton_raphson,
+    solve_powell_hybrid,
+)
 
 METHOD_ALIASES = {
-    "lm": "lm",
-    "levenberg_marquardt": "lm",
-    "hybr": "hybr",
-    "powell_hybrid": "hybr",
+    "levenberg_marquardt": "levenberg_marquardt",
+    "lm": "levenberg_marquardt",
+    "powell_hybrid": "powell_hybrid",
+    "hybr": "powell_hybrid",
     "newton_raphson": "newton_raphson",
     "newton": "newton_raphson",
     "gauss_newton": "gauss_newton",
@@ -22,10 +26,17 @@ METHOD_ALIASES = {
 }
 
 METHOD_DISPLAY_NAMES = {
-    "lm": "Levenberg–Marquardt",
-    "hybr": "Powell hybrid",
+    "levenberg_marquardt": "Levenberg–Marquardt",
+    "powell_hybrid": "Powell hybrid",
     "newton_raphson": "Newton–Raphson",
     "gauss_newton": "Gauss–Newton",
+}
+
+_METHOD_SOLVERS = {
+    "levenberg_marquardt": solve_levenberg_marquardt,
+    "powell_hybrid": solve_powell_hybrid,
+    "newton_raphson": solve_newton_raphson,
+    "gauss_newton": solve_gauss_newton,
 }
 
 
@@ -38,11 +49,14 @@ def normalize_method(method):
     return METHOD_ALIASES[method.strip().lower()]
 
 
-def solve_root(fun, x0, jac=None, *, method="lm", options=None, callback=None):
+def solve_root(
+    fun, x0, jac=None, *, method="levenberg_marquardt", options=None, callback=None
+):
     """Solve a root problem using an experimental method and explicit step policy.
 
-    lm/levenberg_marquardt and hybr/powell_hybrid use StepControlOptions and
-    trust regions. newton_raphson/newton and gauss_newton/gn use NewtonOptions;
+    levenberg_marquardt and powell_hybrid use StepControlOptions and trust
+    regions; lm and hybr remain accepted aliases. newton_raphson and
+    gauss_newton use NewtonOptions, with newton and gn as their aliases;
     backtracking is enabled by default and explicit backtracking=None selects
     full valid steps, including residual increases. Newton requires a square
     numerically full-rank Jacobian; the other methods allow m >= n.
@@ -56,12 +70,8 @@ def solve_root(fun, x0, jac=None, *, method="lm", options=None, callback=None):
     initial points or derivative probes terminate; programming errors propagate.
     """
     canonical = normalize_method(method)
-    driver = (
-        solve_newton
-        if canonical in ("newton_raphson", "gauss_newton")
-        else solve_trust_region
-    )
-    result = driver(fun, x0, jac, method=canonical, options=options, callback=callback)
+    driver = _METHOD_SOLVERS[canonical]
+    result = driver(fun, x0, jac, options=options, callback=callback)
     result.requested_method = method
     result.method_name = METHOD_DISPLAY_NAMES[canonical]
     return result

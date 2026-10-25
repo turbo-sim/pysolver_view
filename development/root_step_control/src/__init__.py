@@ -8,6 +8,12 @@ from .options import (
     StepLimitOptions,
 )
 from .solver import METHOD_DISPLAY_NAMES, solve_root
+from .solvers import (
+    solve_gauss_newton,
+    solve_levenberg_marquardt,
+    solve_newton_raphson,
+    solve_powell_hybrid,
+)
 
 __all__ = [
     "DomainError",
@@ -17,4 +23,8 @@ __all__ = [
     "StepLimitOptions",
     "METHOD_DISPLAY_NAMES",
     "solve_root",
+    "solve_levenberg_marquardt",
+    "solve_powell_hybrid",
+    "solve_newton_raphson",
+    "solve_gauss_newton",
 ]

@@ -228,18 +228,32 @@ class LinearModel:
         return self._qr_healthy and np.all(np.isfinite(self.q))
 
     def step(self, method, radius):
-        """Return the LM or dogleg step within a positive scaled radius, using
-        Gauss-Newton if it already fits.
+        """Select a named subproblem step for experiments using the model directly.
+
+        Solver entry points bind the explicit step functions once before iteration.
+        Short method aliases remain supported by this compatibility interface.
         """
-        if method not in ("lm", "hybr"):
-            raise ValueError("method must be 'lm' or 'hybr'.")
+        if method in ("levenberg_marquardt", "lm"):
+            return self.levenberg_marquardt_step(radius)
+        if method in ("powell_hybrid", "hybr"):
+            return self.powell_hybrid_step(radius)
+        raise ValueError("method must be 'levenberg_marquardt' or 'powell_hybrid'.")
+
+    def levenberg_marquardt_step(self, radius):
+        """Return the unconstrained step if feasible, otherwise solve LM damping."""
+        return self._bounded_step(radius, self._lm)
+
+    def powell_hybrid_step(self, radius):
+        """Return the unconstrained step if feasible, otherwise follow the dogleg."""
+        return self._bounded_step(radius, self._dogleg)
+
+    def _bounded_step(self, radius, boundary_step):
+        """Validate a radius and invoke its boundary solver only when needed."""
         if not np.isfinite(radius) or radius <= 0:
             raise ValueError("radius must be finite and positive.")
         if norm(self.gauss_newton, check_finite=False) <= radius:
             return self.gauss_newton.copy()
-        if method == "lm":
-            return self._lm(radius)
-        return self._dogleg(radius)
+        return boundary_step(radius)
 
     def _lm(self, radius):
         """Find a damped least-squares step on the feasible side of the radius equation.

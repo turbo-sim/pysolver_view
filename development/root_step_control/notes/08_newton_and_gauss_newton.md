@@ -11,8 +11,8 @@ They use public numerical kernels, not MINPACK or an optimization solver.
 | --- | --- | --- |
 | `newton_raphson` | `newton` | Newton–Raphson |
 | `gauss_newton` | `gn` | Gauss–Newton |
-| `lm` | `levenberg_marquardt` | Levenberg–Marquardt |
-| `hybr` | `powell_hybrid` | Powell hybrid |
+| `levenberg_marquardt` | `lm` | Levenberg–Marquardt |
+| `powell_hybrid` | `hybr` | Powell hybrid |
 
 Aliases select the same implementation and defaults. They do not select a
 different backend. Native SciPy/MINPACK is called separately by the comparison

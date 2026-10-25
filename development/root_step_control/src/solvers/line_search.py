@@ -17,8 +17,80 @@ from .evaluation import ModelEvaluator, prepare_inputs
 from .history import HistoryRecorder
 
 
-def solve_newton(fun, x0, jac=None, *, method, options=None, callback=None):
-    """Solve with a strict Newton or minimum-norm Gauss–Newton direction.
+def solve_newton_raphson(fun, x0, jac=None, *, options=None, callback=None):
+    """Solve a square system with strict Newton directions and optional backtracking.
+
+    A numerically singular Jacobian terminates rather than selecting a truncated
+    least-squares direction. NewtonOptions (or a matching dictionary) selects
+    protected backtracking by default; backtracking=None selects full steps.
+    No least-squares stationarity test is applied to Newton directions.
+    """
+    return _solve_line_search(
+        fun,
+        x0,
+        jac,
+        method="newton_raphson",
+        compute_direction=_newton_direction,
+        requires_square=True,
+        stationary=None,
+        options=options,
+        callback=callback,
+    )
+
+
+def solve_gauss_newton(fun, x0, jac=None, *, options=None, callback=None):
+    """Solve a square or overdetermined system with least-squares directions.
+
+    Guarded QR and minimum-norm SVD handle full and deficient numerical rank.
+    NewtonOptions (or a matching dictionary) controls backtracking/full steps.
+    A stationary least-squares point above the residual tolerance is a failure,
+    not a root; its projected residual change supplies the stationarity test.
+    """
+    return _solve_line_search(
+        fun,
+        x0,
+        jac,
+        method="gauss_newton",
+        compute_direction=_gauss_newton_direction,
+        requires_square=False,
+        stationary=_least_squares_stationary,
+        options=options,
+        callback=callback,
+    )
+
+
+def _newton_direction(model):
+    """Copy a strict square full-rank Newton direction from the factored model."""
+    return model.newton_raphson.copy()
+
+
+def _gauss_newton_direction(model):
+    """Copy the model's least-squares direction, including rank-deficient fallback."""
+    return model.gauss_newton.copy()
+
+
+def _least_squares_stationary(model_change, residual_norm, tolerance):
+    """Detect negligible projected residual change without a scale-sensitive gradient."""
+    return norm(model_change, check_finite=False) <= tolerance * min(1.0, residual_norm)
+
+
+def _solve_line_search(
+    fun,
+    x0,
+    jac,
+    *,
+    method,
+    compute_direction,
+    requires_square,
+    stationary,
+    options,
+    callback,
+):
+    """Execute full steps or Armijo recovery with supplied direction and rank rules.
+
+    compute_direction(model) supplies the method's direction. requires_square
+    controls the residual shape contract; an optional stationary function checks
+    the projected change. method labels results only and selects no algorithm.
 
     Options may be NewtonOptions or a nested dictionary. Backtracking=None
     commits every valid full step; otherwise Armijo decrease is required.
@@ -38,7 +110,7 @@ def solve_newton(fun, x0, jac=None, *, method, options=None, callback=None):
     step_policy = "full_step" if search is None else "backtracking"
     recorder = HistoryRecorder(options.history_level, callback)
     evaluator = ModelEvaluator(
-        fun, jac, scale, options, recorder, square=method == "newton_raphson"
+        fun, jac, scale, options, recorder, square=requires_square
     )
     evaluate = evaluator.residual
     store_history = options.history_level != "none"
@@ -128,11 +200,7 @@ def solve_newton(fun, x0, jac=None, *, method, options=None, callback=None):
                 scaled_jacobian, f, stats=linear_stats, compute_gradient=False
             )
             last_rank = model.numerical_rank
-            direction = (
-                model.newton_raphson.copy()
-                if method == "newton_raphson"
-                else model.gauss_newton.copy()
-            )
+            direction = compute_direction(model)
         except np.linalg.LinAlgError as error:
             return finish(7, f"Newton linear solve failed: {error}")
         except ValueError as error:
@@ -145,9 +213,7 @@ def solve_newton(fun, x0, jac=None, *, method, options=None, callback=None):
         linear_residual_norm = float(norm(f + model_change, check_finite=False))
         # A nearly zero projection identifies least-squares stationarity without
         # letting small Jacobian units alone stop an otherwise useful direction.
-        if method == "gauss_newton" and norm(
-            model_change, check_finite=False
-        ) <= options.gtol * min(1.0, f_norm):
+        if stationary is not None and stationary(model_change, f_norm, options.gtol):
             return finish(2, "Stationary least-squares point above residual tolerance.")
         if raw_length == 0:
             return finish(3, "Zero direction above residual tolerance.")

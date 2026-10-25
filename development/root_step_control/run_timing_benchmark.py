@@ -56,7 +56,11 @@ from development.root_step_control.src.problems.thermodynamics import (
 )
 
 TARGET = 1e-8
-METHOD_NAMES = solver_module.METHOD_DISPLAY_NAMES
+# Preserve saved study identifiers; display names come from canonical solver names.
+METHOD_NAMES = {
+    method: solver_module.METHOD_DISPLAY_NAMES[solver_module.normalize_method(method)]
+    for method in ("lm", "hybr", "newton_raphson", "gauss_newton")
+}
 SOLVERS = ("scipy_lm", "scipy_hybr", "pysolverview_lm", "pysolverview_hybr")
 CUSTOM_SOLVERS = tuple(f"pysolverview_{method}" for method in METHOD_NAMES)
 CONTROLLED_SOLVERS = tuple(
