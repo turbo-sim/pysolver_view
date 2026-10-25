@@ -38,6 +38,7 @@ settings.json
 # Sphinx generated files
 _build/
 docs/_build/
+docs/source/api/
 docs/.doctrees/
 docs/.buildinfo
 .doctrees/

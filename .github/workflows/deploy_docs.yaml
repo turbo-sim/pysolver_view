@@ -27,17 +27,15 @@ jobs:
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Install dependencies (including dev)
-      run: poetry install
+      run: poetry install --with dev
 
     - name: Build Sphinx documentation
-      run: |
-        cd docs
-        poetry run python build_docs.py --no-autobuild
+      run: poetry run python docs/build_docs.py --no-autobuild
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: docs/_build/
+        publish_dir: docs/_build/html/
         keep_files: true
         

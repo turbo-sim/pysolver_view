@@ -1,35 +1,27 @@
 @ECHO OFF
-
+setlocal
 pushd %~dp0
 
-REM Command file for Sphinx documentation
-
-if "%SPHINXBUILD%" == "" (
-	set SPHINXBUILD=sphinx-build
-)
-set SOURCEDIR=.
-set BUILDDIR=_build
-
-%SPHINXBUILD% >NUL 2>NUL
-if errorlevel 9009 (
-	echo.
-	echo.The 'sphinx-build' command was not found. Make sure you have Sphinx
-	echo.installed, then set the SPHINXBUILD environment variable to point
-	echo.to the full path of the 'sphinx-build' executable. Alternatively you
-	echo.may add the Sphinx directory to PATH.
-	echo.
-	echo.If you don't have Sphinx installed, grab it from
-	echo.https://www.sphinx-doc.org/
-	exit /b 1
-)
-
-if "%1" == "" goto help
-
-%SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+REM Compatibility shortcuts; build_docs.py owns the documentation workflow.
+if "%PYTHON%" == "" set PYTHON=poetry run python
+if "%1" == "html" goto html
+if "%1" == "livehtml" goto livehtml
+if "%1" == "clean" goto clean
+%PYTHON% build_docs.py --help
 goto end
 
-:help
-%SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+:html
+%PYTHON% build_docs.py --no-autobuild
+goto end
+
+:livehtml
+%PYTHON% build_docs.py
+goto end
+
+:clean
+%PYTHON% build_docs.py --clean-only
 
 :end
+set BUILD_EXIT_CODE=%ERRORLEVEL%
 popd
+exit /b %BUILD_EXIT_CODE%

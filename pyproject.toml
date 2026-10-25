@@ -48,6 +48,8 @@ sphinx-togglebutton = "^0.3.2"
 bump-my-version = "^1.5.1"
 sphinx-autobuild = "^2024.10.3"
 myst-parser = "^4.0.1"
+linkify-it-py = ">=2,<3"
+bibtexparser = "^1.4.3"
 
 [build-system]
 requires = ["poetry-core"]

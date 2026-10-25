@@ -35,7 +35,7 @@ python -m pip install -e .
 python -m pip install -e '.[thermodynamics]'
 ```
 
-Install development dependencies with `poetry install --extras jax`. Add the
+Install development dependencies with `poetry install --with dev --extras jax`. Add the
 `thermodynamics` extra to run the optional CoolProp model checks as well.
 Custom SLSQP requires SciPy 1.17.1, which is selected automatically on Python
 3.11 and newer. Python 3.10 retains its existing SciPy dependency range for
@@ -49,12 +49,17 @@ poetry run python tests/run_tests.py --suite development
 poetry run python docs/build_docs.py --no-autobuild
 ```
 
+Documentation is authored in Markdown under `docs/source/`; the builder generates
+the API reference and writes HTML to `docs/_build/html/`. Omit `--no-autobuild`
+for a live preview. See the [documentation build guide](docs/README.md) for
+the source structure, authoring conventions, and additional build options.
+
 Control test paths and default pytest options in
 [`tests/run_tests.py`](tests/run_tests.py). By default it runs the package and
 development checks, excluding Hessian validation from the agreed migration
 scope. Both existing CI test jobs call this same script.
 
-The [source-layout migration guide](docs/source/source_layout.rst) documents
+The [source-layout migration guide](docs/source/source_layout.md) documents
 canonical imports, compatibility exports, optional dependencies and the explicit
 JAX configuration API. The package name, distribution name and version remain unchanged.
 
@@ -82,8 +87,9 @@ git push origin main --follow-tags
 ```
 
 The tool updates `pyproject.toml`, `src/pysolver_view/__init__.py`,
-`docs/conf.py`, and its own current-version setting. It creates a version commit
-and an annotated `vX.Y.Z` tag; pushing the tag triggers the release workflow.
+and its own current-version setting. `docs/conf.py` reads the package version
+automatically. It creates a version commit and an annotated `vX.Y.Z` tag;
+pushing the tag triggers the release workflow.
 A real bump requires a clean working tree.
 
 ## Other info

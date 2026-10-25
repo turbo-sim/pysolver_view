@@ -1268,6 +1268,24 @@ files = [
 ]
 
 [[package]]
+name = "linkify-it-py"
+version = "2.2.0"
+description = "Links recognition library with FULL unicode support."
+optional = false
+python-versions = ">=3.10"
+groups = ["dev"]
+files = [
+    {file = "linkify_it_py-2.2.0-py3-none-any.whl", hash = "sha256:3adc40eb5af300b2605fcfdb968c24e1d780a90f1f2221af7c15e5111e94d443"},
+    {file = "linkify_it_py-2.2.0.tar.gz", hash = "sha256:907acd2d17ac1fbb9ddb62c8957ccbd6158cac602231a15c3b0cd1e215f03cee"},
+]
+
+[package.extras]
+benchmark = ["pytest", "pytest-benchmark"]
+dev = ["black", "flake8", "isort", "pre-commit", "pyproject-flake8"]
+doc = ["myst-parser", "sphinx", "sphinx_book_theme"]
+test = ["coverage", "pytest", "pytest-cov", "pytest-timeout"]
+
+[[package]]
 name = "markdown-it-py"
 version = "3.0.0"
 description = "Python port of markdown-it. Markdown parsing, done right!"
@@ -4044,4 +4062,4 @@ thermodynamics = ["CoolProp"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.14"
-content-hash = "b9e9a4e74a2c750f68b7eae4c507340269c1f76da7355563a68acdc7a9708bcd"
+content-hash = "81e3858a156fc6283317b56e029f1ebe8cf8084ee4ae587f679f3a2bb719f30e"

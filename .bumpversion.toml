@@ -16,8 +16,3 @@ replace = 'version = "{new_version}"'
 filename = "src/pysolver_view/__init__.py"
 search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
-
-[[tool.bumpversion.files]]
-filename = "docs/conf.py"
-search = 'release = "v{current_version}"'
-replace = 'release = "v{new_version}"'
