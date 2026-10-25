@@ -9,6 +9,7 @@ two deliberately bad designs to distinguish feasibility from optimality.
 """
 
 from pathlib import Path
+import argparse
 import sys
 
 import numpy as np
@@ -106,7 +107,15 @@ def check_known_solution(solver):
     multipliers = assessment["multipliers"]
     np.testing.assert_allclose(multipliers["equality"], [0.2], atol=2e-6, rtol=0)
     np.testing.assert_allclose(multipliers["inequality"], [0.6, 0.0], atol=2e-6, rtol=0)
-    np.testing.assert_allclose(multipliers["lower"], [0.0, 0.0, 1.0], atol=2e-6, rtol=0)
+    # Bound residuals use solver coordinates, so their multipliers transform.
+    bound_multiplier = (
+        1.0
+        if solver.problem.problem_scale is None
+        else 3.0 / solver.problem.problem_scale
+    )
+    np.testing.assert_allclose(
+        multipliers["lower"], [0.0, 0.0, bound_multiplier], atol=2e-6, rtol=0
+    )
     np.testing.assert_allclose(multipliers["upper"], np.zeros(3), atol=2e-6, rtol=0)
 
 
@@ -138,13 +147,48 @@ def plot_comparison(solvers):
     return fig
 
 
-def main():
+def main(argv=None):
     """Print both solve histories and named reports, audit bad designs, and plot."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--final-only",
+        action="store_true",
+        help="Disable automatic KKT checks; explicitly audit the final solution",
+    )
+    parser.add_argument(
+        "--scaled",
+        action="store_true",
+        help="Use solver variables in [0, 1] and explain transformed bound multipliers",
+    )
+    parser.add_argument(
+        "--save-report",
+        type=Path,
+        metavar="DIRECTORY",
+        help="Save each final report to this explicit directory",
+    )
+    parser.add_argument(
+        "--no-show",
+        action="store_true",
+        help="Build the comparison plot without opening a window",
+    )
+    args = parser.parse_args(argv)
     print("Expected optimum: stream_a=1.2, stream_b=0.8, reserve=0; objective=0.84.")
     print(
         "Active restrictions: total_delivery, stream_a_capacity, reserve lower bound."
     )
-    print("Expected multipliers: equality=0.2, active capacity=0.6, reserve lower=1.0.")
+    expected_lower = 3.0 if args.scaled else 1.0
+    print(
+        f"Expected multipliers: equality=0.2, active capacity=0.6, reserve lower={expected_lower:g}."
+    )
+    if args.scaled:
+        print("Scaling: physical variables [0, 3] map to solver coordinates [0, 1].")
+        print(
+            "The bound multiplier changes from 1 to 3; the physical optimum is unchanged."
+        )
+    if args.final_only:
+        print(
+            "Automatic KKT checks are disabled; final solutions are explicitly audited below."
+        )
 
     print("Two separate solves follow, each with its own history and final report.")
     solvers = {}
@@ -181,10 +225,15 @@ def main():
             print_convergence=True,
             plot_convergence=False,
             update_on="iteration",
+            check_kkt=not args.final_only,
+            problem_scale=1.0 if args.scaled else None,
             extra_options=controls,
         )
         solver.solve(problem.pack(initial_design))
         solvers[label] = solver
+        if args.final_only:
+            assert solver.result.kkt_evaluations == 0
+            assert solver.result.kkt_passed is None
         check_known_solution(solver)
         named_solution = problem.unpack(solver.x_final)
         readable_solution = ", ".join(
@@ -198,7 +247,14 @@ def main():
             include_constraints=True,
             include_kkt_conditions=True,
             include_multipliers=True,
+            savefile=args.save_report is not None,
+            filename=f"{library}_kkt_report.txt",
+            output_dir=args.save_report,
         )
+        if args.save_report is not None:
+            print(
+                f"Saved report: {(args.save_report / f'{library}_kkt_report.txt').resolve()}"
+            )
 
     print("\n" + "=" * 80)
     print("Separate diagnostic examples: two bad designs, not additional solves.")
@@ -233,8 +289,11 @@ def main():
     print(
         "KKT checks establish first-order conditions, not a general proof of a minimum."
     )
-    plot_comparison(solvers)
-    plt.show()
+    fig = plot_comparison(solvers)
+    if args.no_show:
+        plt.close(fig)
+    else:
+        plt.show()
 
 
 if __name__ == "__main__":

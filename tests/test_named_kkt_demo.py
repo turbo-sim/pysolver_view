@@ -25,7 +25,8 @@ def test_dictionary_input_uses_declared_order_and_rejects_missing_names():
 
 
 @pytest.mark.parametrize("library", ["scipy", "pysolver"])
-def test_named_reports_match_independent_solution_and_multipliers(library):
+@pytest.mark.parametrize("scale", [None, 1.0])
+def test_named_reports_match_independent_solution_and_multipliers(library, scale):
     """Both adapters preserve names and the known equality/inequality/bound signs."""
     problem = NamedAllocationProblem()
     solver = psv.OptimizationSolver(
@@ -36,11 +37,12 @@ def test_named_reports_match_independent_solution_and_multipliers(library):
         max_iterations=200,
         print_convergence=False,
         plot_convergence=False,
+        problem_scale=scale,
     )
     solver.solve(problem.pack({"stream_a": 0.5, "stream_b": 1.5, "reserve": 0.6}))
     check_known_solution(solver)
     point = solver.x_final_norm
-    variables = solver.make_variables_report(point, normalized=False)
+    variables = solver.make_variables_report(solver.x_final, normalized=False)
     constraints = solver.make_constraint_report(point, tol=1e-6)
     multipliers = solver.make_lagrange_multipliers_report(point, tol=1e-6)
     for name in problem.variable_names:
