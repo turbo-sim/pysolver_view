@@ -402,7 +402,9 @@ the evaluated coordinates. Source changes for this phase are development-only.
 
 ## Source-layout and domain refactor - 25 October 2026
 
-Implemented the structural stages in [refactor.md](refactor.md). The repository,
+Implemented the structural refactor; see the
+[current architecture](docs/development/architecture.md) and
+[remaining limitations](docs/development/limitations.md). The repository,
 distribution, import name and public version remain `pysolver_view` / `0.6.9`.
 The implementation is now under [src/pysolver_view](src/pysolver_view), with
 lightweight problem contracts, domain-specific frontends/backends/numerical
