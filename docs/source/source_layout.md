@@ -2,8 +2,8 @@
 
 The implementation lives in `src/pysolver_view`. Install the checkout with
 `python -m pip install -e .` or `poetry install` before running scripts.
-The repository, distribution and Python import remain `pysolver_view`;
-the public version remains 0.6.9 pending a separate release decision.
+The repository, distribution and Python import remain `pysolver_view`.
+The documentation reads its release version from the installed package.
 
 ## Canonical modules
 

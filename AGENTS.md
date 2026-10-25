@@ -40,8 +40,8 @@ well as implemented behavior.
   algorithms, problems, and audits in the installed package.
 - `docs/source/`: Sphinx/API documentation and the source-layout guide.
   `docs/development/`: design notes, numerical explanations, and study guides.
-- `PROGRESS.md`: task checklist and historical validation evidence. Update it
-  for substantial implementation milestones; label historical measurements.
+- `PROGRESS.md`: brief completed and remaining checklists. Update milestone
+  status without appending historical test counts or a chronological change log.
 
 Use canonical domain modules for new implementation and internal imports.
 Legacy modules such as `nonlinear_system.py`, `optimization_wrappers.py`, and
