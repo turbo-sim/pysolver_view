@@ -6,9 +6,9 @@ a damped least-squares step. Powell's hybrid method chooses a step along a
 dogleg path and reuses derivative information through secant updates.
 
 This note derives those ideas and connects them to
-[trust_region.py](../../../pysolver_view/solvers/root/trust_region.py) and [linear_model.py](../../../pysolver_view/solvers/root/linear_model.py).
+[trust_region.py](../../src/pysolver_view/roots/solvers/trust_region.py) and [linear_model.py](../../src/pysolver_view/roots/solvers/linear_model.py).
 The equations describe the algorithm families; details explicitly labeled
-**PySolverView** describe our experimental implementation. It is an independent
+**PySolverView** describe the packaged custom implementation. It is an independent
 implementation, not the exact native MINPACK iteration used by SciPy.
 MINPACK's [LMDER](https://netlib.org/minpack/lmder.f) solves nonlinear least
 squares, while [HYBRJ](https://netlib.org/minpack/hybrj.f) seeks a zero of a
@@ -298,7 +298,7 @@ The SVD is lazy: a well-conditioned Gauss-Newton step that fits the radius
 needs only QR. Damped retries at the same model reuse the SVD. This is not
 MINPACK's numerical implementation: its [LMPAR](https://netlib.org/minpack/lmpar.f)
 works from pivoted QR factors and permits approximately 10% tolerance in its
-radius equation. See the [backend note](02_implementation_and_backend_boundaries.md)
+radius equation. See the [backend note](architecture.md)
 for the distinction.
 
 ## 4. Powell's hybrid method: the dogleg step
@@ -377,7 +377,7 @@ scaling details.
 
 ### A two-variable picture
 
-![LM and dogleg steps for one local least-squares model](../results_step_geometry/lm_hybrid_step_geometry.png)
+![LM and dogleg steps for one local least-squares model](../../development/root_step_control/results_step_geometry/lm_hybrid_step_geometry.png)
 
 The figure uses $r=(3,3)^T$, $A=\operatorname{diag}(1,3)$, and $\Delta=1.5$.
 Here $A$ is an already specified numerical model; the illustration has no
@@ -400,8 +400,8 @@ convergence benchmark. For this model LM gives the lowest attainable $q$
 inside the circle, with $\lambda\approx1.443520$. That does not imply it will
 give the larger reduction in the actual nonlinear residual, for which the
 model is only approximate.
-The [SVG](../results_step_geometry/lm_hybrid_step_geometry.svg) is suitable for export.
-The [plotting runner](../run_step_geometry.py) reconstructs the figure
+The [SVG](../../development/root_step_control/results_step_geometry/lm_hybrid_step_geometry.svg) is suitable for export.
+The [plotting runner](../../development/root_step_control/run_step_geometry.py) reconstructs the figure
 and independently checks the displayed steps against PySolverView.
 
 ## 5. Why hybrid also needs a Jacobian update
@@ -570,7 +570,7 @@ $\beta_{\mathrm g}=1$ prevents regrowth even after a failure-induced shrink.
 These controls do not cover finite-difference derivative probes: without an
 analytic Jacobian, PySolverView uses the separate `finite_diff_step` distance, and
 undefined derivative probes terminate the solve. See the
-[thermodynamic policy note](01_thermodynamic_step_policy.md) for practical
+[thermodynamic policy note](thermodynamic_models.md) for practical
 scaling and domain-adapter choices.
 
 ## 8. Stopping and the connection to the implementation
@@ -609,11 +609,11 @@ refresh nor a monotone residual history guarantees eventual convergence.
 | Actual/predicted reduction, acceptance, radius | `_solve_trust_region` |
 | Root-only success and failure diagnostics | `_solve_trust_region` |
 
-The [linear-model tests](../tests/test_linear_model.py) check LM steps against an
+The [linear-model tests](../../tests/roots/solvers/test_linear_model.py) check LM steps against an
 independent scalar root solve and optimality residuals, dogleg geometry,
 rank-deficient models, and updated QR factors. The
-[driver tests](../tests/test_solver.py) check actual trial distances, accepted-state
-consistency, failures, and stopping. The [experiment report](../results_convergence/REPORT.md)
+[driver tests](../../tests/roots/solvers/test_solver.py) check actual trial distances, accepted-state
+consistency, failures, and stopping. The [experiment report](../../development/root_step_control/results_convergence/REPORT.md)
 shows what these methods did on the multidimensional problems; mathematical
 structure alone does not establish equivalence to MINPACK or reliability on
 all thermodynamic models.

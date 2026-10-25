@@ -2,11 +2,10 @@
 
 The four custom methods are available through `NonlinearSystemSolver` with
 `library="pysolver"`. Numerical code lives in
-[`pysolver_view/solvers/root/`](../../../pysolver_view/solvers/root/); the adapter
-is [`custom_root.py`](../../../pysolver_view/custom_root.py). Benchmark problems,
-convergence sweeps, timing runners, and their results remain under development.
-The old development imports re-export the packaged functions for compatibility;
-there is only one numerical implementation.
+[`src/pysolver_view/roots/solvers/`](../../src/pysolver_view/roots/solvers); the adapter
+is [`backends/custom.py`](../../src/pysolver_view/roots/backends/custom.py).
+Benchmark problems live in the installed `roots.problems` package. Convergence
+sweeps, timing runners and generated results remain under `development/`.
 
 ## Public usage
 
@@ -83,7 +82,7 @@ their actual physical steps still obey the configured initial and maximum radii.
 Full-rank Newton/Gauss-Newton directions are unchanged in exact arithmetic,
 although conditioning, roundoff, and numerical-rank decisions can differ.
 Rank-deficient Gauss-Newton's minimum-norm choice can change. The
-[scaling and controls note](07_usage_and_controls.md#jacobian-scaling-and-physical-limits)
+[trust-region mathematics](root_trust_regions.md#how-the-numerical-factors-are-chosen)
 describes the coordinate transformation and physical safeguard.
 
 Canonical names and aliases:
@@ -166,47 +165,39 @@ and `"none"` disables stored histories. Plotting and reporting never change the
 numerical solution. Printing/live plotting can still incur costs even with
 history disabled; disable them explicitly when timing the numerical core.
 
-## Example and validation
+## Defaults and direct calls
 
-The single [four-solver demo](../../../demos/demo_eqn_solving/demo_custom_root_solvers.py)
-defines its own two- and eight-variable problems and uses only the installed
-package. Run:
+The frontend defaults to native SciPy `hybr`, `tolerance=1e-6` and
+`max_iterations=100`. Direct `psv.solve_root` instead defaults to custom LM.
+Direct `StepControlOptions`/`NewtonOptions` default to `residual_tol=1e-8`,
+500 trial attempts, 5,000 residual calls, scaled finite-difference distance
+`1e-7`, and full histories. An explicit dataclass carries all those settings;
+it does not inherit missing values from the frontend constructor.
 
-```powershell
-python demos/demo_eqn_solving/demo_custom_root_solvers.py
-python demos/demo_eqn_solving/demo_custom_root_solvers.py --no-show
+Trust-region defaults are `initial_radius=1`, `max_radius=100`, growth 2,
+shrink 0.25 and acceptance ratio 0.1. Newton-family defaults enable Armijo
+backtracking (`armijo_c1=1e-4`, contraction 0.5, at most 30 backtracks) and
+physical step limits 1 initially, 100 maximum, growth 2. The canonical
+[option definitions](../../src/pysolver_view/roots/solvers/options.py) are the
+source of truth for all fields and validation.
+
+```python
+from pysolver_view import StepControlOptions, solve_root
+from pysolver_view.roots.problems import ExtendedRosenbrockProblem
+
+problem = ExtendedRosenbrockProblem(n=10)
+result = solve_root(
+    problem.residual,
+    problem.x0,
+    jac=problem.gradient,
+    method="lm",
+    options=StepControlOptions(x_scale=problem.x_scale, residual_tol=1e-8),
+)
+assert result.success
 ```
 
-Solid Newton-Raphson and dashed Gauss-Newton traces expose overlap. For a square
-nonsingular $J$, both solve $Jp=-F$, since the unique least-squares minimizer has
-zero linearized residual. Equal scales, limits, and acceptance choices therefore
-usually produce matching histories up to roundoff. Rank-deficient models,
-stopping rules, and rectangular systems can differ. All eight demo solves reach
-$\|F\|_2\leq10^{-8}$.
-
-The full convergence and timing runners now exercise the public custom interface.
-Their SciPy comparisons still call `scipy.optimize.root` directly, so custom
-timing includes additional common-interface functionality. The separate
-[`run_adapter_timing.py`](../run_adapter_timing.py) isolates that distinction
-using direct and public calls to the same custom core on three 100-variable
-workloads. [Timing protocol and findings](06_time_performance.md).
-
-Integration regressions are in [`tests/test_custom_root.py`](../../../tests/test_custom_root.py).
-The scaling-specific checks are in
-[`tests/test_root_jacobian_scaling.py`](../../../tests/test_root_jacobian_scaling.py).
-The default-scaling follow-up passes 455 package/root tests, excluding 10
-noncritical Hessian checks. The 212-case convergence rerun retains 100/100
-eligible backend roots, 98/101 eligible custom roots, and all 51/51 eligible
-controlled roots. The remaining three eligible failures use undamped methods;
-unsupported rectangular Newton configurations and inconsistent systems remain
-explicit outcomes. This rerun did not repeat the historical timing studies.
-
-The [radiative heat demo](../../../demos/demo_eqn_solving/README.md) tests 500
-collocation nodes and 1000 variables. All six Newton/LM/hybrid configurations
-converge with the new default, including controlled LM in 12 accepted iterations
-and 13 residual calls. Numerical scaling repairs that LM case but does not
-guarantee fewer calls for every method or problem.
-
-The development numerical tests remain in [`tests/`](../tests/). Wheel building,
-dependent-package migration, and difficult phase-boundary property models are
-separate release/application checks.
+The [four-solver demo](../../demos/demo_eqn_solving/demo_custom_root_solvers.py)
+uses the public frontend. The [trust-region](root_trust_regions.md) and
+[Newton-family](root_line_search.md) notes explain the algorithms. Shared
+[result/accounting contracts](results_and_accounting.md) and the
+[validation guide](validation.md) explain observations and reproducible checks.

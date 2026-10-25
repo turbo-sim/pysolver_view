@@ -147,9 +147,8 @@ python demos/demo_eqn_solving/demo_radiative_heat_collocation.py --no-show --no-
 ```
 
 The unscaled 500-node LM runs are expected to fail near the positive-temperature
-domain boundary. See the [investigation](../../development/radiative_heat_investigation/README.md)
-for the independent subproblem audit and the distinction between numerical
-scaling, physical limits, and residual weighting. Scaling restores convergence
+domain boundary. See the [root solver mathematics](../../docs/development/root_trust_regions.md)
+for the distinction between numerical scaling and physical step limits. Scaling restores convergence
 on this example; it is not a general domain-safety guarantee.
 
 ### Reading the figures and output
@@ -218,7 +217,7 @@ solution, spatial refinement, positive-temperature bounds, and integrated
 energy conservation. Run them with:
 
 ```powershell
-python -m pytest tests/test_radiative_heat_demo.py -q
+python -m pytest tests/roots/test_radiative_heat_demo.py -q
 ```
 
 Results are written to `results_radiative_heat/` beside the script:

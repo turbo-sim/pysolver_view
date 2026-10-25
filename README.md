@@ -12,11 +12,11 @@ and root finding, including native SciPy methods and custom solvers with step co
 - Controlled Levenberg-Marquardt, Powell hybrid, Newton-Raphson, and Gauss-Newton
   through `NonlinearSystemSolver(library="pysolver")`; native SciPy remains the default
 
-The [root solver guide](development/root_step_control/notes/10_public_interface.md)
+The [root solver guide](docs/development/root_solvers.md)
 explains options, scaling, callbacks, and result accounting. Run the single
 [four-solver demo](demos/demo_eqn_solving/demo_custom_root_solvers.py) to compare
 accepted convergence histories. Benchmark suites and timing studies remain under
-[`development/root_step_control/`](development/root_step_control/README.md).
+[development studies](docs/development/README.md).
 
 Custom roots enable Jacobian-based numerical scaling by default; disable it
 with `options={"jacobian_scaling": False}`. User-defined physical step scales

@@ -124,6 +124,6 @@ contains measurements; samples, versions, and the timing plot accompany it.
 Cheap mathematical models emphasize percentage overhead compared with expensive
 physical property evaluations.
 
-See [implementation/validation notes](../../development/kkt_slsqp_validation.md)
+See [implementation/validation notes](../../docs/development/optimization_kkt.md)
 for details. Step-control sensitivity belongs in
 [demo_slsqp_controls](../demo_slsqp_controls/README.md).

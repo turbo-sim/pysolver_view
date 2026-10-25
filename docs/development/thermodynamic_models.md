@@ -2,7 +2,7 @@
 
 ## Start small, but distinguish a trial from an accepted step
 
-Your intuition is sound: a large initial Newton-like correction is undesirable
+A large initial Newton-like correction can be undesirable
 when evaluating its thermodynamic states can fail or become very expensive.
 Choose a conservative first trial **and** retain a maximum for later trials.
 An initial restriction alone does not prevent the solver from taking a large
@@ -10,7 +10,7 @@ step a few iterations later.
 
 The first trial cannot generally be guaranteed to reduce the residual before
 the model is evaluated. Instead, require the first **accepted** step, and every
-subsequent accepted root step, to meet both requirements:
+subsequent accepted trust-region root step, to meet both requirements:
 
 1. The thermodynamic evaluation is valid for the intended model and regime.
 2. The scaled residual norm decreases sufficiently relative to the predicted
@@ -66,7 +66,7 @@ scaling does not make a specified temperature or pressure cap less strict.
 It changes the numerical direction and can improve column balance, but does
 not choose physical scales, normalize residuals, or guarantee domain validity.
 Set `jacobian_scaling=False` to disable it. The
-[scaling policy](07_usage_and_controls.md#jacobian-scaling-and-physical-limits)
+[scaling policy](root_trust_regions.md#how-the-numerical-factors-are-chosen)
 describes how factors are updated from fresh Jacobians.
 
 As an illustrative calculation, suppose two solver coordinates are temperature
@@ -143,7 +143,7 @@ $\eta=0.1$. This already ensures the first accepted step reduces the norm of
 the residual supplied to the solver. A stationary least-squares point is not
 reported as a root unless the residual tolerance is met.
 
-The implemented update policy is:
+The trust-region update policy is:
 
 | Outcome | Radius action |
 | --- | --- |
@@ -155,15 +155,13 @@ Thus even a weak accepted step can lead to a smaller next radius. Growth is not
 automatic after every successful iteration. A factor such as 1.5 is a useful
 setting to evaluate in a thermodynamic test suite, not a guaranteed optimum.
 Setting growth to 1 prevents regrowth even after recovery and can make progress
-unnecessarily slow. An optional requirement for several successful steps before
-regrowth after a property failure could further reduce repeated failures; that
-additional recovery policy is **not implemented**.
+unnecessarily slow. No additional multi-success recovery schedule is implemented.
 
 ## Protect derivatives and test the physical model
 
 Finite-difference probes can fail before the first solver trial is even formed.
 Their distance is independent of the trust radius. The current implementation
-uses `finite_diff_step * x_scale[j]` and stops on an invalid probe; it does not
+uses a scaled probe or an explicit `derivative_abs_step` and stops on an invalid probe; it does not
 try a smaller or opposite-sided probe. Prefer verified analytic derivatives
 when available for the intended regime. Domain-aware finite differences need
 their own implementation, accuracy checks and budgets. Reducing the probe
@@ -177,21 +175,13 @@ controls and checks physical equation errors. This supplies a reproducible
 single-phase cost measurement; it does not establish reliability near saturation,
 across phase changes, or for expensive nested flash calculations.
 
-For the next validation stage, add application-specific thermodynamic systems, multiple
-initial guesses, and continuation between operating points. Record property
-calls and nested flash work, invalid evaluations, residual and Jacobian costs,
-largest physical state changes, final equation errors, and wall time. A single
-residual call may perform many property evaluations, so `nfev` alone is not a
-complete cost measure.
-
-| Available now | Proposed next additions |
-| --- | --- |
-| Fixed initial/max radii, conditional growth, explicit failure recovery, histories | Problem-provided cheap domain checks or physical distance limits |
-| Default numerical Jacobian equilibration independent of physical `x_scale` | Problem-specific validation of scales and behavior near domain boundaries |
-| Separate derivative-probe setting and failure diagnostic | Domain-aware derivative probes and checks against property noise |
-| Retained accepted solver state | Application-managed thermodynamic state restoration |
-| Standard mathematical suite and single-phase CoolProp duct workloads | Application thermodynamics, difficult starts and phase-boundary comparisons |
+Application-specific validation should cover multiple starts, operating
+conditions and continuation, recording failed property work, physical equation
+errors and largest state changes. A residual may contain many property updates;
+`nfev` alone does not measure that cost.
 
 The generic defaults `initial_radius=1` and `max_radius=100` are not a
-thermodynamic protection preset. Select scales and limits for the actual
-variables and operating regime, and test them against realistic failures.
+thermodynamic protection preset. Select scales and limits for the model. The
+distance and acceptance rules above concern custom LM/Powell hybrid;
+Newton/Gauss-Newton use their [line-search policy](root_line_search.md), including
+an optional full-step mode that permits residual increases.

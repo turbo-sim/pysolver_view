@@ -1,28 +1,29 @@
-# Shared KKT assessment and controlled SLSQP
-
-Implemented on 25 October 2026. Turbodash's files were copied, not changed or
-deleted. Updating its imports and dependency is deferred until the user releases
-and adopts the package. No version bump or automatic commit is part of this work.
+# KKT assessment and controlled SLSQP
 
 ## Entry points and organization
 
-- `pysolver_view/diagnostics/kkt.py`: numerical assessment, multiplier estimation,
+- `src/pysolver_view/diagnostics/kkt.py`: numerical assessment, multiplier estimation,
   and independent reconstruction from supplied multipliers. No model evaluations,
   histories, callbacks, or application dependencies.
-- `pysolver_view/solvers/slsqp.py`: the copied generic controlled driver and its
-  domain-failure policy. `_slsqp_backend.py` isolates the compiled SLSQP interface;
+- `src/pysolver_view/optimization/solvers/slsqp/driver.py`: the controlled reverse-communication driver and its
+  domain-failure policy. `_scipy_backend.py` isolates the compiled SLSQP interface;
   `SCIPY_LICENSE.txt` is explicitly included in source/wheel configuration.
-- `pysolver_view/custom_optimization.py`: inequality sign conversion and solver
+- `src/pysolver_view/optimization/backends/custom.py`: inequality sign conversion and solver
   option mapping. The facade owns model and derivative accounting.
 - `OptimizationSolver`: existing public problem, scaling, result, plot, and
   report interface, now also supporting `library="pysolver", method="slsqp"`.
 
 The custom bridge requires **SciPy 1.17.1**. Its runtime guard is local to the
-custom solver; the native backend and package imports keep their existing
-dependency range. Use a Python version supported by that SciPy release and
-install `scipy==1.17.1` in the environment used to run the custom driver.
+custom solver; dependency metadata and the lockfile select this version on Python 3.11 or
+newer. Python 3.10 retains a SciPy 1.15 range for native methods and custom
+roots. Run the complete suite on Python 3.11 or newer.
 
 ```python
+import pysolver_view as psv
+from pysolver_view.optimization.problems import StudyProblem
+
+problem = StudyProblem("constrained_rosenbrock")
+x0 = problem.initial
 solver = psv.OptimizationSolver(
     problem,
     library="pysolver",
@@ -30,17 +31,20 @@ solver = psv.OptimizationSolver(
     max_iterations=200,
     tolerance=1e-9,
     update_on="iteration",
+    print_convergence=False,
     extra_options={
         "first_step_fraction": 0.25,
         "max_step_fraction": 1.0,
         "step_growth_factor": 1.5,
         "domain_backtracking": True,
         "feasibility_tol": 1e-7,
-        "optimality_tol": 1e-6,
+        "optimality_tol": 1e-4,
     },
 )
 x = solver.solve(x0)
+assert solver.success
 solver.print_optimization_report(
+    tol=1e-4,
     include_kkt_conditions=True, include_multipliers=True,
 )
 ```
@@ -62,7 +66,7 @@ metadata. Complex-step requires a model that preserves imaginary perturbations.
 
 Fixed variables must be eliminated before using custom SLSQP. Existing scaling
 is still based on finite variable bounds; independent variable scaling is a
-separate roadmap item. Finite physical bounds and meaningful scaling remain the
+separate limitation. Finite physical bounds and meaningful scaling remain the
 caller's responsibility when enabling `problem_scale`.
 
 ## Mathematical conventions
@@ -89,7 +93,7 @@ constraint scales. A successful assessment is evidence of first-order KKT
 conditions, not a general proof of a minimum. Constraint qualifications and
 derivative quality still matter.
 
-The low-level copied driver retains its nonnegative-inequality convention.
+The low-level driver retains its nonnegative-inequality convention.
 The adapter negates inequality values/Jacobian rows. Public result and iteration
 history KKT dictionaries negate the driver's equality multipliers and inequality
 complementarity products back to public signs. `backend_result.kkt` and its raw
@@ -102,7 +106,7 @@ KKT estimates.
 `evaluate_kkt_conditions(x_norm, tol)` remains available as an on-demand facade
 adapter. It uses same-point values and derivatives, counts diagnostic work, and
 does not publish progress or invoke callbacks. Legacy report fields remain,
-with the following deliberate corrections:
+with the following conventions:
 
 - First-order optimality now uses infinity-norm stationarity.
 - Bound-only feasibility and sign-feasible nonunique multiplier sets are checked.
@@ -131,8 +135,8 @@ success plus independently passing feasibility and first-order optimality by def
 optimality gate; native success and feasibility remain required, while
 `result.kkt_passed` becomes `None`. Explicit KKT/multiplier reports still assess
 on demand. The low-level equivalent is `SLSQPOptions(check_kkt=False)`.
-The [timing demo](../demos/demo_kkt_conditions/run_kkt_timing.py) compares a constrained
-Rosenbrock problem requiring 21 iterations with checks enabled/disabled and separates assessor time from
+The [timing demo](../../demos/demo_kkt_conditions/run_kkt_timing.py) compares a constrained
+Rosenbrock problem with checks enabled/disabled and separates assessor time from
 total solve time. Solve-time `kkt_time` and `kkt_evaluations` are recorded.
 
 Custom callbacks receive initial/accepted coordinates and a callback count,
@@ -141,49 +145,59 @@ Returning `False` or raising `StopIteration` cancels with a structured result
 at the accepted point. Arrays and records are detached copies. Native SciPy
 SLSQP callbacks still indicate major iterations without guaranteed acceptance.
 
-## Named example and validation
 
-Run from the repository root:
+## Residuals and acceptance ratio
 
-```powershell
-python demos/demo_kkt_conditions/demo_named_kkt.py
-```
+| Measure | Definition |
+| --- | --- |
+| Stationarity | $\|\nabla f+J_h^T\lambda+J_g^T\mu-z_L+z_U\|_\infty$ |
+| Primal feasibility | Maximum of absolute equality residuals, positive inequality residuals and finite-bound violations |
+| Dual feasibility | Maximum negative part of inequality and finite-bound multipliers |
+| Complementarity | Maximum absolute multiplier-times-slack over all inequalities and finite bounds |
 
-The [demo guide](../demos/demo_kkt_conditions/README.md) explains the known convex
-solution, equality/inequality/bound multipliers, feasible-but-nonoptimal points,
-and infeasible points. Problem classes already support `variable_names` and
-`constraint_data`; explicit `pack`/`unpack` helpers map dictionaries to numerical
-arrays in a stable order. Named metadata must preserve the numerical order within
-each constraint type. Solvers themselves continue operating on arrays.
+The shared assessment aggregates these as
 
-**Fresh result:** 279 tests passed, with 10 Hessian tests deselected. A headless
-rerun of 15 in-scope demo scripts completed 43 successful solves; the mixed
-comparison excluded only its IPOPT entry in memory. Generated figures/logs were
-kept outside the repository. Interactive windows were not tested.
+$$
+r_{\mathrm{opt}}=\max(r_{\mathrm{stat}},r_{\mathrm{dual}},r_{\mathrm{comp}}),
+\qquad
+\mathrm{kkt\_ratio}=\max\left(
+\frac{r_{\mathrm{primal}}}{\tau_{\mathrm{feas}}},
+\frac{r_{\mathrm{opt}}}{\tau_{\mathrm{opt}}}\right).
+$$
 
-```powershell
-python -m pytest tests/test_kkt.py tests/test_kkt_reporting.py tests/test_custom_slsqp.py tests/test_custom_slsqp_backend.py tests/test_custom_slsqp_kkt_tolerances.py tests/test_custom_slsqp_integration.py tests/test_named_kkt_demo.py tests/test_result_history_optimization.py tests/test_result_history_root.py tests/test_optimization.py tests/test_nonlinear_system.py tests/test_differentiation.py -k "not hessian" -q -p no:cacheprovider
-```
+An available assessment passes when the ratio is at most one. Preserve all
+components: an aggregate alone does not explain a failure.
 
-Validation covers analytical multidimensional KKT systems, fixed/opposing bounds,
-redundant constraints, supplied multipliers, scaling, failed fits, named reports,
-probe accounting, recovery, native-merit consistency, callback cancellation,
-strict versus native success, and the local SciPy version guard. The original
-history/root/first-derivative regression suite is also retained. PyGMO, IPOPT,
-and SNOPT execution remains excluded as agreed.
+## Multiplier fitting, units and independent checks
 
-An installation wheel was not built: this environment lacks `poetry-core`, and
-the configured package source could not supply it. Wheel installation and
-license-presence verification in the built artifact remain release checks.
+The minimax LP fits stationarity and complementarity together, using free
+equality multipliers and nonnegative inequality/bound multipliers. It includes
+all inequalities and every finite bound; it does not guess an active set from
+an arbitrary proximity cutoff. Columns are equilibrated and the objective
+gradient rescales the fit; residuals are then reconstructed in the original
+supplied units. Zero-gradient cases and absent bounds have explicit treatment.
 
-## Combined validation before topic commits
+The fit can find sign-feasible multipliers in dependent systems without assuming
+uniqueness. It still costs work, uses dense arrays and depends on conditioning
+and derivative quality. Dual feasibility of fitted multipliers does not establish
+that the native solver's multipliers have the same signs. Native QP multipliers
+and independently estimated multipliers remain separate sources.
 
-On 25 October 2026, the package tests, SLSQP study tests and root development
-tests passed together: **387 passed, 10 Hessian cases deselected**. This includes
-the optional-KKT regressions and all 94 root development checks. PyGMO, IPOPT
-and SNOPT execution remains outside the agreed validation scope. Installed-wheel
-validation and Turbodash consumer migration remain pending.
+Absolute KKT tolerances depend on variable, objective and constraint scales.
+For $\hat x=D^{-1}(x-a)$, $\hat f=f/q_f$ and $\hat h_i=h_i/q_i$,
+physical equality multipliers satisfy
+$\lambda_i=(q_f/q_i)\hat\lambda_i$. Inequalities transform analogously;
+bound multipliers additionally depend on the variable scale. Always record
+coordinate and ordering conventions before interpreting sensitivities.
 
-```powershell
-python -m pytest tests development/slsqp_controls/tests development/root_step_control/tests -k "not hessian" -q -p no:cacheprovider
-```
+The [independent study audit](../../src/pysolver_view/diagnostics/slsqp_audit.py)
+reconstructs residuals using fresh values/derivatives and supplied multipliers.
+It covers the bundled unscaled inequality-only `StudyProblem` models. It does
+not call the production checker or fit new multipliers. This explicit audit
+work is outside solver counters; it is not a general application KKT adapter.
+
+The [named KKT demo](../../demos/demo_kkt_conditions/README.md) explains a known
+solution, feasible nonoptimal and infeasible points, and ordered named metadata.
+The [validation guide](validation.md) locates current tests and the twenty-case
+tolerance/domain-recovery matrix. Real IPOPT/SNOPT/PyGMO execution remains outside
+routine validation; a native SciPy comparison does not validate those backends.

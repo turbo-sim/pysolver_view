@@ -1,6 +1,6 @@
 # Newton-Raphson and Gauss-Newton with optional backtracking
 
-These development solvers separate the choice of direction from the decision
+These packaged solvers separate the choice of direction from the decision
 to accept a trial. Both use backtracking by default. Setting
 `NewtonOptions(backtracking=None)` selects full, undamped steps.
 They use public numerical kernels, not MINPACK or an optimization solver.
@@ -72,7 +72,7 @@ separate positive diagonal matrix $C$ balances columns of $A=JS$ for numerical
 linear algebra: solve with $AC$ for a direction $v$, then recover $z=Cv$.
 The factors use a fixed initial median reference and running maximum column
 norms from fresh Jacobians. See the
-[shared scaling policy](07_usage_and_controls.md#jacobian-scaling-and-physical-limits)
+[shared scaling policy](root_trust_regions.md#how-the-numerical-factors-are-chosen)
 for zero-column handling and finite-precision limits.
 
 Because $C$ is invertible, a unique square Newton solution satisfies
@@ -165,58 +165,9 @@ residual-based termination remain active. Small steps alone are not success.
 Use `None` rather than infinity to request this policy. Infinite displacement
 or retry limits would not mathematically remove the acceptance test.
 
-## Using the development API
+## Usage and validation
 
-```python
-from pysolver_view import (
-    BacktrackingOptions,
-    NewtonOptions,
-    StepLimitOptions,
-    solve_root,
-)
-from development.root_step_control.src.problems import ExtendedRosenbrockProblem
-
-problem = ExtendedRosenbrockProblem(n=10)
-options = NewtonOptions(
-    x_scale=problem.x_scale,
-    jacobian_scaling=True,
-    backtracking=BacktrackingOptions(
-        step_limits=StepLimitOptions(
-            initial_limit=0.1, max_limit=1.0, growth_factor=1.5
-        )
-    ),
-)
-result = solve_root(
-    problem.residual,
-    problem.x0,
-    jac=problem.gradient,
-    method="newton_raphson",
-    options=options,
-)
-```
-
-Use `method="gauss_newton"` with the same options for the least-squares
-direction. For a full-step comparison, pass
-`NewtonOptions(x_scale=problem.x_scale, backtracking=None)`.
-The result exposes `jacobian_scaling`, the final relative factors in
-`jacobian_scale`, and `jacobian_scale_updates`. Reported `scaled_step_norm`
-continues to mean the step size measured with the fixed physical `x_scale`.
-
-## Interpreting the comparisons
-
-The [custom convergence report](../results_custom_convergence/REPORT.md)
-compares all four methods, including separate full-step Newton-family cases.
-The [native comparison](../results_convergence/REPORT.md) compares the custom
-Levenberg-Marquardt/Powell hybrid implementations with SciPy/MINPACK.
-The [timing report](../results_time_perf/RESULTS.md) separates residual,
-Jacobian, selected numerical kernels, other solver overhead, and total time.
-
-Custom accepted histories and native residual-evaluation traces are different
-observations. A native consecutive evaluation displacement is not an accepted
-step or a measurement of its internal trust radius. Failed solves and
-unsupported dimensions remain visible rather than being treated as successful
-timings.
-
-See [LM/hybrid mathematics](05_lm_and_hybrid_mathematics.md) for the
-trust-region methods and [usage and histories](07_usage_and_controls.md) for
-shared evaluation, callback, and reporting conventions.
+See the [public root interface](root_solvers.md) for installed-package examples,
+option precedence and derivatives. The [validation guide](validation.md) locates
+the four-method convergence study; [timing](timing.md) explains comparisons
+between native observations and custom accepted states.

@@ -1,7 +1,7 @@
 # Timing native and custom root-finding methods
 
 This experiment first compares **Levenberg-Marquardt** and **Powell hybrid**
-between SciPy/MINPACK and the custom [driver](../../../pysolver_view/solvers/root/solver.py). A separate
+between SciPy/MINPACK and the custom [driver](../../src/pysolver_view/roots/solvers/solver.py). A separate
 comparison includes all four PySolverView methods: Levenberg-Marquardt,
 Powell hybrid, Newton-Raphson, and Gauss-Newton. All plot labels use these
 full names and identify the backend.
@@ -14,9 +14,9 @@ distance, a persistent maximum, and gradual growth. Every primary custom case
 retains full histories; a secondary experiment compares full and summary
 LM/Powell hybrid histories on the 100-variable workloads.
 
-Read the generated [timing results](../results_time_perf/RESULTS.md) for
-the measured numbers and [summary.csv](../results_time_perf/summary.csv) for the complete table.
-The studies and problems stay in `root_step_control/`; they use the packaged
+Read the generated [timing results](../../development/root_step_control/results_time_perf/RESULTS.md) for
+the measured numbers and [summary.csv](../../development/root_step_control/results_time_perf/summary.csv) for the complete table.
+The studies stay under `development/root_step_control/`, while reusable problems are installed in `pysolver_view.roots.problems`; they use the packaged
 custom implementation through `NonlinearSystemSolver(library="pysolver")`.
 The standard run contains **56 configurations**: ten configurations on each of
 five workloads (two native, four custom unrestricted, four custom protected),
@@ -94,7 +94,7 @@ every update supplies the complete requested pressure and temperature.
 Analytic derivatives are checked against central differences. Post-solve checks
 verify the equation residuals, increasing temperature and decreasing pressure.
 The ten-cell outlet is approximately 413.94 K and 1.78836 MPa; detailed physical
-errors and state diagnostics are in [metadata.json](../results_time_perf/metadata.json).
+errors and state diagnostics are in [metadata.json](../../development/root_step_control/results_time_perf/metadata.json).
 
 Two additional cases use the established Broyden tridiagonal system with **20
 and 100 variables**. A fifth case is MINPACK's **100-variable discrete integral
@@ -102,7 +102,7 @@ equation**, whose Jacobian is genuinely dense. Its standard discretization
 couples every variable to every equation; this complements the locally coupled
 Broyden system. Their inexpensive residuals make solver overhead and dense
 factorization costs visible. Equations, standard starts, analytic Jacobians and
-source references are in [mathematical.py](../src/problems/mathematical.py). All five cases use the
+source references are in [mathematical problem modules](../../src/pysolver_view/roots/problems). All five cases use the
 project's nonlinear problem interface.
 
 ## What each timing means
@@ -190,68 +190,22 @@ The results apply to this machine and these workload sizes. Actual expensive
 flash calculations, mixtures or different property input pairs can change the
 balance between model cost and solver overhead.
 
-## Measured outcome on 25 October 2026
-
-The maintained run completed **56 configurations and 11,760 timed solves**.
-Every solve met the independently checked residual target. The maximum audited
-protected-step ratio was `1.0000000000000018`, within the floating-point audit
-tolerance. The raw table contains 2,352 batch averages. These timing workloads
-all converged; robustness conclusions require the separate difficult-start
-convergence studies, which retain failures and domain rejections.
-
-The following are **clean median milliseconds per solve**, with full histories:
-
-| 100-variable workload | PySolverView Levenberg-Marquardt, generous | PySolverView Powell hybrid, generous | Newton-Raphson, full step | Gauss-Newton, full step |
-| --- | ---: | ---: | ---: | ---: |
-| Broyden tridiagonal | 2.7126 | 3.8002 | 2.4857 | 2.6873 |
-| Dense discrete integral equation | 2.3256 | 2.0024 | 2.1277 | 2.2002 |
-| Heated nitrogen duct | 7.0999 | 4.4108 | 6.4176 | 6.7389 |
-
-| 100-variable workload, protected steps | Levenberg-Marquardt | Powell hybrid | Newton-Raphson | Gauss-Newton |
-| --- | ---: | ---: | ---: | ---: |
-| Broyden tridiagonal | 16.5418 | 5.5971 | 6.3782 | 7.2520 |
-| Dense discrete integral equation | 7.2159 | 2.4139 | 3.4873 | 4.5972 |
-| Heated nitrogen duct | 92.2530 | 27.0018 | 51.3572 | 50.5545 |
-
-Newton-Raphson and Gauss-Newton have nearly the same direction on these square
-full-rank problems; small timing differences between them should not be
-interpreted as a general algorithmic advantage. Protected Newton-family runs
-avoid LM's damped SVD search and are faster than protected LM on these three
-workloads. Powell hybrid remains faster in these protected cases: it reuses
-and updates its Jacobian instead of evaluating a fresh one after each move.
-On the 100-variable duct, protected LM uses 28 Jacobian calls, the Newton-family
-methods use 27, and Powell hybrid uses one.
-
-The native comparison remains separate. On the 100-variable duct, native
-SciPy/MINPACK LM and Powell hybrid take 8.4895 and 5.3236 ms,
-respectively, versus 7.0999 and 4.4108 ms through the custom
-public interface with generous radii. Native Powell hybrid is faster on the
-inexpensive 100-variable mathematical problems. These totals compare interfaces
-as used, with different diagnostic and stopping costs; they do not isolate
-algorithmic performance. See the report for quartiles and all measured components.
-
-The separate [interface timing runner](../run_adapter_timing.py) compares the
-same custom core directly and through NonlinearSystemSolver, with identical
-full-history policies. Its [report](../results_adapter_perf/RESULTS.md) and
-[CSV](../results_adapter_perf/summary.csv) quantify interface cost without
-attributing that cost to residuals or numerical kernels.
-
 ## Files and checks
 
-- [run_timing_benchmark.py](../run_timing_benchmark.py): complete timing study,
+- [run_timing_benchmark.py](../../development/root_step_control/run_timing_benchmark.py): complete timing study,
   including configuration, measurements, checks, reporting, plotting, and CLI.
-- [thermodynamics.py](../src/problems/thermodynamics.py): thermodynamic equations and derivatives.
-- [RESULTS.md](../results_time_perf/RESULTS.md): measured tables and plot.
-- [summary.csv](../results_time_perf/summary.csv): aggregate timings, counts, checks and ratios.
-- [raw_batches.csv](../results_time_perf/raw_batches.csv): every measured batch average.
-- [metadata.json](../results_time_perf/metadata.json): versions, numerical-library configuration,
+- [heated_gas_duct.py](../../src/pysolver_view/roots/problems/heated_gas_duct.py): thermodynamic equations and derivatives.
+- [RESULTS.md](../../development/root_step_control/results_time_perf/RESULTS.md): measured tables and plot.
+- [summary.csv](../../development/root_step_control/results_time_perf/summary.csv): aggregate timings, counts, checks and ratios.
+- [raw_batches.csv](../../development/root_step_control/results_time_perf/raw_batches.csv): every measured batch average.
+- [metadata.json](../../development/root_step_control/results_time_perf/metadata.json): versions, numerical-library configuration,
   requested thread environment, settings, starts and physical diagnostics.
-- [timing_breakdown.svg](../results_time_perf/timing_breakdown.svg): exportable timing figure.
-- [custom_timing_breakdown.svg](../results_time_perf/custom_timing_breakdown.svg):
+- [timing_breakdown.svg](../../development/root_step_control/results_time_perf/timing_breakdown.svg): exportable timing figure.
+- [custom_timing_breakdown.svg](../../development/root_step_control/results_time_perf/custom_timing_breakdown.svg):
   all four PySolverView methods with generous/full-step policies.
-- [controlled_timing_breakdown.svg](../results_time_perf/controlled_timing_breakdown.svg):
+- [controlled_timing_breakdown.svg](../../development/root_step_control/results_time_perf/controlled_timing_breakdown.svg):
   all four PySolverView methods with protected steps.
-- [summary_timing_breakdown.svg](../results_time_perf/summary_timing_breakdown.svg):
+- [summary_timing_breakdown.svg](../../development/root_step_control/results_time_perf/summary_timing_breakdown.svg):
   secondary history-storage comparison.
 
 The stacked bars use additive instrumented components; black diamonds and
@@ -261,44 +215,29 @@ marked explicitly and excluded from successful-solve timing ratios.
 Run the functional tests separately from a timing session:
 
 ```powershell
-python -m unittest discover -s development/root_step_control/tests -t . -v
+python tests/run_tests.py --suite studies
 ```
 
 They test conservation, derivatives, state resets, timing accounting and
 instrumentation cleanup. They make no assertions about which solver is faster.
 
-## Source organization verification
-
-During the earlier module organization, a separate
-11-round timing comparison repeated all 56 configurations before and after the
-refactor. The historical 21-round study above remains a separate measurement.
-See [source organization and validation](09_source_organization.md) for the fresh
-numbers and their limits; counters and convergence traces were preserved.
-
 ## Public interface overhead
 
-The direct/public experiment uses 24 configurations: all four methods, generous
-or full steps and controlled steps, on each of the three 100-variable problems.
-Eleven interleaved rounds, three solves per batch, and clean/instrumented modes
-produce **3,168 timed solves**. Every solve reaches the target; residual and
-Jacobian calls and accepted-iteration counts agree between interfaces.
+The paired direct/public experiment uses 24 configurations: all four methods,
+generous/full and controlled steps, on three 100-variable problems. Eleven
+interleaved rounds, three solves per batch and clean/instrumented modes produce
+3,168 timed solves. Both interfaces use identical full-history policies; work
+counts and numerical outcomes are checked before interpreting timing ratios.
 
-With full histories, public/direct clean-time ratios span 1.10-1.57 on the two
-cheap mathematical workloads. Most differences are about 0.44-1.20 ms per solve.
-For the thermodynamic duct, ratios span 0.98-1.18. A negative difference for
-controlled LM is measurement variation, not evidence that adding an adapter
-accelerates numerical work. Controlled Newton and Gauss-Newton timings also vary
-despite matching directions and work counts. Raw batches and quartiles are saved.
+Use its generated report and raw batches to assess option resolution, accepted
+recording, common reports and detached-result costs. Do not subtract timings
+from separate sessions to infer adapter cost. Small differences can be noise;
+neither history reduction nor adding an adapter guarantees a speed improvement.
 
-The public interface pays for option resolution, accepted-point recording,
-common reports and detached results. These are real costs, most visible when
-residuals are inexpensive. The separate main timing session had appreciably
-higher absolute times, including on native SciPy; do not subtract numbers from
-different sessions to estimate adapter cost. Use the paired experiment for that.
+## Results are generated evidence
 
-The integration is usable for these workloads, but has not removed Python
-bookkeeping costs. A focused future optimization could reduce repeated history
-copying and format reports lazily, preserving detached data and callback
-contracts. Direct `psv.solve_root` is available when the common frontend is not
-needed. These observations do not justify changing residual targets or disabling
-diagnostics silently. See [the interface report](../results_adapter_perf/RESULTS.md).
+Measured runtimes, ratios, quartiles and environment metadata belong in the
+generated reports, rather than fixed copies in this guide. Results directories
+are ignored and may be absent in a fresh checkout. Regenerate them with the
+[study commands](validation.md#study-runners), and interpret timings together
+with independently checked convergence and actual trial-distance audits.
