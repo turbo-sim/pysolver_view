@@ -1,6 +1,6 @@
 """Compatibility exports for the root studies; implementations live in the package."""
 
-from pysolver_view.solvers.root import (
+from pysolver_view.roots.solvers import (
     BacktrackingOptions,
     DomainError,
     METHOD_DISPLAY_NAMES,
@@ -13,4 +13,4 @@ from pysolver_view.solvers.root import (
     solve_newton_raphson,
     solve_gauss_newton,
 )
-from pysolver_view.solvers.root.solver import METHOD_ALIASES, normalize_method
+from pysolver_view.roots.solvers.solver import METHOD_ALIASES, normalize_method

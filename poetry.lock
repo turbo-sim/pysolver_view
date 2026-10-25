@@ -559,6 +559,63 @@ test = ["Pillow", "contourpy[test-no-images]", "matplotlib"]
 test-no-images = ["pytest", "pytest-cov", "pytest-rerunfailures", "pytest-xdist", "wurlitzer"]
 
 [[package]]
+name = "coolprop"
+version = "7.2.0"
+description = "Open-source thermodynamic and transport properties database"
+optional = true
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "extra == \"thermodynamics\""
+files = [
+    {file = "coolprop-7.2.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:454e2cd8327f8cced296a85869e8c37f3a875590eb5c7ec68474e87d595d5c28"},
+    {file = "coolprop-7.2.0-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:ce9ebbe334431b13ab1e0434c20fe606edc182db777f64f857fc9d0dd33df25e"},
+    {file = "coolprop-7.2.0-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:7eadde0c28b618e96f316f04a40a8ec557f73ed486263aba7d1b2eeb3921c73f"},
+    {file = "coolprop-7.2.0-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:6e4d00997ba53428c68328f5c677a1f284fb3e6d18591fe139a2bf73475fce65"},
+    {file = "coolprop-7.2.0-cp310-cp310-win32.whl", hash = "sha256:2e3ca17ee574de96f87b23fb29488dcba743dff60abf8fcc0254b4a88a76ba7e"},
+    {file = "coolprop-7.2.0-cp310-cp310-win_amd64.whl", hash = "sha256:0703bf6d4900e8004f6f484fb3145a8a5b4efe27dc992037b1d00399c107eb46"},
+    {file = "coolprop-7.2.0-cp310-cp310-win_arm64.whl", hash = "sha256:b6867f8f7ec99459377c8fc8d3ab75eee34181264758472966e6214871f5dff0"},
+    {file = "coolprop-7.2.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:4ee324242095763740fdd8b45e1577c9b00b65f35aaee7480c47822d2618d53d"},
+    {file = "coolprop-7.2.0-cp311-cp311-macosx_11_0_x86_64.whl", hash = "sha256:6af5e83e09a19d8fa53f313514c58890572a7d4aa852ead2b3e811e8019bbd5f"},
+    {file = "coolprop-7.2.0-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:1155a43d90f960f3c4dfb53d7f7e02dace489166b3fdf778332afc09a001288d"},
+    {file = "coolprop-7.2.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:a5e14e9fe5ab4028d7424cee1fa7439544d1f710409e284efddef1c8000f19fd"},
+    {file = "coolprop-7.2.0-cp311-cp311-win32.whl", hash = "sha256:75125781a940472c7fc250e2bd0138f75e63fdb2ba4d0b82c1c96fbfe6aba9bd"},
+    {file = "coolprop-7.2.0-cp311-cp311-win_amd64.whl", hash = "sha256:e3a761dd2da83b737e2bfd45fa136a93d7cf58eff61ef1d2d008c0a7889de93e"},
+    {file = "coolprop-7.2.0-cp311-cp311-win_arm64.whl", hash = "sha256:682e2cffd9e34e31c3a84f5b1d820b9a2bf2d83b02a0c31c7a6249ffd9012501"},
+    {file = "coolprop-7.2.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:8a75b223336ceb6ddda6da372f037569d719484274b18fc484b0da46bd9fed29"},
+    {file = "coolprop-7.2.0-cp312-cp312-macosx_11_0_x86_64.whl", hash = "sha256:548fb14497f7132db54f0b09b4ded948075665b173ac5d4acd0f4be9b96a32c6"},
+    {file = "coolprop-7.2.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:78d7ebbcee40c8b30d647861d90cba63a59b6beee0f23c7a8ca04abd83ee0441"},
+    {file = "coolprop-7.2.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:e88ef42e81b42e42fdd3bd5b8dc541c729e16cf104f08f7a7a8ed354f65fa418"},
+    {file = "coolprop-7.2.0-cp312-cp312-win32.whl", hash = "sha256:1cd780de217f4359d4d65ab854a9691e6c955aea2eac59ca92c437c6d11033bb"},
+    {file = "coolprop-7.2.0-cp312-cp312-win_amd64.whl", hash = "sha256:eeb609eb6c284d480fe749b3ea576d70e8bd30fec3dc96775f93d5f51e615bc8"},
+    {file = "coolprop-7.2.0-cp312-cp312-win_arm64.whl", hash = "sha256:259809cdc8bc47e55d915ff5ddaebb49246d37fde1ad272066b5fe1273723af5"},
+    {file = "coolprop-7.2.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:c5dc0b72340f92db402f042a49eaa3d7d80c12ca4f34f2ef9ce14030ebdb5018"},
+    {file = "coolprop-7.2.0-cp313-cp313-macosx_11_0_x86_64.whl", hash = "sha256:a518d657d7f78e2936116b1c15b89c611f7858a75510498d59c4b4a8b9905d62"},
+    {file = "coolprop-7.2.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:67c004f0bff6e46737c325018b1297bbcf3d7693abf8610cd1b64ae33d06c152"},
+    {file = "coolprop-7.2.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:893622e592d92f4fca4d1e41c6d255f579b45e7bd8467684bc194f30c31aa384"},
+    {file = "coolprop-7.2.0-cp313-cp313-win32.whl", hash = "sha256:352a276a91a69e0ca73a88609a1cfe47284b3a98a9fbcfc5372875df4ae347bf"},
+    {file = "coolprop-7.2.0-cp313-cp313-win_amd64.whl", hash = "sha256:bd984c9428e78e26b21b5565262001cb19fc0aece56262afaa067b01c2951929"},
+    {file = "coolprop-7.2.0-cp313-cp313-win_arm64.whl", hash = "sha256:5966a71ddc7d63913a13dfed1c264d719248dbd4ca5e8cf1d0325ce43be3188e"},
+    {file = "coolprop-7.2.0-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:64e22e0c7f10151103105978732f2be8ffc2ed9412bcdc2af5ae2b5757581a06"},
+    {file = "coolprop-7.2.0-cp314-cp314-macosx_11_0_x86_64.whl", hash = "sha256:13226086468b6c34dc1a42661cc2d7e58d510ee16b1cce353af1bccc41c8efcb"},
+    {file = "coolprop-7.2.0-cp314-cp314-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:5b41311957f42ff4df52344486a8f6bc3973df1c201bb5d224f786ff58bc303b"},
+    {file = "coolprop-7.2.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:fa3149acadcca0f0e3ef6e5a634a803e0502bf5819dd7b2e7e01db3439a84ff5"},
+    {file = "coolprop-7.2.0-cp314-cp314-win32.whl", hash = "sha256:4dfacd25f3c42de1aea85c5080018fbf54fcb6d4eb83168fad7318af28f1546e"},
+    {file = "coolprop-7.2.0-cp314-cp314-win_amd64.whl", hash = "sha256:57e1b6d9dc1b9041bbc30b08040b89b5859176a490d4a574d6fb24b726e7e922"},
+    {file = "coolprop-7.2.0-cp314-cp314-win_arm64.whl", hash = "sha256:fdeb8d797099a53578f6c35362604373cc98222ca31b0d57d9a58a73ccb9a01e"},
+    {file = "coolprop-7.2.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:66071d78300323282da8c0a9d63019deba322f2ff030b861d6c48c9d511df63d"},
+    {file = "coolprop-7.2.0-cp39-cp39-macosx_11_0_x86_64.whl", hash = "sha256:338374ea76119afb6af039b18a72ddda349124644ab637fe34c0d34679102ec3"},
+    {file = "coolprop-7.2.0-cp39-cp39-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:367eefc3e8595b8dfe1a6886414a8c84212dfa039765ccf0f676b19636c3c79b"},
+    {file = "coolprop-7.2.0-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:9fa17eabd9721d8e61e8bd4ab7398220fcf80262744dd20d4c615efe8565e3ce"},
+    {file = "coolprop-7.2.0-cp39-cp39-win32.whl", hash = "sha256:6b0144fc258dbe8c75527854c1b46b0abb1724b77debe88db47c31c2485c4c1f"},
+    {file = "coolprop-7.2.0-cp39-cp39-win_amd64.whl", hash = "sha256:079a519db1c056e276a394c05b3d9e72d7828bd7e212ec71f7ad422d5a26af7c"},
+    {file = "coolprop-7.2.0-cp39-cp39-win_arm64.whl", hash = "sha256:9dbb3ec3ce1450816757d1af7b3ca11dd37606ca3c2c24862c0991de9312e2eb"},
+    {file = "coolprop-7.2.0.tar.gz", hash = "sha256:b1e205d67e7f4f38e26d2ed0abb815e7a0f643b069407c238f3d1b3631791b75"},
+]
+
+[package.dependencies]
+numpy = ">=1.20"
+
+[[package]]
 name = "cycler"
 version = "0.12.1"
 description = "Composable style cycles"
@@ -887,8 +944,8 @@ files = [
 jaxlib = "0.5.3"
 ml_dtypes = ">=0.4.0"
 numpy = [
+    {version = ">=1.25"},
     {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
-    {version = ">=1.25", markers = "python_version < \"3.12\""},
 ]
 opt_einsum = "*"
 scipy = ">=1.11.1"
@@ -1419,10 +1476,10 @@ files = [
 
 [package.dependencies]
 numpy = [
+    {version = ">=1.21.2", markers = "python_version >= \"3.10\""},
     {version = ">=2.1.0", markers = "python_version >= \"3.13\""},
     {version = ">=1.26.0", markers = "python_version == \"3.12\""},
     {version = ">=1.23.3", markers = "python_version >= \"3.11\""},
-    {version = ">=1.21.2", markers = "python_version == \"3.10\""},
 ]
 
 [package.extras]
@@ -1739,9 +1796,9 @@ files = [
 
 [package.dependencies]
 numpy = [
+    {version = ">=1.22.4", markers = "python_version < \"3.11\""},
     {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
     {version = ">=1.23.2", markers = "python_version == \"3.11\""},
-    {version = ">=1.22.4", markers = "python_version < \"3.11\""},
 ]
 python-dateutil = ">=2.8.2"
 pytz = ">=2020.1"
@@ -2592,7 +2649,7 @@ description = "Python documentation generator"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
-markers = "python_version <= \"3.12\""
+markers = "python_version < \"3.13\""
 files = [
     {file = "sphinx-7.3.7-py3-none-any.whl", hash = "sha256:413f75440be4cacf328f580b4274ada4565fb2187d696a84970c23f77b64d8c3"},
     {file = "sphinx-7.3.7.tar.gz", hash = "sha256:a4a7db75ed37531c05002d56ed6948d4c42f473a36f46e1382b0bd76ca9627bc"},
@@ -2820,7 +2877,7 @@ description = "An awesome theme for the Sphinx documentation generator"
 optional = false
 python-versions = "<4.0,>=3.8"
 groups = ["dev"]
-markers = "python_version <= \"3.12\""
+markers = "python_version < \"3.13\""
 files = [
     {file = "sphinxawesome_theme-5.2.0-py3-none-any.whl", hash = "sha256:56f1462f4ec4a5d66017819de6b7965a394d4157117bf12f029e7818d6789525"},
     {file = "sphinxawesome_theme-5.2.0.tar.gz", hash = "sha256:c24f1e5c0b9e475380d16fc5f1f3bfd84955817da0905d95f7e20809d7cd3c5d"},
@@ -3130,7 +3187,7 @@ files = [
     {file = "tzdata-2025.3-py2.py3-none-any.whl", hash = "sha256:06a47e5700f3081aab02b2e513160914ff0694bce9947d6b76ebd6bf57cfc5d1"},
     {file = "tzdata-2025.3.tar.gz", hash = "sha256:de39c2ca5dc7b0344f2eba86f49d614019d29f060fc4ebc8a417896a620b56a7"},
 ]
-markers = {dev = "(platform_system == \"Windows\" or sys_platform == \"win32\") and sys_platform != \"darwin\" and sys_platform != \"linux\""}
+markers = {dev = "sys_platform != \"darwin\" and sys_platform != \"linux\" and (platform_system == \"Windows\" or sys_platform == \"win32\")"}
 
 [[package]]
 name = "tzlocal"
@@ -3542,8 +3599,9 @@ tzlocal = {version = ">=4.0", markers = "sys_platform != \"darwin\" and sys_plat
 
 [extras]
 jax = ["jax"]
+thermodynamics = ["CoolProp"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.14"
-content-hash = "042d0cf5ee554456043460af16c163ab1a685a4c3851775e02e803e586f47073"
+content-hash = "1c049e2e39b1237fde99c9fdd2909ac2d0f5626d0525231d7816109b64dcdf2e"

@@ -1,21 +1,17 @@
 """Compare four controlled root solvers using the public PySolverView interface.
 
 Run with --no-show to save the figures without opening a window. Problem
-definitions are shared with the benchmarks under development/root_step_control/.
+definitions come from the installed pysolver_view.roots.problems package.
 """
 
 import argparse
 import json
 from pathlib import Path
-import sys
-
-if __name__ == "__main__":
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import numpy as np
 import pysolver_view as psv
 
-from development.root_step_control.src.problems import (
+from pysolver_view.roots.problems import (
     BroydenTridiagonalProblem,
     ExtendedRosenbrockProblem,
 )

@@ -28,12 +28,12 @@ import scipy
 from scipy.optimize import root
 from pysolver_view import NonlinearSystemSolver
 
-from development.root_step_control.src.problems import (
+from pysolver_view.roots.problems import (
     get_extension_problems,
     get_large_problems,
     get_problems,
 )
-from pysolver_view.solvers.root.solver import (
+from pysolver_view.roots.solvers.solver import (
     BacktrackingOptions,
     DomainError,
     METHOD_DISPLAY_NAMES,

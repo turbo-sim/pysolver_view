@@ -12,5 +12,6 @@ Use the panel to the left or the table of contents below to navigathe the docume
    source/introduction
    source/tutorial_optimization
    source/tutorial_nonlinear_system
+   source/source_layout
    source/api/modules
 

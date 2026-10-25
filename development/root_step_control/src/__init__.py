@@ -1,6 +1,6 @@
 """Compatibility exports for the root studies; implementations live in the package."""
 
-from pysolver_view.solvers.root import (
+from pysolver_view.roots.solvers import (
     BacktrackingOptions,
     DomainError,
     METHOD_DISPLAY_NAMES,

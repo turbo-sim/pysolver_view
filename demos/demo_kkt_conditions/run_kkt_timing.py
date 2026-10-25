@@ -10,7 +10,6 @@ import csv
 import json
 import platform
 from pathlib import Path
-import sys
 from time import perf_counter
 
 import matplotlib.pyplot as plt
@@ -18,7 +17,6 @@ import numpy as np
 import scipy
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT))
 import pysolver_view as psv
 
 

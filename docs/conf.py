@@ -1,8 +1,4 @@
-import os
-import sys
-
-# Add package root dir to path
-sys.path.insert(0, os.path.abspath(".."))
+# API documentation uses the installed package (poetry install or pip install -e .).
 
 # Define project metadata
 project = "pysolver_view"
@@ -21,9 +17,14 @@ extensions = [
     "numpydoc",
 ]
 
+# Document definitions in their canonical modules. Compatibility/lazy exports
+# link to those definitions without documenting every imported object again.
+autodoc_default_options = {"ignore-module-all": True}
+numpydoc_show_class_members = False
+
 # Exclude unnecessary files
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
-exclude_patterns.extend(["source/api/pysolver_view.rst"])
+# The generated package index links canonical modules and the compatibility API.
 
 # Define theme
 html_theme = "sphinx_book_theme"

@@ -1,56 +1,19 @@
-"""Reproducible problem collections for convergence and timing studies."""
-
-from .mathematical import (
-    BroydenTridiagonalProblem,
-    BrownAlmostLinearProblem,
-    CoupledOverdeterminedRosenbrockProblem,
-    DiscreteBoundaryValueProblem,
-    DiscreteIntegralEquationProblem,
-    ExtendedRosenbrockProblem,
-    HelicalValleyProblem,
-    LogarithmicDomainProblem,
-    PowellBadlyScaledProblem,
-    PowellSingularProblem,
-)
+"""Compatibility exports for packaged root problems."""
+from importlib import import_module
 
 
-def get_extension_problems():
-    """Return thermodynamic, domain-recovery and rectangular Newton-family controls."""
-    from .thermodynamics import HeatedGasDuctProblem
+_EXPORTS = {'get_extension_problems': ('pysolver_view.roots.problems', 'get_extension_problems'), 'get_problems': ('pysolver_view.roots.problems', 'get_problems'), 'get_large_problems': ('pysolver_view.roots.problems', 'get_large_problems')}
+__all__ = list(_EXPORTS)
 
-    return [
-        HeatedGasDuctProblem(),
-        LogarithmicDomainProblem(),
-        CoupledOverdeterminedRosenbrockProblem(),
-        CoupledOverdeterminedRosenbrockProblem(inconsistent=True),
-    ]
+def __getattr__(name):
+    if name not in _EXPORTS:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    module, symbol = _EXPORTS[name]
+    value = import_module(module, __name__)
+    if symbol is not None:
+        value = getattr(value, symbol)
+    globals()[name] = value
+    return value
 
-
-def get_problems():
-    """Seven well-known, genuinely multidimensional systems at standard starts."""
-    return [
-        ExtendedRosenbrockProblem(n=10),
-        PowellSingularProblem(),
-        PowellBadlyScaledProblem(),
-        BrownAlmostLinearProblem(n=10),
-        BroydenTridiagonalProblem(n=20),
-        DiscreteBoundaryValueProblem(n=20),
-        HelicalValleyProblem(),
-    ]
-
-
-def get_large_problems():
-    """Three 100-variable cases: banded, dense, and property-heavy coupling.
-
-    CoolProp is only imported when this expanded suite is requested. The duct
-    refines the original ten-cell domain at fixed total heat and resistance.
-    """
-    from .thermodynamics import HeatedGasDuctProblem
-
-    return [
-        BroydenTridiagonalProblem(n=100),
-        DiscreteIntegralEquationProblem(n=100),
-        HeatedGasDuctProblem(
-            n_cells=50, total_heat_per_mass=1e5, total_loss_coefficient=80
-        ),
-    ]
+def __dir__():
+    return sorted(set(globals()) | set(__all__))

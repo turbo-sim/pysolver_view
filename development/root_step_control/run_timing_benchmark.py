@@ -47,12 +47,12 @@ import scipy
 from scipy.optimize import OptimizeResult, root
 from pysolver_view import NonlinearSystemProblem, NonlinearSystemSolver
 
-from pysolver_view.solvers.root import solver as solver_module
-from development.root_step_control.src.problems import (
+from pysolver_view.roots.solvers import solver as solver_module
+from pysolver_view.roots.problems import (
     BroydenTridiagonalProblem,
     get_large_problems,
 )
-from development.root_step_control.src.problems.thermodynamics import (
+from pysolver_view.roots.problems.heated_gas_duct import (
     HeatedGasDuctProblem,
 )
 
@@ -192,7 +192,7 @@ def measure_custom_kernels(measurements, solver, enabled):
     """
     replacements = []
     if enabled and solver_configuration(solver).backend == "pysolverview":
-        from pysolver_view.solvers.root import linear_model
+        from pysolver_view.roots.solvers import linear_model
 
         bindings = [
             (linear_model, name, label)

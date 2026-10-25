@@ -26,6 +26,38 @@ large-step runs on a 1000-variable collocation problem.
 
 ## Documentation
 
+Install the checkout before running tests or demos; the package lives under
+`src/pysolver_view/`:
+
+```bash
+python -m pip install -e .
+# Optional physical benchmark models:
+python -m pip install -e '.[thermodynamics]'
+```
+
+Install development dependencies with `poetry install --extras jax`. Add the
+`thermodynamics` extra to run the optional CoolProp model checks as well.
+Custom SLSQP requires SciPy 1.17.1, which is selected automatically on Python
+3.11 and newer. Python 3.10 retains its existing SciPy dependency range for
+native methods and custom roots; the full test suite needs Python 3.11 or newer.
+
+```bash
+poetry run python tests/run_tests.py
+# Run just one of the configured suites:
+poetry run python tests/run_tests.py --suite package
+poetry run python tests/run_tests.py --suite development
+poetry run python docs/build_docs.py --no-autobuild
+```
+
+Control test paths and default pytest options in
+[`tests/run_tests.py`](tests/run_tests.py). By default it runs the package and
+development checks, excluding Hessian validation from the agreed migration
+scope. Both existing CI test jobs call this same script.
+
+The [source-layout migration guide](docs/source/source_layout.rst) documents
+canonical imports, compatibility exports, optional dependencies and the explicit
+JAX configuration API. The package name, distribution name and version remain unchanged.
+
 Please refer to the [`documentation`](https://turbo-sim.github.io/pysolver_view/index.html) for:
 - Installation instructions
 - Tutorials showing how to use the code

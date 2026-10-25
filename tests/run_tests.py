@@ -1,15 +1,62 @@
 #!/usr/bin/env python3
-import pytest
+"""Master test runner for local development and the existing CI jobs.
 
-# Define the list of tests
-tests_list = ["test_differentiation.py", "test_optimization.py", "test_nonlinear_system.py"]
+Edit TEST_SUITES, ENABLED_SUITES and PYTEST_OPTIONS below to control the checks.
+Additional command-line arguments are passed to pytest.
+"""
 
-# Run pytest when the python script is executed
-pytest.main(tests_list + ["-vv"])
-# pytest.main([__file__, "-vv"])
-# pytest.main([__file__])
+import argparse
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+TEST_SUITES = {
+    "package": ["tests"],
+    "development": [
+        "development/root_step_control/tests",
+        "development/slsqp_controls/tests",
+    ],
+}
+ENABLED_SUITES = ["package", "development"]
+# Hessian validation remains outside the agreed migration scope.
+PYTEST_OPTIONS = ["-q", "-k", "not hessian"]
+CACHE_DIR = REPO_ROOT / "build" / "pytest_cache"
 
 
+def main(argv=None):
+    """Run the configured suites from the repository and return pytest's status."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--suite",
+        choices=TEST_SUITES,
+        action="append",
+        help="Run only this suite; repeat to select several. Default: all enabled suites.",
+    )
+    options, pytest_args = parser.parse_known_args(argv)
+    if pytest_args[:1] == ["--"]:
+        pytest_args = pytest_args[1:]
+    suites = options.suite if options.suite is not None else ENABLED_SUITES
+    paths = [str(REPO_ROOT / path) for suite in suites for path in TEST_SUITES[suite]]
+    environment = os.environ.copy()
+    environment.setdefault("MPLBACKEND", "Agg")
+    return subprocess.call(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            *paths,
+            *PYTEST_OPTIONS,
+            "-o",
+            f"cache_dir={CACHE_DIR}",
+            *pytest_args,
+        ],
+        cwd=REPO_ROOT,
+        env=environment,
+    )
 
-# TODO it would be good to use TOX or NOX to test my installation across multiple python versions.
-# Maybe it is even better to do so through github actions
+
+if __name__ == "__main__":
+    raise SystemExit(main())

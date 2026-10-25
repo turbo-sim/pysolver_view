@@ -65,6 +65,7 @@ env/
 *.~lock.*
 
 # Environment directories
+.venv/
 .env/
 venv/
 env/

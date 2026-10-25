@@ -34,7 +34,7 @@ jobs:
       run: poetry install --extras jax
 
     - name: Run tests
-      run: poetry run pytest
+      run: poetry run python tests/run_tests.py
 
 
   test_windows:
@@ -58,7 +58,7 @@ jobs:
         run: poetry install --extras jax
 
       - name: Run tests
-        run: poetry run pytest
+        run: poetry run python tests/run_tests.py
 
 
   publish_to_pypi:

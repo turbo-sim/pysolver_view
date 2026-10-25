@@ -11,8 +11,8 @@ import numpy as np
 from scipy.optimize import OptimizeResult
 
 from .. import run_timing_benchmark as timing
-from pysolver_view.solvers.root import linear_model
-from ..src.problems import BroydenTridiagonalProblem
+from pysolver_view.roots.solvers import linear_model
+from pysolver_view.roots.problems import BroydenTridiagonalProblem
 
 
 class TimingAccountingTests(unittest.TestCase):

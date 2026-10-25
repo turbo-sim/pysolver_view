@@ -7,13 +7,17 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/turbo-sim/pysolver_view"
 documentation = "https://turbo-sim.github.io/pysolver_view/"
-include = [{ path = "pysolver_view/solvers/SCIPY_LICENSE.txt", format = ["sdist", "wheel"] }]
+packages = [{ include = "pysolver_view", from = "src" }]
+include = [{ path = "src/pysolver_view/optimization/solvers/slsqp/SCIPY_LICENSE.txt", format = ["sdist", "wheel"] }]
 
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.14"
 numpy = "^2.2.4"
-scipy = "^1.15.2"
+scipy = [
+    { version = "^1.15.2", python = ">=3.10,<3.11" },
+    { version = "1.17.1", python = ">=3.11,<3.14" },
+]
 matplotlib = "^3.10.1"
 pandas = "^2.2.3"
 openpyxl = "^3.1.5"
@@ -21,9 +25,11 @@ PyYAML = "^6.0.2"
 toml = "^0.10.2"
 cycler = "^0.12.1"
 jax = { version = "^0.5.3", optional = true }
+CoolProp = { version = ">=6.6,<8", optional = true }
 
 [tool.poetry.extras]
 jax = ["jax"]
+thermodynamics = ["CoolProp"]
 
 [tool.poetry.group.dev.dependencies]
 ipython = ">=8.13,<8.17"

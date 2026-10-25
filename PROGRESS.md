@@ -399,3 +399,95 @@ the evaluated coordinates. Source changes for this phase are development-only.
 | 2026-10-25 LM mesh investigation | Reproduced LM failure after increasing the heat demo to 500 nodes: boundary temperatures approach zero while the summed residual decreases. Independent trust-region step audits agree within 5e-12 relative error; the principal causes are mesh-dependent residual weighting and fixed variable scaling, not an identified damping bug. Native LM with default scaling converges; forcing identity scaling attempts invalid temperatures. Boundary reweighting, exact boundary elimination, quadrature weighting, and fixed Jacobian-column scaling each restore custom convergence and pass the original residual target. Reproducible scripts, saved evidence, and recommendations are in development/radiative_heat_investigation/. Production solvers and the user's 500-node example remain unchanged by this investigation; improvements are proposed, not implemented. |
 
 | 2026-10-25 Jacobian scaling | Implemented default-enabled `jacobian_scaling` for all four custom root methods, separate from physical `x_scale`. Fresh-Jacobian running column norms shape LM/hybrid steps; physical caps and numerical probes remain unchanged. All six 500-node heat runs converge; controlled LM reaches 4.5e-11 in 12 accepted iterations / 13 calls. Controlled hybrid converges in 26 / 30, versus 20 / 22 unscaled. Updated source/usage/math notes and regenerated demo figures/data. 455 tests pass (10 Hessian cases excluded); 212 convergence configurations retain 100/100 backend roots, 98/101 eligible custom roots, and 51/51 controlled successes. Historical investigation runners explicitly disable scaling to preserve their evidence. |
+
+## Source-layout and domain refactor — 25 October 2026
+
+Implemented the structural stages in [refactor.md](refactor.md). The repository,
+distribution, import name and public version remain `pysolver_view` / `0.6.9`.
+The implementation is now under [src/pysolver_view](src/pysolver_view), with
+lightweight problem contracts, domain-specific frontends/backends/numerical
+solvers, explicit lazy public exports, and compatibility modules pointing to
+canonical objects. Numerical root modules, KKT mathematics and the SLSQP driver
+functions retain their pre-refactor ASTs.
+
+Optimization evaluation contexts own caches and counters; scaling, named
+constraint gathering and KKT adaptation are separate modules. Native roots have
+an evaluation context; the custom adapter receives an explicit run context.
+Public histories/results retain detached data. Passive table, text and plot
+renderers consume supplied records, while frontend convenience methods retain
+explicit diagnostic evaluation and callback responsibilities.
+
+Promoted the reusable mathematical models, suites and optional heated-gas duct
+to `roots/problems/`, with one concrete problem per module. Development imports
+forward to those classes; runners and instrumentation remain under development.
+Numerical/problem tests now live under `tests/roots/`. The public four-solver
+demo imports only the installed package.
+
+Selected behavior changes are documented in the
+[migration guide](docs/source/source_layout.rst): imports no longer configure
+exception hooks, JAX platform/precision or its logger; `configure_jax()` provides
+explicit opt-in. The constrained Rosenbrock example keeps NumPy precision and
+uses a local 64-bit JAX context for automatic derivatives. CoolProp loads only
+on physical-model construction via the `thermodynamics` extra. PyGMO availability
+is independent of its nonfree plugin, and the NLOpt adapter accepts common and
+legacy option names. Shared mutable problem scaling, general derivative-policy
+changes, logger ownership and the historical Lorentz spelling remain separate
+follow-ups.
+
+Validation on Windows / Python 3.13.2 / SciPy 1.17.1:
+
+- Before modification: **464 tests and 184 subtests passed**, excluding the 10
+  Hessian cases specified as outside the migration scope.
+- Final package tests: **475 passed, 166 subtests passed, 10 deselected**.
+  Separate development study/instrumentation checks: **30 passed, 18 subtests
+  passed**. Total: **505 tests and 184 subtests passed**, without warnings.
+- All **212 convergence rows exactly match** the saved pre-refactor source,
+  including success, iterations, residual/Jacobian counts and numerical metrics.
+  Backend comparison: 100/100 successful; custom comparison: 98/101 eligible
+  successful, including 51/51 controlled successes. The three uncontrolled
+  failures, six unsupported cases and five inconsistent-system controls retain
+  their baseline outcomes. See the new
+  [backend report](development/root_step_control/results_refactor_convergence/REPORT.md)
+  and [custom report](development/root_step_control/results_refactor_custom_convergence/REPORT.md).
+- Repeated the full interface timing study with **3,168 timed solves per source
+  version**. All 24 configurations retain counts and successful roots. The median
+  ratio of public runtime after/before was 0.947, with variable individual cases.
+  A further 2,400 timed solves in alternating processes examined the two largest
+  apparent slowdowns; neither reproduced the slowdown. These measurements remain
+  subject to workstation noise and do not establish a speedup. See
+  [interface timings](development/root_step_control/results_refactor_adapter_perf/RESULTS.md)
+  and its `focused_comparison.json`.
+- Editable installation works. Poetry-core 2.1.2 built both the sdist and a wheel
+  **from that sdist**. Installed the wheel in a fresh environment and ran
+  [wheel_smoke.py](tests/packaging/wheel_smoke.py) from outside the checkout with
+  `python -I`, without source-path injection. Both the no-JAX/no-CoolProp run and
+  the separate thermodynamics-extra run passed. Confirmed installed paths,
+  compatibility identities, native/custom solves, promoted models, and SciPy
+  license inclusion in both archives. The wheel excludes development and demos.
+- All eight solves in the standalone four-method demo passed using the installed
+  wheel from outside the checkout. The constrained optimization example also
+  converges without JAX.
+- API pages regenerated; Sphinx HTML build succeeds **without warnings**.
+  Ruff's undefined/unused-name checks, Black checks and `git diff --check` pass.
+  `poetry check --lock` passes with the existing Poetry-metadata deprecation
+  notices; the metadata style was intentionally retained.
+
+At the user's request, workflow modernization and the extra CI jobs were
+reverted. The original jobs, triggers, action versions, Python/Poetry setup,
+publishing and documentation deployment behavior are retained. The sole workflow
+change is calling `tests/run_tests.py` in the two existing test jobs. Test paths,
+enabled suites, pytest defaults and headless plotting are controlled in that
+master script; its default runs both package and development checks with the
+agreed Hessian exclusion. The user selected the full suite and authorized the
+necessary SciPy dependency update: Python >=3.11 selects SciPy 1.17.1, while
+Python 3.10 retains its existing range. Wheel and optional-model gates described
+above were performed locally, rather than added to the workflows.
+Invoking the master runner with no arguments from outside the repository passed
+505 tests and 184 subtests, with the existing 10 Hessian exclusions. Confirmed
+that workflow contents match the originals exactly except the two runner calls;
+the test-discovery configuration added to `pyproject.toml` was removed so test
+selection and defaults have one home in the Python script.
+PyGMO/IPOPT/SNOPT execution, Hessian validation, downstream application migration
+and publication remain outside this change. No release version was bumped.
+The user's existing edit to `demos/demo_slsqp_controls/run_sensitivity.py` was
+preserved.

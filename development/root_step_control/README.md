@@ -7,7 +7,7 @@ Problems use the project's `NonlinearSystemProblem` interface.
 
 Throughout the code, notes and results, **SciPy/MINPACK** means the native
 solvers exposed by `scipy.optimize.root`. **PySolverView** means the custom
-root implementations in `pysolver_view/solvers/root/`. Saved solver
+root implementations in `src/pysolver_view/roots/solvers/`. Saved solver
 identifiers use `scipy_*` and `pysolverview_*`, respectively.
 
 ## Folder structure
@@ -18,11 +18,11 @@ root_step_control/
 |-- src/
 |   |-- solver.py                # Compatibility re-export of packaged drivers
 |   `-- problems/
-|       |-- base.py              # Shared benchmark metadata/interface
-|       |-- mathematical.py      # Standard systems and constructed controls
-|       |-- thermodynamics.py    # Optional CoolProp duct problem
-|       `-- suites.py            # Reproducible problem collections
-|-- tests/                       # Numerical, problem, and study checks
+|       |-- base.py              # Compatibility import of packaged metadata
+|       |-- mathematical.py      # Compatibility imports of packaged models
+|       |-- thermodynamics.py    # Compatibility import of packaged duct model
+|       `-- suites.py            # Compatibility imports of packaged suites
+|-- tests/                       # Study orchestration and instrumentation checks
 |-- notes/                       # Mathematics, usage, design, measured findings
 |-- run_convergence_benchmark.py
 |-- run_timing_benchmark.py
@@ -36,36 +36,36 @@ root_step_control/
 ```
 
 The installable numerical implementation is in
-[`pysolver_view/solvers/root/`](../../pysolver_view/solvers/root/).
+[`src/pysolver_view/roots/solvers/`](../../src/pysolver_view/roots/solvers/).
 Its `solver.py`, `options.py`, `trust_region.py`, `line_search.py`,
 `linear_model.py`, `scaling.py`, `evaluation.py`, `history.py`, and `trial_step.py` retain the
 same responsibilities described below. The public adapter is
-[`custom_root.py`](../../pysolver_view/custom_root.py). See
+[`custom_root.py`](../../src/pysolver_view/roots/backends/custom.py). See
 [public usage and integration](notes/10_public_interface.md).
 
 
 The `run_*.py` files contain their study-specific setup, execution, plotting,
-reporting, and command-line handling. Shared benchmark problem definitions live in `src/problems/`; numerical functions
+reporting, and command-line handling. Reusable problem definitions live in `src/pysolver_view/roots/problems/` at the repository root; numerical functions
 are imported from the installable package. Each study writes to a named
 `results_<case>/` directory; use `--output` to keep an additional case separately.
 Result directories contain outputs rather than implementation or tests.
 
 | Source | Purpose |
 | --- | --- |
-| [solver.py](../../pysolver_view/solvers/root/solver.py) | Public `solve_root`, method aliases and driver dispatch; configuration re-exports |
-| [options.py](../../pysolver_view/solvers/root/options.py) | All validated options, keeping trust-region and backtracking policies distinct |
-| [exceptions.py](../../pysolver_view/solvers/root/exceptions.py) | Recognized model-domain failures and internal budget/probe signals |
-| [trust_region.py](../../pysolver_view/solvers/root/trust_region.py) | Named LM and Powell hybrid functions, explicit step/update choices, shared trust-region engine |
-| [line_search.py](../../pysolver_view/solvers/root/line_search.py) | Named Newton–Raphson and Gauss–Newton functions, explicit direction/rank choices, shared line-search engine |
-| [linear_model.py](../../pysolver_view/solvers/root/linear_model.py) | QR/SVD factors, LM damping, dogleg steps and Broyden updates |
-| [scaling.py](../../pysolver_view/solvers/root/scaling.py) | Default-enabled Jacobian column equilibration, independent of physical step scales |
-| [evaluation.py](../../pysolver_view/solvers/root/evaluation.py) | Residual validation, analytic/numerical Jacobians and model-call budgets |
-| [history.py](../../pysolver_view/solvers/root/history.py) | Histories, copied callbacks and accepted-state result assembly |
-| [trial_step.py](../../pysolver_view/solvers/root/trial_step.py) | Trial coordinates and scaled displacement audits, including rounding |
-| [base.py](src/problems/base.py) | Benchmark metadata using the existing `NonlinearSystemProblem` interface |
-| [mathematical.py](src/problems/mathematical.py) | Standard multidimensional equations and constructed domain/rectangular controls |
-| [thermodynamics.py](src/problems/thermodynamics.py) | Coupled CoolProp nitrogen duct, derivatives and physical diagnostics |
-| [suites.py](src/problems/suites.py) | Original, large and extension problem collections; thermodynamic imports on demand |
+| [solver.py](../../src/pysolver_view/roots/solvers/solver.py) | Public `solve_root`, method aliases and driver dispatch; configuration re-exports |
+| [options.py](../../src/pysolver_view/roots/solvers/options.py) | All validated options, keeping trust-region and backtracking policies distinct |
+| [exceptions.py](../../src/pysolver_view/roots/solvers/exceptions.py) | Recognized model-domain failures and internal budget/probe signals |
+| [trust_region.py](../../src/pysolver_view/roots/solvers/trust_region.py) | Named LM and Powell hybrid functions, explicit step/update choices, shared trust-region engine |
+| [line_search.py](../../src/pysolver_view/roots/solvers/line_search.py) | Named Newton–Raphson and Gauss–Newton functions, explicit direction/rank choices, shared line-search engine |
+| [linear_model.py](../../src/pysolver_view/roots/solvers/linear_model.py) | QR/SVD factors, LM damping, dogleg steps and Broyden updates |
+| [scaling.py](../../src/pysolver_view/roots/solvers/scaling.py) | Default-enabled Jacobian column equilibration, independent of physical step scales |
+| [evaluation.py](../../src/pysolver_view/roots/solvers/evaluation.py) | Residual validation, analytic/numerical Jacobians and model-call budgets |
+| [history.py](../../src/pysolver_view/roots/solvers/history.py) | Histories, copied callbacks and accepted-state result assembly |
+| [trial_step.py](../../src/pysolver_view/roots/solvers/trial_step.py) | Trial coordinates and scaled displacement audits, including rounding |
+| [base.py](../../src/pysolver_view/roots/problems/base.py) | Benchmark metadata using the existing `NonlinearSystemProblem` interface |
+| [mathematical problems](../../src/pysolver_view/roots/problems/) | Standard multidimensional equations and constructed domain/rectangular controls |
+| [heated_gas_duct.py](../../src/pysolver_view/roots/problems/heated_gas_duct.py) | Coupled CoolProp nitrogen duct, derivatives and physical diagnostics |
+| [suites.py](../../src/pysolver_view/roots/problems/suites.py) | Original, large and extension problem collections; thermodynamic imports on demand |
 
 Both numerical drivers share evaluation and history mechanics. Their acceptance,
 stopping and Jacobian-refresh decisions remain explicit in their respective
@@ -88,6 +88,10 @@ implementation imports use the packaged paths above. The
 boundaries and the refactor checks.
 
 ## Run the studies
+
+Install the checkout first (`python -m pip install -e ".[thermodynamics]"`).
+Numerical and model tests now live in `tests/roots/`; this directory retains
+benchmark orchestration and timing instrumentation tests.
 
 The stored convergence and timing reports predate default Jacobian equilibration.
 They remain historical measurements; rerunning the scripts uses the current

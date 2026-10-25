@@ -10,13 +10,10 @@ two deliberately bad designs to distinguish feasibility from optimality.
 
 from pathlib import Path
 import argparse
-import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Run this checkout even when a different release is installed in the environment.
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 import pysolver_view as psv
 
 
