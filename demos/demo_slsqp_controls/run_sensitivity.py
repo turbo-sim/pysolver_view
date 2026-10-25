@@ -214,14 +214,14 @@ def json_value(value):
 
 def plot_case(rows, case, output):
     """Show marked objective and optimality histories using consistent colors."""
-    psv.set_plot_options(grid=False)
+    psv.set_plot_options(fontsize=10, grid=False)
     selected = [row for row in rows if row["case"] == case]
     colormap = plt.get_cmap("plasma")
     sweep_colors = iter(colormap(np.linspace(0.2, 0.8, len(selected) - 1)))
     colors = [
         "black" if row["profile"] == "scipy" else next(sweep_colors) for row in selected
     ]
-    fig, axes = plt.subplots(2, 2, figsize=(14, 9), layout="constrained")
+    fig, axes = plt.subplots(2, 2, figsize=(10, 6.5), dpi=100, layout="constrained")
     for row, color in zip(selected, colors):
         calls = row["calls"]
         label = (
