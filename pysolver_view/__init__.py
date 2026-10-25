@@ -34,6 +34,8 @@ from .optimization_problems import *
 from .optimization_wrappers import *
 from .nonlinear_system import *
 from .nonlinear_system_problems import *
+from .diagnostics import assess_kkt, evaluate_kkt_residuals
+from .solvers import DomainError, Evaluation, SLSQPOptions, minimize_slsqp
 
 
 __version__ = "0.6.9"

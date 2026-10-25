@@ -13,16 +13,21 @@ from matplotlib.ticker import MaxNLocator
 
 from . import numerical_differentiation
 from . import optimization_wrappers as _opt
+from .custom_optimization import minimize_pysolver
+from .diagnostics.kkt import assess_kkt
+from .solvers.slsqp import DomainError
 from .pysolver_utilities import savefig_in_formats, validate_keys
 
 # Define valid libraries and their corresponding methods
 OPTIMIZATION_LIBRARIES = {
+    "pysolver": minimize_pysolver,
     "scipy": _opt.minimize_scipy,
     "pygmo": _opt.minimize_pygmo,
     "pygmo_nlopt": _opt.minimize_nlopt,
 }
 
 VALID_LIBRARIES_AND_METHODS = {
+    "pysolver": ["slsqp"],
     "scipy": _opt.SCIPY_SOLVERS,
     "pygmo": _opt.PYGMO_SOLVERS,
     "pygmo_nlopt": _opt.NLOPT_SOLVERS,
@@ -108,11 +113,23 @@ class OptimizationSolver:
     logger : logging.Logger, optional
         Logger object to which logging messages will be directed. Logging is disabled if `logger` is None.
     update_on : str, optional
-        Selects the observation stream: 'gradient' (default), 'function', or native SciPy SLSQP 'iteration' events. Derivative probes never generate observations.
+        Selects 'gradient' (default), 'function', or SLSQP 'iteration' events.
+        SciPy callbacks denote major iterations with unknown acceptance; custom
+        SLSQP records accepted points. Derivative probes never generate observations.
     callback_functions : list of callable or callable, optional
-        Optional callbacks receiving (copied_solver_coordinates, observation_count). The count is not a solver iteration number. Final synchronization does not invoke callbacks.
+        Callbacks receive (copied_solver_coordinates, callback_count). The count
+        is not a solver iteration number. SciPy uses the selected observation
+        stream; custom SLSQP uses initial/accepted points only and supports
+        cancellation with StopIteration or a False return. Final synchronization
+        does not invoke callbacks.
     plot_improvement_only : bool, optional
         If True, plots only display iterations that improve the objective function value (useful for gradient-free optimizers) (default is False).
+    check_kkt : bool, optional
+        Enable automatic KKT diagnostics (default True). If False, histories have
+        unavailable optimality and no multiplier estimation runs automatically.
+        Custom SLSQP success then requires native success and feasibility only.
+        Explicit evaluate_kkt_conditions or requested KKT/multiplier reports still
+        perform an on-demand assessment, outside the automatic solve policy.
 
     Methods
     -------
@@ -148,8 +165,16 @@ class OptimizationSolver:
         callback_functions=None,
         plot_improvement_only=False,
         tolerance_check_cache=None,
+        check_kkt=True,
     ):
         # Initialize class variables
+        if not isinstance(check_kkt, bool):
+            raise TypeError("check_kkt must be a boolean.")
+        if "check_kkt" in extra_options:
+            raise ValueError(
+                "Pass check_kkt directly to OptimizationSolver, not in extra_options."
+            )
+        self.check_kkt = check_kkt
         self.problem = problem
         self.display = print_convergence
         self.plot = plot_convergence
@@ -182,10 +207,12 @@ class OptimizationSolver:
 
         # Auto-generate design variable names if not provided
         if not hasattr(self.problem, "variable_names"):
-            n_vars = len(self.problem.get_bounds()[0])
-            self.problem.variable_names = [
-                f"design_variable_{i}" for i in range(n_vars)
-            ]
+            bounds = self.problem.get_bounds()
+            self.problem.variable_names = (
+                None
+                if bounds is None
+                else [f"design_variable_{i}" for i in range(len(bounds[0]))]
+            )
 
         # Check for logger validity
         if self.logger is not None:
@@ -220,6 +247,11 @@ class OptimizationSolver:
         self.failed_grad_count = 0
         self.callback_function_call_count = 0
         self._in_callback = False
+        self._custom_initial_pending = self.library == "pysolver"
+        self._custom_kkt = None
+        self._kkt_cache = None
+        self.kkt_count = 0
+        self.kkt_time = 0.0
         # Initialize variables for convergence report
         self.f_final = None
         self.x_final = None
@@ -311,34 +343,63 @@ class OptimizationSolver:
         if self.plot:
             self._plot_convergence_callback([], [], initialize=True)
         x0 = np.asarray(x0, dtype=float).copy()
+        if not self.problem.variable_names:
+            self.problem.variable_names = [
+                f"design_variable_{i}" for i in range(x0.size)
+            ]
+        if len(self.problem.variable_names) != x0.size:
+            raise ValueError(
+                "variable_names must contain one name per decision variable."
+            )
+        if self.library == "pysolver" and self.problem.get_bounds() is not None:
+            lower, upper = map(np.asarray, self.problem.get_bounds())
+            if np.any(lower >= upper):
+                raise ValueError(
+                    "Custom SLSQP requires lower < upper; remove fixed variables."
+                )
         if self.problem.get_bounds() is not None:
             x0 = self.problem.clip_to_bounds(x0, logger=self.logger)
         x0 = self.problem.scale_physical_to_normalized(x0)
         self._write_header()
-        if self.library == "scipy" and self.method == "slsqp":
+        if self.library in {"scipy", "pysolver"} and self.method == "slsqp":
             self.iteration_count = 0
         if self.update_on == "iteration" and self.iteration_count is None:
-            raise ValueError("Iteration observations currently require SciPy SLSQP.")
-        self._print_convergence_progress(x0, event_kind="initial")
+            raise ValueError("Iteration observations require SciPy or pysolver SLSQP.")
+        if self.library != "pysolver":
+            self._print_convergence_progress(x0, event_kind="initial")
         problem = _PygmoProblem(self)
+        backend_options = dict(self.options)
+        if self.library == "pysolver":
+            backend_options["check_kkt"] = self.check_kkt
         solution = OPTIMIZATION_LIBRARIES[self.library](
-            problem, x0, self.method, self.options
+            problem, x0, self.method, backend_options
         )
         self.backend_result = copy.deepcopy(solution)
         self.x_final_norm = np.asarray(solution.x, dtype=float).copy()
         self.x_final = np.array(
             self.problem.scale_normalized_to_physical(self.x_final_norm), copy=True
         )
-        final_values = self._evaluate_fitness(self.x_final_norm, diagnostic=True)
+        if self.library == "pysolver":
+            final_values = solution.fitness
+            self._custom_kkt = self._public_driver_kkt(solution.get("kkt"))
+        else:
+            final_values = self._evaluate_fitness(self.x_final_norm, diagnostic=True)
+        if final_values is None:
+            final_values = np.full(1 + self.N_eq + self.N_ineq, np.nan)
         self.f_final = copy.deepcopy(final_values[0])
         self.success = solution.success
         self.message = solution.message
         native_iterations = solution.get("nit")
         if native_iterations is not None:
             self.iteration_count = int(native_iterations)
-        final_snapshot = self._observation_snapshot(self.x_final_norm, "final")
-        if self.x_last_norm is None or not np.array_equal(
-            self.x_final_norm, self.x_last_norm
+        final_snapshot = (
+            self._observation_snapshot(self.x_final_norm, "final", values=final_values)
+            if np.all(np.isfinite(final_values))
+            else dict(optimality=float("nan"), constraint_violation=float("inf"))
+        )
+        if "x" in final_snapshot and (
+            self.x_last_norm is None
+            or not np.array_equal(self.x_final_norm, self.x_last_norm)
         ):
             self._publish_observation(final_snapshot, notify=False)
         self.elapsed_time = time.perf_counter() - start_time
@@ -350,7 +411,7 @@ class OptimizationSolver:
             optimality=final_snapshot["optimality"],
             constraint_violation=final_snapshot["constraint_violation"],
             success=self.success,
-            solver_success=solution.success,
+            solver_success=solution.get("solver_success", solution.success),
             status=solution.get("status"),
             message=self.message,
             nit=self.iteration_count,
@@ -364,7 +425,24 @@ class OptimizationSolver:
             func_count_total=self.func_count_tot,
             iteration_count=self.iteration_count,
             elapsed_time=self.elapsed_time,
+            kkt_enabled=self.check_kkt,
+            kkt_passed=None,
+            kkt_evaluations=self.kkt_count,
+            kkt_time=self.kkt_time,
         )
+        if self.library == "pysolver":
+            for name in ("feasible", "stationary", "events", "effective_options"):
+                self.result[name] = copy.deepcopy(solution.get(name))
+            assessment = self._public_driver_kkt(solution.get("kkt"))
+            self.result.kkt = assessment
+            self.result.kkt_passed = (
+                bool(assessment and assessment["passed"]) if self.check_kkt else None
+            )
+            self.result.kkt_evaluations = solution.get("kkt_evaluations", 0)
+            self.result.kkt_time = solution.get("kkt_time", 0.0)
+            self.result.optimality = (
+                solution.optimality if self.check_kkt else float("nan")
+            )
         self._write_footer()
         return self.x_final.copy()
 
@@ -380,7 +458,11 @@ class OptimizationSolver:
             )
         before = self.func_count_tot
         values = self._evaluate_fitness(x_norm)
-        if self.func_count_tot != before and self.update_on == "function":
+        if (
+            self.func_count_tot != before
+            and self.update_on == "function"
+            and not self._custom_initial_pending
+        ):
             self._print_convergence_progress(x_norm, event_kind="function")
         return values
 
@@ -421,6 +503,7 @@ class OptimizationSolver:
                 "Fitness must contain the objective and declared constraints."
             )
         if cache_result:
+            self._kkt_cache = None
             self.cache.update(
                 x=point,
                 f=values[0],
@@ -438,7 +521,11 @@ class OptimizationSolver:
         """Obtain one full Jacobian and optionally record its base-point observation."""
         before = self.grad_count
         grad = self._evaluate_gradient(x_norm)
-        if self.grad_count != before and self.update_on == "gradient":
+        if (
+            self.grad_count != before
+            and self.update_on == "gradient"
+            and not self._custom_initial_pending
+        ):
             self._print_convergence_progress(x_norm, event_kind="gradient")
         return grad
 
@@ -468,27 +555,66 @@ class OptimizationSolver:
                     """Count derivative model work without disturbing the base snapshot."""
                     if np.array_equal(probe, point):
                         return base.copy()
-                    return self._evaluate_fitness(
-                        probe,
-                        derivative=True,
-                        diagnostic=diagnostic,
-                        use_cache=False,
-                        cache_result=False,
-                    )
+                    try:
+                        return self._evaluate_fitness(
+                            probe,
+                            derivative=True,
+                            diagnostic=diagnostic,
+                            use_cache=False,
+                            cache_result=False,
+                        )
+                    except DomainError as error:
+                        if self.library != "pysolver":
+                            raise
+                        changed = np.flatnonzero(probe != point)
+                        raise DomainError(
+                            "Derivative probe failed; probes are not retried: "
+                            + str(error),
+                            metadata={
+                                "probe": np.real(probe).tolist(),
+                                "column": (
+                                    int(changed[0]) if changed.size == 1 else None
+                                ),
+                                "cause": error.to_dict(),
+                            },
+                        ) from error
 
-                grad = numerical_differentiation.approx_gradient(
-                    evaluate_probe,
-                    point,
-                    f0=base,
-                    method=self.derivative_method,
-                    abs_step=self.derivative_abs_step,
-                )
+                if self.library == "pysolver":
+                    methods = {
+                        "forward_finite_differences": "2-point",
+                        "central_finite_differences": "3-point",
+                        "complex_step": "cs",
+                    }
+                    bounds = self.problem.get_bounds_normalized()
+                    grad = numerical_differentiation.approx_derivative(
+                        evaluate_probe,
+                        point,
+                        f0=base,
+                        method=methods.get(
+                            self.derivative_method, self.derivative_method
+                        ),
+                        abs_step=(
+                            self.derivative_abs_step
+                            if self.derivative_abs_step is not None
+                            else self.options.get("finite_diff_step", 1e-7)
+                        ),
+                        bounds=(-np.inf, np.inf) if bounds is None else bounds,
+                    )
+                else:
+                    grad = numerical_differentiation.approx_gradient(
+                        evaluate_probe,
+                        point,
+                        f0=base,
+                        method=self.derivative_method,
+                        abs_step=self.derivative_abs_step,
+                    )
             grad = (
                 np.asarray(grad).reshape(1 + self.N_eq + self.N_ineq, point.size).copy()
             )
         except Exception:
             self.failed_grad_count += 1
             raise
+        self._kkt_cache = None
         self.cache.update(
             x_jac=point,
             f_jac=grad[0].copy(),
@@ -498,7 +624,9 @@ class OptimizationSolver:
         )
         return grad
 
-    def _handle_output(self, text: str, savefile: bool = False, filename: str = None, to_console=False):
+    def _handle_output(
+        self, text: str, savefile: bool = False, filename: str = None, to_console=False
+    ):
         """
         Unified output handler: print, log, and optionally save to a file.
 
@@ -560,10 +688,11 @@ class OptimizationSolver:
         # Store text in memory
         self.convergence_report.extend(lines_to_output)
 
-    def _observation_snapshot(self, x, event_kind):
+    def _observation_snapshot(self, x, event_kind, *, values=None):
         """Build one detached point-consistent record without forcing derivatives."""
         point = np.asarray(x, dtype=float).copy()
-        values = self._evaluate_fitness(point, diagnostic=True)
+        if values is None:
+            values = self._evaluate_fitness(point, diagnostic=True)
         equalities = values[1 : 1 + self.N_eq]
         inequalities = values[1 + self.N_eq :]
         violations = [0.0, *np.abs(equalities), *np.maximum(inequalities, 0.0)]
@@ -573,8 +702,18 @@ class OptimizationSolver:
             violations.extend(np.maximum(lower - point, 0.0))
             violations.extend(np.maximum(point - upper, 0.0))
         optimality = float("nan")
-        if self.cache["x_jac"] is not None and np.array_equal(
-            point, self.cache["x_jac"]
+        if self.library == "pysolver":
+            assessment = self._custom_kkt
+            if (
+                assessment is not None
+                and assessment["available"]
+                and np.array_equal(point, assessment["x"])
+            ):
+                optimality = assessment["stationarity"]
+        elif (
+            self.check_kkt
+            and self.cache["x_jac"] is not None
+            and np.array_equal(point, self.cache["x_jac"])
         ):
             # This is a pure reconstruction from already available values/derivatives.
             optimality = self._kkt_from_cache(point, 50 * self.options["tolerance"])[
@@ -616,6 +755,57 @@ class OptimizationSolver:
         if self.update_on == "iteration":
             self._publish_observation(snapshot)
 
+    @staticmethod
+    def _public_driver_kkt(assessment):
+        """Detach driver diagnostics and convert equality multipliers to public signs."""
+        if assessment is None:
+            return None
+        public = copy.deepcopy(assessment)
+        if public.get("multipliers") is not None:
+            public["multipliers"]["equality"] *= -1
+        if public.get("complementarity_products") is not None:
+            public["complementarity_products"]["inequality"] *= -1
+        public["coordinates"] = "solver"
+        public["convention"] = "h=0, g<=0; L=f+lambda*h+mu*g-zL*(x-l)+zU*(x-u)"
+        return public
+
+    def _record_custom_iteration(self, entry):
+        """Record accepted custom-driver points and notify cancellable callbacks.
+
+        The driver invokes this only at the initial or accepted point. Function
+        and gradient observation streams may include trials, but user callbacks
+        for this backend always receive accepted points. Raising StopIteration
+        or returning False stops at that point with a structured failed result.
+        """
+        initial = self._custom_initial_pending
+        self._custom_initial_pending = False
+        self.iteration_count = int(entry["iteration"])
+        self._custom_kkt = self._public_driver_kkt(entry.get("kkt"))
+        values = entry["fitness"].copy()
+        values[1 + self.N_eq :] *= -1
+        snapshot = self._observation_snapshot(
+            entry["x"], "initial" if initial else "iteration", values=values
+        )
+        snapshot["accepted"] = True
+        snapshot["norm_step"] = entry["step_norm"]
+        snapshot["kkt"] = copy.deepcopy(self._custom_kkt)
+        if not initial:
+            self.iteration_history.append(copy.deepcopy(snapshot))
+        if initial or self.update_on == "iteration":
+            self._publish_observation(snapshot, notify=False)
+        if self.callback_functions:
+            self.callback_function_call_count += 1
+            self._in_callback = True
+            try:
+                for callback in self.callback_functions:
+                    if (
+                        callback(entry["x"].copy(), self.callback_function_call_count)
+                        is False
+                    ):
+                        raise StopIteration("Stopped by user callback")
+            finally:
+                self._in_callback = False
+
     def _print_convergence_progress(self, x, event_kind="observation", notify=True):
         """Record and render a base-point observation without recursive evaluations."""
         self._publish_observation(
@@ -641,7 +831,7 @@ class OptimizationSolver:
         self.convergence_report.append(status)
         if self.plot:
             self._plot_convergence_callback([], [])
-        if notify and self.callback_functions:
+        if notify and self.callback_functions and self.library != "pysolver":
             self.callback_function_call_count += 1
             self._in_callback = True
             try:
@@ -671,10 +861,18 @@ class OptimizationSolver:
         lines_to_output += [
             f" Final objective: {self.result.fun:+.6e}",
             f" Final constraint violation: {self.result.constraint_violation:+.6e}",
-            f" Final optimality (cached derivatives): {self.result.optimality:+.6e}",
+            (
+                f" Final optimality (cached derivatives): {self.result.optimality:+.6e}"
+                if self.check_kkt
+                else " Final optimality: not assessed (KKT disabled)."
+            ),
             f" Total model calls: {self.result.nfev}; "
             f"gradient evaluations: {self.result.njev}",
         ]
+        if not self.check_kkt:
+            lines_to_output.append(
+                " Automatic KKT checks: disabled; optimality not assessed."
+            )
         lines_to_output += [separator]
 
         # Print or log content
@@ -717,7 +915,11 @@ class OptimizationSolver:
                 {
                     "function": "Function evaluations (excluding derivative/diagnostic calls)",
                     "gradient": "Gradient evaluations",
-                    "iteration": "Native SLSQP major iterations",
+                    "iteration": (
+                        "Accepted SLSQP iterations"
+                        if self.library == "pysolver"
+                        else "Native SLSQP major iterations"
+                    ),
                 }[self.update_on]
             )
             self.ax_1.set_ylabel("Objective function")
@@ -816,7 +1018,9 @@ class OptimizationSolver:
             If this method is called before the problem has been solved.
         """
         if self.x_final is None:
-            raise ValueError("This method can only be used after invoking the 'solve()' method.")
+            raise ValueError(
+                "This method can only be used after invoking the 'solve()' method."
+            )
 
         # Initialize and optionally show plot
         self._plot_convergence_callback([], [], initialize=True, showfig=showfig)
@@ -827,7 +1031,9 @@ class OptimizationSolver:
             if filename is None:
                 basename = f"{type(self.problem).__name__}_{self.start_datetime}"
                 filename = f"convergence_history_{basename}"
-            savefig_in_formats(self.fig, os.path.join(output_dir, filename), formats=[".png", ".svg"])
+            savefig_in_formats(
+                self.fig, os.path.join(output_dir, filename), formats=[".png", ".svg"]
+            )
 
         # Close the figure if it should not be displayed
         if not showfig:
@@ -835,7 +1041,9 @@ class OptimizationSolver:
 
         return self.fig
 
-    def print_convergence_history(self, savefile=False, filename=None, output_dir="output", to_console=True):
+    def print_convergence_history(
+        self, savefile=False, filename=None, output_dir="output", to_console=True
+    ):
         """
         Print or save the convergence history of the optimization process.
 
@@ -876,7 +1084,9 @@ class OptimizationSolver:
             If the method is called before the optimization problem has been solved.
         """
         if self.x_final is None:
-            raise ValueError("This method can only be used after invoking the 'solve()' method.")
+            raise ValueError(
+                "This method can only be used after invoking the 'solve()' method."
+            )
 
         # Join convergence history lines
         full_text = "\n".join(self.convergence_report)
@@ -892,7 +1102,9 @@ class OptimizationSolver:
             filepath = None
 
         # Output the report (either print or save to file)
-        self._handle_output(full_text, savefile=savefile, filename=filepath, to_console=to_console)
+        self._handle_output(
+            full_text, savefile=savefile, filename=filepath, to_console=to_console
+        )
 
     def print_optimization_report(
         self,
@@ -908,42 +1120,42 @@ class OptimizationSolver:
         to_console=True,
     ):
         """
-        Generate and print or save a complete optimization report with customizable content.
+            Generate and print or save a complete optimization report with customizable content.
 
-        This method assembles a detailed summary of the optimization process and results,
-        allowing fine-grained control over which components to include. It supports
-        outputting the report to the console or saving it to a file.
+            This method assembles a detailed summary of the optimization process and results,
+            allowing fine-grained control over which components to include. It supports
+            outputting the report to the console or saving it to a file.
 
-        The report may include the following sections:
-        - Convergence history: number of function and gradient evaluations, objective function value, maximum constraint violation, and step norm. The report also includes The method provides a detailed report on an exit message, success status, and execution time
-        - Number of function evaluations
-        - Number of gradient evaluations
-        - Objective function value
-        - Maximum constraint violation
-        - Two-norm of the update step
-
-    
-    Objective value, constraint violation, and step norm over iterations.
-        - Design variables: Final values, shown in physical units and (if applicable) normalized space.
-        - Constraints: Numerical values and satisfaction status of all constraints.
-        - KKT conditions: Checks of the Karush-Kuhn-Tucker optimality conditions.
-        - Lagrange multipliers: Values of multipliers for equality, inequality, and bound constraints.
-
-        This method is intended to be called after the `solve()` method has been completed.
+            The report may include the following sections:
+            - Convergence history: number of function and gradient evaluations, objective function value, maximum constraint violation, and step norm. The report also includes The method provides a detailed report on an exit message, success status, and execution time
+            - Number of function evaluations
+            - Number of gradient evaluations
+            - Objective function value
+            - Maximum constraint violation
+            - Two-norm of the update step
 
 
-        Parameters
-        ----------
-        include_convergence_history : bool
-        include_design_variables_normalized : bool
-        include_design_variables_physical : bool
-        include_constraints : bool
-        include_kkt : bool
-        include_multipliers : bool
-        savefile : bool
-        filename : str or None
-        tol : float or None  (tolerance for constraints/KKT)
-        output_dir : str      (directory for saving file)
+        Objective value, constraint violation, and step norm over iterations.
+            - Design variables: Final values, shown in physical units and (if applicable) normalized space.
+            - Constraints: Numerical values and satisfaction status of all constraints.
+            - KKT conditions: Checks of the Karush-Kuhn-Tucker optimality conditions.
+            - Lagrange multipliers: Values of multipliers for equality, inequality, and bound constraints.
+
+            This method is intended to be called after the `solve()` method has been completed.
+
+
+            Parameters
+            ----------
+            include_convergence_history : bool
+            include_design_variables_normalized : bool
+            include_design_variables_physical : bool
+            include_constraints : bool
+            include_kkt : bool
+            include_multipliers : bool
+            savefile : bool
+            filename : str or None
+            tol : float or None  (tolerance for constraints/KKT)
+            output_dir : str      (directory for saving file)
         """
 
         # Define the vector of independent variables
@@ -962,7 +1174,7 @@ class OptimizationSolver:
                 r.append(self.make_variables_report(x_norm, normalized=False))
             else:
                 r.append(self.make_variables_report(x_norm, normalized=True))
-                r.append(self.make_variables_report(x_phys, normalized=False))    
+                r.append(self.make_variables_report(x_phys, normalized=False))
         if include_constraints:
             r.append(self.make_constraint_report(x_norm, tol))
         if include_multipliers:
@@ -981,8 +1193,13 @@ class OptimizationSolver:
         else:
             filepath = None
 
-        # 5) emit once to console, logger, or file
-        self._handle_output(full_text, savefile=savefile, filename=filepath, to_console=to_console)
+        # Explicit reports honor their own output request, independently of
+        # the option that controls live convergence printing.
+        self._handle_output(
+            full_text, savefile=savefile, filename=filepath, to_console=False
+        )
+        if to_console:
+            print(full_text)
 
     # def make_optimization_report(self, x_phys, tol=1e-6):
     #     """
@@ -1013,11 +1230,16 @@ class OptimizationSolver:
         x_norm = np.asarray(x_norm)
         if normalized:
             values = x_norm
-            lb_raw, ub_raw = self.problem.get_bounds_normalized()
+            bounds = self.problem.get_bounds_normalized()
         else:
             values = x_norm
-            lb_raw, ub_raw = self.problem.get_bounds()
+            bounds = self.problem.get_bounds()
 
+        lb_raw, ub_raw = (
+            (np.full(values.size, -np.inf), np.full(values.size, np.inf))
+            if bounds is None
+            else bounds
+        )
         names = self.problem.variable_names or [
             f"design_variable_{i}" for i in range(len(values))
         ]
@@ -1035,7 +1257,7 @@ class OptimizationSolver:
 
         for key, lb, val, ub in zip(names, lb_raw, values, ub_raw):
             if len(key) > max_name_width:
-                key = "..." + key[-(max_name_width - 3):]
+                key = "..." + key[-(max_name_width - 3) :]
 
             if normalized:
                 lines.append(f" {key:<39}{lb:>13.4f}{val:>13.4f}{ub:>13.4f}")
@@ -1106,10 +1328,34 @@ class OptimizationSolver:
         if self.cache["has_constraint_data"]:
             if not isinstance(data, list) or not all(isinstance(d, dict) for d in data):
                 raise TypeError("Expected self.constraint_data to be a list of dicts")
-            required = {"name", "type", "target", "value", "satisfied"}
-            allowed = required | {"normalized_mismatch", "mismatch", "normalize"}
+            required = {"name", "type", "target", "value"}
+            allowed = required | {
+                "satisfied",
+                "normalized_mismatch",
+                "mismatch",
+                "normalize",
+            }
+            equality_index, inequality_index = 0, 0
             for entry in data:
                 validate_keys(entry, required, allowed)
+                if entry["type"] == "=":
+                    if equality_index >= self.N_eq:
+                        raise ValueError("Too many named equality constraints.")
+                    mismatch = self.cache["c_eq"][equality_index]
+                    entry["satisfied"] = bool(abs(mismatch) <= tol)
+                    equality_index += 1
+                elif entry["type"] in {"<", ">"}:
+                    if inequality_index >= self.N_ineq:
+                        raise ValueError("Too many named inequality constraints.")
+                    mismatch = self.cache["c_ineq"][inequality_index]
+                    entry["satisfied"] = bool(mismatch <= tol)
+                    inequality_index += 1
+                else:
+                    raise ValueError("Named constraint type must be '=', '<', or '>'.")
+            if (equality_index, inequality_index) != (self.N_eq, self.N_ineq):
+                raise ValueError(
+                    "Named constraint counts must match the fitness vector."
+                )
             return data
 
         # Otherwise evaluate constraints from scratch
@@ -1156,7 +1402,9 @@ class OptimizationSolver:
             - Lagrange multipliers for active constraints
             - Complementary slackness products
 
-        It does not apply any tolerance threshold; that is handled separately.
+        Uses the shared sign-constrained multiplier estimate and applies ``tol``
+        to feasibility and optimality. Metrics use solver coordinates and the
+        supplied objective/constraint units; stationarity uses the infinity norm.
 
         Returns
         -------
@@ -1170,130 +1418,96 @@ class OptimizationSolver:
         return self._kkt_from_cache(point, tol)
 
     def _kkt_from_cache(self, x_norm, tol):
-        """Reconstruct legacy KKT metrics from same-point cached arrays only.
+        """Assess public-sign KKT residuals using only same-point cached arrays.
 
-        The numerical multiplier estimator is unchanged until the shared KKT
-        phase. This helper performs no evaluations, recording, or callbacks.
+        The legacy dual-feasibility field remains a signed minimum multiplier.
+        Shared diagnostics additionally expose the nonnegative dual residual and
+        infinity-norm stationarity. Multiplier indices are user inequalities,
+        then all lower-bound slots, then all upper-bound slots.
         """
-        # Retrieve gradients and Jacobians from cache
-        f_jac = self.cache["f_jac"]
-        c_eq_jac = self.cache["c_eq_jac"]
-        c_ineq_jac = self.cache["c_ineq_jac"]
-        c_eq = self.cache["c_eq"]
-        c_ineq = self.cache["c_ineq"]
-
-        # Re-cast bounds as inequality constraints
+        point = np.asarray(x_norm, dtype=float)
+        if not (
+            np.array_equal(point, self.cache["x"])
+            and np.array_equal(point, self.cache["x_jac"])
+        ):
+            raise ValueError(
+                "KKT assessment requires values and derivatives at the same point."
+            )
+        if self._kkt_cache is not None and self._kkt_cache[0] == tol:
+            return copy.deepcopy(self._kkt_cache[1])
         bounds = self.problem.get_bounds_normalized()
-        if bounds is None:
-            lb, ub = np.full(x_norm.size, -np.inf), np.full(x_norm.size, np.inf)
+        lower, upper = (
+            (np.full(point.size, -np.inf), np.full(point.size, np.inf))
+            if bounds is None
+            else map(np.asarray, bounds)
+        )
+        started_check = time.perf_counter()
+        assessment = assess_kkt(
+            point,
+            self.cache["f_jac"],
+            self.cache["c_eq"],
+            self.cache["c_eq_jac"],
+            self.cache["c_ineq"],
+            self.cache["c_ineq_jac"],
+            lower,
+            upper,
+            feasibility_tol=tol,
+            optimality_tol=tol,
+        )
+        self.kkt_time += time.perf_counter() - started_check
+        self.kkt_count += 1
+        assessment["coordinates"] = "solver"
+        assessment["physical_x"] = self.problem.scale_normalized_to_physical(
+            point
+        ).copy()
+        assessment["problem_scale"] = self.problem.problem_scale
+        assessment["derivative_source"] = (
+            "analytic" if hasattr(self.problem, "gradient") else self.derivative_method
+        )
+        inequalities = np.r_[self.cache["c_ineq"], lower - point, point - upper]
+        finite = np.r_[
+            np.ones(self.N_ineq, dtype=bool), np.isfinite(lower), np.isfinite(upper)
+        ]
+        if assessment["available"]:
+            multipliers = assessment["multipliers"]
+            duals = np.r_[
+                multipliers["inequality"], multipliers["lower"], multipliers["upper"]
+            ]
+            signed_dual = float(np.min(duals[finite])) if np.any(finite) else 0.0
+            selected = {i: float(duals[i]) for i in np.flatnonzero(finite)}
+            products = (duals[finite] * inequalities[finite]).tolist()
+            equality_multipliers = multipliers["equality"].copy()
         else:
-            lb, ub = np.asarray(bounds[0]), np.asarray(bounds[1])
-        c_lb, c_ub = lb - x_norm, x_norm - ub
-        n = x_norm.size
-        I = np.eye(n)
-        jac_lb = -I  # ∇(lb_i - x_i) = -e_i
-        jac_ub = +I  # ∇(x_i - ub_i) = +e_i
-        c_ineq = np.hstack([c_ineq, c_lb, c_ub])
-        c_ineq_jac = np.vstack([c_ineq_jac, jac_lb, jac_ub])
-
-        # Identify active inequality constraints (c_i(x) ≈ 0)
-        idx_active_ineq = [i for i, v in enumerate(c_ineq) if abs(v) <= tol]
-
-        # Build full constraint Jacobian for active constraints
-        c_jac_blocks = []
-        if self.N_eq > 0:
-            c_jac_blocks.append(c_eq_jac)
-        if idx_active_ineq:
-            c_jac_blocks.append(c_ineq_jac[idx_active_ineq])
-
-        # Solve stationarity condition: grad(f) + J^T * mu = 0
-        if c_jac_blocks:
-            c_jac = np.vstack(c_jac_blocks)
-            mu_vec, *_ = np.linalg.lstsq(c_jac.T, -f_jac, rcond=None)
-        else:
-            mu_vec = np.zeros(0)
-
-        mu_eq = mu_vec[: self.N_eq] if self.N_eq > 0 else np.array([])
-        mu_ineq = mu_vec[self.N_eq :] if idx_active_ineq else np.array([])
-
-        # Compute gradient of Lagrangian
-        lagrangian_gradient = f_jac.copy()
-        if self.N_eq > 0:
-            lagrangian_gradient += c_eq_jac.T @ mu_eq
-        for idx, mu in zip(idx_active_ineq, mu_ineq):
-            lagrangian_gradient += mu * c_ineq_jac[idx]
-
-        # Compute slackness products mu_i * h_i(x)
-        slack_products = [mu * c_ineq[i] for i, mu in zip(idx_active_ineq, mu_ineq)]
-
-        # Save in dictionary
-        kkt_data = {
-            "lagrangian_gradient": lagrangian_gradient,
-            "equality_violation": c_eq,
-            "inequality_violation": c_ineq,
-            "multipliers_eq": mu_eq,
-            "multipliers_ineq": {i: mu for i, mu in zip(idx_active_ineq, mu_ineq)},
-            "slack_products": slack_products,
+            signed_dual = float("nan")
+            selected = {i: float("nan") for i in np.flatnonzero(finite)}
+            products = []
+            equality_multipliers = np.full(self.N_eq, np.nan)
+        first = assessment["stationarity"]
+        first = float("nan") if first is None else first
+        complementarity = assessment["complementarity"]
+        complementarity = float("nan") if complementarity is None else complementarity
+        equality_error = float(np.max(np.abs(self.cache["c_eq"]), initial=0))
+        inequality_error = float(np.max(np.maximum(inequalities[finite], 0), initial=0))
+        result = {
+            **assessment,
+            "equality_violation": self.cache["c_eq"].copy(),
+            "inequality_violation": inequalities,
+            "multipliers_eq": equality_multipliers,
+            "multipliers_ineq": selected,
+            "slack_products": products,
+            "first_order_optimality": first,
+            "feasibility_equality": equality_error,
+            "feasibility_inequality": inequality_error,
+            "feasibility_dual": signed_dual,
+            "complementary_slackness": complementarity,
+            "first_order_optimality_ok": bool(first <= tol),
+            "feasibility_equality_ok": bool(equality_error <= tol),
+            "feasibility_inequality_ok": bool(inequality_error <= tol),
+            "feasibility_dual_ok": bool(signed_dual >= -tol),
+            "complementary_slackness_ok": bool(complementarity <= tol),
         }
-
-        # ------------------------------------------ #
-        # ---------- Check KKT conditions ---------- #
-        # ------------------------------------------ #
-
-        # 1. First-order optimality (||∇L|| ≈ 0)
-        grad_L = kkt_data["lagrangian_gradient"]
-        first_order_val = np.linalg.norm(grad_L)
-        first_order_ok = first_order_val <= tol
-
-        # 2. Equality feasibility (|c_eq_i| <= tol)
-        c_eq = kkt_data["equality_violation"]
-        if self.N_eq > 0:
-            feasibility_eq_val = np.max(np.abs(c_eq))
-            feasibility_eq_ok = feasibility_eq_val <= tol
-        else:
-            feasibility_eq_val = 0.0
-            feasibility_eq_ok = True
-
-        # 3. Inequality feasibility (c_ineq_i <= 0)
-        c_ineq = kkt_data["inequality_violation"]
-        if self.N_ineq > 0:
-            feasibility_ineq_val = np.max(np.maximum(c_ineq, 0.0))
-            feasibility_ineq_ok = feasibility_ineq_val <= tol
-        else:
-            feasibility_ineq_val = 0.0
-            feasibility_ineq_ok = True
-
-        # 4. Dual feasibility (mu_ineq_i >= 0)
-        mu_ineq_vals = list(kkt_data["multipliers_ineq"].values())
-        if mu_ineq_vals:
-            feasibility_dual_val = np.min(mu_ineq_vals)
-            feasibility_dual_ok = feasibility_dual_val >= -tol
-        else:
-            feasibility_dual_val = 0.0
-            feasibility_dual_ok = True
-
-        # 5. Complementary slackness (mu_ineq_i * c_ineq_i ≈ 0)
-        slack_products = kkt_data["slack_products"]
-        if slack_products:
-            complementary_slack_val = np.max(np.abs(slack_products))
-            complementary_slack_ok = complementary_slack_val <= tol
-        else:
-            complementary_slack_val = 0.0
-            complementary_slack_ok = True
-
-        return {
-            **kkt_data,
-            "first_order_optimality": first_order_val,
-            "feasibility_equality": feasibility_eq_val,
-            "feasibility_inequality": feasibility_ineq_val,
-            "feasibility_dual": feasibility_dual_val,
-            "complementary_slackness": complementary_slack_val,
-            "first_order_optimality_ok": first_order_ok,
-            "feasibility_equality_ok": feasibility_eq_ok,
-            "feasibility_inequality_ok": feasibility_ineq_ok,
-            "feasibility_dual_ok": feasibility_dual_ok,
-            "complementary_slackness_ok": complementary_slack_ok,
-        }
+        self._kkt_cache = tol, copy.deepcopy(result)
+        return result
 
     def make_kkt_optimality_report(self, x_norm, tol):
         r"""
@@ -1343,31 +1557,31 @@ class OptimizationSolver:
             (
                 "First order optimality",
                 kkt_data["first_order_optimality"],
-                f"< {tol:+.3e}",
+                f"<= {tol:+.3e}",
                 kkt_data["first_order_optimality_ok"],
             ),
             (
                 "Equality feasibility",
                 kkt_data["feasibility_equality"],
-                f"< {tol:+.3e}",
+                f"<= {tol:+.3e}",
                 kkt_data["feasibility_equality_ok"],
             ),
             (
                 "Inequality feasibility",
                 kkt_data["feasibility_inequality"],
-                f"< {tol:+.3e}",
+                f"<= {tol:+.3e}",
                 kkt_data["feasibility_inequality_ok"],
             ),
             (
                 "Dual feasibility",
                 kkt_data["feasibility_dual"],
-                f"> {-tol:+.3e}",
+                f">= {-tol:+.3e}",
                 kkt_data["feasibility_dual_ok"],
             ),
             (
                 "Complementary slackness",
                 kkt_data["complementary_slackness"],
-                f"< {tol:+.3e}",
+                f"<= {tol:+.3e}",
                 kkt_data["complementary_slackness_ok"],
             ),
         ]
@@ -1376,6 +1590,12 @@ class OptimizationSolver:
             status = "yes" if ok else " no"
             lines.append(f" {name:<36}{val:>+16.3e}{target:>16}{status:>10}")
 
+        lines.append(" Coordinates: solver; stationarity norm: infinity.")
+        lines.append(
+            " Multipliers: independently estimated; first-order conditions only."
+        )
+        if not kkt_data["available"]:
+            lines.append(" Assessment unavailable: " + kkt_data.get("message", ""))
         lines.append(sep)
         return "\n".join(lines)
 
@@ -1605,7 +1825,8 @@ class OptimizationSolver:
         """
         Generate a report of all Lagrange multipliers:
         - Equalities: always included
-        - Inequalities and bounds: show value if active, 'inactive' otherwise
+        - Inequalities and finite bounds: all independently estimated multipliers.
+        - Unavailable estimates: NaN with an explicit reason.
 
         Returns
         -------
@@ -1616,8 +1837,7 @@ class OptimizationSolver:
         kkt_data = self.evaluate_kkt_conditions(x_norm, tol)
         constraint_data = self.get_constraint_data(x_norm, tol)
         eq_data = [c for c in constraint_data if c["type"] == "="]
-        ineq_data = [c for c in constraint_data if c["type"] == "<"]
-        # TODO: add cases of ctype ">"?
+        ineq_data = [c for c in constraint_data if c["type"] in {"<", ">"}]
 
         # Print Lagrange multipliers in tabular format
         sep = "-" * 80
@@ -1625,7 +1845,7 @@ class OptimizationSolver:
         lines = [
             "",
             sep,
-            " Lagrange multipliers report",
+            " Lagrange multipliers report (estimated, solver coordinates)",
             sep,
             f" {'Multiplier for constraint':<{max_name_width}}{'Type':>15}{'Value':>15}",
             sep,
@@ -1664,6 +1884,12 @@ class OptimizationSolver:
             if len(name) > max_name_width:
                 name = "..." + name[-(max_name_width - 3) :]
 
+            if j >= n_ineq:
+                bound = self.problem.get_bounds_normalized()
+                index = j - n_ineq if j < n_ineq + n_vars else j - n_ineq - n_vars
+                side = 0 if j < n_ineq + n_vars else 1
+                if bound is None or not np.isfinite(bound[side][index]):
+                    continue
             if j in active:
                 valstr = f"{kkt_data['multipliers_ineq'][j]:+.3e}"
             else:
@@ -1671,6 +1897,8 @@ class OptimizationSolver:
 
             lines.append(f" {name:<{max_name_width}}{ctype:>15}{valstr:>15}")
 
+        if not kkt_data["available"]:
+            lines.append(" Assessment unavailable: " + kkt_data.get("message", ""))
         lines.append(sep)
         return "\n".join(lines)
 
@@ -1902,7 +2130,6 @@ class OptimizationProblem(ABC):
 
         # Apply scaling using broadcasting to support both 1D and 2D gradients
         return grad_phys * scaling_factor
-    
 
     def clip_to_bounds(self, x_physical, logger=None):
         """
@@ -1932,8 +2159,7 @@ class OptimizationProblem(ABC):
                     f"  Name       : {self.variable_names[i]}\n"
                     f"  Original   : {orig:.3e}\n"
                     f"  Bounds     : [{low:.3e}, {high:.3e}]\n"
-                    f"  Clipped to : {new:.3e}\n"
-                    + "-" * 80
+                    f"  Clipped to : {new:.3e}\n" + "-" * 80
                 )
                 if logger:
                     for line in msg.splitlines():
@@ -1942,6 +2168,7 @@ class OptimizationProblem(ABC):
                     print(msg)
 
         return x_clipped
+
 
 def count_constraints(var):
     """
@@ -2064,6 +2291,9 @@ class _PygmoProblem:
     def __init__(self, wrapped_problem):
         # Pygmo requires a flattened Jacobian for gradients, unlike SciPy's two-dimensional array.
         self.iteration_callback = lambda x: wrapped_problem._record_iteration(x)
+        self.accepted_callback = lambda entry: wrapped_problem._record_custom_iteration(
+            entry
+        )
         self.fitness = lambda x: wrapped_problem.fitness(x)
         self.gradient = lambda x: wrapped_problem.gradient(x).flatten()
 
