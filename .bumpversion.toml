@@ -1,0 +1,23 @@
+[tool.bumpversion]
+current_version = "0.6.9"
+commit = true
+tag = true
+tag_name = "v{new_version}"
+tag_message = "Release {new_version}"
+message = "Bump version: {current_version} -> {new_version}"
+allow_dirty = false
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "src/pysolver_view/__init__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "docs/conf.py"
+search = 'release = "v{current_version}"'
+replace = 'release = "v{new_version}"'

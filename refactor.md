@@ -627,7 +627,7 @@ Necessary repository updates include:
   from the distribution name. Give it an explicit source path resolved from
   `__file__`. [conf.py](docs/conf.py) inserts the repository root on `sys.path` when run from `docs/`;
   prefer installed-package imports and regenerate API pages for the reorganized modules.
-- **Versions:** update [.bumpversion.cfg](.bumpversion.cfg), the initializer,
+- **Versions:** update [.bumpversion.toml](.bumpversion.toml), the initializer,
   package metadata and docs paths. Single-source version metadata later if useful;
   preserve the public `pysolver_view.__version__` value.
 - **Tests:** [run_tests.py](tests/run_tests.py) lists only three older test files.

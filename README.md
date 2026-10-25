@@ -64,5 +64,27 @@ Please refer to the [`documentation`](https://turbo-sim.github.io/pysolver_view/
 - Complete documentation of all functions and classes in PySolverView
 
 
+## Version bumping
+
+Version bumps use `bump-my-version`, configured in
+[.bumpversion.toml](.bumpversion.toml). Install the development tools with
+`poetry install --with dev`, then commit your work before bumping:
+
+```bash
+# Preview the next patch version without modifying files.
+poetry run bump-my-version bump --dry-run --verbose patch
+
+# Choose one increment: patch, minor, or major.
+poetry run bump-my-version bump patch
+
+# Push the version commit and release tag from main.
+git push origin main --follow-tags
+```
+
+The tool updates `pyproject.toml`, `src/pysolver_view/__init__.py`,
+`docs/conf.py`, and its own current-version setting. It creates a version commit
+and an annotated `vX.Y.Z` tag; pushing the tag triggers the release workflow.
+A real bump requires a clean working tree.
+
 ## Other info
 - Pygmo and pygmo-plugin-nonfree should be installed with Conda
