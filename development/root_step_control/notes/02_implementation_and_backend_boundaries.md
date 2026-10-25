@@ -16,9 +16,9 @@ both what the current experiments prove and what must be maintained.
 | --- | --- | --- |
 | Public SciPy `root("lm")` / `root("hybr")` | MINPACK | SciPy calls its compiled MINPACK routines |
 | Turbodash custom SLSQP | Native SLSQP, with the Python driver controlling pending evaluations | Private `_slsqplib` interface and workspace, pinned to SciPy 1.17.1 |
-| Experimental `solve_root(method="lm")` | Python driver in [solver.py](../src/solver.py), model in [linear_model.py](../src/linear_model.py) | Public `scipy.linalg` operations; no native LM solver call |
+| Experimental `solve_root(method="lm")` | Python driver in [trust_region.py](../src/solvers/trust_region.py), model in [linear_model.py](../src/solvers/linear_model.py) | Public `scipy.linalg` operations; no native LM solver call |
 | Experimental `solve_root(method="hybr")` | The same driver and model modules | Public `scipy.linalg` operations; no native HYBRD/HYBRJ call |
-| Experimental `solve_root(method="newton_raphson")` / `"gauss_newton"` | [newton_solver.py](../src/newton_solver.py), sharing the QR/SVD model | Public linear algebra; optional Armijo backtracking or full valid steps |
+| Experimental `solve_root(method="newton_raphson")` / `"gauss_newton"` | [line_search.py](../src/solvers/line_search.py), sharing the QR/SVD model | Public linear algebra; optional Armijo backtracking or full valid steps |
 
 SciPy's linear algebra can itself use compiled numerical libraries, but that
 does not mean the native MINPACK solver is running. `OptimizeResult` is simply
@@ -141,11 +141,12 @@ lines, make the scopes concrete:
 
 | Source scope | Lines |
 | --- | ---: |
-| PySolverView [solver.py](../src/solver.py), trust-region driver, controls, aliases and dispatch | 525 |
-| PySolverView [linear_model.py](../src/linear_model.py), subproblems and factor management | 332 |
-| PySolverView trust-region/dispatch module and linear model together | 857 |
-| PySolverView Newton-family driver, options, trial geometry and common exceptions | 526 |
-| Combined numerical modules for all four custom methods | 1,383 |
+| PySolverView public dispatcher, options and exceptions | 303 |
+| PySolverView [trust_region.py](../src/solvers/trust_region.py), LM/hybrid driver | 278 |
+| PySolverView [line_search.py](../src/solvers/line_search.py), Newton-family driver | 275 |
+| Shared evaluation, histories and trial-coordinate handling | 230 |
+| PySolverView [linear_model.py](../src/solvers/linear_model.py), subproblems and factor management | 332 |
+| Combined numerical modules for all four custom methods, excluding package initializers | 1,418 |
 | MINPACK analytic-Jacobian [LMDER](https://netlib.org/minpack/lmder.f), main routine | 452 |
 | LMDER plus its numerical helper closure | 1,358 |
 | MINPACK analytic-Jacobian [HYBRJ](https://netlib.org/minpack/hybrj.f), main routine | 440 |
@@ -166,8 +167,8 @@ These are Netlib Fortran sources, not the size of SciPy's complete translated
 MINPACK file, wrappers, finite-difference variants or test suite. PySolverView delegates
 factorizations and updates to compiled SciPy/LAPACK routines whose source is
 excluded from these Python counts. The Newton-family modules add methods and
-controls outside the scope of the two MINPACK paths; their lines are listed
-separately rather than implying equivalent implementations.
+controls outside the scope of the two MINPACK paths. The shared modules serve
+both driver families, so these totals do not imply equivalent implementations.
 
 Tests compare subproblem solutions, factor updates, residual accuracy and actual
 trial bounds. They provide evidence for this implementation's behavior; they do

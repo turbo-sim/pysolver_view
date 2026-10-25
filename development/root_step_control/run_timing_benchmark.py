@@ -51,7 +51,7 @@ from development.root_step_control.src.problems import (
     BroydenTridiagonalProblem,
     get_large_problems,
 )
-from development.root_step_control.src.problem_thermodynamics import (
+from development.root_step_control.src.problems.thermodynamics import (
     HeatedGasDuctProblem,
 )
 
@@ -187,7 +187,7 @@ def measure_custom_kernels(measurements, solver, enabled):
     """
     replacements = []
     if enabled and solver_configuration(solver).backend == "pysolverview":
-        from development.root_step_control.src import linear_model
+        from development.root_step_control.src.solvers import linear_model
 
         bindings = [
             (linear_model, name, label)

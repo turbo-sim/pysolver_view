@@ -6,7 +6,7 @@ a damped least-squares step. Powell's hybrid method chooses a step along a
 dogleg path and reuses derivative information through secant updates.
 
 This note derives those ideas and connects them to
-[solver.py](../src/solver.py) and [linear_model.py](../src/linear_model.py).
+[trust_region.py](../src/solvers/trust_region.py) and [linear_model.py](../src/solvers/linear_model.py).
 The equations describe the algorithm families; details explicitly labeled
 **PySolverView** describe our experimental implementation. It is an independent
 implementation, not the exact native MINPACK iteration used by SciPy.

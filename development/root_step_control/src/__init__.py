@@ -1,14 +1,13 @@
 """Shared solver implementations and problem definitions for the experiments."""
 
-from .solver import (
+from .exceptions import DomainError
+from .options import (
     BacktrackingOptions,
-    DomainError,
-    METHOD_DISPLAY_NAMES,
     NewtonOptions,
     StepControlOptions,
     StepLimitOptions,
-    solve_root,
 )
+from .solver import METHOD_DISPLAY_NAMES, solve_root
 
 __all__ = [
     "DomainError",

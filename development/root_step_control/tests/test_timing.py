@@ -11,7 +11,7 @@ import numpy as np
 from scipy.optimize import OptimizeResult
 
 from .. import run_timing_benchmark as timing
-from ..src import linear_model
+from ..src.solvers import linear_model
 from ..src.problems import BroydenTridiagonalProblem
 
 

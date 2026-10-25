@@ -1,6 +1,6 @@
 """Experimental root solvers with trust-region or backtracking step controls."""
 
-from .src.solver import (
+from .src import (
     BacktrackingOptions,
     DomainError,
     METHOD_DISPLAY_NAMES,

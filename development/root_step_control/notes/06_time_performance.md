@@ -101,7 +101,7 @@ equation**, whose Jacobian is genuinely dense. Its standard discretization
 couples every variable to every equation; this complements the locally coupled
 Broyden system. Their inexpensive residuals make solver overhead and dense
 factorization costs visible. Equations, standard starts, analytic Jacobians and
-source references are in [problems.py](../src/problems.py). All five cases use the
+source references are in [mathematical.py](../src/problems/mathematical.py). All five cases use the
 project's nonlinear problem interface.
 
 ## What each timing means
@@ -228,7 +228,7 @@ evaluation counts, measured kernels, native status, and all 20-variable cases.
 
 - [run_timing_benchmark.py](../run_timing_benchmark.py): complete timing study,
   including configuration, measurements, checks, reporting, plotting, and CLI.
-- [problem_thermodynamics.py](../src/problem_thermodynamics.py): thermodynamic equations and derivatives.
+- [thermodynamics.py](../src/problems/thermodynamics.py): thermodynamic equations and derivatives.
 - [RESULTS.md](../results_time_perf/RESULTS.md): measured tables and plot.
 - [summary.csv](../results_time_perf/summary.csv): aggregate timings, counts, checks and ratios.
 - [raw_batches.csv](../results_time_perf/raw_batches.csv): every measured batch average.
@@ -254,3 +254,11 @@ python -m unittest discover -s development/root_step_control/tests -t . -v
 
 They test conservation, derivatives, state resets, timing accounting and
 instrumentation cleanup. They make no assertions about which solver is faster.
+
+## Source organization verification
+
+After moving the drivers and shared bookkeeping into `src/solvers/`, a separate
+11-round timing comparison repeated all 56 configurations before and after the
+refactor. The historical 21-round study above remains a separate measurement.
+See [source organization and validation](09_source_organization.md) for the fresh
+numbers and their limits; counters and convergence traces were preserved.

@@ -11,3 +11,7 @@ class DomainError(ValueError):
 
 class BudgetExhausted(Exception):
     """Signal an internal residual-call budget limit, not a model-domain failure."""
+
+
+class UnrepresentableProbe(Exception):
+    """Identify a numerical derivative step that floating point cannot represent."""

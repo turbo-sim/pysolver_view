@@ -1,4 +1,4 @@
-"""Validated direction-independent options for the experimental Newton methods."""
+"""Validated options for trust-region and line-search root solvers."""
 
 from dataclasses import dataclass, field
 from numbers import Integral, Real
@@ -133,3 +133,87 @@ class NewtonOptions:
             raise TypeError(
                 "backtracking must be BacktrackingOptions, a dictionary, or None."
             )
+
+
+@dataclass(frozen=True)
+class StepControlOptions:
+    """Control scaled trial distances and termination.
+
+    ``x_scale`` contains fixed characteristic variable distances (not MINPACK
+    ``diag``; the correspondence is ``diag = 1 / x_scale``). ``initial_radius``
+    is an absolute scaled distance, independent of the initial point.
+    ``max_radius`` bounds every trial. After a successful boundary step with
+    ratio >= 0.75, the radius may grow by ``growth_factor``; poor/undefined
+    trials shrink it by ``shrink_factor``. A growth factor of one prevents
+    regrowth, including after recovery. Radii never exceed ``max_radius``.
+
+    Success requires ``norm(fun(x)) <= residual_tol``. Small steps, a stationary
+    least-squares point, and exhausted budgets are failures, not roots.
+    ``max_iterations`` counts all trial attempts (accepted or rejected).
+    ``max_nfev`` includes initial, trial, and numerical-derivative evaluations.
+    Forward difference probes move ``finite_diff_step * x_scale[j]`` in x[j].
+    """
+
+    initial_radius: float = 1.0
+    max_radius: float = 100.0
+    growth_factor: float = 2.0
+    shrink_factor: float = 0.25
+    acceptance_ratio: float = 0.1
+    residual_tol: float = 1e-8
+    xtol: float = 1e-12
+    gtol: float = 1e-12
+    max_iterations: int = 500
+    max_nfev: int = 5000
+    finite_diff_step: float = 1e-7
+    x_scale: object = 1.0
+    history_level: str = "full"
+
+    def __post_init__(self):
+        """Validate finite positive controls, consistent radii, integer budgets and the
+        selected history mode.
+        """
+        if self.history_level not in ("full", "summary", "none"):
+            raise ValueError("history_level must be 'full', 'summary' or 'none'.")
+        for name in (
+            "initial_radius",
+            "max_radius",
+            "growth_factor",
+            "shrink_factor",
+            "acceptance_ratio",
+            "residual_tol",
+            "xtol",
+            "gtol",
+            "finite_diff_step",
+        ):
+            value = getattr(self, name)
+            if (
+                isinstance(value, (bool, np.bool_))
+                or not isinstance(value, Real)
+                or not np.isfinite(value)
+                or value <= 0
+            ):
+                raise ValueError(f"{name} must be finite and positive.")
+        if self.initial_radius > self.max_radius:
+            raise ValueError("initial_radius must not exceed max_radius.")
+        if self.growth_factor < 1:
+            raise ValueError("growth_factor must be >= 1.")
+        if self.shrink_factor >= 1:
+            raise ValueError("shrink_factor must be < 1.")
+        if self.acceptance_ratio >= 0.25:
+            raise ValueError("acceptance_ratio must be < 0.25.")
+        for name in ("max_iterations", "max_nfev"):
+            value = getattr(self, name)
+            if (
+                isinstance(value, (bool, np.bool_))
+                or not isinstance(value, Integral)
+                or value < 1
+            ):
+                raise ValueError(f"{name} must be a positive integer.")
+        scale = np.asarray(self.x_scale, dtype=float)
+        if (
+            scale.ndim > 1
+            or scale.size == 0
+            or not np.all(np.isfinite(scale))
+            or np.any(scale <= 0)
+        ):
+            raise ValueError("x_scale must be a positive finite scalar or vector.")

@@ -4,7 +4,9 @@ These notes address the design questions raised after the root-step experiments.
 They describe the code currently present and distinguish it from proposed work.
 The [folder guide](../README.md) lists the source, tests, runners, and outputs.
 For practical details, see the [timing protocol](06_time_performance.md) and
-[solver usage guide](07_usage_and_controls.md).
+[solver usage guide](07_usage_and_controls.md). The
+[source organization note](09_source_organization.md) explains module boundaries
+and records the structural refactor checks.
 Documentation and local implementation reviewed on 25 October 2026; the numerical
 experiment used SciPy 1.17.1.
 

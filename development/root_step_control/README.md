@@ -15,7 +15,22 @@ identifiers use `scipy_*` and `pysolverview_*`, respectively.
 ```text
 root_step_control/
 ├── README.md
-├── src/                         # Shared solvers and problem definitions
+├── src/
+│   ├── solver.py                # Public dispatch and method aliases
+│   ├── options.py               # Trust-region and backtracking settings
+│   ├── exceptions.py            # Domain and internal termination signals
+│   ├── solvers/
+│   │   ├── trust_region.py      # Levenberg–Marquardt and Powell hybrid
+│   │   ├── line_search.py       # Newton–Raphson and Gauss–Newton
+│   │   ├── linear_model.py      # QR/SVD, model updates, step directions
+│   │   ├── evaluation.py        # Residual/Jacobian evaluation and budgets
+│   │   ├── history.py           # Records, callbacks, final results
+│   │   └── trial_step.py        # Scaled trial coordinates and rounding
+│   └── problems/
+│       ├── base.py              # Shared benchmark metadata/interface
+│       ├── mathematical.py      # Standard systems and constructed controls
+│       ├── thermodynamics.py    # Optional CoolProp duct problem
+│       └── suites.py            # Reproducible problem collections
 ├── tests/                       # Numerical, solver, problem, and timing checks
 ├── notes/                       # Mathematics, usage, design, and recommendations
 ├── run_convergence_benchmark.py
@@ -35,14 +50,30 @@ Result directories contain outputs rather than implementation or tests.
 
 | Source | Purpose |
 | --- | --- |
-| [solver.py](src/solver.py) | Shared iteration, step controls, histories, and failure handling |
-| [linear_model.py](src/linear_model.py) | QR/SVD factors, LM damping, dogleg steps, and secant updates |
-| [newton_solver.py](src/newton_solver.py) | Newton–Raphson/Gauss–Newton iteration, Armijo acceptance, and full-step modes |
-| [newton_options.py](src/newton_options.py) | Validated backtracking and scaled step-limit options |
-| [line_search.py](src/line_search.py) | Rounded trial geometry and pre-evaluation distance audit |
-| [solver_common.py](src/solver_common.py) | Shared explicit domain-failure and evaluation-budget exceptions |
-| [problems.py](src/problems.py) | Standard multidimensional mathematical systems |
-| [problem_thermodynamics.py](src/problem_thermodynamics.py) | Coupled CoolProp nitrogen duct problem |
+| [solver.py](src/solver.py) | Public `solve_root`, method aliases and driver dispatch; configuration re-exports |
+| [options.py](src/options.py) | All validated options, keeping trust-region and backtracking policies distinct |
+| [exceptions.py](src/exceptions.py) | Recognized model-domain failures and internal budget/probe signals |
+| [trust_region.py](src/solvers/trust_region.py) | LM/Powell hybrid iteration, trust-radius adaptation, model refresh decisions |
+| [line_search.py](src/solvers/line_search.py) | Newton–Raphson/Gauss–Newton iteration, Armijo acceptance, full-step modes |
+| [linear_model.py](src/solvers/linear_model.py) | QR/SVD factors, LM damping, dogleg steps and Broyden updates |
+| [evaluation.py](src/solvers/evaluation.py) | Residual validation, analytic/numerical Jacobians and model-call budgets |
+| [history.py](src/solvers/history.py) | Histories, copied callbacks and accepted-state result assembly |
+| [trial_step.py](src/solvers/trial_step.py) | Trial coordinates and scaled displacement audits, including rounding |
+| [base.py](src/problems/base.py) | Benchmark metadata using the existing `NonlinearSystemProblem` interface |
+| [mathematical.py](src/problems/mathematical.py) | Standard multidimensional equations and constructed domain/rectangular controls |
+| [thermodynamics.py](src/problems/thermodynamics.py) | Coupled CoolProp nitrogen duct, derivatives and physical diagnostics |
+| [suites.py](src/problems/suites.py) | Original, large and extension problem collections; thermodynamic imports on demand |
+
+Both numerical drivers share evaluation and history mechanics. Their acceptance,
+stopping and Jacobian-refresh decisions remain explicit in their respective
+modules. `linear_model.py` retains the cached factors and secant updates as well
+as computing directions. `trial_step.py` bounds actual displacements; variable
+scales remain fixed caller inputs.
+
+The package-level imports, `src.solver` API and `src.problems` exports remain
+available. Internal implementation imports use the paths above. The
+[organization and validation note](notes/09_source_organization.md) documents the
+boundaries and the refactor checks.
 
 ## Run the studies
 

@@ -108,10 +108,10 @@ the linear model.
 
 | Current component | Reuse or required change |
 | --- | --- |
-| [src/solver.py](root_step_control/src/solver.py) | Preserve the public `solve_root` entry point, evaluation budgets, recognized `DomainError` protocol, callback copies and result conventions. Extract shared accounting where needed. |
-| [src/linear_model.py](root_step_control/src/linear_model.py) | Reuse guarded QR and SVD factors and the existing `gauss_newton` direction. Add an explicit strict Newton direction/rank contract. |
-| [src/problems.py](root_step_control/src/problems.py) | Reuse the standard mathematical systems and 100-variable cases. Add only problems needed to exercise missing behavior. |
-| [src/problem_thermodynamics.py](root_step_control/src/problem_thermodynamics.py) | Reuse the 20- and 100-variable CoolProp duct models and their physical checks. |
+| [src/solver.py](root_step_control/src/solver.py) | Preserve the public `solve_root` entry point and aliases. Share budgets and evaluation/history mechanics through the `solvers/` helpers; retain the `DomainError` re-export. |
+| [src/solvers/linear_model.py](root_step_control/src/solvers/linear_model.py) | Reuse guarded QR and SVD factors and the existing `gauss_newton` direction. Add an explicit strict Newton direction/rank contract. |
+| [src/problems/mathematical.py](root_step_control/src/problems/mathematical.py) | Reuse the standard mathematical systems and 100-variable cases. Add only problems needed to exercise missing behavior. |
+| [src/problems/thermodynamics.py](root_step_control/src/problems/thermodynamics.py) | Reuse the 20- and 100-variable CoolProp duct models and their physical checks. |
 | [tests/](root_step_control/tests) | Extend the existing behavioral, numerical and accounting checks. |
 | [run_convergence_benchmark.py](root_step_control/run_convergence_benchmark.py) | Add eligible method/configuration cases and policy-aware audits. |
 | [run_timing_benchmark.py](root_step_control/run_timing_benchmark.py) | Add explicit method registrations while preserving clean/instrumented measurement separation. |
@@ -450,10 +450,10 @@ remain visible in the results.
 | Phase | Work and files | Completion check |
 | --- | --- | --- |
 | 1. Contracts | Finalize the two new methods, alias registry, option validation, default policies and result meanings. | Tests specify aliases, omitted versus explicit `None`, full-step acceptance, protected acceptance and incompatible dimensions. |
-| 2. Shared mechanics | Extract evaluation/history/accounting helpers into a small shared `src/solver_common.py` module. Preserve re-exports of `DomainError`. | Existing correctness coverage remains passing, with obsolete trajectory expectations updated; LM/hybrid convergence and control contracts are verified. |
-| 3. Directions | Extend `src/linear_model.py` with strict Newton/rank diagnostics and shared factorization reuse. Make unnecessary gradient work optional where required. | Independent linear-solve and least-squares references agree. |
-| 4. Full-step modes | Add the Newton-family loop in `src/newton_solver.py` and dispatch from `src/solver.py`. | Pure Newton and full Gauss–Newton follow their stated commit policies. |
-| 5. Protected modes | Add bounded Armijo search in `src/line_search.py` and select it for either method when `backtracking` is enabled. | Every evaluated trial respects the active limit; domain recovery and budgets are correct. |
+| 2. Shared mechanics | Share evaluation/accounting through `src/solvers/evaluation.py` and records/results through `src/solvers/history.py`; keep exceptions in `src/exceptions.py`. Preserve re-exports of `DomainError`. | Existing correctness coverage remains passing, with obsolete trajectory expectations updated; LM/hybrid convergence and control contracts are verified. |
+| 3. Directions | Extend `src/solvers/linear_model.py` with strict Newton/rank diagnostics and shared factorization reuse. Make unnecessary gradient work optional where required. | Independent linear-solve and least-squares references agree. |
+| 4. Full-step modes | Add the Newton-family loop in `src/solvers/line_search.py` and dispatch from `src/solver.py`. | Pure Newton and full Gauss–Newton follow their stated commit policies. |
+| 5. Protected modes | Keep bounded Armijo acceptance in `src/solvers/line_search.py` and trial construction in `src/solvers/trial_step.py` and select it for either method when `backtracking` is enabled. | Every evaluated trial respects the active limit; domain recovery and budgets are correct. |
 | 6. Experiments | Extend the existing `run_*.py` scripts and policy-aware audits. | Scripts run independently and save complete cases to new `results_<case>/` folders. |
 | 7. Documentation | Update exports, usage guide, mathematics note and comparisons. Every new function/class needs an explanatory docstring. | Imports, commands, links and method descriptions match actual behavior. |
 
@@ -461,12 +461,17 @@ The new shared modules should contain code reused across methods. Keep
 study-specific orchestration, plots and reports in the existing runner scripts.
 Keep new methods experimental until their thermodynamic cases have been reviewed.
 
-Implementation detail: sharing was limited to the exception protocol, QR/SVD
-linear model, option types, and Newton-family trial geometry. The established
-LM/hybrid loop was preserved rather than broadly rewriting its accounting.
-Across the rerun 100-case study, root outcomes and evaluation/iteration counts
-match the saved baseline; residual and maximum-step differences are at
-floating-point roundoff scale.
+Implementation detail: both driver families now use shared residual/Jacobian
+accounting, history/callback/result handling and trial-coordinate helpers in
+`src/solvers/`. Options and exceptions have dedicated modules. The trust-region
+and line-search loops retain their own acceptance, stopping and Jacobian-refresh
+policies. Problems are grouped by mathematical and thermodynamic definitions,
+with shared benchmark metadata and separate suite selection.
+
+The structural refactor reproduced all summaries and stored traces exactly in
+fresh 100-case native/custom and 112-case custom studies. The
+[source organization and validation note](root_step_control/notes/09_source_organization.md)
+records the architecture, tests and timing comparison.
 
 ## 9. Validation plan
 

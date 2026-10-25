@@ -6,16 +6,15 @@ or Broyden. All accepted states, attempted steps and residual calls use the same
 accounting conventions as the neighboring trust-region experiments.
 """
 
-from copy import deepcopy
-
 import numpy as np
 from scipy.linalg import norm
-from scipy.optimize import OptimizeResult
 
-from .line_search import prepare_trial
+from .trial_step import prepare_trial
 from .linear_model import LinearModel
-from .newton_options import NewtonOptions
-from .solver_common import BudgetExhausted, DomainError
+from ..options import NewtonOptions
+from ..exceptions import BudgetExhausted, DomainError, UnrepresentableProbe
+from .evaluation import ModelEvaluator, prepare_inputs
+from .history import HistoryRecorder
 
 
 def solve_newton(fun, x0, jac=None, *, method, options=None, callback=None):
@@ -32,99 +31,49 @@ def solve_newton(fun, x0, jac=None, *, method, options=None, callback=None):
         options = NewtonOptions(**options)
     if not isinstance(options, NewtonOptions):
         raise TypeError("options must be NewtonOptions or a dictionary.")
-    x = np.asarray(x0, dtype=float).copy()
-    if x.ndim != 1 or x.size == 0 or not np.all(np.isfinite(x)):
-        raise ValueError("x0 must be a nonempty finite vector.")
-    scale = np.asarray(options.x_scale, dtype=float)
-    if scale.ndim == 0:
-        scale = np.full(x.size, scale.item())
-    if scale.shape != x.shape:
-        raise ValueError("x_scale must be scalar or have the same shape as x0.")
-    scale = scale.copy()
+    x, scale = prepare_inputs(x0, options.x_scale)
     search = options.backtracking
     limits = None if search is None else search.step_limits
     step_limit = None if limits is None else limits.initial_limit
     step_policy = "full_step" if search is None else "backtracking"
-    history, trials, evaluations = [], [], []
+    recorder = HistoryRecorder(options.history_level, callback)
+    evaluator = ModelEvaluator(
+        fun, jac, scale, options, recorder, square=method == "newton_raphson"
+    )
+    evaluate = evaluator.residual
     store_history = options.history_level != "none"
-    store_coordinates = options.history_level == "full"
-    nfev = njev = nit = ntrials = nrejected = ninvalid = nbacktracks = 0
+    nit = ntrials = nrejected = ninvalid = nbacktracks = 0
     max_trial_step_scaled = max_step_limit_used = max_step_limit_ratio = 0.0
     linear_stats = {}
-    f = f_norm = last_eval_norm = residual_size = None
+    f = f_norm = None
     last_rank = linear_residual_norm = None
-
-    def evaluate(point, kind):
-        """Count one copied model call and validate fixed residual shape and range."""
-        nonlocal nfev, last_eval_norm, residual_size
-        if nfev >= options.max_nfev:
-            raise BudgetExhausted
-        nfev += 1
-        record = None
-        if store_history:
-            record = dict(kind=kind, valid=False, residual_norm=None, nfev=nfev)
-            if store_coordinates:
-                record["x"] = point.copy()
-            evaluations.append(record)
-        try:
-            values = np.asarray(fun(point.copy()), dtype=float)
-            if values.ndim != 1 or values.size < x.size:
-                raise ValueError(
-                    "fun must return a vector with at least len(x0) entries."
-                )
-            if residual_size is not None and values.size != residual_size:
-                raise ValueError("Residual size changed during the solve.")
-            if method == "newton_raphson" and values.size != x.size:
-                raise ValueError(
-                    "Newton–Raphson requires a square residual/Jacobian pair."
-                )
-            if not np.all(np.isfinite(values)):
-                raise DomainError("Nonfinite residual at model evaluation.")
-            last_eval_norm = float(norm(values, check_finite=False))
-            if last_eval_norm > np.sqrt(np.finfo(float).max):
-                raise DomainError(
-                    "Residual is too large for a finite squared-norm merit."
-                )
-        except DomainError as error:
-            if record is not None:
-                record["reason"] = str(error)
-            raise
-        residual_size = values.size
-        if record is not None:
-            record.update(valid=True, residual_norm=last_eval_norm)
-        return values.copy()
 
     def finish(status, message):
         """Return detached accepted values and counters without fabricating a radius."""
-        return OptimizeResult(
-            x=x.copy(),
-            fun=None if f is None else f.copy(),
-            success=status == 0,
+        return recorder.result(
+            x=x,
+            fun=f,
             status=status,
             message=message,
             method=method,
             step_policy=step_policy,
-            nfev=nfev,
-            njev=njev,
+            nfev=evaluator.nfev,
+            njev=evaluator.njev,
             nit=nit,
             nupdates=0,
             ntrials=ntrials,
             nrejected=nrejected,
             ninvalid=ninvalid,
             nbacktracks=nbacktracks,
-            history=history,
-            trials=trials,
-            evaluations=evaluations,
             radius=None,
             step_limit=step_limit,
             residual_norm=f_norm,
-            history_level=options.history_level,
             max_trial_step_scaled=max_trial_step_scaled,
             max_step_limit_used=None if limits is None else max_step_limit_used,
             max_step_limit_ratio=None if limits is None else max_step_limit_ratio,
             numerical_rank=last_rank,
             linear_residual_norm=linear_residual_norm,
-            linear_algebra=dict(linear_stats),
+            linear_algebra=linear_stats,
         )
 
     def record_accepted(
@@ -133,7 +82,8 @@ def solve_newton(fun, x0, jac=None, *, method, options=None, callback=None):
         """Record a committed point and call an isolated full-record callback."""
         if not store_history and callback is None:
             return False
-        record = dict(
+        return recorder.accepted(
+            x,
             iteration=nit,
             residual_norm=f_norm,
             step_norm=step_norm,
@@ -142,22 +92,13 @@ def solve_newton(fun, x0, jac=None, *, method, options=None, callback=None):
             step_fraction=fraction,
             backtracks=backtracks,
             step_policy=step_policy,
-            nfev=nfev,
-            njev=njev,
+            nfev=evaluator.nfev,
+            njev=evaluator.njev,
         )
-        if store_coordinates:
-            record["x"] = x.copy()
-        if store_history:
-            history.append(record)
-        if callback is not None:
-            copied = deepcopy(record)
-            copied["x"] = x.copy()
-            return callback(copied) is False
-        return False
 
     try:
         f = evaluate(x, "initial")
-        f_norm = last_eval_norm
+        f_norm = evaluator.last_norm
     except DomainError as error:
         return finish(4, f"Undefined initial point: {error}")
     if record_accepted():
@@ -166,31 +107,16 @@ def solve_newton(fun, x0, jac=None, *, method, options=None, callback=None):
         return finish(0, "Residual tolerance satisfied.")
 
     while ntrials < options.max_iterations:
-        if nfev >= options.max_nfev:
+        if evaluator.nfev >= options.max_nfev:
             return finish(1, "Residual evaluation budget exhausted.")
-        njev += 1
         try:
-            if jac is not None:
-                jacobian = np.asarray(jac(x.copy()), dtype=float)
-            else:
-                jacobian = np.empty((f.size, x.size))
-                for column in range(x.size):
-                    probe = x.copy()
-                    probe[column] += options.finite_diff_step * scale[column]
-                    distance = probe[column] - x[column]
-                    if distance == 0 or not np.isfinite(probe[column]):
-                        return finish(
-                            3, "Finite-difference probe cannot be represented."
-                        )
-                    jacobian[:, column] = (
-                        evaluate(probe, "finite_difference") - f
-                    ) / distance
+            jacobian = evaluator.jacobian(x, f)
+        except UnrepresentableProbe as error:
+            return finish(3, str(error))
         except BudgetExhausted:
             return finish(1, "Residual evaluation budget exhausted during derivatives.")
         except DomainError as error:
             return finish(4, f"Undefined derivative evaluation: {error}")
-        if jacobian.shape != (f.size, x.size):
-            raise ValueError(f"jac must have shape {(f.size, x.size)}.")
         if not np.all(np.isfinite(jacobian)):
             return finish(4, "Nonfinite Jacobian; derivative recovery is not enabled.")
         with np.errstate(over="ignore", invalid="ignore"):
@@ -237,7 +163,7 @@ def solve_newton(fun, x0, jac=None, *, method, options=None, callback=None):
         for backtracks in range(reductions_allowed + 1):
             if ntrials >= options.max_iterations:
                 return finish(1, "Trial iteration budget exhausted.")
-            if nfev >= options.max_nfev:
+            if evaluator.nfev >= options.max_nfev:
                 return finish(1, "Residual evaluation budget exhausted.")
             if backtracks:
                 nbacktracks += 1
@@ -269,7 +195,7 @@ def solve_newton(fun, x0, jac=None, *, method, options=None, callback=None):
                 required = -search.armijo_c1 * directional_derivative
             try:
                 trial_f = evaluate(trial_x, "trial")
-                trial_norm = last_eval_norm
+                trial_norm = evaluator.last_norm
                 actual = float((0.5 * (f_norm - trial_norm)) * (f_norm + trial_norm))
                 valid = True
                 accepted = search is None or (actual > 0 and actual >= required)
@@ -315,13 +241,11 @@ def solve_newton(fun, x0, jac=None, *, method, options=None, callback=None):
                     directional_derivative=directional_derivative,
                     armijo_required_reduction=required,
                     actual_reduction=actual,
-                    nfev=nfev,
-                    njev=njev,
+                    nfev=evaluator.nfev,
+                    njev=evaluator.njev,
                     jacobian_source="evaluated",
                 )
-                if store_coordinates:
-                    record.update(x_base=x.copy(), x=trial_x.copy())
-                trials.append(record)
+                recorder.trial(x, trial_x, record)
             if accepted:
                 if step_limit is not None:
                     if backtracks:
@@ -343,7 +267,7 @@ def solve_newton(fun, x0, jac=None, *, method, options=None, callback=None):
                 return finish(4, f"Undefined full-step trial: {reason}")
             if ntrials >= options.max_iterations:
                 return finish(1, "Trial iteration budget exhausted.")
-            if nfev >= options.max_nfev:
+            if evaluator.nfev >= options.max_nfev:
                 return finish(1, "Residual evaluation budget exhausted.")
             if backtracks == reductions_allowed:
                 return finish(6, "Backtracking exhausted above residual tolerance.")

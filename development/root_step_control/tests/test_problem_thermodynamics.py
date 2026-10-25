@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 from scipy.optimize import root
 
-from ..src.problem_thermodynamics import CP, HeatedGasDuctProblem
+from ..src.problems.thermodynamics import CP, HeatedGasDuctProblem
 from ..src.solver import DomainError, solve_root
 
 

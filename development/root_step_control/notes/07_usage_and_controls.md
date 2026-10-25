@@ -260,7 +260,7 @@ python development/root_step_control/run_convergence_benchmark.py --output devel
 
 The benchmark problems subclass the project's `NonlinearSystemProblem` and
 expose `residual(x)` and `gradient(x)`. They are established multidimensional
-systems, with equations, starts, dimensions, and references in [problems.py](../src/problems.py).
+systems, with equations, starts, dimensions, and references in [mathematical.py](../src/problems/mathematical.py).
 The benchmark compares them against SciPy LM/hybrid at `factor=100`
 and `factor=0.1`, plus three configurations of each custom solver. It writes
 `summary.csv`, `traces.json` (including versions, settings and full histories),

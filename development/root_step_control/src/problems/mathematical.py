@@ -15,43 +15,8 @@ Variable scales are fixed characteristic displacements, not residual weights.
 
 import numpy as np
 
-from pysolver_view.nonlinear_system import NonlinearSystemProblem
-
-from .solver import DomainError
-
-MINPACK_SOURCE = "https://www.netlib.org/minpack/ex/file16"
-
-
-def _dimension(n, *, multiple=1):
-    """Validate n as an integer >= 2 divisible by multiple, and return it as a Python
-    int.
-    """
-    if isinstance(n, bool) or not isinstance(n, (int, np.integer)) or n < 2:
-        raise ValueError("n must be an integer >= 2")
-    if n % multiple:
-        raise ValueError(f"n must be a multiple of {multiple}")
-    return int(n)
-
-
-class BenchmarkProblem(NonlinearSystemProblem):
-    """PSV root-problem base carrying reproducible benchmark metadata."""
-
-    source = MINPACK_SOURCE
-
-    def __init__(self, name, x0, description, *, x_scale=None, solution=None):
-        """Store the benchmark name, start vector, scales, description and optional
-        reference root.
-        """
-        self.name = name
-        self.x0 = np.asarray(x0, dtype=float)
-        self.n = self.x0.size
-        self.m = self.n
-        self.root_exists = True
-        self.x_scale = (
-            np.ones(self.n) if x_scale is None else np.asarray(x_scale, dtype=float)
-        )
-        self.description = description
-        self.solution = None if solution is None else np.asarray(solution, dtype=float)
+from ..exceptions import DomainError
+from .base import BenchmarkProblem, MINPACK_SOURCE, _dimension
 
 
 class ExtendedRosenbrockProblem(BenchmarkProblem):
@@ -467,45 +432,3 @@ class LogarithmicDomainProblem(BenchmarkProblem):
         """Return the positive-definite dense Jacobian at a valid model point."""
         self._check_domain(x)
         return np.diag(1 / x) + self.coupling
-
-
-def get_extension_problems():
-    """Return thermodynamic, domain-recovery and rectangular Newton-family controls."""
-    from .problem_thermodynamics import HeatedGasDuctProblem
-
-    return [
-        HeatedGasDuctProblem(),
-        LogarithmicDomainProblem(),
-        CoupledOverdeterminedRosenbrockProblem(),
-        CoupledOverdeterminedRosenbrockProblem(inconsistent=True),
-    ]
-
-
-def get_problems():
-    """Seven well-known, genuinely multidimensional systems at standard starts."""
-    return [
-        ExtendedRosenbrockProblem(n=10),
-        PowellSingularProblem(),
-        PowellBadlyScaledProblem(),
-        BrownAlmostLinearProblem(n=10),
-        BroydenTridiagonalProblem(n=20),
-        DiscreteBoundaryValueProblem(n=20),
-        HelicalValleyProblem(),
-    ]
-
-
-def get_large_problems():
-    """Three 100-variable cases: banded, dense, and property-heavy coupling.
-
-    CoolProp is only imported when this expanded suite is requested. The duct
-    refines the original ten-cell domain at fixed total heat and resistance.
-    """
-    from .problem_thermodynamics import HeatedGasDuctProblem
-
-    return [
-        BroydenTridiagonalProblem(n=100),
-        DiscreteIntegralEquationProblem(n=100),
-        HeatedGasDuctProblem(
-            n_cells=50, total_heat_per_mass=1e5, total_loss_coefficient=80
-        ),
-    ]

@@ -13,9 +13,8 @@ https://coolprop.org/coolprop/HighLevelAPI.html#partial-derivatives
 
 import numpy as np
 
-from pysolver_view.nonlinear_system import NonlinearSystemProblem
-
-from .solver import DomainError
+from ..exceptions import DomainError
+from .base import BenchmarkProblem
 
 try:
     import CoolProp as CP
@@ -23,7 +22,7 @@ except ImportError:
     CP = None
 
 
-class HeatedGasDuctProblem(NonlinearSystemProblem):
+class HeatedGasDuctProblem(BenchmarkProblem):
     """Solve 2*n_cells coupled energy and pressure-loss equations.
 
     Unknowns are interleaved ``[T_1, p_1, ..., T_N, p_N]`` in K and Pa.
@@ -109,6 +108,7 @@ class HeatedGasDuctProblem(NonlinearSystemProblem):
         self.x_scale = np.tile([20.0, 1e5], self.n_cells)
         # Uniform inlet state: no approximate solution is precomputed.
         self.x0 = np.tile([self.inlet_temperature, self.inlet_pressure], self.n_cells)
+        super().__init__(self.name, self.x0, self.description, x_scale=self.x_scale)
         self._state = CP.AbstractState(self.backend, self.fluid)
         self._state.update(CP.PT_INPUTS, self.inlet_pressure, self.inlet_temperature)
         self.inlet_enthalpy = self._state.hmass()
