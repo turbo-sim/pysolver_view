@@ -1,10 +1,60 @@
-# This file is provided to streamline Conda virtual environment generation
-# Using conda (instead of poetry) is necessary to install Pygmo and access IPOPT/SNOPTname: pysolver_env
+# Install pysolver_view and PyGMO together in one Conda environment.
+# Conda supplies PyGMO and the compiled numerical dependencies; pip installs
+# pysolver_view and its remaining dependencies into that same environment.
+#
+# CASE 1: DEVELOP FROM A CLONED REPOSITORY
+#   git clone https://github.com/turbo-sim/pysolver_view.git
+#   cd pysolver_view
+#   conda env create -f environment.yaml
+#   conda activate pysolver_env
+# The pip section below installs this checkout in editable mode automatically.
+# Run creation from the repository root so "-e ." points to this project.
+# Source edits are immediately available without reinstalling the package.
+#
+# CASE 2: INSTALL THE PUBLISHED PACKAGE WITHOUT CLONING
+# Run these commands in a Conda-enabled terminal; no repository is needed:
+#   conda create -n pysolver_env --override-channels -c conda-forge python=3.13 pip "numpy>=2.2.4,<3" scipy=1.17.1 pygmo
+#   conda activate pysolver_env
+#   python -m pip install pysolver_view
+# Alternatively, save this YAML and replace "-e ." in its pip section with
+# "pysolver_view", then use conda env create -f environment.yaml.
+# The published release may not yet include changes in the repository.
+#
+# CHECK EITHER INSTALLATION
+#   python -c "import sys, pysolver_view, pygmo; print(sys.executable); print(pysolver_view.__file__); print(pygmo.__version__)"
+# Select this environment's Python in your IDE and activate it before running.
+# Keep PyGMO managed by Conda; do not install its pip wheel over this environment.
+# SciPy 1.17.1 is selected for the custom SLSQP backend.
+#
+# OPTIONAL IPOPT AND SNOPT
+# Check IPOPT support: python -c "import pygmo as pg; print(pg.ipopt())"
+# Use OptimizationSolver(problem, library="pygmo", method="ipopt").
+# For SNOPT: conda install -c conda-forge pygmo_plugins_nonfree
+# Also obtain a licensed SNOPT 7.7 shared library separately and set its path:
+#   PowerShell: $env:SNOPT_LIB = 'C:/solvers/snopt/snopt77.dll'
+#   Ubuntu:     export SNOPT_LIB=/path/to/libsnopt77.so
+# Use library="pygmo", method="snopt". The plugin does not include SNOPT.
+#
+# OPTIONAL REPOSITORY TESTS (CASE 1)
+# Uncomment the desired PyGMO cases in tests/optimization/test_optimization.py,
+# after configuring the corresponding solvers, then run:
+#   python -m pytest tests/optimization/test_optimization.py -k "pygmo" -q
+# Installing dependencies alone does not enable the commented test cases.
+#
+# References: https://esa.github.io/pygmo2/install.html
+#             https://esa.github.io/pagmo_plugins_nonfree/install.html
+# Installation instructions only; these environments have not been tested here.
+
 name: pysolver_env
 channels:
- - conda-forge
+  - conda-forge
+  - nodefaults
 dependencies:
   - python=3.13
   - pip
-  - poetry
-  
+  - pytest
+  - numpy>=2.2.4,<3
+  - scipy=1.17.1
+  - pygmo
+  - pip:
+      - -e .
