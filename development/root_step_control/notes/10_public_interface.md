@@ -177,7 +177,7 @@ python demos/demo_eqn_solving/demo_custom_root_solvers.py
 python demos/demo_eqn_solving/demo_custom_root_solvers.py --no-show
 ```
 
-Solid Newton–Raphson and dashed Gauss–Newton traces expose overlap. For a square
+Solid Newton-Raphson and dashed Gauss-Newton traces expose overlap. For a square
 nonsingular $J$, both solve $Jp=-F$, since the unique least-squares minimizer has
 zero linearized residual. Equal scales, limits, and acceptance choices therefore
 usually produce matching histories up to roundoff. Rank-deficient models,

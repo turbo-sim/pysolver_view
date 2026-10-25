@@ -15,10 +15,10 @@ METHOD_ALIASES = {
 }
 
 METHOD_DISPLAY_NAMES = {
-    "levenberg_marquardt": "Levenberg–Marquardt",
+    "levenberg_marquardt": "Levenberg-Marquardt",
     "powell_hybrid": "Powell hybrid",
-    "newton_raphson": "Newton–Raphson",
-    "gauss_newton": "Gauss–Newton",
+    "newton_raphson": "Newton-Raphson",
+    "gauss_newton": "Gauss-Newton",
 }
 
 

@@ -173,7 +173,7 @@ class LinearModel:
         replacing Newton with a pseudoinverse least-squares direction.
         """
         if self.a.shape[0] != self.a.shape[1]:
-            raise ValueError("Newton–Raphson requires a square Jacobian.")
+            raise ValueError("Newton-Raphson requires a square Jacobian.")
         if self.numerical_rank != self.a.shape[1]:
             raise np.linalg.LinAlgError("Numerically singular Newton Jacobian.")
         return self.gauss_newton

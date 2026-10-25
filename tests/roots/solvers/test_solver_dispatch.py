@@ -45,7 +45,7 @@ class SolverDispatchTests(unittest.TestCase):
                     self.assertEqual(direct.nupdates, 0)
 
     def test_named_newton_methods_keep_distinct_shape_and_rank_requirements(self):
-        """Strict Newton rejects singular/rectangular models that Gauss–Newton solves."""
+        """Strict Newton rejects singular/rectangular models that Gauss-Newton solves."""
         matrix = np.array([[1.0, 1.0], [2.0, 2.0]])
         target = np.array([1.0, 2.0])
         residual = lambda x: matrix @ x - target

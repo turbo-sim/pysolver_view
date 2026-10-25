@@ -1,7 +1,7 @@
 # The mathematics of LM and Powell's hybrid root solver
 
 Both methods use a local linear approximation of the residual equations and
-limit how far they trust that approximation. Levenberg–Marquardt (LM) chooses
+limit how far they trust that approximation. Levenberg-Marquardt (LM) chooses
 a damped least-squares step. Powell's hybrid method chooses a step along a
 dogleg path and reuses derivative information through secant updates.
 
@@ -132,7 +132,7 @@ That preserves the exact roots but changes the residual norm, merit landscape,
 and stopping tolerance. The supplied Jacobian must then also include $W$.
 PySolverView does not choose these residual weights automatically.
 
-## 2. Newton and Gauss–Newton steps
+## 2. Newton and Gauss-Newton steps
 
 For a nonsingular square Jacobian, the Newton step solves
 
@@ -146,7 +146,7 @@ It would cancel the residual if the linearization were exact. When the model
 is nonlinear or the Jacobian is nearly singular, that prediction can require
 an excessively large displacement.
 
-Gauss–Newton generalizes the linear solve to least squares:
+Gauss-Newton generalizes the linear solve to least squares:
 
 $$
 z_{\mathrm{GN}}\in\arg\min_z\frac12\|r+Az\|_2^2.
@@ -175,14 +175,14 @@ constant to the least-squares objective and does not affect this solve.
 If the factor is unsuitable, an SVD supplies a solution of minimum norm with
 respect to the numerical rank. Singular values at or below
 $\epsilon_{\mathrm{mach}}\max(m,n)\sigma_{\max}$ are treated as zero for that
-Gauss–Newton solve. This numerical-rank decision is an approximation for tiny
+Gauss-Newton solve. This numerical-rank decision is an approximation for tiny
 but mathematically nonzero singular values.
 
 Both methods use $z_{\mathrm{GN}}$ as the numerical candidate when it fits
 inside the numerical radius. The separate physical cap may still shorten it.
 Their main difference appears when the numerical candidate needs restriction.
 
-## 3. Levenberg–Marquardt: solve the constrained quadratic model
+## 3. Levenberg-Marquardt: solve the constrained quadratic model
 
 The trust-region formulation of LM solves
 
@@ -206,7 +206,7 @@ $$
 \lambda\bigl(\|z\|_2^2-\Delta^2\bigr)=0.
 $$
 
-If a minimum-norm Gauss–Newton step fits, $\lambda=0$ is sufficient.
+If a minimum-norm Gauss-Newton step fits, $\lambda=0$ is sufficient.
 Otherwise choose $\lambda>0$ so that $\|z(\lambda)\|_2=\Delta$.
 For positive $\lambda$, the shifted matrix is positive definite even when
 $A$ has deficient rank.
@@ -294,7 +294,7 @@ It returns the feasible candidate, which can be shorter if the search stops
 early. A final rounding correction enforces the cap. These are finite-precision
 approximations to the ideal optimality conditions above.
 
-The SVD is lazy: a well-conditioned Gauss–Newton step that fits the radius
+The SVD is lazy: a well-conditioned Gauss-Newton step that fits the radius
 needs only QR. Damped retries at the same model reuse the SVD. This is not
 MINPACK's numerical implementation: its [LMPAR](https://netlib.org/minpack/lmpar.f)
 works from pivoted QR factors and permits approximately 10% tolerance in its
@@ -304,7 +304,7 @@ for the distinction.
 ## 4. Powell's hybrid method: the dogleg step
 
 The hybrid method combines a Newton-like step with a descent direction.
-For a square nonsingular fresh Jacobian, its Gauss–Newton point is the Newton
+For a square nonsingular fresh Jacobian, its Gauss-Newton point is the Newton
 point. When the Jacobian model has been updated approximately, it is a
 quasi-Newton point.
 
@@ -335,8 +335,8 @@ The code also handles numerical degeneracies. The step has three cases:
 | Condition | Dogleg step |
 | --- | --- |
 | $\lVert z_{\mathrm{GN}}\rVert_2\leq\Delta$ | $z=z_{\mathrm{GN}}$ |
-| Gauss–Newton is outside and $\lVert z_{\mathrm C}\rVert_2\geq\Delta$ | $z=-\Delta g/\lVert g\rVert_2$ |
-| Cauchy is inside and Gauss–Newton is outside | $z=z_{\mathrm C}+\tau(z_{\mathrm{GN}}-z_{\mathrm C})$, with $0<\tau<1$ chosen on the boundary |
+| Gauss-Newton is outside and $\lVert z_{\mathrm C}\rVert_2\geq\Delta$ | $z=-\Delta g/\lVert g\rVert_2$ |
+| Cauchy is inside and Gauss-Newton is outside | $z=z_{\mathrm C}+\tau(z_{\mathrm{GN}}-z_{\mathrm C})$, with $0<\tau<1$ chosen on the boundary |
 
 For the last case, let $v=z_{\mathrm{GN}}-z_{\mathrm C}$. Expanding the
 boundary condition gives
@@ -346,7 +346,7 @@ $$
 \|z_{\mathrm C}\|_2^2-\Delta^2=0.
 $$
 
-The positive root selects the intersection on the Cauchy-to-Gauss–Newton
+The positive root selects the intersection on the Cauchy-to-Gauss-Newton
 segment. PySolverView computes an equivalent normalized expression. Define
 
 $$
@@ -372,7 +372,7 @@ The first branch avoids subtracting nearly equal numbers. The implementation
 also scales the vectors before forming their difference. The boundary step
 is obtained directly from this geometric calculation.
 MINPACK's [DOGLEG routine](https://netlib.org/minpack/dogleg.f) implements the
-same broad gradient/Gauss–Newton construction, with its own arithmetic and
+same broad gradient/Gauss-Newton construction, with its own arithmetic and
 scaling details.
 
 ### A two-variable picture
@@ -390,7 +390,7 @@ same radius, while their directions differ.
 
 | Step | $z_1$ | $z_2$ | $\lVert z\rVert_2$ | $\lVert r+Az\rVert_2$ |
 | --- | ---: | ---: | ---: | ---: |
-| Gauss–Newton | -3.000000 | -1.000000 | 3.162278 | 0 |
+| Gauss-Newton | -3.000000 | -1.000000 | 3.162278 | 0 |
 | Cauchy | -0.365854 | -1.097561 | 1.156931 | 2.650357 |
 | Dogleg | -1.048930 | -1.072262 | 1.500000 | 1.963077 |
 | LM | -1.227737 | -0.861778 | 1.500000 | 1.820127 |
@@ -600,7 +600,7 @@ refresh nor a monotone residual history guarantees eventual convergence.
 | --- | --- |
 | Physical Jacobian coordinates $A_0=JS$ | `_solve_trust_region`: `jacobian * scale` |
 | Numerical factors $C$ and Jacobian $A=A_0C$ | `JacobianScaling.update` and `_solve_trust_region` |
-| QR or numerical-rank Gauss–Newton solve | `LinearModel.gauss_newton` |
+| QR or numerical-rank Gauss-Newton solve | `LinearModel.gauss_newton` |
 | Damped LM radius equation | `LinearModel._lm` |
 | Cauchy point and sphere intersection | `LinearModel._dogleg` |
 | Broyden correction and residual anchoring | `_update_powell_jacobian` after a valid trial |

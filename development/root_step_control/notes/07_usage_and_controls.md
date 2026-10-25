@@ -1,10 +1,10 @@
 # Solver usage, step controls, and histories
 
 Explicit first-step and persistent maximum-step controls are feasible for both
-Levenberg–Marquardt (LM) and Powell's hybrid root-finding method (`hybr`). This
+Levenberg-Marquardt (LM) and Powell's hybrid root-finding method (`hybr`). This
 experiment implements independent dense trust-region variants and compares them
 with `scipy.optimize.root(method="lm")` and `root(method="hybr")`.
-The solvers use QR-based Gauss–Newton solves and hybrid rank-one QR updates,
+The solvers use QR-based Gauss-Newton solves and hybrid rank-one QR updates,
 with explicit trial-distance controls and SVD for damped or deficient-rank steps.
 The [folder guide](../README.md) locates the shared source, runners, tests,
 results, and notes. Timing comparisons use the custom solvers and native
@@ -40,8 +40,8 @@ The aliases `lm`, `hybr`, `newton`, and `gn` resolve to `levenberg_marquardt`,
 The result's `method` contains the canonical author name; `requested_method`
 retains the supplied spelling. The low-level `solve_root` default is `levenberg_marquardt`; the public
 `NonlinearSystemSolver` retains native SciPy `hybr` as its default.
-Legends use Levenberg–Marquardt, Powell hybrid, Newton–Raphson, and
-Gauss–Newton. Aliases do not create extra algorithms or change the backend.
+Legends use Levenberg-Marquardt, Powell hybrid, Newton-Raphson, and
+Gauss-Newton. Aliases do not create extra algorithms or change the backend.
 
 The trust-region descriptions and radius fields below refer to LM/Powell
 hybrid. Newton-family histories instead record the line-search fraction and
@@ -204,16 +204,16 @@ With the numerical Jacobian $A=J\,\mathrm{diag}(s)C$, both trust-region methods
 model $\frac12\|F+Av\|_2^2$ inside $\|v\|_2\leq\Delta$, followed by the
 physical-distance safeguard described above. With scaling disabled, $C=I$.
 
-- **LM** obtains the unconstrained Gauss–Newton step from pivoted QR and a
+- **LM** obtains the unconstrained Gauss-Newton step from pivoted QR and a
   triangular solve when the factor passes its conditioning checks. Only when
   damping or a rank/conditioning fallback is needed does it compute an SVD.
   Damping brackets $(A^TA+\lambda I)v=-A^TF$ using spectral coefficients; their
   norm is evaluated without repeated multiplication by the right singular
   vectors. The numerical candidate lies on the feasible side of the radius equation.
   The implementation never explicitly forms the normal equations.
-- **Hybrid** follows the dogleg Cauchy-to-Gauss–Newton path to the radius boundary.
+- **Hybrid** follows the dogleg Cauchy-to-Gauss-Newton path to the radius boundary.
   A stable quadratic intersection computes the boundary step directly.
-  Its fast Gauss–Newton path uses QR; a minimum-norm SVD step handles deficient
+  Its fast Gauss-Newton path uses QR; a minimum-norm SVD step handles deficient
   rank. Scaled Broyden rank-one updates incorporate valid trials,
   including rejected ones. Two consecutive agreement ratios below 0.1 trigger
   a fresh Jacobian. Approximate models are also refreshed before declaring

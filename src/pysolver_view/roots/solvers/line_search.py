@@ -1,4 +1,4 @@
-"""Newton–Raphson and Gauss–Newton with full steps or protected backtracking.
+"""Newton-Raphson and Gauss-Newton with full steps or protected backtracking.
 
 Both methods rebuild their Jacobian after each committed point and reuse the
 same factors for rejected line-search trials. They never silently switch to LM

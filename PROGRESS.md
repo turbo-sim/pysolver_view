@@ -142,7 +142,7 @@ excluded. The initial regression baseline failed before implementation
 Non-SciPy wrappers were adapted statically and remain untested by agreement.
 This Phase 1 validation preceded the shared KKT replacement, now completed in Phase 2.
 
-**Demo follow-up:** Fixed gradient-first function histories and Nelder–Mead's
+**Demo follow-up:** Fixed gradient-first function histories and Nelder-Mead's
 iteration budget; corrected demo axis labels and unused configuration. BFGS's
 Wolfe demo explicitly uses an unbounded problem. All 14 in-scope scripts and
 41 solves completed successfully in headless runs, with no runtime warnings.
@@ -256,14 +256,14 @@ separately, including timing noise. All eight demo solves and an isolated
 package-copy smoke check pass without development imports. This is not a wheel
 installation check: poetry-core remains unavailable; Phase 7 release checks remain.
 
-## 5. Newton–Raphson and Gauss–Newton
+## 5. Newton-Raphson and Gauss-Newton
 
 - [x] Add the two canonical methods and `newton` / `gn` aliases.
 - [x] Implement shared options with default backtracking and explicit
   `backtracking=None` for undamped execution.
 - [x] Distinguish disabled backtracking from disabled step limits and zero retries.
 - [x] Implement strict square-system Newton direction/rank handling.
-- [x] Reuse QR/SVD least-squares directions for Gauss–Newton.
+- [x] Reuse QR/SVD least-squares directions for Gauss-Newton.
 - [x] Implement full-step commitment, including valid residual increases.
 - [x] Implement shared Armijo backtracking, scaled limits, and gradual recovery.
 - [x] Test singular, overdetermined, inconsistent, domain-failure, callback,
@@ -351,7 +351,7 @@ scope and follow-up rather than checking the corresponding milestone complete.
 Phase 5 started on 2026-10-25 at the user's request for parallel work. Its scope
 is development code, tests, notes, and regenerated studies; production promotion
 remains a separate phase. Fresh comparisons separate native SciPy versus custom
-Levenberg–Marquardt/Powell hybrid from the four-method custom comparison.
+Levenberg-Marquardt/Powell hybrid from the four-method custom comparison.
 
 Phase 5 validation completed on 2026-10-25: 91 tests passed; all 239 named
 functions and 30 classes in the experiment have docstrings; all 21 Python files
@@ -400,7 +400,7 @@ the evaluated coordinates. Source changes for this phase are development-only.
 
 | 2026-10-25 Jacobian scaling | Implemented default-enabled `jacobian_scaling` for all four custom root methods, separate from physical `x_scale`. Fresh-Jacobian running column norms shape LM/hybrid steps; physical caps and numerical probes remain unchanged. All six 500-node heat runs converge; controlled LM reaches 4.5e-11 in 12 accepted iterations / 13 calls. Controlled hybrid converges in 26 / 30, versus 20 / 22 unscaled. Updated source/usage/math notes and regenerated demo figures/data. 455 tests pass (10 Hessian cases excluded); 212 convergence configurations retain 100/100 backend roots, 98/101 eligible custom roots, and 51/51 controlled successes. Historical investigation runners explicitly disable scaling to preserve their evidence. |
 
-## Source-layout and domain refactor — 25 October 2026
+## Source-layout and domain refactor - 25 October 2026
 
 Implemented the structural stages in [refactor.md](refactor.md). The repository,
 distribution, import name and public version remain `pysolver_view` / `0.6.9`.

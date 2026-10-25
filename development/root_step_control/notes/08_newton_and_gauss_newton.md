@@ -1,4 +1,4 @@
-# Newton–Raphson and Gauss–Newton with optional backtracking
+# Newton-Raphson and Gauss-Newton with optional backtracking
 
 These development solvers separate the choice of direction from the decision
 to accept a trial. Both use backtracking by default. Setting
@@ -9,18 +9,18 @@ They use public numerical kernels, not MINPACK or an optimization solver.
 
 | Canonical method | Alias | Display name |
 | --- | --- | --- |
-| `newton_raphson` | `newton` | Newton–Raphson |
-| `gauss_newton` | `gn` | Gauss–Newton |
-| `levenberg_marquardt` | `lm` | Levenberg–Marquardt |
+| `newton_raphson` | `newton` | Newton-Raphson |
+| `gauss_newton` | `gn` | Gauss-Newton |
+| `levenberg_marquardt` | `lm` | Levenberg-Marquardt |
 | `powell_hybrid` | `hybr` | Powell hybrid |
 
 Aliases select the same implementation and defaults. They do not select a
 different backend. Native SciPy/MINPACK is called separately by the comparison
 scripts. There is no separate damped-Newton method name: damping is a policy
-of the Newton–Raphson method.
+of the Newton-Raphson method.
 
-Newton–Raphson requires a square, numerically nonsingular Jacobian.
-Gauss–Newton also handles overdetermined and numerically rank-deficient models.
+Newton-Raphson requires a square, numerically nonsingular Jacobian.
+Gauss-Newton also handles overdetermined and numerically rank-deficient models.
 Both still solve a root-finding problem: a stationary point with residual norm
 above the target is a failure, even if it is a least-squares minimum.
 
@@ -36,13 +36,13 @@ $$
 The application normalizes its residual equations separately. Scaling a
 temperature variable does not normalize an energy residual.
 
-Newton–Raphson solves
+Newton-Raphson solves
 
 $$
 Az=-r.
 $$
 
-Gauss–Newton solves the local least-squares problem
+Gauss-Newton solves the local least-squares problem
 
 $$
 \min_z\frac12\|r+Az\|_2^2.
@@ -56,7 +56,7 @@ method.
 
 The implementation uses guarded pivoted QR and a triangular solve when
 appropriate. An SVD provides numerical-rank checks and a minimum-norm
-Gauss–Newton direction otherwise. Strict Newton does not silently substitute a
+Gauss-Newton direction otherwise. Strict Newton does not silently substitute a
 truncated pseudoinverse for a singular linear solve. Neither path explicitly
 forms or inverts $A^TA$.
 
@@ -91,10 +91,10 @@ Use `NewtonOptions(jacobian_scaling=False)` or the public
 to custom LM/hybrid through `StepControlOptions`, but does not affect SciPy.
 No extra residual or Jacobian calls are made to compute the factors.
 
-Gauss–Newton's `gtol` guard checks whether the modeled residual change is
+Gauss-Newton's `gtol` guard checks whether the modeled residual change is
 negligible: $\|Az\|_2\leq\mathrm{gtol}\min(1,\|r\|_2)$ above the root target.
 This avoids declaring stationarity solely because Jacobian units make $A^Tr$
-small. Newton–Raphson has no gradient-based early exit before its linear solve.
+small. Newton-Raphson has no gradient-based early exit before its linear solve.
 
 ## Backtracking acceptance
 
@@ -105,7 +105,7 @@ $$
 $$
 
 An exact Newton direction satisfies $d=-\|r\|_2^2<0$ away from a root.
-An exact Gauss–Newton direction is descending when it has a nonzero modeled
+An exact Gauss-Newton direction is descending when it has a nonzero modeled
 residual reduction. Numerical descent must still be checked.
 
 If a scaled step limit $\Delta$ is enabled, the first fraction is
@@ -154,7 +154,7 @@ one trial which must pass acceptance; it is not an undamped solver.
 
 `backtracking=None` disables both the search and its envelope. The fraction
 is one and every valid finite trial is committed, including one that increases
-the residual norm. For example, Newton–Raphson on the Rosenbrock equations can
+the residual norm. For example, Newton-Raphson on the Rosenbrock equations can
 first move from $(-1.2,1)$ to approximately $(1,-3.84)$, increasing the residual,
 before reaching the root.
 
@@ -207,7 +207,7 @@ continues to mean the step size measured with the fixed physical `x_scale`.
 The [custom convergence report](../results_custom_convergence/REPORT.md)
 compares all four methods, including separate full-step Newton-family cases.
 The [native comparison](../results_convergence/REPORT.md) compares the custom
-Levenberg–Marquardt/Powell hybrid implementations with SciPy/MINPACK.
+Levenberg-Marquardt/Powell hybrid implementations with SciPy/MINPACK.
 The [timing report](../results_time_perf/RESULTS.md) separates residual,
 Jacobian, selected numerical kernels, other solver overhead, and total time.
 

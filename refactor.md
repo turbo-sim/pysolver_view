@@ -113,8 +113,8 @@ to be extracted, not merely renamed.
 | [`solvers/exceptions.py`](pysolver_view/solvers/exceptions.py) | 23 | Move the shared public `DomainError` to package-level `exceptions.py`; preserve one class identity and old imports. |
 | [`solvers/root/solver.py`](pysolver_view/solvers/root/solver.py) | 83 | Move the numerical modules to `roots/solvers/` and keep the four-function dispatcher. Move aliases/display metadata into lightweight `roots/methods.py`. |
 | [`solvers/root/options.py`](pysolver_view/solvers/root/options.py) | 251 | Keep the related option dataclasses together. Extract small repeated validation helpers if useful, without an inheritance hierarchy. |
-| [`solvers/root/trust_region.py`](pysolver_view/solvers/root/trust_region.py) | 364 | Keep Levenberg–Marquardt and Powell hybrid functions with their shared trust-region engine. |
-| [`solvers/root/line_search.py`](pysolver_view/solvers/root/line_search.py) | 349 | Keep Newton–Raphson and Gauss–Newton functions with their shared full-step/backtracking engine. |
+| [`solvers/root/trust_region.py`](pysolver_view/solvers/root/trust_region.py) | 364 | Keep Levenberg-Marquardt and Powell hybrid functions with their shared trust-region engine. |
+| [`solvers/root/line_search.py`](pysolver_view/solvers/root/line_search.py) | 349 | Keep Newton-Raphson and Gauss-Newton functions with their shared full-step/backtracking engine. |
 | [`solvers/root/linear_model.py`](pysolver_view/solvers/root/linear_model.py) | 346 | Keep QR/SVD state, rank/condition decisions, factor updates, and step construction together. |
 | [`solvers/root/evaluation.py`](pysolver_view/solvers/root/evaluation.py) | 182 | Keep ownership of custom residual/Jacobian calls, domain validation, and budgets. Share derivative primitives only where policies remain explicit. |
 | [`solvers/root/history.py`](pysolver_view/solvers/root/history.py) | 63 | Keep numerical trial/accepted records separate from public plotting histories. Later pass counters explicitly instead of reading the evaluator through a back-reference. |
@@ -144,7 +144,7 @@ KKT compatibility fields, and final results. Relevant boundaries are visible at
 `optimization.py:333` (solve), `:449` (evaluation), `:691` (recording),
 `:982` (presentation/export), `:1214` (named diagnostics), and `:1906`
 (problem interface). Large commented report implementations also obscure the
-active code around lines 1602–1784.
+active code around lines 1602-1784.
 
 The root frontend has the same smaller-scale mixture. For example,
 `nonlinear_system.py:434` names a method `_print_convergence_progress`, but it
@@ -281,7 +281,7 @@ compatibility surface until an explicit alternative/deprecation is supplied.
 
 ### Optional dependencies and private APIs need clear ownership
 
-- `optimization_wrappers.py:11–18` imports PyGMO and its nonfree plugin in the
+- `optimization_wrappers.py:11-18` imports PyGMO and its nonfree plugin in the
   same `try` block. Missing the plugin marks ordinary PyGMO unavailable. Load
   dependencies independently in the adapters that need them.
 - The custom SLSQP bridge already isolates its private SciPy dependency and
@@ -300,7 +300,7 @@ compatibility surface until an explicit alternative/deprecation is supplied.
 ### Run state belongs to a solve, not the reusable model
 
 The optimization constructor writes `problem_scale` and generated variable
-names onto the problem (`optimization.py:206–215`). Two solver objects sharing
+names onto the problem (`optimization.py:206-215`). Two solver objects sharing
 one model can interfere through that mutable configuration. Introduce explicit
 per-run evaluation/scaling state as a later extraction, retaining legacy access
 where necessary. Do not deep-copy a stateful thermodynamic model by default.
@@ -693,9 +693,9 @@ changes after the import/layout boundaries are stable:
 
 | Issue | Evidence and recommended treatment |
 | --- | --- |
-| Shared mutable problem scaling | `optimization.py:206–215` changes caller-owned state. Move run configuration out of the model with explicit compatibility handling; separately address fixed/unbounded scaling. |
-| Coupled optional backend availability | `optimization_wrappers.py:11–18` couples PyGMO to its nonfree plugin. Independent availability checks can be validated without executing those backends. |
-| NLOpt option-name mismatch | The frontend supplies `tolerance`/`max_iterations`; `minimize_nlopt` consumes `tol`/`max_iter` at `optimization_wrappers.py:600–601`. Normalize the adapter contract. This was found statically, not by a new NLOpt run. |
+| Shared mutable problem scaling | `optimization.py:206-215` changes caller-owned state. Move run configuration out of the model with explicit compatibility handling; separately address fixed/unbounded scaling. |
+| Coupled optional backend availability | `optimization_wrappers.py:11-18` couples PyGMO to its nonfree plugin. Independent availability checks can be validated without executing those backends. |
+| NLOpt option-name mismatch | The frontend supplies `tolerance`/`max_iterations`; `minimize_nlopt` consumes `tol`/`max_iter` at `optimization_wrappers.py:600-601`. Normalize the adapter contract. This was found statically, not by a new NLOpt run. |
 | Hidden numerical work in bundled root example | `LorentzEquations.gradient()` internally performs complex-step residual evaluations. The solver sees a Jacobian call, not those probes. Supply the small analytic Jacobian or delegate numerical derivatives to the solver. |
 | Derivative shape/step conventions differ | Legacy helpers use squeezed output shapes and nominal differences; the custom root evaluator checks represented probe distances and budgets. Harmonize primitives only with explicit shape, rounding, bounds and accounting tests. |
 | Import-time host configuration | Remove automatic exception-hook/JAX/logger changes in a documented change; offer explicit configuration where needed. |

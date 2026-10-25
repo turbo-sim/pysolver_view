@@ -9,7 +9,7 @@ and root finding, including native SciPy methods and custom solvers with step co
 - Print and visualize convergence history
 - Streamlined problem definition (object-oriented)
 - Improved function and gradient evaluation to avoid unnecesary model evaluations
-- Controlled Levenberg–Marquardt, Powell hybrid, Newton–Raphson, and Gauss–Newton
+- Controlled Levenberg-Marquardt, Powell hybrid, Newton-Raphson, and Gauss-Newton
   through `NonlinearSystemSolver(library="pysolver")`; native SciPy remains the default
 
 The [root solver guide](development/root_step_control/notes/10_public_interface.md)

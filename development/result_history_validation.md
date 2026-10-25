@@ -66,13 +66,13 @@ No PyGMO, IPOPT, SNOPT, or Hessian execution was required.
 ### Demo follow-up
 
 Two additional regressions failed before the fixes: trust-constr's gradient-first
-requests hid its function history, and Nelder–Mead ignored `max_iterations`.
+requests hid its function history, and Nelder-Mead ignored `max_iterations`.
 An unperturbed model evaluation needed by a solver Jacobian now counts as an
 ordinary function evaluation and can publish a function observation. Perturbed
 finite-difference/complex-step samples remain derivative calls and never become
 progress observations. Diagnostic-only requests remain nonpublishing.
 
-Nelder–Mead now receives `maxiter`; its demonstration uses a budget of 500 and
+Nelder-Mead now receives `maxiter`; its demonstration uses a budget of 500 and
 converges in 247 iterations. Derivative-free methods do not receive an unused
 Jacobian. Fully infinite bounds are omitted from SciPy arguments, and the BFGS
 Wolfe demo explicitly declares unbounded variables. Finite bounds are not
@@ -80,7 +80,7 @@ silently removed. Scaling, comparison, and tolerance axes now label the actual
 evaluation counts rather than calling them iterations.
 
 The headless demo rerun completed 14 scripts and 41 successful solves without
-runtime warnings. Trust-region sensitivity histories contain 34–40 observations
+runtime warnings. Trust-region sensitivity histories contain 34-40 observations
 instead of two. IPOPT/SNOPT demos were skipped; the mixed comparison ran only
 its SciPy entries, filtered in memory. The standalone numerical Hessian demo
 also executed successfully as part of this requested demo check; this does not

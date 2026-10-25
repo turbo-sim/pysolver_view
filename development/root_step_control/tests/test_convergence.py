@@ -63,7 +63,7 @@ class ConvergencePolicyTests(unittest.TestCase):
         row = summarize_case(problem, run)
         self.assertFalse(row["supported"])
         self.assertEqual(row["nfev"], 0)
-        self.assertIn("Newton–Raphson", display_label(run))
+        self.assertIn("Newton-Raphson", display_label(run))
         self.assertIn("unsupported", display_label(run))
 
 

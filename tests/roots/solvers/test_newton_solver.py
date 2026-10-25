@@ -54,7 +54,7 @@ class NewtonSolverTests(unittest.TestCase):
         self.assertTrue(result.success)
         self.assertEqual(result.method, "levenberg_marquardt")
         self.assertEqual(result.requested_method, "levenberg_marquardt")
-        self.assertEqual(result.method_name, "Levenberg–Marquardt")
+        self.assertEqual(result.method_name, "Levenberg-Marquardt")
         self.assertEqual(normalize_method(" LM "), "levenberg_marquardt")
         self.assertEqual(normalize_method(" Powell_Hybrid "), "powell_hybrid")
 
@@ -220,7 +220,7 @@ class NewtonSolverTests(unittest.TestCase):
             np.testing.assert_array_equal(full.x, [10, 8])
 
     def test_rank_contract_and_overdetermined_root(self):
-        """Strict Newton rejects rank loss while Gauss–Newton uses minimum-norm solutions."""
+        """Strict Newton rejects rank loss while Gauss-Newton uses minimum-norm solutions."""
         singular = np.array([[1.0, 1.0], [2.0, 2.0]])
         result = solve_root(
             lambda x: singular @ x - [2, 4],

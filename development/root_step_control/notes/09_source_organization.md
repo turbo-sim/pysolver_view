@@ -46,7 +46,7 @@ The functions are also exported directly by `pysolver_view`:
 
 The engines receive the direction/step functions and the corresponding update,
 shape and stationarity choices once. Their loops do not inspect method-name
-strings to select algorithms. Powell's secant update and Gauss–Newton's
+strings to select algorithms. Powell's secant update and Gauss-Newton's
 stationarity rule are named helpers. The linear model exposes distinct LM and
 dogleg step functions; its `step(method, radius)` selector remains available for
 existing model-level experiments and tests.
@@ -60,8 +60,8 @@ alias and human-readable method name.
 
 | Module under `pysolver_view/solvers/root/` | Responsibility |
 | --- | --- |
-| `trust_region.py` | Levenberg–Marquardt and Powell hybrid entry points, Powell update helper, and shared trust-region acceptance/recovery. |
-| `line_search.py` | Newton–Raphson and Gauss–Newton entry points, direction/stationarity helpers, and shared full-step or Armijo recovery. |
+| `trust_region.py` | Levenberg-Marquardt and Powell hybrid entry points, Powell update helper, and shared trust-region acceptance/recovery. |
+| `line_search.py` | Newton-Raphson and Gauss-Newton entry points, direction/stationarity helpers, and shared full-step or Armijo recovery. |
 | `linear_model.py` | Local residual model, cached QR/SVD, Broyden factor updates, strict Newton/least-squares directions, LM and dogleg subproblems. |
 | `evaluation.py` | Initial-vector preparation, residual shape/finiteness checks, analytic or numerical Jacobians, call budgets and probe accounting. |
 | `history.py` | Accepted/evaluated/trial records, detached callback records and final results from the last accepted point. |
@@ -120,7 +120,7 @@ for the default and its effect on the four methods.
   Residual/Jacobian calls, kernel counts, accepted/trial counts, backtracks,
   invalid evaluations and final residuals match across the timing comparison.
 - The median across the 46 custom configurations of the after/before clean
-  median-time ratio is 0.978, with range 0.905–1.047. The corresponding median
+  median-time ratio is 0.978, with range 0.905-1.047. The corresponding median
   for the 10 unchanged native SciPy configurations is 0.993.
 
 These are sequential measurements on one machine. Their variation does not
@@ -130,10 +130,10 @@ For the protected 100-variable duct, clean milliseconds per complete solve:
 
 | Method | Before refactor | After refactor |
 | --- | ---: | ---: |
-| Levenberg–Marquardt | 60.188 | 57.499 |
+| Levenberg-Marquardt | 60.188 | 57.499 |
 | Powell hybrid | 14.337 | 13.855 |
-| Newton–Raphson | 30.804 | 30.340 |
-| Gauss–Newton | 30.679 | 30.956 |
+| Newton-Raphson | 30.804 | 30.340 |
+| Gauss-Newton | 30.679 | 30.956 |
 
 The local validation artifacts are under
 `results_refactor_validation/before/` and `results_refactor_validation/after/`,
@@ -154,7 +154,7 @@ python development/root_step_control/run_timing_benchmark.py --repetitions 11 --
 The subsequent extraction of four named entry points passes 94 development
 tests. Two added tests compare every direct function with its `solve_root`
 selection, including complete results and histories, and exercise the distinct
-Newton/Gauss–Newton shape and rank contracts.
+Newton/Gauss-Newton shape and rank contracts.
 
 All 100 native/custom and 112 custom-only convergence summaries and saved traces
 match the preceding implementation exactly. A separate timing check repeats
@@ -164,7 +164,7 @@ solves in each run reach the target; residual/Jacobian/kernel counts, iterations
 invalid evaluations, backtracks and final residuals remain identical.
 
 The median after/before clean-time ratio across the 46 custom configurations is
-0.919 (range 0.813–0.993), while the 10 unchanged SciPy configurations have median
+0.919 (range 0.813-0.993), while the 10 unchanged SciPy configurations have median
 ratio 0.926. Both groups becoming faster indicates environmental variability;
 these short sequential measurements do not establish a speedup from dispatch.
 They show no observed timing regression on this workload set.

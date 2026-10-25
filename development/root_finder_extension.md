@@ -1,4 +1,4 @@
-# Implementation plan: Newton and Gauss–Newton root solvers
+# Implementation plan: Newton and Gauss-Newton root solvers
 
 **Status: implemented and integrated on 25 October 2026.** The methods and options
 are packaged in [`pysolver_view/solvers/root/`](../pysolver_view/solvers/root/)
@@ -25,7 +25,7 @@ remain correctness requirements within the new implementation.
 The intended methods are `newton_raphson` and `gauss_newton`. Both enable
 backtracking by default; setting `backtracking=None` selects the corresponding
 undamped, full-step method. Damped Newton is a step-policy configuration of
-Newton–Raphson, not a third solver. This separates the linear direction from
+Newton-Raphson, not a third solver. This separates the linear direction from
 step acceptance and avoids duplicating solver implementations.
 
 They will share scaling, evaluation tracking, histories and root-success
@@ -90,16 +90,16 @@ $F$ and its consistent Jacobian.
 | Canonical method | Dimensions | Direction | Step acceptance |
 | --- | --- | --- | --- |
 | `newton_raphson` | Square systems, $m=n$, with a numerically nonsingular Jacobian | Solve $Az=-r$ | Backtracking with scaled limits by default; `backtracking=None` takes full valid steps, including residual increases. |
-| `gauss_newton` | Square or overdetermined systems, $m\geq n$ | Minimize $\lVert r+Az\rVert_2$ | The same configurable backtracking policy; `backtracking=None` selects full-step Gauss–Newton. |
+| `gauss_newton` | Square or overdetermined systems, $m\geq n$ | Minimize $\lVert r+Az\rVert_2$ | The same configurable backtracking policy; `backtracking=None` selects full-step Gauss-Newton. |
 
-For a square nonsingular Jacobian, Newton and Gauss–Newton give the same
+For a square nonsingular Jacobian, Newton and Gauss-Newton give the same
 direction in exact arithmetic. Their implementations should therefore share
-the corresponding factorization and solve logic. Gauss–Newton has additional
+the corresponding factorization and solve logic. Gauss-Newton has additional
 meaning for overdetermined or numerically rank-deficient models.
 
-Full-step Newton–Raphson is a useful reference and local solver when a good
-initial guess is available. Newton–Raphson with backtracking is the priority
-for fragile thermodynamic models. Gauss–Newton adds the unregularized
+Full-step Newton-Raphson is a useful reference and local solver when a good
+initial guess is available. Newton-Raphson with backtracking is the priority
+for fragile thermodynamic models. Gauss-Newton adds the unregularized
 least-squares direction, with or without line-search damping. Backtracking
 scales a computed direction; it does not introduce LM regularization into
 the linear model.
@@ -134,14 +134,14 @@ Use the following explicit root-method registry:
 
 | Canonical identifier | Additional accepted alias | Display name |
 | --- | --- | --- |
-| `newton_raphson` | `newton` | Newton–Raphson |
-| `gauss_newton` | `gn` | Gauss–Newton |
-| `levenberg_marquardt` | `lm` | Levenberg–Marquardt |
+| `newton_raphson` | `newton` | Newton-Raphson |
+| `gauss_newton` | `gn` | Gauss-Newton |
+| `levenberg_marquardt` | `lm` | Levenberg-Marquardt |
 | `powell_hybrid` | `hybr` | Powell hybrid |
 
-The correct spellings are **Levenberg–Marquardt** and **Powell hybrid**.
+The correct spellings are **Levenberg-Marquardt** and **Powell hybrid**.
 SciPy identifies `hybr` as a modification of the Powell hybrid method and
-`lm` as Levenberg–Marquardt; MINPACK's HYBRD documentation uses the same
+`lm` as Levenberg-Marquardt; MINPACK's HYBRD documentation uses the same
 Powell attribution.
 [SciPy root documentation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html),
 [MINPACK HYBRD documentation](https://www.math.utah.edu/software/minpack/minpack/hybrd.html)
@@ -280,10 +280,10 @@ For Newton:
 4. When QR conditioning requires investigation, use a rank-revealing SVD and
    verify numerical full rank before computing the Newton direction.
 5. Return a diagnostic on numerical singularity or an unusable linear solve.
-   A truncated pseudoinverse direction belongs to Gauss–Newton, not strict
+   A truncated pseudoinverse direction belongs to Gauss-Newton, not strict
    Newton.
 
-For Gauss–Newton:
+For Gauss-Newton:
 
 1. Accept $m\geq n$.
 2. Recompute derivatives after each committed iterate.
@@ -301,7 +301,7 @@ Likewise, avoid making an unnecessary overflowing gradient product prevent
 an otherwise usable Newton solve. For line-search directional derivatives,
 $r^T(Az)$ avoids explicitly constructing $A^Tr$.
 
-For Gauss–Newton, a fresh-model stationary point above the residual target
+For Gauss-Newton, a fresh-model stationary point above the residual target
 remains a failure diagnostic. Numerical rank and linear-solve residuals
 should be available in result diagnostics.
 
@@ -325,10 +325,10 @@ diagnostics. A sufficiently small step above the residual target is failure,
 not success. Numerical singularity is also a diagnostic, not an instruction
 to change algorithms without the caller's request.
 
-Full-step Gauss–Newton follows the same commit policy, using its least-squares
+Full-step Gauss-Newton follows the same commit policy, using its least-squares
 direction and rank handling.
 
-## 6. Backtracking for Newton–Raphson and Gauss–Newton
+## 6. Backtracking for Newton-Raphson and Gauss-Newton
 
 Use the merit function
 
@@ -453,7 +453,7 @@ remain visible in the results.
 | 1. Contracts | Finalize the two new methods, alias registry, option validation, default policies and result meanings. | Tests specify aliases, omitted versus explicit `None`, full-step acceptance, protected acceptance and incompatible dimensions. |
 | 2. Shared mechanics | Share evaluation/accounting through `pysolver_view/solvers/root/evaluation.py` and records/results through `pysolver_view/solvers/root/history.py`; keep exceptions in `pysolver_view/solvers/root/exceptions.py`. Preserve re-exports of `DomainError`. | Existing correctness coverage remains passing, with obsolete trajectory expectations updated; LM/hybrid convergence and control contracts are verified. |
 | 3. Directions | Extend `pysolver_view/solvers/root/linear_model.py` with strict Newton/rank diagnostics and shared factorization reuse. Make unnecessary gradient work optional where required. | Independent linear-solve and least-squares references agree. |
-| 4. Full-step modes | Add the Newton-family loop in `pysolver_view/solvers/root/line_search.py` and dispatch from `src/solver.py`. | Pure Newton and full Gauss–Newton follow their stated commit policies. |
+| 4. Full-step modes | Add the Newton-family loop in `pysolver_view/solvers/root/line_search.py` and dispatch from `src/solver.py`. | Pure Newton and full Gauss-Newton follow their stated commit policies. |
 | 5. Protected modes | Keep bounded Armijo acceptance in `pysolver_view/solvers/root/line_search.py` and trial construction in `pysolver_view/solvers/root/trial_step.py` and select it for either method when `backtracking` is enabled. | Every evaluated trial respects the active limit; domain recovery and budgets are correct. |
 | 6. Experiments | Extend the existing `run_*.py` scripts and policy-aware audits. | Scripts run independently and save complete cases to new `results_<case>/` folders. |
 | 7. Documentation | Update exports, usage guide, mathematics note and comparisons. Every new function/class needs an explanatory docstring. | Imports, commands, links and method descriptions match actual behavior. |
@@ -489,10 +489,10 @@ Add tests under `root_step_control/tests/` for:
   Newton-family options supplied to LM/hybrid.
 - Square linear systems: one-step full Newton, analytic solution, correct
   counters and step fraction 1.
-- Newton/Gauss–Newton equivalence on well-conditioned nonsingular square models,
+- Newton/Gauss-Newton equivalence on well-conditioned nonsingular square models,
   using independent solves as references.
 - Rank deficiency: strict Newton reports numerical singularity; consistent
-  Gauss–Newton problems reach an appropriate minimum-norm root.
+  Gauss-Newton problems reach an appropriate minimum-norm root.
 - Consistent overdetermined systems and inconsistent overdetermined systems.
   For example, $F(x)=(x_1-1,x_2-2,1)^T$ has minimum residual norm 1 and must
   never be reported as a root.

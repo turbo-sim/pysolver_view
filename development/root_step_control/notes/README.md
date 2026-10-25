@@ -27,7 +27,7 @@ restore larger steps only when the local model earns that increase.
 | Is this ready for a SciPy PR? | It supports a feature discussion and a reproducible motivation. The current experimental solvers are not yet a ready replacement or extension of native MINPACK. | [Library and SciPy roadmap](03_pysolver_view_and_scipy.md) |
 | Can IPOPT and SNOPT use similar protection? | Yes in principle, but start with their native controls and failure-reporting interfaces. Their step and acceptance rules differ from the root solvers. | [IPOPT and SNOPT](04_ipopt_and_snopt.md) |
 | How do LM and hybrid work mathematically? | Both use a scaled least-squares model; LM solves a damped trust-region subproblem, while hybrid combines dogleg steps with Broyden updates. | [Mathematics and step geometry](05_lm_and_hybrid_mathematics.md) |
-| How do Newton–Raphson and Gauss–Newton differ? | Newton requires a square nonsingular Jacobian; Gauss–Newton also supports rectangular/rank-deficient models. Both have optional Armijo backtracking and scaled limits. | [Newton-family mathematics](08_newton_and_gauss_newton.md) |
+| How do Newton-Raphson and Gauss-Newton differ? | Newton requires a square nonsingular Jacobian; Gauss-Newton also supports rectangular/rank-deficient models. Both have optional Armijo backtracking and scaled limits. | [Newton-family mathematics](08_newton_and_gauss_newton.md) |
 
 The implementation uses QR-based fast paths, maintained hybrid QR updates, lazy SVD,
 and optional scalar or disabled histories. The control policy remains independent
@@ -36,7 +36,7 @@ explain the numerical methods; [timing results](../results_time_perf/RESULTS.md)
 the custom solvers with native SciPy.
 
 The [four-method custom convergence report](../results_custom_convergence/REPORT.md)
-adds Newton–Raphson and Gauss–Newton. Full-step runs are explicitly identified:
+adds Newton-Raphson and Gauss-Newton. Full-step runs are explicitly identified:
 their valid accepted residuals may increase, and an undefined trial ends the run.
 The coupled logarithmic domain test is a mathematical recovery test, distinct
 from the real-property duct benchmarks.

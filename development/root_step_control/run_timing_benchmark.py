@@ -703,7 +703,7 @@ def comparison_groups(summary):
             "timing_breakdown",
             "PySolverView versus SciPy/MINPACK",
             SOLVERS,
-            "Levenberg–Marquardt and Powell hybrid use generous initial radii based on "
+            "Levenberg-Marquardt and Powell hybrid use generous initial radii based on "
             "MINPACK factor=100. The custom maximum is at least $10^{12}$ and audited "
             "to remain inactive. Intrinsic trust-region adaptation remains enabled.",
         ),
@@ -711,8 +711,8 @@ def comparison_groups(summary):
             "custom_timing_breakdown",
             "All PySolverView methods: unrestricted user step controls",
             CUSTOM_SOLVERS,
-            "Levenberg–Marquardt and Powell hybrid retain intrinsic trust-region "
-            "adaptation with generous user limits. Newton–Raphson and Gauss–Newton "
+            "Levenberg-Marquardt and Powell hybrid retain intrinsic trust-region "
+            "adaptation with generous user limits. Newton-Raphson and Gauss-Newton "
             "use full steps with backtracking=None. This compares explicit policies; "
             "it does not remove the trust-region algorithms' own damping.",
         ),
@@ -786,7 +786,7 @@ def write_report(output, summary, metadata):
         f"{metadata['warmups']} warmups per configuration. One BLAS thread is requested "
         "before imports by the direct CLI.",
         "",
-        "Clean medians contain no residual/Jacobian/kernel timers. Q25–Q75 describe "
+        "Clean medians contain no residual/Jacobian/kernel timers. Q25-Q75 describe "
         "batch-average variability, not confidence intervals. All trials and failures "
         "are retained. Speed ratios are withheld if either compared configuration "
         "fails the independently checked residual target.",
@@ -809,14 +809,14 @@ def write_report(output, summary, metadata):
             "",
             explanation,
             "",
-            f"| Problem | Solver | Clean median | Q25–Q75 | {ratio_label} | Root success |",
+            f"| Problem | Solver | Clean median | Q25-Q75 | {ratio_label} | Root success |",
             "| --- | --- | ---: | ---: | ---: | ---: |",
         ]
         for row in rows:
             lines.append(
                 f"| {row['problem']} | {solver_description(row['solver'])} | "
                 f"{row['clean_total_median_ms']:.4f} | "
-                f"{row['clean_total_q25_ms']:.4f}–{row['clean_total_q75_ms']:.4f} | "
+                f"{row['clean_total_q25_ms']:.4f}-{row['clean_total_q75_ms']:.4f} | "
                 f"{format_optional_number(row[ratio_field], 2)} | "
                 f"{row['root_success_fraction']:.0%} |"
             )

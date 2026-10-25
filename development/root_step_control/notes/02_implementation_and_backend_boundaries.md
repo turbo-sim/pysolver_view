@@ -67,9 +67,9 @@ solvers and does not change SciPy/MINPACK.
 LM computes a candidate minimizing the squared model norm inside
 $\|z\|_2\leq\Delta$. PySolverView first computes a pivoted economic QR
 factorization and checks the triangular factor's conditioning. For an adequately
-conditioned model it obtains the Gauss–Newton step by a triangular solve. An SVD
+conditioned model it obtains the Gauss-Newton step by a triangular solve. An SVD
 is computed only if damping is necessary or the QR path is unsuitable. Neither
-path explicitly forms the normal equations. If the Gauss–Newton step fits, it
+path explicitly forms the normal equations. If the Gauss-Newton step fits, it
 uses that step; otherwise it searches for a nonnegative damping parameter satisfying
 
 $$
@@ -134,7 +134,7 @@ stagnation. These dogleg/Broyden ingredients make it a Powell-style hybrid.
 
 PySolverView maintains QR factors after each Broyden update. With
 $A[:,P]=QR$ and update $uv^T$, the corresponding factor update uses $u$ and
-$v[P]$. A triangular solve supplies the next Gauss–Newton step, subject to
+$v[P]$. A triangular solve supplies the next Gauss-Newton step, subject to
 conditioning safeguards. Periodic refactorization limits accumulated update
 error; this rebuilds factors of the current approximate matrix without calling
 the application Jacobian. A poorly conditioned updated QR requests an exact

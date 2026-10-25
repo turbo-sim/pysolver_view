@@ -217,7 +217,7 @@ def run_custom_case(problem, method, configuration):
             supported=False,
             success=False,
             native_success=None,
-            message="Unsupported: Newton–Raphson requires a square system.",
+            message="Unsupported: Newton-Raphson requires a square system.",
             x=None,
             residual_norm=None,
             nfev=0,
@@ -412,7 +412,7 @@ def display_label(run):
         "initial_only": "small initial radius",
         "generous": "generous radius",
     }
-    label = f"{backend} {METHOD_NAMES[run['method']]} – {labels.get(configuration, configuration)}"
+    label = f"{backend} {METHOD_NAMES[run['method']]} - {labels.get(configuration, configuration)}"
     if not run.get("supported", True):
         label += " (unsupported)"
     elif not run["success"]:
@@ -533,9 +533,9 @@ def write_report(output, summary, artifacts, comparison):
     negative = [row for row in summary if row["supported"] and not row["root_exists"]]
     skipped = [row for row in summary if not row["supported"]]
     title = (
-        "SciPy/MINPACK versus PySolverView: Levenberg–Marquardt and Powell hybrid"
+        "SciPy/MINPACK versus PySolverView: Levenberg-Marquardt and Powell hybrid"
         if comparison == "backends"
-        else "PySolverView: Levenberg–Marquardt, Powell hybrid, Newton–Raphson and Gauss–Newton"
+        else "PySolverView: Levenberg-Marquardt, Powell hybrid, Newton-Raphson and Gauss-Newton"
     )
     lines = [
         f"# {title}",
@@ -560,8 +560,8 @@ def write_report(output, summary, artifacts, comparison):
     else:
         lines += [
             "The `_controlled` figures compare all four methods with initial scaled displacement limit 0.1, maximum 1, and growth factor 1.5. Trust-region and Armijo acceptance rules differ even when the displacement envelopes match.",
-            "The `_newton_policies` figures compare controlled, uncapped backtracking, and full-step Newton–Raphson/Gauss–Newton. Full steps are allowed to increase residuals and terminate on an undefined trial. Uncapped backtracking starts each search at fraction one.",
-            "Newton–Raphson requires square, numerically full-rank Jacobians; rectangular cases are recorded as unsupported rather than convergence failures. Gauss–Newton uses a minimum-norm least-squares direction when needed.",
+            "The `_newton_policies` figures compare controlled, uncapped backtracking, and full-step Newton-Raphson/Gauss-Newton. Full steps are allowed to increase residuals and terminate on an undefined trial. Uncapped backtracking starts each search at fraction one.",
+            "Newton-Raphson requires square, numerically full-rank Jacobians; rectangular cases are recorded as unsupported rather than convergence failures. Gauss-Newton uses a minimum-norm least-squares direction when needed.",
             "The dense rectangular Rosenbrock controls are constructed extensions, not original MINPACK examples. The inconsistent case has an unavoidable constant residual of one and therefore no root.",
             "The coupled positive-domain logarithmic system deliberately exposes an undefined first full Newton step. It is a mathematical model-domain surrogate, not a thermodynamic property model. Actual property behavior is measured separately with CoolProp heated-duct cases.",
         ]
@@ -628,7 +628,7 @@ def write_report(output, summary, artifacts, comparison):
             )
         )
         residual = (
-            "–"
+            "-"
             if row["final_residual_norm"] is None
             else f"{row['final_residual_norm']:.3e}"
         )

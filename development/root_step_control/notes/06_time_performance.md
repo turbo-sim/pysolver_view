@@ -1,15 +1,15 @@
 # Timing native and custom root-finding methods
 
-This experiment first compares **Levenberg–Marquardt** and **Powell hybrid**
+This experiment first compares **Levenberg-Marquardt** and **Powell hybrid**
 between SciPy/MINPACK and the custom [driver](../../../pysolver_view/solvers/root/solver.py). A separate
-comparison includes all four PySolverView methods: Levenberg–Marquardt,
-Powell hybrid, Newton–Raphson, and Gauss–Newton. All plot labels use these
+comparison includes all four PySolverView methods: Levenberg-Marquardt,
+Powell hybrid, Newton-Raphson, and Gauss-Newton. All plot labels use these
 full names and identify the backend.
 
 The custom-method comparison has unrestricted-user-control and protected-step
 variants. The unrestricted variant keeps LM/Powell hybrid's intrinsic
 trust-region adaptation with generous user radii and uses `backtracking=None`
-for full-step Newton–Raphson/Gauss–Newton. Protected variants use a small initial
+for full-step Newton-Raphson/Gauss-Newton. Protected variants use a small initial
 distance, a persistent maximum, and gradual growth. Every primary custom case
 retains full histories; a secondary experiment compares full and summary
 LM/Powell hybrid histories on the 100-variable workloads.
@@ -152,7 +152,7 @@ counts are reported alongside cumulative times.
   mathematical algorithms.
 - Active-control runs on all five problems use
   `initial_radius=0.1`, `max_radius=1`, `growth_factor=1.5` in the custom solvers.
-  For Newton–Raphson/Gauss–Newton, the equivalent distance settings are
+  For Newton-Raphson/Gauss-Newton, the equivalent distance settings are
   `initial_limit=0.1`, `max_limit=1`, `growth_factor=1.5` inside
   `BacktrackingOptions`. Matching these bounds does not make Armijo acceptance
   identical to trust-region acceptance. A shortened Newton-family step carries
@@ -201,19 +201,19 @@ convergence studies, which retain failures and domain rejections.
 
 The following are **clean median milliseconds per solve**, with full histories:
 
-| 100-variable workload | PySolverView Levenberg–Marquardt, generous | PySolverView Powell hybrid, generous | Newton–Raphson, full step | Gauss–Newton, full step |
+| 100-variable workload | PySolverView Levenberg-Marquardt, generous | PySolverView Powell hybrid, generous | Newton-Raphson, full step | Gauss-Newton, full step |
 | --- | ---: | ---: | ---: | ---: |
 | Broyden tridiagonal | 2.7126 | 3.8002 | 2.4857 | 2.6873 |
 | Dense discrete integral equation | 2.3256 | 2.0024 | 2.1277 | 2.2002 |
 | Heated nitrogen duct | 7.0999 | 4.4108 | 6.4176 | 6.7389 |
 
-| 100-variable workload, protected steps | Levenberg–Marquardt | Powell hybrid | Newton–Raphson | Gauss–Newton |
+| 100-variable workload, protected steps | Levenberg-Marquardt | Powell hybrid | Newton-Raphson | Gauss-Newton |
 | --- | ---: | ---: | ---: | ---: |
 | Broyden tridiagonal | 16.5418 | 5.5971 | 6.3782 | 7.2520 |
 | Dense discrete integral equation | 7.2159 | 2.4139 | 3.4873 | 4.5972 |
 | Heated nitrogen duct | 92.2530 | 27.0018 | 51.3572 | 50.5545 |
 
-Newton–Raphson and Gauss–Newton have nearly the same direction on these square
+Newton-Raphson and Gauss-Newton have nearly the same direction on these square
 full-rank problems; small timing differences between them should not be
 interpreted as a general algorithmic advantage. Protected Newton-family runs
 avoid LM's damped SVD search and are faster than protected LM on these three
@@ -283,11 +283,11 @@ Eleven interleaved rounds, three solves per batch, and clean/instrumented modes
 produce **3,168 timed solves**. Every solve reaches the target; residual and
 Jacobian calls and accepted-iteration counts agree between interfaces.
 
-With full histories, public/direct clean-time ratios span 1.10–1.57 on the two
-cheap mathematical workloads. Most differences are about 0.44–1.20 ms per solve.
-For the thermodynamic duct, ratios span 0.98–1.18. A negative difference for
+With full histories, public/direct clean-time ratios span 1.10-1.57 on the two
+cheap mathematical workloads. Most differences are about 0.44-1.20 ms per solve.
+For the thermodynamic duct, ratios span 0.98-1.18. A negative difference for
 controlled LM is measurement variation, not evidence that adding an adapter
-accelerates numerical work. Controlled Newton and Gauss–Newton timings also vary
+accelerates numerical work. Controlled Newton and Gauss-Newton timings also vary
 despite matching directions and work counts. Raw batches and quartiles are saved.
 
 The public interface pays for option resolution, accepted-point recording,

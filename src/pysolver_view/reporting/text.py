@@ -153,7 +153,7 @@ def optimization_footer(header, message, success, elapsed_time, result, check_kk
 
 def root_header(problem_name, method, library):
     """Format the root header from supplied run data."""
-    method_name = METHOD_DISPLAY_NAMES[normalize_method(method)].replace("\u2013", "-")
+    method_name = METHOD_DISPLAY_NAMES[normalize_method(method)]
     initial_message = (
         f" Solve system of equations for {problem_name}\n"
         f" Root-finding algorithm employed: {method_name} ({library})"

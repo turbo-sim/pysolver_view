@@ -18,10 +18,10 @@ from pysolver_view.roots.problems import (
 
 
 METHOD_STYLES = {
-    "levenberg_marquardt": ("Levenberg–Marquardt", "-.", 1.8),
+    "levenberg_marquardt": ("Levenberg-Marquardt", "-.", 1.8),
     "powell_hybrid": ("Powell hybrid", ":", 2.2),
-    "newton_raphson": ("Newton–Raphson", "-", 3.0),
-    "gauss_newton": ("Gauss–Newton", "--", 1.7),
+    "newton_raphson": ("Newton-Raphson", "-", 3.0),
+    "gauss_newton": ("Gauss-Newton", "--", 1.7),
 }
 
 

@@ -151,7 +151,7 @@ def main():
     }
     labels = {
         "origin": ("Current point\n$z=0$", (0.17, 0.16)),
-        "gauss_newton": ("Gauss–Newton\n$z_{GN}=(-3,-1)$", (-3.30, -0.54)),
+        "gauss_newton": ("Gauss-Newton\n$z_{GN}=(-3,-1)$", (-3.30, -0.54)),
         "cauchy": ("Cauchy point", (0.02, -1.33)),
         "dogleg": ("Dogleg boundary step", (-2.46, -1.57)),
         "lm": ("LM boundary step", (-2.50, -0.27)),
@@ -177,7 +177,7 @@ def main():
         xlabel=r"Scaled displacement $z_1$",
         ylabel=r"Scaled displacement $z_2$",
         aspect="equal",
-        title="Two ways to restrict the same Gauss–Newton model",
+        title="Two ways to restrict the same Gauss-Newton model",
     )
     axis.legend(loc="upper left", framealpha=0.95)
     axis.grid(alpha=0.1)

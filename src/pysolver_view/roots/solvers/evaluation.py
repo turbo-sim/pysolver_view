@@ -98,7 +98,7 @@ class ModelEvaluator:
                 raise ValueError("Residual size changed during the solve.")
             if self.square and values.size != self.scale.size:
                 raise ValueError(
-                    "Newton–Raphson requires a square residual/Jacobian pair."
+                    "Newton-Raphson requires a square residual/Jacobian pair."
                 )
             if not np.all(np.isfinite(values)):
                 raise DomainError("Nonfinite residual at model evaluation.")

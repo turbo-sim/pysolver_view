@@ -117,15 +117,15 @@ class BacktrackingOptions:
 
 @dataclass(frozen=True)
 class NewtonOptions:
-    """Configure Newton–Raphson or Gauss–Newton with optional backtracking.
+    """Configure Newton-Raphson or Gauss-Newton with optional backtracking.
 
     Omission enables protected backtracking. Explicit backtracking=None selects
     full valid steps, even if the residual increases. Root success always
     requires residual_tol. max_iterations counts trial attempts, max_nfev counts
     every residual call including undefined trials and finite-difference probes.
-    For Gauss–Newton, gtol detects a negligible projected residual change
+    For Gauss-Newton, gtol detects a negligible projected residual change
     ||A z|| <= gtol * min(1, ||F||), rather than testing an arbitrarily scaled
-    gradient. Newton–Raphson has no gradient-based early-exit test.
+    gradient. Newton-Raphson has no gradient-based early-exit test.
 
     jacobian_scaling=True equilibrates linear-system columns using running
     maximum norms at fresh Jacobians. This leaves x_scale, derivative probes,

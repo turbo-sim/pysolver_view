@@ -81,7 +81,7 @@ tries again. `Status<=-2` requests termination. The callback must not alter the
 input coordinates. The guide also explains that bounds and linear constraints
 help restrict function evaluations, subject to feasibility tolerances; they do
 not establish validity of a general nonlinear thermodynamic state.
-See [SNOPT 7.7, sections 3.5–3.6](https://ccom.ucsd.edu/reports/UCSD-CCoM-19-01.pdf).
+See [SNOPT 7.7, sections 3.5-3.6](https://ccom.ucsd.edu/reports/UCSD-CCoM-19-01.pdf).
 
 Other controls serve different purposes: `Linesearch tolerance` controls search
 accuracy; `Function precision` describes function accuracy; `Difference interval`

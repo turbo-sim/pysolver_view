@@ -71,7 +71,7 @@ I would complete these steps:
 5. **Check numerical and implementation limits.** Include inconsistent systems,
    nearly singular Jacobians, noisy residuals, scaling extremes and larger
    dimensions. PySolverView maintains hybrid QR factors with rank-one updates
-   and uses a QR Gauss–Newton path for LM. Damped/rank-deficient cases still
+   and uses a QR Gauss-Newton path for LM. Damped/rank-deficient cases still
    require SVD.
    Measure these paths under realistic controls; generous-step timing alone
    does not predict the cost of a cautious thermodynamic solve.

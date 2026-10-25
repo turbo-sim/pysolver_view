@@ -437,7 +437,7 @@ Recommended initial policy:
 
 1. Preserve broad PySolverView compatibility for existing backends.
 2. Load/check the private SLSQP bridge only when that method is selected.
-3. Document and test custom SLSQP on Python 3.11–3.13 with SciPy 1.17.1; provide
+3. Document and test custom SLSQP on Python 3.11-3.13 with SciPy 1.17.1; provide
    a reproducible supported-environment constraint file.
 4. Preserve Turbodash's exact SciPy pin during migration and make the required
    new PySolverView release an explicit runtime dependency of its optimization
