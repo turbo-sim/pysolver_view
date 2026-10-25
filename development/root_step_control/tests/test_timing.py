@@ -11,7 +11,7 @@ import numpy as np
 from scipy.optimize import OptimizeResult
 
 from .. import run_timing_benchmark as timing
-from ..src.solvers import linear_model
+from pysolver_view.solvers.root import linear_model
 from ..src.problems import BroydenTridiagonalProblem
 
 
@@ -352,11 +352,12 @@ class TimingAccountingTests(unittest.TestCase):
                     self.assertIsNotNone(options.backtracking)
                 else:
                     self.assertIsNone(options.backtracking)
-                with patch.object(timing.solver_module, "solve_root") as solve:
+                with patch.object(timing, "NonlinearSystemSolver") as solve:
                     timing.run_solver(
                         problem, solver, options, problem.residual, problem.gradient
                     )
                 self.assertEqual(solve.call_args.kwargs["method"], method)
+                self.assertEqual(solve.call_args.kwargs["library"], "pysolver")
 
     def test_plot_labels_use_full_names_and_separate_backend_identity(self):
         """Method abbreviations must not replace author-based names in plot labels."""
@@ -475,6 +476,7 @@ class TimingAccountingTests(unittest.TestCase):
         for name, argument in (
             ("run_convergence_benchmark.py", "--suite"),
             ("run_timing_benchmark.py", "--repetitions"),
+            ("run_adapter_timing.py", "--repetitions"),
             ("run_step_geometry.py", "--output"),
         ):
             with self.subTest(runner=name):

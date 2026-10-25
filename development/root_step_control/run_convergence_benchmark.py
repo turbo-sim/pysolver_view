@@ -26,13 +26,14 @@ if __name__ == "__main__":
 import numpy as np
 import scipy
 from scipy.optimize import root
+from pysolver_view import NonlinearSystemSolver
 
 from development.root_step_control.src.problems import (
     get_extension_problems,
     get_large_problems,
     get_problems,
 )
-from development.root_step_control.src.solver import (
+from pysolver_view.solvers.root.solver import (
     BacktrackingOptions,
     DomainError,
     METHOD_DISPLAY_NAMES,
@@ -40,7 +41,6 @@ from development.root_step_control.src.solver import (
     StepLimitOptions,
     StepControlOptions,
     normalize_method,
-    solve_root,
 )
 
 # Preserve saved study identifiers; display names come from canonical solver names.
@@ -229,13 +229,16 @@ def run_custom_case(problem, method, configuration):
             trials=[],
             verification_nfev=0,
         )
-    result = solve_root(
-        problem.residual,
-        problem.x0.copy(),
-        jac=problem.gradient,
+    solver = NonlinearSystemSolver(
+        problem,
         method=method,
+        library="pysolver",
         options=options,
+        print_convergence=False,
+        update_on="iteration",
     )
+    solver.solve(problem.x0.copy())
+    result = solver.result
     verified_norm = euclidean_norm(problem.residual(result.x))
     return {
         "label": f"pysolverview_{method}_{configuration}",

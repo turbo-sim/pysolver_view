@@ -16,9 +16,9 @@ both what the current experiments prove and what must be maintained.
 | --- | --- | --- |
 | Public SciPy `root("lm")` / `root("hybr")` | MINPACK | SciPy calls its compiled MINPACK routines |
 | Turbodash custom SLSQP | Native SLSQP, with the Python driver controlling pending evaluations | Private `_slsqplib` interface and workspace, pinned to SciPy 1.17.1 |
-| Experimental `solve_root(method="lm")` | Python driver in [trust_region.py](../src/solvers/trust_region.py), model in [linear_model.py](../src/solvers/linear_model.py) | Public `scipy.linalg` operations; no native LM solver call |
+| Experimental `solve_root(method="lm")` | Python driver in [trust_region.py](../../../pysolver_view/solvers/root/trust_region.py), model in [linear_model.py](../../../pysolver_view/solvers/root/linear_model.py) | Public `scipy.linalg` operations; no native LM solver call |
 | Experimental `solve_root(method="hybr")` | The same driver and model modules | Public `scipy.linalg` operations; no native HYBRD/HYBRJ call |
-| Experimental `solve_root(method="newton_raphson")` / `"gauss_newton"` | [line_search.py](../src/solvers/line_search.py), sharing the QR/SVD model | Public linear algebra; optional Armijo backtracking or full valid steps |
+| Experimental `solve_root(method="newton_raphson")` / `"gauss_newton"` | [line_search.py](../../../pysolver_view/solvers/root/line_search.py), sharing the QR/SVD model | Public linear algebra; optional Armijo backtracking or full valid steps |
 
 SciPy's linear algebra can itself use compiled numerical libraries, but that
 does not mean the native MINPACK solver is running. `OptimizeResult` is simply
@@ -57,8 +57,15 @@ served documentation, labeled SciPy 1.18.0 at review time. [LM options](https://
 
 ## Experimental LM
 
-The code forms the scaled linear model $r+Az$ and minimizes its squared norm
-inside $\|z\|_2\leq\Delta$. PySolverView first computes a pivoted economic QR
+The code forms the numerical linear model $r+Az$, where
+$A=JSC$, $S=\operatorname{diag}(\texttt{x\_scale})$, and $C$ contains positive
+Jacobian-based numerical factors. `jacobian_scaling=True` is the default;
+setting it to `False` makes $C=I$. Physical step limits and derivative probes
+continue to use the fixed caller scales $S$. This option belongs to the custom
+solvers and does not change SciPy/MINPACK.
+
+LM computes a candidate minimizing the squared model norm inside
+$\|z\|_2\leq\Delta$. PySolverView first computes a pivoted economic QR
 factorization and checks the triangular factor's conditioning. For an adequately
 conditioned model it obtains the Gauss–Newton step by a triangular solve. An SVD
 is computed only if damping is necessary or the QR path is unsuitable. Neither
@@ -68,6 +75,15 @@ uses that step; otherwise it searches for a nonnegative damping parameter satisf
 $$
 (A^TA+\lambda I)z=-A^Tr,\qquad\|z\|_2\leq\Delta.
 $$
+
+The candidate physical displacement is $p=SCz$. If $\|S^{-1}p\|_2>\Delta$,
+the driver shortens it along the same ray to retain the physical cap. Both
+norms are audited after adding the displacement to the current coordinates.
+The final clipped trial is generally not the exact minimizer over the
+intersection of the numerical and physical trust regions. The equations
+above describe the numerical LM subproblem; the physical clipping is an
+additional safeguard. Predicted reduction uses the actual rounded numerical
+displacement $(SC)^{-1}(x_{\mathrm{trial}}-x_{\mathrm{base}})$.
 
 The condition check uses LAPACK's triangular reciprocal-condition estimator
 through SciPy's [DTRCON interface](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.lapack.dtrcon.html),
@@ -86,18 +102,30 @@ the bracket is retained.
 Available QR/SVD factors are reused during retries at the same accepted point. The radius is
 enforced before evaluating a trial. Actual versus predicted reduction governs
 acceptance and the next radius. A new Jacobian is evaluated after an accepted
-move. This is an LM trust-region implementation, not a translation of every
+move. Numerical factors then update using running maximum column norms and a
+fixed initial reference; rejected retries retain the same factors. No extra
+model or derivative calls are needed for scaling. See the
+[scaling policy](07_usage_and_controls.md#jacobian-scaling-and-physical-limits).
+This is an LM trust-region implementation, not a translation of every
 MINPACK decision or stopping rule.
 
 ## Experimental hybrid
 
 The hybrid variant computes a dogleg step between the Cauchy and Gauss-Newton
-steps, then updates its scaled Jacobian using trial secant information:
+steps in numerical coordinates, applies the same physical-distance safeguard,
+then updates its numerical Jacobian using trial secant information:
 
 $$
 A_{\mathrm{new}}=A+\frac{(y-Az)z^T}{z^Tz},\qquad
 y=r(x_{\mathrm{trial}})-r(x_{\mathrm{base}}).
 $$
+
+The secant displacement is the actual rounded numerical step
+$z=(SC)^{-1}(x_{\mathrm{trial}}-x_{\mathrm{base}})$, including any clipping.
+The numerical metric $C$ is frozen throughout Broyden updates. It changes only
+when fresh derivatives are evaluated and the model is rebuilt, keeping the
+secant pairs and factorization in consistent coordinates. Periodic QR
+refactorization alone does not change the scaling.
 
 A valid rejected trial can also supply this update. Undefined trials cannot.
 Two consecutive poor agreement ratios trigger a fresh Jacobian; a misleading
@@ -134,24 +162,29 @@ libraries. MINPACK additionally implements its own numerical kernels, derivative
 variants, scaling logic, progress tests, workspaces and long-established edge-case
 behavior. Source-line counts therefore compare different scopes and say little
 about reliability or numerical equivalence. PySolverView separates the driver and
-factorization model, both stored in this self-contained directory.
+factorization model under `pysolver_view/solvers/root/`. Benchmark code stays
+under development.
 
-Physical source-line counts on 25 October 2026, including comments and blank
-lines, make the scopes concrete:
+The following historical source-line counts were recorded on 25 October 2026
+before the Jacobian-equilibration addition. They include comments and blank
+lines and illustrate the different scopes; they are not current package totals:
 
 | Source scope | Lines |
 | --- | ---: |
-| PySolverView public dispatcher, options and exceptions | 313 |
-| PySolverView [trust_region.py](../src/solvers/trust_region.py), LM/hybrid driver | 355 |
-| PySolverView [line_search.py](../src/solvers/line_search.py), Newton-family driver | 341 |
-| Shared evaluation, histories and trial-coordinate handling | 230 |
-| PySolverView [linear_model.py](../src/solvers/linear_model.py), subproblems and factor management | 346 |
-| Combined numerical modules for all four custom methods, excluding package initializers | 1,585 |
+| PySolverView public dispatcher, options and exceptions | 345 |
+| PySolverView [trust_region.py](../../../pysolver_view/solvers/root/trust_region.py), LM/hybrid driver | 364 |
+| PySolverView [line_search.py](../../../pysolver_view/solvers/root/line_search.py), Newton-family driver | 349 |
+| Shared evaluation, histories and trial-coordinate handling | 312 |
+| PySolverView [linear_model.py](../../../pysolver_view/solvers/root/linear_model.py), subproblems and factor management | 346 |
+| Combined numerical modules for all four custom methods, excluding package initializers | 1,716 |
 | MINPACK analytic-Jacobian [LMDER](https://netlib.org/minpack/lmder.f), main routine | 452 |
 | LMDER plus its numerical helper closure | 1,358 |
 | MINPACK analytic-Jacobian [HYBRJ](https://netlib.org/minpack/hybrj.f), main routine | 440 |
 | HYBRJ plus its numerical helper closure | 1,460 |
 | Union of those two MINPACK paths, shared helpers counted once | 2,369 |
+
+The custom count excludes the public frontend/adapter, package initializers,
+and the shared DomainError definition used by both roots and SLSQP.
 
 The LMDER closure includes [LMPAR](https://netlib.org/minpack/lmpar.f),
 [QRFAC](https://netlib.org/minpack/qrfac.f),
@@ -175,12 +208,15 @@ trial bounds. They provide evidence for this implementation's behavior; they do
 not prove every MINPACK safeguard has been reproduced. The distinction remains
 important even when PySolverView is competitive on the measured workloads.
 
-## What the current validation establishes
+## What the validation establishes
 
 The [report](../results_convergence/REPORT.md) compares native and custom implementations explicitly.
 Within each custom method, the three configurations vary the step controls;
 those comparisons are the clearest evidence about those controls. Native versus
 custom comparisons also include algorithm and stopping-rule differences.
+The recorded convergence and timing findings below predate default Jacobian
+equilibration. They support the configurations used in those studies and do
+not establish identical histories or timings with the new numerical metric.
 
 The test suite checks actual trial limits, accepted-state consistency,
 root-success conditions, Jacobian update behavior, and problem derivatives.

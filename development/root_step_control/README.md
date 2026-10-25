@@ -1,64 +1,67 @@
 # Root step control: folder guide
 
-This experiment implements Levenberg–Marquardt, Powell hybrid,
+This development suite exercises the packaged Levenberg–Marquardt, Powell hybrid,
 Newton–Raphson, and Gauss–Newton root solvers with explicit step controls.
 It compares the first two with native SciPy and all four with each other.
 Problems use the project's `NonlinearSystemProblem` interface.
 
 Throughout the code, notes and results, **SciPy/MINPACK** means the native
 solvers exposed by `scipy.optimize.root`. **PySolverView** means the custom
-root implementations in this experiment. Saved solver
+root implementations in `pysolver_view/solvers/root/`. Saved solver
 identifiers use `scipy_*` and `pysolverview_*`, respectively.
 
 ## Folder structure
 
 ```text
 root_step_control/
-├── README.md
-├── src/
-│   ├── solver.py                # Public dispatch and method aliases
-│   ├── options.py               # Trust-region and backtracking settings
-│   ├── exceptions.py            # Domain and internal termination signals
-│   ├── solvers/
-│   │   ├── trust_region.py      # Levenberg–Marquardt and Powell hybrid
-│   │   ├── line_search.py       # Newton–Raphson and Gauss–Newton
-│   │   ├── linear_model.py      # QR/SVD, model updates, step directions
-│   │   ├── evaluation.py        # Residual/Jacobian evaluation and budgets
-│   │   ├── history.py           # Records, callbacks, final results
-│   │   └── trial_step.py        # Scaled trial coordinates and rounding
-│   └── problems/
-│       ├── base.py              # Shared benchmark metadata/interface
-│       ├── mathematical.py      # Standard systems and constructed controls
-│       ├── thermodynamics.py    # Optional CoolProp duct problem
-│       └── suites.py            # Reproducible problem collections
-├── tests/                       # Numerical, solver, problem, and timing checks
-├── notes/                       # Mathematics, usage, design, and recommendations
-├── run_convergence_benchmark.py
-├── run_timing_benchmark.py
-├── run_step_geometry.py
-├── results_convergence/         # Step-control cases, traces, plots, and report
-├── results_custom_convergence/  # Four-method and Newton-policy comparisons
-├── results_time_perf/           # Native/custom timings, settings, and plots
-└── results_step_geometry/       # Illustrated LM and dogleg local-model steps
+|-- README.md
+|-- src/
+|   |-- solver.py                # Compatibility re-export of packaged drivers
+|   `-- problems/
+|       |-- base.py              # Shared benchmark metadata/interface
+|       |-- mathematical.py      # Standard systems and constructed controls
+|       |-- thermodynamics.py    # Optional CoolProp duct problem
+|       `-- suites.py            # Reproducible problem collections
+|-- tests/                       # Numerical, problem, and study checks
+|-- notes/                       # Mathematics, usage, design, measured findings
+|-- run_convergence_benchmark.py
+|-- run_timing_benchmark.py
+|-- run_adapter_timing.py
+|-- run_step_geometry.py
+|-- results_convergence/
+|-- results_custom_convergence/
+|-- results_time_perf/
+|-- results_adapter_perf/
+`-- results_step_geometry/
 ```
 
+The installable numerical implementation is in
+[`pysolver_view/solvers/root/`](../../pysolver_view/solvers/root/).
+Its `solver.py`, `options.py`, `trust_region.py`, `line_search.py`,
+`linear_model.py`, `scaling.py`, `evaluation.py`, `history.py`, and `trial_step.py` retain the
+same responsibilities described below. The public adapter is
+[`custom_root.py`](../../pysolver_view/custom_root.py). See
+[public usage and integration](notes/10_public_interface.md).
+
+
 The `run_*.py` files contain their study-specific setup, execution, plotting,
-reporting, and command-line handling. Shared solver functions and all problem
-definitions live together in `src/`. Each study writes to a named
+reporting, and command-line handling. Shared benchmark problem definitions live in `src/problems/`; numerical functions
+are imported from the installable package. Each study writes to a named
 `results_<case>/` directory; use `--output` to keep an additional case separately.
 Result directories contain outputs rather than implementation or tests.
 
 | Source | Purpose |
 | --- | --- |
-| [solver.py](src/solver.py) | Public `solve_root`, method aliases and driver dispatch; configuration re-exports |
-| [options.py](src/options.py) | All validated options, keeping trust-region and backtracking policies distinct |
-| [exceptions.py](src/exceptions.py) | Recognized model-domain failures and internal budget/probe signals |
-| [trust_region.py](src/solvers/trust_region.py) | Named LM and Powell hybrid functions, explicit step/update choices, shared trust-region engine |
-| [line_search.py](src/solvers/line_search.py) | Named Newton–Raphson and Gauss–Newton functions, explicit direction/rank choices, shared line-search engine |
-| [linear_model.py](src/solvers/linear_model.py) | QR/SVD factors, LM damping, dogleg steps and Broyden updates |
-| [evaluation.py](src/solvers/evaluation.py) | Residual validation, analytic/numerical Jacobians and model-call budgets |
-| [history.py](src/solvers/history.py) | Histories, copied callbacks and accepted-state result assembly |
-| [trial_step.py](src/solvers/trial_step.py) | Trial coordinates and scaled displacement audits, including rounding |
+| [solver.py](../../pysolver_view/solvers/root/solver.py) | Public `solve_root`, method aliases and driver dispatch; configuration re-exports |
+| [options.py](../../pysolver_view/solvers/root/options.py) | All validated options, keeping trust-region and backtracking policies distinct |
+| [exceptions.py](../../pysolver_view/solvers/root/exceptions.py) | Recognized model-domain failures and internal budget/probe signals |
+| [trust_region.py](../../pysolver_view/solvers/root/trust_region.py) | Named LM and Powell hybrid functions, explicit step/update choices, shared trust-region engine |
+| [line_search.py](../../pysolver_view/solvers/root/line_search.py) | Named Newton–Raphson and Gauss–Newton functions, explicit direction/rank choices, shared line-search engine |
+| [linear_model.py](../../pysolver_view/solvers/root/linear_model.py) | QR/SVD factors, LM damping, dogleg steps and Broyden updates |
+| [scaling.py](../../pysolver_view/solvers/root/scaling.py) | Default-enabled Jacobian column equilibration, independent of physical step scales |
+| [evaluation.py](../../pysolver_view/solvers/root/evaluation.py) | Residual validation, analytic/numerical Jacobians and model-call budgets |
+| [history.py](../../pysolver_view/solvers/root/history.py) | Histories, copied callbacks and accepted-state result assembly |
+| [trial_step.py](../../pysolver_view/solvers/root/trial_step.py) | Trial coordinates and scaled displacement audits, including rounding |
 | [base.py](src/problems/base.py) | Benchmark metadata using the existing `NonlinearSystemProblem` interface |
 | [mathematical.py](src/problems/mathematical.py) | Standard multidimensional equations and constructed domain/rectangular controls |
 | [thermodynamics.py](src/problems/thermodynamics.py) | Coupled CoolProp nitrogen duct, derivatives and physical diagnostics |
@@ -67,8 +70,11 @@ Result directories contain outputs rather than implementation or tests.
 Both numerical drivers share evaluation and history mechanics. Their acceptance,
 stopping and Jacobian-refresh decisions remain explicit in their respective
 modules. `linear_model.py` retains the cached factors and secant updates as well
-as computing directions. `trial_step.py` bounds actual displacements; variable
-scales remain fixed caller inputs.
+as computing directions. `trial_step.py` bounds actual displacements using the
+fixed caller input `x_scale`. Independent numerical factors adapt to fresh
+Jacobian column norms by default; set `jacobian_scaling=False` to disable them.
+LM and hybrid use the numerical geometry while retaining the physical cap.
+Full-rank Newton/Gauss-Newton directions are unchanged in exact arithmetic.
 
 `solve_root()` dispatches directly to four named functions: `solve_levenberg_marquardt`,
 `solve_powell_hybrid`, `solve_newton_raphson` and `solve_gauss_newton`. Each binds its
@@ -76,11 +82,18 @@ numerical choices before entering one of two shared iteration engines. The
 engines do not branch on method names.
 
 The package-level imports, `src.solver` API and `src.problems` exports remain
-available. Internal implementation imports use the paths above. The
+available. The development imports are compatibility re-exports. Runners and internal
+implementation imports use the packaged paths above. The
 [organization and validation note](notes/09_source_organization.md) documents the
 boundaries and the refactor checks.
 
 ## Run the studies
+
+The stored convergence and timing reports predate default Jacobian equilibration.
+They remain historical measurements; rerunning the scripts uses the current
+defaults and may change their trajectories, counts, and timings. The
+[radiative heat demo](../../demos/demo_eqn_solving/README.md) documents the
+500-node validation of the new scaling behavior.
 
 Run these commands from the `pysolver_view` repository root. The scripts also
 work from another directory when given their absolute paths. Default output
@@ -92,12 +105,14 @@ directory.
 python development/root_step_control/run_convergence_benchmark.py
 python development/root_step_control/run_timing_benchmark.py
 python development/root_step_control/run_step_geometry.py
+python development/root_step_control/run_adapter_timing.py
 ```
 
 | Runner | Default output | Saved results |
 | --- | --- | --- |
 | [run_convergence_benchmark.py](run_convergence_benchmark.py) | [results_convergence/](results_convergence) and [results_custom_convergence/](results_custom_convergence) | 100 native/custom configurations and 112 custom configurations, CSV summaries, JSON traces, reports, and PNG/SVG figures |
 | [run_timing_benchmark.py](run_timing_benchmark.py) | [results_time_perf/](results_time_perf) | 56 configurations, raw batches, summary, metadata, timing report, and separate native/custom/controlled figures |
+| [run_adapter_timing.py](run_adapter_timing.py) | [results_adapter_perf/](results_adapter_perf) | Paired direct/public timing of all four custom methods on three 100-variable problems |
 | [run_step_geometry.py](run_step_geometry.py) | [results_step_geometry/](results_step_geometry) | LM/dogleg contour illustration in PNG and SVG |
 
 The convergence runner defaults to both comparison families. The native/custom
@@ -133,17 +148,18 @@ dependency of the main package.
 
 ## Tests and direct use
 
-All unit and integration checks are in [tests/](tests). Run them separately
+Numerical and study checks are in [tests/](tests); public-interface regressions
+are in [test_custom_root.py](../../tests/test_custom_root.py). Run tests separately
 from timing measurements:
 
 ```powershell
 python -m unittest discover -s development/root_step_control/tests -t . -v
 ```
 
-The existing public experiment import remains available:
+Direct calls use the packaged numerical API:
 
 ```python
-from development.root_step_control import StepControlOptions, solve_root
+from pysolver_view import StepControlOptions, solve_root
 from development.root_step_control.src.problems import ExtendedRosenbrockProblem
 
 problem = ExtendedRosenbrockProblem(n=10)
@@ -171,7 +187,8 @@ shows a conservative configuration. Canonical names are `levenberg_marquardt`,
 `method` and the original spelling in `requested_method`.
 
 The four named functions can also be imported directly from
-`development.root_step_control`. Each accepts `fun, x0, jac=None, options=None,
+`pysolver_view`. The development import re-exports them for compatibility.
+Each accepts `fun, x0, jac=None, options=None,
 callback=None`, with the last two arguments keyword-only. Direct calls return
 the same numerical results and histories, including the canonical `method`.
 `solve_root()` additionally normalizes aliases and supplies `requested_method`

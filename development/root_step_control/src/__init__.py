@@ -1,30 +1,15 @@
-"""Shared solver implementations and problem definitions for the experiments."""
+"""Compatibility exports for the root studies; implementations live in the package."""
 
-from .exceptions import DomainError
-from .options import (
+from pysolver_view.solvers.root import (
     BacktrackingOptions,
+    DomainError,
+    METHOD_DISPLAY_NAMES,
     NewtonOptions,
     StepControlOptions,
     StepLimitOptions,
-)
-from .solver import METHOD_DISPLAY_NAMES, solve_root
-from .solvers import (
-    solve_gauss_newton,
+    solve_root,
     solve_levenberg_marquardt,
-    solve_newton_raphson,
     solve_powell_hybrid,
+    solve_newton_raphson,
+    solve_gauss_newton,
 )
-
-__all__ = [
-    "DomainError",
-    "StepControlOptions",
-    "NewtonOptions",
-    "BacktrackingOptions",
-    "StepLimitOptions",
-    "METHOD_DISPLAY_NAMES",
-    "solve_root",
-    "solve_levenberg_marquardt",
-    "solve_powell_hybrid",
-    "solve_newton_raphson",
-    "solve_gauss_newton",
-]

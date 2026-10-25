@@ -1,7 +1,7 @@
 # Timing native and custom root-finding methods
 
 This experiment first compares **Levenberg–Marquardt** and **Powell hybrid**
-between SciPy/MINPACK and the custom [driver](../src/solver.py). A separate
+between SciPy/MINPACK and the custom [driver](../../../pysolver_view/solvers/root/solver.py). A separate
 comparison includes all four PySolverView methods: Levenberg–Marquardt,
 Powell hybrid, Newton–Raphson, and Gauss–Newton. All plot labels use these
 full names and identify the backend.
@@ -16,7 +16,8 @@ LM/Powell hybrid histories on the 100-variable workloads.
 
 Read the generated [timing results](../results_time_perf/RESULTS.md) for
 the measured numbers and [summary.csv](../results_time_perf/summary.csv) for the complete table.
-Everything needed for the comparison is inside `root_step_control/`.
+The studies and problems stay in `root_step_control/`; they use the packaged
+custom implementation through `NonlinearSystemSolver(library="pysolver")`.
 The standard run contains **56 configurations**: ten configurations on each of
 five workloads (two native, four custom unrestricted, four custom protected),
 plus two summary-history configurations on each of three 100-variable workloads.
@@ -117,7 +118,8 @@ project's nonlinear problem interface.
 
 **Solver overhead is not pure linear-algebra time.** It includes factorization,
 matrix operations, step selection, convergence tests, Python/native bookkeeping,
-callback overhead, and the experimental solvers' history storage. Native MINPACK
+callback overhead, public-interface reporting preparation, detached results,
+and custom history storage. Native MINPACK
 does not expose separate QR timing through SciPy's public interface. Isolating
 that time would require instrumenting the native source/build. This experiment
 does not estimate it or report it as zero.
@@ -178,8 +180,11 @@ counts are reported alongside cumulative times.
   Use clean medians for speed ratios. The CSV includes the instrumented/clean
   ratio to make this perturbation visible.
 - Imports, problem construction, solver-option construction, warmup, post-solve
-  verification, and report/plot generation are excluded. Each model call still
-  includes its necessary state updates and array assembly.
+  verification, and study report/plot generation are excluded. Custom totals
+  include public solver construction, option copying, convergence-report
+  preparation, and detached result assembly, with printing/live plotting off.
+  Native timings call scipy.optimize.root directly. Each model call includes
+  its necessary state updates and array assembly.
 
 The results apply to this machine and these workload sizes. Actual expensive
 flash calculations, mixtures or different property input pairs can change the
@@ -198,15 +203,15 @@ The following are **clean median milliseconds per solve**, with full histories:
 
 | 100-variable workload | PySolverView Levenberg–Marquardt, generous | PySolverView Powell hybrid, generous | Newton–Raphson, full step | Gauss–Newton, full step |
 | --- | ---: | ---: | ---: | ---: |
-| Broyden tridiagonal | 1.4891 | 1.7720 | 1.3935 | 1.4513 |
-| Dense discrete integral equation | 1.2287 | 0.8487 | 1.1981 | 1.1307 |
-| Heated nitrogen duct | 3.6747 | 2.8011 | 3.6444 | 3.6490 |
+| Broyden tridiagonal | 2.7126 | 3.8002 | 2.4857 | 2.6873 |
+| Dense discrete integral equation | 2.3256 | 2.0024 | 2.1277 | 2.2002 |
+| Heated nitrogen duct | 7.0999 | 4.4108 | 6.4176 | 6.7389 |
 
 | 100-variable workload, protected steps | Levenberg–Marquardt | Powell hybrid | Newton–Raphson | Gauss–Newton |
 | --- | ---: | ---: | ---: | ---: |
-| Broyden tridiagonal | 9.7082 | 2.3328 | 3.6629 | 3.6222 |
-| Dense discrete integral equation | 4.9417 | 1.1561 | 1.9999 | 2.0487 |
-| Heated nitrogen duct | 57.0659 | 14.0023 | 30.2559 | 30.4597 |
+| Broyden tridiagonal | 16.5418 | 5.5971 | 6.3782 | 7.2520 |
+| Dense discrete integral equation | 7.2159 | 2.4139 | 3.4873 | 4.5972 |
+| Heated nitrogen duct | 92.2530 | 27.0018 | 51.3572 | 50.5545 |
 
 Newton–Raphson and Gauss–Newton have nearly the same direction on these square
 full-rank problems; small timing differences between them should not be
@@ -218,11 +223,18 @@ On the 100-variable duct, protected LM uses 28 Jacobian calls, the Newton-family
 methods use 27, and Powell hybrid uses one.
 
 The native comparison remains separate. On the 100-variable duct, native
-SciPy/MINPACK Levenberg–Marquardt and Powell hybrid take 5.3363 and 4.1149 ms
-respectively, versus 3.6747 and 2.8011 ms for their custom generous-radius
-counterparts. Native Powell hybrid is faster on the two inexpensive
-100-variable mathematical problems. See the complete report for quartiles,
-evaluation counts, measured kernels, native status, and all 20-variable cases.
+SciPy/MINPACK LM and Powell hybrid take 8.4895 and 5.3236 ms,
+respectively, versus 7.0999 and 4.4108 ms through the custom
+public interface with generous radii. Native Powell hybrid is faster on the
+inexpensive 100-variable mathematical problems. These totals compare interfaces
+as used, with different diagnostic and stopping costs; they do not isolate
+algorithmic performance. See the report for quartiles and all measured components.
+
+The separate [interface timing runner](../run_adapter_timing.py) compares the
+same custom core directly and through NonlinearSystemSolver, with identical
+full-history policies. Its [report](../results_adapter_perf/RESULTS.md) and
+[CSV](../results_adapter_perf/summary.csv) quantify interface cost without
+attributing that cost to residuals or numerical kernels.
 
 ## Files and checks
 
@@ -257,8 +269,36 @@ instrumentation cleanup. They make no assertions about which solver is faster.
 
 ## Source organization verification
 
-After moving the drivers and shared bookkeeping into `src/solvers/`, a separate
+During the earlier module organization, a separate
 11-round timing comparison repeated all 56 configurations before and after the
 refactor. The historical 21-round study above remains a separate measurement.
 See [source organization and validation](09_source_organization.md) for the fresh
 numbers and their limits; counters and convergence traces were preserved.
+
+## Public interface overhead
+
+The direct/public experiment uses 24 configurations: all four methods, generous
+or full steps and controlled steps, on each of the three 100-variable problems.
+Eleven interleaved rounds, three solves per batch, and clean/instrumented modes
+produce **3,168 timed solves**. Every solve reaches the target; residual and
+Jacobian calls and accepted-iteration counts agree between interfaces.
+
+With full histories, public/direct clean-time ratios span 1.10–1.57 on the two
+cheap mathematical workloads. Most differences are about 0.44–1.20 ms per solve.
+For the thermodynamic duct, ratios span 0.98–1.18. A negative difference for
+controlled LM is measurement variation, not evidence that adding an adapter
+accelerates numerical work. Controlled Newton and Gauss–Newton timings also vary
+despite matching directions and work counts. Raw batches and quartiles are saved.
+
+The public interface pays for option resolution, accepted-point recording,
+common reports and detached results. These are real costs, most visible when
+residuals are inexpensive. The separate main timing session had appreciably
+higher absolute times, including on native SciPy; do not subtract numbers from
+different sessions to estimate adapter cost. Use the paired experiment for that.
+
+The integration is usable for these workloads, but has not removed Python
+bookkeeping costs. A focused future optimization could reduce repeated history
+copying and format reports lazily, preserving detached data and callback
+contracts. Direct `psv.solve_root` is available when the common frontend is not
+needed. These observations do not justify changing residual targets or disabling
+diagnostics silently. See [the interface report](../results_adapter_perf/RESULTS.md).

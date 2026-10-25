@@ -4,24 +4,30 @@ These are independent trust-region implementations, not wrappers around or
 bit-for-bit reproductions of MINPACK. Hybrid combines dogleg steps and scaled
 Broyden QR updates, refreshing the Jacobian after poor model agreement.
 Only public NumPy/SciPy interfaces are used. The
-geometry is fixed by the caller: ``norm((x_trial - x_base) / x_scale) <= radius``.
+physical geometry is fixed: ``norm((x_trial - x_base) / x_scale) <= radius``.
 The first radius, a persistent maximum, and permitted growth are independent.
 All trial points, including rejected and undefined ones, obey the radius;
-finite-difference probes are separate and use ``finite_diff_step`` instead.
+derivative probes are separate, using scaled or explicit physical probe steps.
+Default Jacobian equilibration additionally shapes the numerical trust region.
+Its step is shortened along the same ray if required by the physical cap;
+this is not an exact solve over the intersection of the two metric balls.
 """
 
 import numpy as np
 from scipy.linalg import norm
 
-from ..options import StepControlOptions
-from ..exceptions import BudgetExhausted, DomainError, UnrepresentableProbe
+from .options import StepControlOptions
+from .exceptions import BudgetExhausted, DomainError, UnrepresentableProbe
 from .linear_model import LinearModel
 from .evaluation import ModelEvaluator, prepare_inputs
 from .history import HistoryRecorder
-from .trial_step import prepare_trust_region_trial
+from .scaling import JacobianScaling
+from .trial_step import prepare_trust_region_trial, prepare_equilibrated_trial
 
 
-def solve_levenberg_marquardt(fun, x0, jac=None, *, options=None, callback=None):
+def solve_levenberg_marquardt(
+    fun, x0, jac=None, *, options=None, callback=None, observer=None
+):
     """Solve with damped least-squares steps and a fresh Jacobian after acceptance.
 
     StepControlOptions (or a matching dictionary) controls the trust region.
@@ -38,10 +44,13 @@ def solve_levenberg_marquardt(fun, x0, jac=None, *, options=None, callback=None)
         update_jacobian=None,
         options=options,
         callback=callback,
+        observer=observer,
     )
 
 
-def solve_powell_hybrid(fun, x0, jac=None, *, options=None, callback=None):
+def solve_powell_hybrid(
+    fun, x0, jac=None, *, options=None, callback=None, observer=None
+):
     """Solve with dogleg steps and Broyden updates from valid trials.
 
     StepControlOptions (or a matching dictionary) controls the trust region.
@@ -58,6 +67,7 @@ def solve_powell_hybrid(fun, x0, jac=None, *, options=None, callback=None):
         update_jacobian=_update_powell_jacobian,
         options=options,
         callback=callback,
+        observer=observer,
     )
 
 
@@ -99,6 +109,7 @@ def _solve_trust_region(
     update_jacobian,
     options,
     callback,
+    observer,
 ):
     """Execute trust-region acceptance and recovery with supplied numerical choices.
 
@@ -108,7 +119,8 @@ def _solve_trust_region(
     method identifies results only; it does not select an algorithm here.
 
     ``fun(x)`` returns a nonempty residual vector and ``jac(x)`` its m-by-n
-    Jacobian, with m >= n. Without ``jac`` forward differences are used.
+    Jacobian, with m >= n. Without ``jac`` the configured numerical derivative
+    method is used (forward differences by default).
     ``options`` is a :class:`StepControlOptions` or a dictionary of its fields.
     The optional callback receives a copy of each accepted history record,
     including the initial point; returning exactly ``False`` requests a stop.
@@ -139,8 +151,9 @@ def _solve_trust_region(
     if not isinstance(options, StepControlOptions):
         raise TypeError("options must be StepControlOptions or a dictionary.")
     x, scale = prepare_inputs(x0, options.x_scale)
+    scaling = JacobianScaling(x.size, options.jacobian_scaling)
     radius = options.initial_radius
-    recorder = HistoryRecorder(options.history_level, callback)
+    recorder = HistoryRecorder(options.history_level, callback, observer)
     evaluator = ModelEvaluator(fun, jac, scale, options, recorder)
     evaluate = evaluator.residual
     nit = nupdates = ntrials = nrejected = ninvalid = 0
@@ -173,6 +186,7 @@ def _solve_trust_region(
             max_radius_used=max_radius_used,
             max_radius_ratio=max_radius_ratio,
             linear_algebra=linear_stats,
+            **scaling.diagnostics(),
         )
 
     def record_accepted(step_norm=0.0, scaled_step_norm=0.0):
@@ -183,6 +197,7 @@ def _solve_trust_region(
             return False
         return recorder.accepted(
             x,
+            f,
             iteration=nit,
             residual_norm=f_norm,
             step_norm=step_norm,
@@ -229,19 +244,26 @@ def _solve_trust_region(
                 )
             with np.errstate(over="ignore", invalid="ignore"):
                 scaled_jacobian = jacobian * scale
-                gradient = scaled_jacobian.T @ f
-            if not np.all(np.isfinite(scaled_jacobian)) or not np.all(
-                np.isfinite(gradient)
-            ):
+            if not np.all(np.isfinite(scaled_jacobian)):
                 return finish(
                     3,
                     "Scaled linear model overflowed; revise variable/residual scaling.",
+                )
+            factors = scaling.update(scaled_jacobian)
+            with np.errstate(over="ignore", invalid="ignore"):
+                numerical_jacobian = scaled_jacobian * factors
+                gradient = numerical_jacobian.T @ f
+            if not np.all(np.isfinite(numerical_jacobian)) or not np.all(
+                np.isfinite(gradient)
+            ):
+                return finish(
+                    3, "Equilibrated linear model overflowed; revise residual scaling."
                 )
             if norm(gradient, np.inf) <= options.gtol:
                 return finish(
                     2, "Stationary least-squares point above residual tolerance."
                 )
-            model = LinearModel(scaled_jacobian, f, stats=linear_stats)
+            model = LinearModel(numerical_jacobian, f, stats=linear_stats)
             model_is_fresh = True
             poor_agreements = 0
 
@@ -251,11 +273,24 @@ def _solve_trust_region(
                 continue
             return finish(2, "Stationary least-squares point above residual tolerance.")
 
-        scaled_step = compute_step(model, radius)
+        numerical_step = compute_step(model, radius)
         try:
-            trial_x, step, scaled_step, scaled_norm = prepare_trust_region_trial(
-                x, scale, scaled_step, radius
-            )
+            if options.jacobian_scaling:
+                (
+                    trial_x,
+                    step,
+                    scaled_step,
+                    scaled_norm,
+                    numerical_step,
+                    numerical_norm,
+                ) = prepare_equilibrated_trial(
+                    x, scale, factors, numerical_step, radius
+                )
+            else:
+                trial_x, step, scaled_step, scaled_norm = prepare_trust_region_trial(
+                    x, scale, numerical_step, radius
+                )
+                numerical_step, numerical_norm = scaled_step, scaled_norm
         except ValueError as error:
             return finish(3, str(error))
         if scaled_norm <= options.xtol * (options.xtol + x_norm) or scaled_norm == 0:
@@ -263,7 +298,7 @@ def _solve_trust_region(
                 model = None
                 continue
             return finish(3, "Step stagnation above residual tolerance.")
-        model_change = model.a @ scaled_step
+        model_change = model.a @ numerical_step
         predicted = float(
             -np.dot(f, model_change) - 0.5 * np.dot(model_change, model_change)
         )
@@ -309,6 +344,7 @@ def _solve_trust_region(
                 residual_norm=trial_norm,
                 step_norm=physical_step_norm,
                 scaled_step_norm=scaled_norm,
+                numerical_step_norm=numerical_norm,
                 radius=radius,
                 ratio=ratio,
                 predicted_reduction=predicted,
@@ -322,7 +358,7 @@ def _solve_trust_region(
         used_radius = radius
         if not valid or ratio < 0.25:
             radius *= options.shrink_factor
-        elif ratio >= 0.75 and scaled_norm >= 0.8 * used_radius:
+        elif ratio >= 0.75 and max(scaled_norm, numerical_norm) >= 0.8 * used_radius:
             radius = min(options.max_radius, options.growth_factor * used_radius)
         if accepted:
             x, f = trial_x, trial_f
@@ -340,8 +376,8 @@ def _solve_trust_region(
                 trial_residual=trial_f,
                 accepted_residual=f,
                 model_change=model_change,
-                scaled_step=scaled_step,
-                scaled_norm=scaled_norm,
+                scaled_step=numerical_step,
+                scaled_norm=numerical_norm,
                 ratio=ratio,
                 poor_agreements=poor_agreements,
             )

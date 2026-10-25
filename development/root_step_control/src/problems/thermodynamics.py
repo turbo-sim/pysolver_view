@@ -13,7 +13,7 @@ https://coolprop.org/coolprop/HighLevelAPI.html#partial-derivatives
 
 import numpy as np
 
-from ..exceptions import DomainError
+from pysolver_view.solvers.root import DomainError
 from .base import BenchmarkProblem
 
 try:

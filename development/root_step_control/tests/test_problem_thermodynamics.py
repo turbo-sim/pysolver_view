@@ -6,7 +6,7 @@ import numpy as np
 from scipy.optimize import root
 
 from ..src.problems.thermodynamics import CP, HeatedGasDuctProblem
-from ..src.solver import DomainError, solve_root
+from pysolver_view.solvers.root.solver import DomainError, solve_root
 
 
 @unittest.skipIf(CP is None, "CoolProp is optional for the timing experiment")

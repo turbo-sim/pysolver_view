@@ -65,3 +65,28 @@ def prepare_trust_region_trial(x, scale, scaled_step, radius):
     if scaled_norm > radius * (1 + 8 * np.finfo(float).eps):
         raise ValueError("No representable trial within the requested radius.")
     return trial_x, step, scaled_step, scaled_norm
+
+
+def prepare_equilibrated_trial(x, scale, factors, numerical_step, radius):
+    """Honor both numerical trust geometry and the caller's physical step cap.
+
+    Convert the equilibrated direction to physical scaled coordinates and
+    shorten it along the same ray if necessary. Audit both norms after actual
+    coordinate rounding. The returned numerical displacement is the one used
+    for the predicted reduction and any Broyden update, not an unclipped step.
+    """
+    scaled_step = factors * numerical_step
+    for attempt in range(4):
+        trial, step, scaled_step, length = prepare_trust_region_trial(
+            x, scale, scaled_step, radius
+        )
+        numerical_step = scaled_step / factors
+        numerical_length = float(norm(numerical_step, check_finite=False))
+        if numerical_length <= radius * (1 + 8 * np.finfo(float).eps):
+            return trial, step, scaled_step, length, numerical_step, numerical_length
+        if attempt == 3:
+            break
+        coordinate_ulp = np.spacing(np.maximum(np.abs(x), np.abs(trial)))
+        reserve = 2 * norm(coordinate_ulp / scale / factors, check_finite=False)
+        scaled_step *= max(0.0, radius - reserve) / numerical_length
+    raise ValueError("No representable trial within both step metrics.")

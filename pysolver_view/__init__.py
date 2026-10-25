@@ -36,6 +36,11 @@ from .nonlinear_system import *
 from .nonlinear_system_problems import *
 from .diagnostics import assess_kkt, evaluate_kkt_residuals
 from .solvers import DomainError, Evaluation, SLSQPOptions, minimize_slsqp
+from .solvers.root import (
+    StepControlOptions, NewtonOptions, BacktrackingOptions, StepLimitOptions,
+    solve_root, solve_levenberg_marquardt, solve_powell_hybrid,
+    solve_newton_raphson, solve_gauss_newton,
+)
 
 
 __version__ = "0.6.9"

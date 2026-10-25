@@ -64,6 +64,33 @@ A fresh Jacobian is obtained after each committed move. Rejected trials at one
 base reuse the direction and factorization. These two methods do not use the
 Broyden updates employed by Powell hybrid.
 
+### Default Jacobian equilibration
+
+`NewtonOptions(jacobian_scaling=True)` is the default. The fixed caller scales
+$s$ still define physical step limits and derivative-probe distances. A
+separate positive diagonal matrix $C$ balances columns of $A=JS$ for numerical
+linear algebra: solve with $AC$ for a direction $v$, then recover $z=Cv$.
+The factors use a fixed initial median reference and running maximum column
+norms from fresh Jacobians. See the
+[shared scaling policy](07_usage_and_controls.md#jacobian-scaling-and-physical-limits)
+for zero-column handling and finite-precision limits.
+
+Because $C$ is invertible, a unique square Newton solution satisfies
+$ACv=-r$ if and only if $Az=-r$. Full-column-rank Gauss-Newton likewise has
+the same unique physical least-squares direction in exact arithmetic. The
+benefit is numerical column balance; roundoff and rank decisions may change.
+For rank-deficient Gauss-Newton, minimizing $\|v\|_2$ instead of $\|z\|_2$
+can select a different minimum-norm solution. This distinction is deliberate
+and does not imply equivalence of deficient-rank trajectories.
+
+Line-search slopes, step limits, and stagnation checks use the converted
+physical direction $z$ and the original $A$. This transformation does not
+add damping to full Newton or change the meaning of `backtracking=None`.
+Use `NewtonOptions(jacobian_scaling=False)` or the public
+`options={"jacobian_scaling": False}` to disable it. The switch also applies
+to custom LM/hybrid through `StepControlOptions`, but does not affect SciPy.
+No extra residual or Jacobian calls are made to compute the factors.
+
 Gauss–Newton's `gtol` guard checks whether the modeled residual change is
 negligible: $\|Az\|_2\leq\mathrm{gtol}\min(1,\|r\|_2)$ above the root target.
 This avoids declaring stationarity solely because Jacobian units make $A^Tr$
@@ -141,7 +168,7 @@ or retry limits would not mathematically remove the acceptance test.
 ## Using the development API
 
 ```python
-from development.root_step_control import (
+from pysolver_view import (
     BacktrackingOptions,
     NewtonOptions,
     StepLimitOptions,
@@ -152,6 +179,7 @@ from development.root_step_control.src.problems import ExtendedRosenbrockProblem
 problem = ExtendedRosenbrockProblem(n=10)
 options = NewtonOptions(
     x_scale=problem.x_scale,
+    jacobian_scaling=True,
     backtracking=BacktrackingOptions(
         step_limits=StepLimitOptions(
             initial_limit=0.1, max_limit=1.0, growth_factor=1.5
@@ -170,6 +198,9 @@ result = solve_root(
 Use `method="gauss_newton"` with the same options for the least-squares
 direction. For a full-step comparison, pass
 `NewtonOptions(x_scale=problem.x_scale, backtracking=None)`.
+The result exposes `jacobian_scaling`, the final relative factors in
+`jacobian_scale`, and `jacobian_scale_updates`. Reported `scaled_step_norm`
+continues to mean the step size measured with the fixed physical `x_scale`.
 
 ## Interpreting the comparisons
 

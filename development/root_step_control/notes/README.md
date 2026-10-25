@@ -3,6 +3,8 @@
 These notes address the design questions raised after the root-step experiments.
 They describe the code currently present and distinguish it from proposed work.
 The [folder guide](../README.md) lists the source, tests, runners, and outputs.
+The numerical implementation is packaged under `pysolver_view/solvers/root/`.
+Use [the public interface](10_public_interface.md) to select `library="pysolver"`.
 For practical details, see the [timing protocol](06_time_performance.md) and
 [solver usage guide](07_usage_and_controls.md). The
 [source organization note](09_source_organization.md) explains module boundaries
@@ -57,5 +59,5 @@ The [experiment report](../results_convergence/REPORT.md) contains the repeated 
 multidimensional study and the additional 100-variable comparisons. The suite
 distinguishes residual-target success, trial-distance audits and execution cost.
 It demonstrates controllable trial distances, not universal robustness for
-thermodynamic models. All sources, results and notes needed to reproduce these
-studies are stored under this directory.
+thermodynamic models. The studies and problem definitions remain here; they import the packaged
+numerical implementation through the public interface.

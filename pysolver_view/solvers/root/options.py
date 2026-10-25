@@ -27,6 +27,39 @@ def _integer_at_least(name, value, minimum):
         raise ValueError(f"{name} must be an integer >= {minimum}.")
 
 
+def _validate_derivatives(options):
+    """Normalize derivative aliases and validate optional physical probe distances."""
+    aliases = {
+        "2-point": "2-point",
+        "forward_finite_differences": "2-point",
+        "3-point": "3-point",
+        "central_finite_differences": "3-point",
+        "cs": "cs",
+        "complex_step": "cs",
+    }
+    if options.derivative_method not in aliases:
+        raise ValueError("derivative_method must be '2-point', '3-point', or 'cs'.")
+    object.__setattr__(options, "derivative_method", aliases[options.derivative_method])
+    if options.derivative_abs_step is not None:
+        step = np.asarray(options.derivative_abs_step, dtype=float)
+        if (
+            step.ndim > 1
+            or not step.size
+            or not np.all(np.isfinite(step))
+            or np.any(step <= 0)
+        ):
+            raise ValueError(
+                "derivative_abs_step must be a positive finite scalar or vector."
+            )
+
+
+def _validate_scaling(options):
+    """Require an explicit boolean for automatic numerical column scaling."""
+    if not isinstance(options.jacobian_scaling, (bool, np.bool_)):
+        raise TypeError("jacobian_scaling must be a boolean.")
+    object.__setattr__(options, "jacobian_scaling", bool(options.jacobian_scaling))
+
+
 @dataclass(frozen=True)
 class StepLimitOptions:
     """Bound scaled displacements and restore a reduced envelope gradually.
@@ -93,6 +126,12 @@ class NewtonOptions:
     For Gauss–Newton, gtol detects a negligible projected residual change
     ||A z|| <= gtol * min(1, ||F||), rather than testing an arbitrarily scaled
     gradient. Newton–Raphson has no gradient-based early-exit test.
+
+    jacobian_scaling=True equilibrates linear-system columns using running
+    maximum norms at fresh Jacobians. This leaves x_scale, derivative probes,
+    and physical backtracking limits unchanged. Full-rank Newton/Gauss-Newton
+    directions are unchanged in exact arithmetic; rank-deficient minimum-norm
+    Gauss-Newton directions can change. False disables numerical equilibration.
     """
 
     x_scale: object = 1.0
@@ -102,13 +141,18 @@ class NewtonOptions:
     max_iterations: int = 500
     max_nfev: int = 5000
     finite_diff_step: float = 1e-7
+    derivative_method: str = "2-point"
+    derivative_abs_step: object = None
     history_level: str = "full"
     backtracking: BacktrackingOptions | None = field(
         default_factory=BacktrackingOptions
     )
+    jacobian_scaling: bool = True
 
     def __post_init__(self):
         """Validate common controls and normalize nested dictionaries consistently."""
+        _validate_derivatives(self)
+        _validate_scaling(self)
         for name in ("residual_tol", "xtol", "gtol", "finite_diff_step"):
             _positive_finite(name, getattr(self, name))
         for name in ("max_iterations", "max_nfev"):
@@ -152,6 +196,12 @@ class StepControlOptions:
     ``max_iterations`` counts all trial attempts (accepted or rejected).
     ``max_nfev`` includes initial, trial, and numerical-derivative evaluations.
     Forward difference probes move ``finite_diff_step * x_scale[j]`` in x[j].
+
+    jacobian_scaling=True adds numerical column equilibration without changing
+    the physical meaning of x_scale or the radius cap. Numerical trust steps
+    are shortened along their ray when required by the physical envelope.
+    Scaling updates only at fresh Jacobians and stays fixed through Broyden
+    updates and trial retries. False selects the original fixed-scale geometry.
     """
 
     initial_radius: float = 1.0
@@ -165,13 +215,18 @@ class StepControlOptions:
     max_iterations: int = 500
     max_nfev: int = 5000
     finite_diff_step: float = 1e-7
+    derivative_method: str = "2-point"
+    derivative_abs_step: object = None
     x_scale: object = 1.0
     history_level: str = "full"
+    jacobian_scaling: bool = True
 
     def __post_init__(self):
         """Validate finite positive controls, consistent radii, integer budgets and the
         selected history mode.
         """
+        _validate_derivatives(self)
+        _validate_scaling(self)
         if self.history_level not in ("full", "summary", "none"):
             raise ValueError("history_level must be 'full', 'summary' or 'none'.")
         for name in (

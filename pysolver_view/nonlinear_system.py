@@ -12,94 +12,80 @@ from matplotlib.ticker import MultipleLocator
 from scipy.optimize import root
 
 from . import numerical_differentiation
+from .custom_root import RootSolverAdapter, resolve_root_options
+from .solvers.root.solver import METHOD_DISPLAY_NAMES, normalize_method
 from .pysolver_utilities import savefig_in_formats
 
 SOLVER_OPTIONS = ["hybr", "lm"]
 
 
 class NonlinearSystemSolver:
-    r"""
-    Solver class for nonlinear systems of equations.
-
-    The solver is designed to handle system of nonlinear equations of the form:
-
-    .. math::
-
-        F(x) = 0
-
-    where :math:`F: \mathbb{R}^n \rightarrow \mathbb{R}^n` is a vector-valued
-    function of the vector :math:`x`.
-
-    The class interfaces with the `root` method from `scipy.optimize` to solve the equations and provides a structured framework for initialization, solution monitoring, and post-processing.
+    r"""Solve nonlinear equations with native SciPy or controlled custom methods.
 
     Parameters
     ----------
     problem : NonlinearSystemProblem
-        An instance of a problem defining the system of equations to be solved.
+        Model with ``residual(x)`` and optional analytic ``gradient(x)``.
     method : str, optional
-        Method to be used by scipy's root for solving the nonlinear system. Available solvers are:
-
-        - :code:`hybr`:  Uses MINPACK's 'hybrd' method, which is is a modification of Powell's hybrid method.
-        - :code:`lm`: The Levenberg-Marquardt method, which blends the steepest descent and the Gauss-Newton methods.
-
-        The choice between :code:`hybr` and :code:`lm` largely depends on the specifics of the problem at hand.
-        The :code:`hybr` usually requires less gradient evaluations and it is often faster when analytic gradients are not available.
-        It is advisable to experiment with both methods to determine the most appropriate choice for a given problem.
-
-        Defaults to 'hybr'.
-    tol : float, optional
-        Tolerance for the solver termination. Defaults to 1e-9.
-    max_iter : integer, optional
-        Maximum number of function evaluations for the solver termination. Defaults to 100.
-    options : dict, optional
-        Additional options to be passed to scipy's root.
+        Default ``hybr``. SciPy supports ``lm``/``hybr`` and their full aliases
+        ``levenberg_marquardt``/``powell_hybrid``. The custom backend additionally
+        supports ``newton_raphson``/``newton`` and ``gauss_newton``/``gn``.
+    tolerance : float, optional
+        Default 1e-6. SciPy's existing residual acceptance is 10*tolerance.
+        Custom options use this as residual_tol unless explicitly overridden.
+    max_iterations : int, optional
+        Default 100. Sets native maxfev (hybr) or maxiter (lm). For custom
+        solvers, fills the trial-attempt budget unless explicitly overridden;
+        accepted iterations, trials, and residual evaluations are distinct.
+    options : dict or root-options dataclass, optional
+        Native SciPy options, or StepControlOptions/NewtonOptions for custom
+        solvers. Explicit custom dictionary fields override constructor defaults;
+        a matching dataclass supplies every option. See result.effective_options.
     derivative_method : str, optional
-        Finite difference method to be used when the problem Jacobian is not provided. Defaults to '2-point'
-    derivative_abs_step : float, optional
-        Finite difference absolute step size to be used when the problem Jacobian is not provided. Defaults to 1e-6
-    print_convergence : bool, optional
-        If True, displays the convergence progress. Defaults to True.
-    plot_convergence : bool, optional
-        If True, plots the convergence progress. Defaults to False.
+        ``2-point``, ``3-point``, or ``cs`` for a missing analytic Jacobian.
+        The selected backend owns differentiation, avoiding nested probes.
+    derivative_abs_step : float or array, optional
+        Physical probe distance, default 1e-6. Custom options may override this
+        or select scaled probes using finite_diff_step instead.
+    print_convergence, plot_convergence : bool, optional
+        Enable console and live figure output; defaults True and False.
+    plot_scale : str, optional
+        Residual axis scale; default ``log``.
     logger : logging.Logger, optional
-        Logger object to which logging messages will be directed. Defaults to None.
+        Destination for convergence messages.
     update_on : str, optional
-        Specifies if the convergence report should be updated on a new function evaluations ("function") or on gradient evaluations ("gradient"). Defaults to "function".
+        ``function`` (default), ``gradient``, or custom-only ``iteration``.
+        Function observations can include rejected trials; iteration observations
+        contain the initial state and accepted moves only. Probes never add rows.
     callback_func : callable, optional
-        Observation callback receiving a detached ``(x, observation_count)``.
-        The count describes recorded function/Jacobian observations, not native
-        solver iterations. Numerical derivative probes do not invoke it.
+        Receives detached ``(x, callback_count)``. Native SciPy calls it for
+        selected observations. Custom solvers call it at the initial state and
+        accepted moves, independently of update_on; False or StopIteration stops.
+    library : str, keyword-only
+        ``scipy`` (default) or ``pysolver``. Custom roots are independent Python
+        algorithms using SciPy linear algebra, not native MINPACK wrappers.
 
     Attributes
     ----------
-    backend_result : scipy.optimize.OptimizeResult or None
-        Detached native result, including SciPy's original counters and status.
-    result : scipy.optimize.OptimizeResult or None
-        Final point and residual, package-level call counts, native success,
-        and the residual-based acceptance decision. The existing additional
-        residual check uses ``10 * tolerance``, reported as ``residual_tolerance``.
+    backend_result, result : scipy.optimize.OptimizeResult or None
+        Detached backend result and enriched public result. Final coordinates
+        come from the backend. Custom success requires the residual target;
+        result.fun is None when the initial residual is undefined.
     convergence_history : dict
-        Point-consistent function/Jacobian observations and optional final
-        result record. ``norm_step`` is displacement between observed points,
-        not necessarily an accepted solver step.
-    iteration_count : None
-        Native LM/hybrid do not expose accepted-iteration counts. Their
-        ``iteration_history`` is therefore empty.
+        Selected observations, with scalar values even in summary history mode.
+        A displacement between function observations is not an accepted step.
+    iteration_history : list
+        Custom initial/accepted records. Native LM/hybrid expose no iterations,
+        so their list is empty and iteration_count is None.
+    iteration_count : int or None
+        Accepted custom moves, excluding the initial record and derivative probes.
 
-
-    Methods
-    -------
-    solve(x0)
-        Solve the system of nonlinear equations using the specified initial guess `x0`.
-    residual(x)
-        Evaluate the vector of residuals of the at a given point `x`.
-    gradient(x)
-        Evaluate the Jacobian of the system at a given point `x`.
-    print_convergence_history()
-        Print the convergence history of the problem.
-    plot_convergence_history()
-        Plot the convergence history.
-
+    Notes
+    -----
+    solve(x0) continues to return a solution vector. Custom history_level selects
+    full coordinate storage, scalar summary records, or no stored histories.
+    Model-domain recovery uses pysolver_view.DomainError; unrelated programming
+    exceptions propagate. A new solve resets all per-run counters and histories.
     """
 
     def __init__(
@@ -117,6 +103,8 @@ class NonlinearSystemSolver:
         logger=None,
         update_on="function",
         callback_func=None,
+        *,
+        library="scipy",
     ):
         # Initialize class variables
         self.problem = problem
@@ -124,23 +112,43 @@ class NonlinearSystemSolver:
         self.plot = plot_convergence
         self.plot_scale = plot_scale
         self.logger = logger
-        self.method = method
+        if library not in ("scipy", "pysolver"):
+            raise ValueError("library must be 'scipy' or 'pysolver'.")
+        self.library = library
+        self.requested_method = method
+        canonical = normalize_method(method)
+        if library == "scipy":
+            native_methods = {"levenberg_marquardt": "lm", "powell_hybrid": "hybr"}
+            if canonical not in native_methods:
+                raise ValueError(
+                    "SciPy root supports only lm/hybr and their author-name aliases here."
+                )
+            self.method = native_methods[canonical]
+        else:
+            self.method = canonical
         self.tol = tolerance
         self.maxiter = max_iterations
-        self.options = copy.deepcopy(options) if options else {}
+        self.options = (
+            resolve_root_options(
+                canonical,
+                options,
+                tolerance,
+                max_iterations,
+                derivative_method,
+                derivative_abs_step,
+            )
+            if library == "pysolver"
+            else copy.deepcopy(options) if options else {}
+        )
         self.derivative_method = derivative_method
         self.derivative_abs_step = derivative_abs_step
         self.callback_func = callback_func
         self.callback_func_call_count = 0
 
-        # Define the maximun number of iterations
-        if method == "hybr":
-            self.options["maxfev"] = self.maxiter
-        elif method == "lm":
-            self.options["maxiter"] = self.maxiter
-        else:
-            raise ValueError(
-                f"Invalid solver. Available options: {', '.join(SOLVER_OPTIONS)}"
+        # Preserve the native constructor's evaluation-budget mapping.
+        if library == "scipy":
+            self.options["maxfev" if self.method == "hybr" else "maxiter"] = (
+                self.maxiter
             )
 
         # Check for logger validity
@@ -152,9 +160,14 @@ class NonlinearSystemSolver:
 
         # Check for valid display_on value
         self.update_on = update_on
-        if update_on not in ["function", "gradient"]:
+        allowed_updates = (
+            ("function", "gradient", "iteration")
+            if library == "pysolver"
+            else ("function", "gradient")
+        )
+        if update_on not in allowed_updates:
             raise ValueError(
-                "Invalid value for 'update_on'. It should be either 'function' or 'gradient'."
+                f"Invalid update_on for {library}; choose from {allowed_updates}."
             )
 
         self.include_solution_in_footer = False
@@ -176,7 +189,7 @@ class NonlinearSystemSolver:
         self.func_count_tot = 0
         self.derivative_func_count = 0
         self.callback_func_call_count = 0
-        self.iteration_count = None
+        self.iteration_count = 0 if self.library == "pysolver" else None
         self.iteration_history = []
         self.success = None
         self.message = None
@@ -184,6 +197,7 @@ class NonlinearSystemSolver:
         self.result = None
         self.solution_report = []
         self.elapsed_time = None
+        self._last_record_x = self._last_record_residual = None
         self.convergence_history = {
             "x": [],
             "residual": [],
@@ -198,9 +212,9 @@ class NonlinearSystemSolver:
         }
 
     def solve(self, x0):
-        """Return the native solver's final point and retain detailed results.
+        """Return the selected backend's final point and retain detailed results.
 
-        ``backend_result`` is a detached native SciPy result. ``result`` adds
+        ``backend_result`` is a detached backend result. ``result`` adds
         package-level evaluation accounting and residual-based acceptance.
         Native LM/hybrid iteration counts are unavailable; evaluations and
         Jacobian requests are never relabeled as iterations. Reusing this
@@ -210,24 +224,39 @@ class NonlinearSystemSolver:
         self.start_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         start_time = time.perf_counter()
         self._write_header()
-        solution = root(
-            self.residual,
-            np.array(x0, dtype=float, copy=True),
-            jac=self.gradient,
-            method=self.method,
-            tol=self.tol,
-            options=self.options.copy(),
-        )
+        if self.library == "pysolver":
+            solution = RootSolverAdapter(self).solve(
+                np.array(x0, dtype=float, copy=True)
+            )
+        else:
+            solution = root(
+                self.residual,
+                np.array(x0, dtype=float, copy=True),
+                jac=self.gradient,
+                method=self.method,
+                tol=self.tol,
+                options=self.options.copy(),
+            )
 
         # The backend's returned point and residual are authoritative, even
         # when its most recent evaluation was an unsuccessful trial.
         self.backend_result = copy.deepcopy(solution)
         self.x_final = np.array(solution.x, copy=True)
-        self.f_final = np.atleast_1d(np.array(solution.fun, copy=True))
+        self.f_final = (
+            None
+            if solution.fun is None
+            else np.atleast_1d(np.array(solution.fun, copy=True))
+        )
         self.success = bool(solution.success)
         self.message = str(solution.message)
-        residual_norm = float(np.linalg.norm(self.f_final))
-        residual_tolerance = 10 * self.tol
+        residual_norm = (
+            float(np.linalg.norm(self.f_final))
+            if self.f_final is not None
+            else float("inf")
+        )
+        residual_tolerance = (
+            self.options.residual_tol if self.library == "pysolver" else 10 * self.tol
+        )
         if self.success and (
             not np.isfinite(residual_norm) or residual_norm > residual_tolerance
         ):
@@ -239,22 +268,31 @@ class NonlinearSystemSolver:
                 f"target {residual_tolerance:0.2e})."
             )
 
-        self.residuals_last = self.f_final.copy()
-        self._residual_x = self.x_final.copy()
-        self._residual_value = self.f_final.copy()
-        history = self.convergence_history
-        if not history["x"] or not (
-            np.array_equal(history["x"][-1], self.x_final)
-            and np.array_equal(history["residual"][-1], self.f_final)
+        self.residuals_last = None if self.f_final is None else self.f_final.copy()
+        self._residual_x = None if self.f_final is None else self.x_final.copy()
+        self._residual_value = None if self.f_final is None else self.f_final.copy()
+        if (
+            self.f_final is not None
+            and not (
+                np.array_equal(self._last_record_x, self.x_final)
+                and np.array_equal(self._last_record_residual, self.f_final)
+            )
+            and not (
+                self.library == "pysolver" and self.options.history_level == "none"
+            )
         ):
             self._print_convergence_progress(
-                self.x_final, self.f_final, event_kind="final", notify=False
+                self.x_final,
+                self.f_final,
+                event_kind="final",
+                notify=False,
+                iteration=self.iteration_count,
             )
         self.elapsed_time = time.perf_counter() - start_time
         self.result = copy.deepcopy(solution)
         self.result.update(
             x=self.x_final.copy(),
-            fun=self.f_final.copy(),
+            fun=None if self.f_final is None else self.f_final.copy(),
             success=self.success,
             solver_success=bool(solution.success),
             message=self.message,
@@ -262,8 +300,12 @@ class NonlinearSystemSolver:
             residual_tolerance=residual_tolerance,
             nfev=self.func_count_tot,
             njev=self.grad_count,
-            nit=None,
-            iteration_count=None,
+            nit=self.iteration_count,
+            iteration_count=self.iteration_count,
+            library=self.library,
+            method=normalize_method(self.method),
+            method_name=METHOD_DISPLAY_NAMES[normalize_method(self.method)],
+            requested_method=self.requested_method,
             func_count=self.func_count,
             func_count_total=self.func_count_tot,
             derivative_func_count=self.derivative_func_count,
@@ -368,11 +410,14 @@ class NonlinearSystemSolver:
         gradient evaluations, norm of the residuals, and norm of the steps.
         """
         # Define header text
+        method_name = METHOD_DISPLAY_NAMES[normalize_method(self.method)].replace(
+            "\u2013", "-"
+        )
         initial_message = (
             f" Solve system of equations for {type(self.problem).__name__}\n"
-            f" Root-finding algorithm employed: {self.method}"
+            f" Root-finding algorithm employed: {method_name} ({self.library})"
         )
-        self.header = f" {'Func-eval':>15}{'Grad-eval':>15}{'Norm of residual':>24}{'Point displacement':>24} "
+        self.header = f" {'Func-eval':>15}{'Grad-eval':>15}{'Norm of residual':>24}{'Step size':>24} "
         separator = "-" * len(self.header)
         lines_to_output = [
             separator,
@@ -390,11 +435,12 @@ class NonlinearSystemSolver:
         self.solution_report.extend(lines_to_output)
 
     def _print_convergence_progress(
-        self, x, residual=None, *, event_kind=None, notify=True
+        self, x, residual=None, *, event_kind=None, notify=True, iteration=None
     ):
         """Record and render a supplied point/residual snapshot without evaluation.
 
-        This history contains observations, not native accepted iterations.
+        This history contains the selected observation stream. Custom iteration
+        rows represent accepted moves; native root rows remain observations.
         ``norm_step`` measures displacement between recorded points. The legacy
         callback receives ``(x, observation_count)`` with a detached point.
         Final-result records do not generate an extra callback.
@@ -416,7 +462,7 @@ class NonlinearSystemSolver:
             "x": point.copy(),
             "residual": value.copy(),
             "event_kind": self.update_on if event_kind is None else event_kind,
-            "iteration": None,
+            "iteration": iteration,
             "grad_count": self.grad_count,
             "func_count": self.func_count,
             "func_count_total": self.func_count_tot,
@@ -425,8 +471,14 @@ class NonlinearSystemSolver:
             "norm_step": norm_step,
         }
         self.x_last = point.copy()
-        for key, entry in record.items():
-            self.convergence_history[key].append(entry)
+        self._last_record_x = point.copy()
+        self._last_record_residual = value.copy()
+        level = self.options.history_level if self.library == "pysolver" else "full"
+        if level != "none":
+            for key, entry in record.items():
+                self.convergence_history[key].append(
+                    None if level == "summary" and key in ("x", "residual") else entry
+                )
         self._render_progress(record)
         if self.plot:
             self._plot_callback()
@@ -492,9 +544,13 @@ class NonlinearSystemSolver:
             self.fig, self.ax = plt.subplots()
             (self.obj_line,) = self.ax.plot([], [], color="#D95319", marker="o")
             self.ax.set_xlabel(
-                "Function evaluations (excluding derivative probes)"
-                if self.update_on == "function"
-                else "Jacobian evaluations"
+                "Accepted iterations"
+                if self.update_on == "iteration"
+                else (
+                    "Function evaluations (excluding derivative probes)"
+                    if self.update_on == "function"
+                    else "Jacobian evaluations"
+                )
             )
             self.ax.set_ylabel("Two-norm of residual vector")
             self.ax.set_yscale(self.plot_scale)
@@ -504,9 +560,13 @@ class NonlinearSystemSolver:
 
         # Update plot data with current values
         iteration = (
-            self.convergence_history["func_count"]
-            if self.update_on == "function"
-            else self.convergence_history["grad_count"]
+            self.convergence_history["iteration"]
+            if self.update_on == "iteration"
+            else (
+                self.convergence_history["func_count"]
+                if self.update_on == "function"
+                else self.convergence_history["grad_count"]
+            )
         )
         residual = self.convergence_history["norm_residual"]
         self.obj_line.set_xdata(iteration)

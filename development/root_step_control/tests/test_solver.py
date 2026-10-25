@@ -16,7 +16,11 @@ import numpy as np
 from pysolver_view.nonlinear_system import NonlinearSystemProblem
 
 from ..src.problems import BrownAlmostLinearProblem, get_problems
-from ..src.solver import DomainError, StepControlOptions, solve_root
+from pysolver_view.solvers.root.solver import (
+    DomainError,
+    StepControlOptions,
+    solve_root,
+)
 
 METHODS = ("lm", "hybr")
 
@@ -525,7 +529,11 @@ class RootStepControlTests(unittest.TestCase):
             [10.0, 5.0],
             jacobian,
             method="hybr",
-            options=dict(initial_radius=100.0, max_radius=100.0),
+            # Identity geometry deliberately triggers the poor-model branch;
+            # automatic scaling can avoid those rejected steps altogether.
+            options=dict(
+                initial_radius=100.0, max_radius=100.0, jacobian_scaling=False
+            ),
         )
         self.assertTrue(result.success, result.message)
         self.assertEqual(result.njev, len(jacobian_calls))
@@ -610,7 +618,13 @@ class RootStepControlTests(unittest.TestCase):
                 [0.0, 0.0],
                 jac=lambda x: np.diag([1e150, 1.0]),
                 method="hybr",
-                options=dict(initial_radius=1e-20, max_radius=1e-20, max_iterations=3),
+                # Retain the unbalanced geometry that provokes this overflow.
+                options=dict(
+                    initial_radius=1e-20,
+                    max_radius=1e-20,
+                    max_iterations=3,
+                    jacobian_scaling=False,
+                ),
             )
         self.assertFalse(result.success)
         self.assertIn("budget", result.message)

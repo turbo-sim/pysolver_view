@@ -16,7 +16,9 @@ application's `NonlinearSystemProblem` subclasses. A generic solver can understa
 that an evaluation is undefined without knowing which fluid or equation of state
 caused the failure.
 
-Keep the backend distinction visible when integrating the experiments:
+The public integration now exposes custom methods through `library="pysolver"`.
+See [usage and integration contracts](10_public_interface.md). The following
+distinctions still determine ownership and maintenance:
 
 | Implementation | What pysolver_view would own | Maintenance consequence |
 | --- | --- | --- |
@@ -25,11 +27,9 @@ Keep the backend distinction visible when integrating the experiments:
 | Experimental controlled LM | Trust-region loop, damping solve and acceptance policy | Own numerical implementation and its validation |
 | Experimental controlled hybrid | Dogleg steps, Broyden updates, refresh and acceptance policy | Own numerical implementation; differs from native HYBRJ |
 
-Use backend names that communicate this distinction, such as
-`scipy_minpack` and `experimental_controlled`, alongside the method name. These
-are proposed API names, not options currently implemented. Do not silently
-replace existing `method="hybr"` behavior when adding the controlled variant to
-the public solver class.
+Implemented backend names are `scipy` and `pysolver`, alongside the canonical
+method name. Native SciPy remains the default; existing `method="hybr"` calls
+retain their backend unless the caller selects the custom library.
 
 A shared reporting contract should distinguish accepted iterates, attempted
 solver steps, derivative probes, and rejected domain evaluations. Share scaling
@@ -47,7 +47,8 @@ calls and conservation checks. Its single-phase regime and chosen start do not
 establish reliability near saturation, critical conditions, phase changes, or
 difficult flash calculations.
 
-Before promoting the new backends, I would complete these steps:
+Before adopting the custom backends routinely for fragile thermodynamics,
+I would complete these steps:
 
 1. **Build a thermodynamic regression collection.** Use representative coupled
    flow, energy, pressure and property equations through `NonlinearSystemProblem`.
@@ -77,7 +78,8 @@ Before promoting the new backends, I would complete these steps:
 6. **Make integration reproducible.** Keep native backends available, document
    status semantics, test supported dependencies, preserve third-party notices
    when reusing code, and add explicit compatibility tests for the SLSQP private
-   bridge. Fix final-point and history semantics before public integration.
+   bridge. Final-point and history semantics are integrated and tested; broader
+   installed-package and consumer validation remains part of release preparation.
 
 Continuation between nearby operating points can complement these controls.
 It reduces the distance a solve needs to travel; a maximum step then protects

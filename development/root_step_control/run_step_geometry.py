@@ -21,7 +21,7 @@ from matplotlib.patches import Circle
 import numpy as np
 from scipy.optimize import brentq
 
-from development.root_step_control.src.solvers.linear_model import LinearModel
+from pysolver_view.solvers.root.linear_model import LinearModel
 
 
 def example():

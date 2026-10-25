@@ -45,8 +45,9 @@ if __name__ == "__main__":
 import numpy as np
 import scipy
 from scipy.optimize import OptimizeResult, root
+from pysolver_view import NonlinearSystemProblem, NonlinearSystemSolver
 
-from development.root_step_control.src import solver as solver_module
+from pysolver_view.solvers.root import solver as solver_module
 from development.root_step_control.src.problems import (
     BroydenTridiagonalProblem,
     get_large_problems,
@@ -191,7 +192,7 @@ def measure_custom_kernels(measurements, solver, enabled):
     """
     replacements = []
     if enabled and solver_configuration(solver).backend == "pysolverview":
-        from development.root_step_control.src.solvers import linear_model
+        from pysolver_view.solvers.root import linear_model
 
         bindings = [
             (linear_model, name, label)
@@ -287,7 +288,24 @@ def make_options(problem, solver):
     return solver_module.StepControlOptions(**controls, **common)
 
 
-def run_solver(problem, solver, options, residual, jacobian):
+class MeasuredRootProblem(NonlinearSystemProblem):
+    """Delegate to the supplied measured callbacks without changing a benchmark model."""
+
+    def __init__(self, residual, jacobian):
+        """Retain residual/Jacobian callbacks for one timed solve."""
+        self._residual = residual
+        self._jacobian = jacobian
+
+    def residual(self, x):
+        """Evaluate the original problem through its optional timing wrapper."""
+        return self._residual(x)
+
+    def gradient(self, x):
+        """Evaluate the supplied analytic Jacobian through its timing wrapper."""
+        return self._jacobian(x)
+
+
+def run_solver(problem, solver, options, residual, jacobian, *, interface="public"):
     """Dispatch one registered configuration to native root or solve_root using the
     supplied callbacks.
     """
@@ -300,9 +318,26 @@ def run_solver(problem, solver, options, residual, jacobian):
             method=configuration.method,
             options=options,
         )
-    return solver_module.solve_root(
-        residual, problem.x0, jac=jacobian, method=configuration.method, options=options
+    if interface == "core":
+        return solver_module.solve_root(
+            residual,
+            problem.x0,
+            jac=jacobian,
+            method=configuration.method,
+            options=options,
+        )
+    if interface != "public":
+        raise ValueError("interface must be 'public' or 'core'.")
+    facade = NonlinearSystemSolver(
+        MeasuredRootProblem(residual, jacobian),
+        method=configuration.method,
+        library="pysolver",
+        options=options,
+        print_convergence=False,
+        update_on="iteration",
     )
+    facade.solve(problem.x0)
+    return facade.result
 
 
 def check_result(problem, solver, options, result, *, strict=True):
@@ -413,7 +448,9 @@ def optional_mean(values):
     )
 
 
-def measure_batch(problem, solver, options, batch_size, instrumented):
+def measure_batch(
+    problem, solver, options, batch_size, instrumented, *, interface="public"
+):
     """Average a sequential batch; retain failures instead of dropping samples."""
     totals = dict(
         total_ns=0,
@@ -444,7 +481,9 @@ def measure_batch(problem, solver, options, batch_size, instrumented):
             before = perf_counter_ns()
             measurements.start_ns = before
             try:
-                result = run_solver(problem, solver, options, residual, jacobian)
+                result = run_solver(
+                    problem, solver, options, residual, jacobian, interface=interface
+                )
             except solver_module.DomainError as error:
                 result = OptimizeResult(
                     x=np.full(problem.n, np.nan),
@@ -865,8 +904,11 @@ def write_report(output, summary, metadata):
         "heated-duct models with 20 and 100 variables. These results do not establish "
         "universal speed or thermodynamic robustness.",
         "",
-        "Imports, construction, warmups, verification, and plots are excluded from "
-        "solve timing. Native stopping rules may perform additional work below the "
+        "Imports, problem construction, warmups, verification, and plots are excluded from "
+        "solve timing. Custom totals include NonlinearSystemSolver construction, option "
+        "resolution, accepted-point reporting preparation, and detached result copies; "
+        "printing and live plotting are disabled. SciPy uses scipy.optimize.root directly. "
+        "Native stopping rules may perform additional work below the "
         "common residual target. Reported rankings depend on hardware, numerical "
         "library builds, logging, starts, and control policies.",
         "",
@@ -1049,6 +1091,8 @@ def run_benchmark(
             for _, solver, _ in configurations
         },
         method_display_names=METHOD_NAMES,
+        custom_interface="NonlinearSystemSolver(library='pysolver'), construction and reporting preparation included",
+        scipy_interface="scipy.optimize.root directly",
         notes="Batch averages per solve. Analytic Jacobians. Clean totals determine ratios. Native linear-algebra timing unavailable. Failures retained.",
         problems=[
             dict(

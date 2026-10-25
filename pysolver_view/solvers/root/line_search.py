@@ -11,13 +11,16 @@ from scipy.linalg import norm
 
 from .trial_step import prepare_trial
 from .linear_model import LinearModel
-from ..options import NewtonOptions
-from ..exceptions import BudgetExhausted, DomainError, UnrepresentableProbe
+from .options import NewtonOptions
+from .exceptions import BudgetExhausted, DomainError, UnrepresentableProbe
 from .evaluation import ModelEvaluator, prepare_inputs
 from .history import HistoryRecorder
+from .scaling import JacobianScaling
 
 
-def solve_newton_raphson(fun, x0, jac=None, *, options=None, callback=None):
+def solve_newton_raphson(
+    fun, x0, jac=None, *, options=None, callback=None, observer=None
+):
     """Solve a square system with strict Newton directions and optional backtracking.
 
     A numerically singular Jacobian terminates rather than selecting a truncated
@@ -35,10 +38,13 @@ def solve_newton_raphson(fun, x0, jac=None, *, options=None, callback=None):
         stationary=None,
         options=options,
         callback=callback,
+        observer=observer,
     )
 
 
-def solve_gauss_newton(fun, x0, jac=None, *, options=None, callback=None):
+def solve_gauss_newton(
+    fun, x0, jac=None, *, options=None, callback=None, observer=None
+):
     """Solve a square or overdetermined system with least-squares directions.
 
     Guarded QR and minimum-norm SVD handle full and deficient numerical rank.
@@ -56,6 +62,7 @@ def solve_gauss_newton(fun, x0, jac=None, *, options=None, callback=None):
         stationary=_least_squares_stationary,
         options=options,
         callback=callback,
+        observer=observer,
     )
 
 
@@ -85,6 +92,7 @@ def _solve_line_search(
     stationary,
     options,
     callback,
+    observer,
 ):
     """Execute full steps or Armijo recovery with supplied direction and rank rules.
 
@@ -104,11 +112,12 @@ def _solve_line_search(
     if not isinstance(options, NewtonOptions):
         raise TypeError("options must be NewtonOptions or a dictionary.")
     x, scale = prepare_inputs(x0, options.x_scale)
+    scaling = JacobianScaling(x.size, options.jacobian_scaling)
     search = options.backtracking
     limits = None if search is None else search.step_limits
     step_limit = None if limits is None else limits.initial_limit
     step_policy = "full_step" if search is None else "backtracking"
-    recorder = HistoryRecorder(options.history_level, callback)
+    recorder = HistoryRecorder(options.history_level, callback, observer)
     evaluator = ModelEvaluator(
         fun, jac, scale, options, recorder, square=requires_square
     )
@@ -146,6 +155,7 @@ def _solve_line_search(
             numerical_rank=last_rank,
             linear_residual_norm=linear_residual_norm,
             linear_algebra=linear_stats,
+            **scaling.diagnostics(),
         )
 
     def record_accepted(
@@ -156,6 +166,7 @@ def _solve_line_search(
             return False
         return recorder.accepted(
             x,
+            f,
             iteration=nit,
             residual_norm=f_norm,
             step_norm=step_norm,
@@ -195,12 +206,15 @@ def _solve_line_search(
             scaled_jacobian = jacobian * scale
         if not np.all(np.isfinite(scaled_jacobian)):
             return finish(3, "Scaled linear model overflowed; revise variable scaling.")
+        factors = scaling.update(scaled_jacobian)
         try:
             model = LinearModel(
-                scaled_jacobian, f, stats=linear_stats, compute_gradient=False
+                scaled_jacobian * factors, f, stats=linear_stats, compute_gradient=False
             )
             last_rank = model.numerical_rank
-            direction = compute_direction(model)
+            # Factor in equilibrated coordinates, then apply all line-search and
+            # physical step controls to the original caller-scaled displacement.
+            direction = factors * compute_direction(model)
         except np.linalg.LinAlgError as error:
             return finish(7, f"Newton linear solve failed: {error}")
         except ValueError as error:

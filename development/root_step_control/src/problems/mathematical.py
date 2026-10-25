@@ -15,7 +15,7 @@ Variable scales are fixed characteristic displacements, not residual weights.
 
 import numpy as np
 
-from ..exceptions import DomainError
+from pysolver_view.solvers.root import DomainError
 from .base import BenchmarkProblem, MINPACK_SOURCE, _dimension
 
 

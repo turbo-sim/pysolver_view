@@ -1,12 +1,12 @@
 # Implementation plan: Newton and Gauss–Newton root solvers
 
-**Status: implemented in development on 25 October 2026.** The two methods,
-options, and aliases below are available in
-[root_step_control/](root_step_control). Production-package integration remains
-separate. This note retains the design and validation plan; current usage and
-mathematics are in the [Newton-family note](root_step_control/notes/08_newton_and_gauss_newton.md).
+**Status: implemented and integrated on 25 October 2026.** The methods and options
+are packaged in [`pysolver_view/solvers/root/`](../pysolver_view/solvers/root/)
+and exposed through `NonlinearSystemSolver(library="pysolver")`. Benchmarks stay
+under [root_step_control/](root_step_control). This note retains the design plan;
+current usage is in the [public-interface note](root_step_control/notes/10_public_interface.md).
 
-Validation completed: 91 development tests; 100 native/custom LM/hybrid
+Validation completed: 94 development tests plus public integration regressions; 100 native/custom LM/hybrid
 convergence cases; 112 custom comparison configurations; and 11,760 timed
 solves across 56 configurations. Failed and unsupported convergence cases are
 retained in the [custom report](root_step_control/results_custom_convergence/REPORT.md);
@@ -109,7 +109,7 @@ the linear model.
 | Current component | Reuse or required change |
 | --- | --- |
 | [src/solver.py](root_step_control/src/solver.py) | Preserve the public `solve_root` entry point and aliases. Share budgets and evaluation/history mechanics through the `solvers/` helpers; retain the `DomainError` re-export. |
-| [src/solvers/linear_model.py](root_step_control/src/solvers/linear_model.py) | Reuse guarded QR and SVD factors and the existing `gauss_newton` direction. Add an explicit strict Newton direction/rank contract. |
+| [linear_model.py](../pysolver_view/solvers/root/linear_model.py) | Reuse guarded QR and SVD factors and the existing `gauss_newton` direction. Add an explicit strict Newton direction/rank contract. |
 | [src/problems/mathematical.py](root_step_control/src/problems/mathematical.py) | Reuse the standard mathematical systems and 100-variable cases. Add only problems needed to exercise missing behavior. |
 | [src/problems/thermodynamics.py](root_step_control/src/problems/thermodynamics.py) | Reuse the 20- and 100-variable CoolProp duct models and their physical checks. |
 | [tests/](root_step_control/tests) | Extend the existing behavioral, numerical and accounting checks. |
@@ -208,7 +208,7 @@ growth factor. Reject infinity, NaN, and ambiguous disabling values explicitly.
 A proposed protected call is:
 
 ```python
-# Development API; production-package integration remains separate.
+from pysolver_view import solve_root, NewtonOptions, BacktrackingOptions, StepLimitOptions
 result = solve_root(
     problem.residual,
     problem.x0,
@@ -451,20 +451,20 @@ remain visible in the results.
 | Phase | Work and files | Completion check |
 | --- | --- | --- |
 | 1. Contracts | Finalize the two new methods, alias registry, option validation, default policies and result meanings. | Tests specify aliases, omitted versus explicit `None`, full-step acceptance, protected acceptance and incompatible dimensions. |
-| 2. Shared mechanics | Share evaluation/accounting through `src/solvers/evaluation.py` and records/results through `src/solvers/history.py`; keep exceptions in `src/exceptions.py`. Preserve re-exports of `DomainError`. | Existing correctness coverage remains passing, with obsolete trajectory expectations updated; LM/hybrid convergence and control contracts are verified. |
-| 3. Directions | Extend `src/solvers/linear_model.py` with strict Newton/rank diagnostics and shared factorization reuse. Make unnecessary gradient work optional where required. | Independent linear-solve and least-squares references agree. |
-| 4. Full-step modes | Add the Newton-family loop in `src/solvers/line_search.py` and dispatch from `src/solver.py`. | Pure Newton and full Gauss–Newton follow their stated commit policies. |
-| 5. Protected modes | Keep bounded Armijo acceptance in `src/solvers/line_search.py` and trial construction in `src/solvers/trial_step.py` and select it for either method when `backtracking` is enabled. | Every evaluated trial respects the active limit; domain recovery and budgets are correct. |
+| 2. Shared mechanics | Share evaluation/accounting through `pysolver_view/solvers/root/evaluation.py` and records/results through `pysolver_view/solvers/root/history.py`; keep exceptions in `pysolver_view/solvers/root/exceptions.py`. Preserve re-exports of `DomainError`. | Existing correctness coverage remains passing, with obsolete trajectory expectations updated; LM/hybrid convergence and control contracts are verified. |
+| 3. Directions | Extend `pysolver_view/solvers/root/linear_model.py` with strict Newton/rank diagnostics and shared factorization reuse. Make unnecessary gradient work optional where required. | Independent linear-solve and least-squares references agree. |
+| 4. Full-step modes | Add the Newton-family loop in `pysolver_view/solvers/root/line_search.py` and dispatch from `src/solver.py`. | Pure Newton and full Gauss–Newton follow their stated commit policies. |
+| 5. Protected modes | Keep bounded Armijo acceptance in `pysolver_view/solvers/root/line_search.py` and trial construction in `pysolver_view/solvers/root/trial_step.py` and select it for either method when `backtracking` is enabled. | Every evaluated trial respects the active limit; domain recovery and budgets are correct. |
 | 6. Experiments | Extend the existing `run_*.py` scripts and policy-aware audits. | Scripts run independently and save complete cases to new `results_<case>/` folders. |
 | 7. Documentation | Update exports, usage guide, mathematics note and comparisons. Every new function/class needs an explanatory docstring. | Imports, commands, links and method descriptions match actual behavior. |
 
 The new shared modules should contain code reused across methods. Keep
 study-specific orchestration, plots and reports in the existing runner scripts.
-Keep new methods experimental until their thermodynamic cases have been reviewed.
+Keep custom methods opt-in; broader application-specific thermodynamic validation remains necessary.
 
 Implementation detail: both driver families now use shared residual/Jacobian
 accounting, history/callback/result handling and trial-coordinate helpers in
-`src/solvers/`. Options and exceptions have dedicated modules. The trust-region
+`pysolver_view/solvers/root/`. Options and exceptions have dedicated modules. The trust-region
 and line-search loops retain their own acceptance, stopping and Jacobian-refresh
 policies. Problems are grouped by mathematical and thermodynamic definitions,
 with shared benchmark metadata and separate suite selection.

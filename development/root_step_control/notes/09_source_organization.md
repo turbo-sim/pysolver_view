@@ -1,15 +1,17 @@
 # Source organization and refactor validation
 
-The development implementation separates public configuration and dispatch,
+The packaged implementation separates public configuration and dispatch,
 numerical algorithms, shared evaluation/history mechanics, and benchmark
-problems. This refactor changes organization without changing step policies.
+problems. The public `NonlinearSystemSolver` adapter adds observation streams without
+changing step policies. Problems and study runners remain under development.
+See [public integration](10_public_interface.md).
 
 ## Public interface
 
 The package-level exports and `src.solver` entry point remain available:
 
 ```python
-from development.root_step_control import (
+from pysolver_view import (
     BacktrackingOptions,
     DomainError,
     NewtonOptions,
@@ -19,10 +21,10 @@ from development.root_step_control import (
 )
 ```
 
-`src.solver` normalizes aliases and dispatches directly to one of four named
-solver functions. `src.options`
+`pysolver_view.solvers.root.solver` normalizes aliases and dispatches directly to one of four named
+solver functions. `root.options`
 defines the configuration dataclasses; trust-radius settings and optional
-Armijo backtracking retain distinct semantics. `src.exceptions` defines the
+Armijo backtracking retain distinct semantics. `root.exceptions` defines the
 shared domain-error protocol and internal budget/probe termination signals.
 The problem classes and suite functions previously exported by `src.problems`
 remain importable from that path, which is now a package.
@@ -33,7 +35,7 @@ tests and timing instrumentation use the new paths directly.
 ## Four methods, two shared engines
 
 The public dispatcher maps each canonical author name to a dedicated function.
-The functions are also exported directly by `development.root_step_control`:
+The functions are also exported directly by `pysolver_view`:
 
 | Entry point | Numerical choices | Shared engine |
 | --- | --- | --- |
@@ -56,14 +58,15 @@ alias and human-readable method name.
 
 ## Algorithm and helper boundaries
 
-| Module under `src/solvers/` | Responsibility |
+| Module under `pysolver_view/solvers/root/` | Responsibility |
 | --- | --- |
 | `trust_region.py` | Levenberg–Marquardt and Powell hybrid entry points, Powell update helper, and shared trust-region acceptance/recovery. |
 | `line_search.py` | Newton–Raphson and Gauss–Newton entry points, direction/stationarity helpers, and shared full-step or Armijo recovery. |
 | `linear_model.py` | Local residual model, cached QR/SVD, Broyden factor updates, strict Newton/least-squares directions, LM and dogleg subproblems. |
 | `evaluation.py` | Initial-vector preparation, residual shape/finiteness checks, analytic or numerical Jacobians, call budgets and probe accounting. |
 | `history.py` | Accepted/evaluated/trial records, detached callback records and final results from the last accepted point. |
-| `trial_step.py` | Trial coordinates and bounds on their actual scaled displacement, including floating-point rounding. |
+| `scaling.py` | Numerical Jacobian column equilibration from fresh derivatives, separately from fixed physical variable scales. |
+| `trial_step.py` | Trial coordinates and bounds on actual physical and numerical scaled displacement, including floating-point rounding. |
 
 The two drivers share bookkeeping while retaining their numerical decisions.
 The history recorder does not decide whether a point is accepted or whether
@@ -72,11 +75,12 @@ recognized model-domain failures; the driver determines whether recovery is
 possible. Method-specific diagnostics remain explicit when records/results are
 built.
 
-There are two trial-coordinate helpers. The trust-region helper preserves
-subproblem clipping followed by coordinate-rounding correction. The line-search
-helper preserves its fraction and actual-displacement accounting for Armijo.
+The trust-region trial helpers preserve physical clipping and check both
+numerical and physical distances after coordinate rounding. The line-search
+helper preserves its fraction and physical-displacement accounting for Armijo.
 They share a module because they address the same geometry, but retain their
-arithmetic order and failure messages. Neither helper chooses variable scales.
+arithmetic order and failure messages. Scaling factors are chosen separately
+by `JacobianScaling`; derivative probes continue to use fixed physical scales.
 
 `linear_model.py` keeps its name because it owns persistent model/factor state
 and Broyden updates in addition to solving linear subproblems.
@@ -92,11 +96,18 @@ its analytic derivatives and physical diagnostics.
 `suites.py` chooses the original, large and extension collections. It imports
 the thermodynamic module only when a collection needs it. Mathematical problems
 and solver use do not require CoolProp. Problem definitions import `DomainError`
-directly from `exceptions.py`. The numerical modules never import benchmark
+from the packaged root API; roots and SLSQP share one `DomainError` class. The numerical modules never import benchmark
 problems. Study-specific plotting, timing and report generation remain in the
 `run_*.py` scripts.
 
 ## Module reorganization verification on 25 October 2026
+
+The verification records below describe the module/dispatch/public-interface
+refactors before Jacobian equilibration became the default. Their exact-history
+comparisons and timings are historical evidence for those refactors; they do
+not assert identical histories with the current scaling enabled. See the
+[current scaling policy](07_usage_and_controls.md#jacobian-scaling-and-physical-limits)
+for the default and its effect on the four methods.
 
 - All 91 existing development tests pass after updating implementation imports.
 - Fresh native/custom and custom-only convergence studies contain 100 and 112
@@ -163,3 +174,30 @@ and `results_method_dispatch_validation/after/`. The latter also contains the
 `convergence/` and `custom/` runs. As with other generated study outputs, these
 remain ignored by Git. The numerical policies and main solver default are
 unchanged.
+
+## Public integration validation
+
+All four numerical methods now live in `pysolver_view/solvers/root/`. The
+development API re-exports them; benchmark problems remain under `src/problems/`.
+The public frontend delegates numerical derivatives to the core and translates
+its evaluation and accepted-point events without extra model calls.
+
+On 25 October 2026, the combined package, custom SLSQP study, and root development
+suite passed **418 tests**, with ten Hessian tests excluded by the agreed scope.
+This includes 94 development root checks and 29 public-root regressions.
+Forward/central/complex derivatives, probe budgets, cancellation, shared domain
+errors, authoritative results, history modes and solver reuse are covered.
+
+The public-interface convergence rerun verifies all 100 native/custom cases.
+The custom comparison retains 98/101 eligible roots, six unsupported rectangular
+Newton configurations, and five correctly rejected inconsistent configurations.
+All 51 eligible controlled cases succeed. All 11,760 timed solves in the
+56-configuration main benchmark reach the target, as do 3,168 timed solves in
+the separate direct/public comparison. Work counts agree across interfaces.
+[Timing findings](06_time_performance.md) describe the measured interface cost
+and the observed variation between timing sessions.
+
+The four-solver demo succeeds on both of its problems. A separate isolated copy
+of the package runs all four methods without importing development files.
+Wheel construction is still unverified because poetry-core is unavailable;
+this smoke check does not replace the release installation matrix.

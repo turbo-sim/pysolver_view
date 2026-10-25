@@ -38,7 +38,8 @@ describe their separate options and rank requirements.
 The aliases `lm`, `hybr`, `newton`, and `gn` resolve to `levenberg_marquardt`,
 `powell_hybrid`, `newton_raphson`, and `gauss_newton` respectively.
 The result's `method` contains the canonical author name; `requested_method`
-retains the supplied spelling. The default is `levenberg_marquardt`.
+retains the supplied spelling. The low-level `solve_root` default is `levenberg_marquardt`; the public
+`NonlinearSystemSolver` retains native SciPy `hybr` as its default.
 Legends use Levenberg–Marquardt, Powell hybrid, Newton–Raphson, and
 Gauss–Newton. Aliases do not create extra algorithms or change the backend.
 
@@ -69,6 +70,8 @@ $$
 $|p_i| \leq s_i\Delta_{\max}$. Residual scaling is separate and belongs in the
 model. The same radius controls apply before evaluating accepted, rejected, and
 undefined trials. Numerical-derivative probes have a separate distance setting.
+The default Jacobian equilibration described below changes the numerical model
+coordinates, while retaining these physical distance limits and probe settings.
 
 ## What SciPy already provides
 
@@ -108,7 +111,7 @@ also require optional **CoolProp**; `--suite original` runs the seven mathematic
 systems without it.
 
 ```python
-from development.root_step_control import StepControlOptions, solve_root
+from pysolver_view import StepControlOptions, solve_root
 from development.root_step_control.src.problems import ExtendedRosenbrockProblem
 
 problem = ExtendedRosenbrockProblem(n=10)
@@ -118,6 +121,7 @@ options = StepControlOptions(
     max_radius=1.0,
     growth_factor=1.5,
     x_scale=problem.x_scale,
+    jacobian_scaling=True,  # Default: balance Jacobian columns numerically.
     residual_tol=1e-8,
 )
 result = solve_root(problem.residual, problem.x0, jac=problem.gradient,
@@ -146,6 +150,7 @@ return `False` to stop. The callback receives a copy.
 | `shrink_factor` | Multiplicative radius reduction after poor or undefined trials |
 | `acceptance_ratio` | Minimum ratio of actual to predicted merit reduction for acceptance |
 | `x_scale` | Positive fixed characteristic distance per variable; scalar broadcasts |
+| `jacobian_scaling` | Boolean, default `True`: balance the columns of `J * x_scale` in numerical coordinates; physical distance limits and derivative probes still use fixed `x_scale` |
 | `residual_tol` | Required residual two-norm for root success |
 | `xtol`, `gtol` | Stagnation/stationarity termination thresholds; never imply root success |
 | `max_iterations` | Budget of trial attempts, including rejected attempts |
@@ -158,17 +163,53 @@ Choose scales before selecting radii. For example, `x_scale=[100, 0.01]` and
 units, with an additional joint Euclidean constraint. A cap limits motion; it
 does not impose variable bounds or guarantee membership of a physical domain.
 
+## Jacobian scaling and physical limits
+
+All four custom methods enable `jacobian_scaling=True` by default. To disable
+it through the common interface, use
+`NonlinearSystemSolver(..., library="pysolver", options={"jacobian_scaling": False})`.
+For direct calls, use `StepControlOptions(jacobian_scaling=False)` for LM/hybrid
+or `NewtonOptions(jacobian_scaling=False)` for Newton/Gauss-Newton. This is a
+custom-backend option; native SciPy options and behavior are unchanged.
+
+Write $A_0=J\,\mathrm{diag}(s)$ and $C=\mathrm{diag}(c)$, where $c$ contains
+positive numerical factors. The solver factors $A=A_0C$ and converts a numerical
+step $v$ to the caller-scaled displacement $z=Cv$. The initial nonzero column
+norms define a fixed reference: their median in logarithmic coordinates.
+Each factor is that reference norm divided by the largest norm seen for its
+column on fresh Jacobian evaluations, clipped to
+$[\sqrt{\epsilon_{\mathrm{mach}}},1/\sqrt{\epsilon_{\mathrm{mach}}}]$.
+Zero columns keep factor one until a nonzero derivative appears. No extra model
+or derivative evaluations are needed. Hybrid freezes $C$ during Broyden updates
+and changes it only when evaluating a fresh Jacobian.
+
+LM and hybrid generate their candidates inside $\|v\|_2\leq\Delta$. If
+$\|Cv\|_2>\Delta$, the candidate is shortened along the same direction to
+honor the physical limit as well. Both norms are checked after coordinate
+rounding. This preserves a physical first-step cap of `initial_radius` and a
+persistent cap of `max_radius`; it is not an exact optimization over the
+intersection of the two trust regions.
+
+For full-rank Newton and Gauss-Newton, this invertible change of coordinates
+leaves the exact physical linear direction unchanged. Finite-precision solves
+and numerical-rank decisions can still differ. Rank-deficient Gauss-Newton's
+minimum-norm choice can change because its norm is now measured in numerical
+coordinates. Backtracking and its physical step limits retain their meanings.
+Scaling can improve poorly balanced Jacobians, but does not replace sensible
+residual normalization, physical limits, or domain-error handling.
+
 ## Algorithm and failure handling
 
-For $A=J\,\mathrm{diag}(s)$, both methods model
-$\frac12\|F+Az\|_2^2$ inside $\|z\|_2\leq\Delta$.
+With the numerical Jacobian $A=J\,\mathrm{diag}(s)C$, both trust-region methods
+model $\frac12\|F+Av\|_2^2$ inside $\|v\|_2\leq\Delta$, followed by the
+physical-distance safeguard described above. With scaling disabled, $C=I$.
 
 - **LM** obtains the unconstrained Gauss–Newton step from pivoted QR and a
   triangular solve when the factor passes its conditioning checks. Only when
   damping or a rank/conditioning fallback is needed does it compute an SVD.
-  Damping brackets $(A^TA+\lambda I)z=-A^TF$ using spectral coefficients; their
+  Damping brackets $(A^TA+\lambda I)v=-A^TF$ using spectral coefficients; their
   norm is evaluated without repeated multiplication by the right singular
-  vectors. The final step lies on the feasible side of the radius equation.
+  vectors. The numerical candidate lies on the feasible side of the radius equation.
   The implementation never explicitly forms the normal equations.
 - **Hybrid** follows the dogleg Cauchy-to-Gauss–Newton path to the radius boundary.
   A stable quadratic intersection computes the boundary step directly.
@@ -180,7 +221,8 @@ $\frac12\|F+Az\|_2^2$ inside $\|z\|_2\leq\Delta$.
   supply secant information and retain the current model. QR factors are updated
   with the Broyden matrix, with periodic refactorization to limit accumulated
   update error. Refactorizing a matrix does not itself evaluate a new Jacobian.
-- Predicted reduction uses the actual rounded step that will be evaluated.
+- Predicted reduction uses the actual rounded numerical displacement after
+  enforcing both distance limits.
   Accepted points strictly reduce the residual norm. Poor trials shrink the
   radius; good steps near the boundary may expand it up to the maximum.
   LM reuses its Jacobian and available factors on retries and recomputes them after acceptance;
@@ -194,12 +236,16 @@ $\frac12\|F+Az\|_2^2$ inside $\|z\|_2\leq\Delta$.
   least-squares point with a nonzero residual, tiny steps, or exhausted budgets
   means failure. This matters especially for LM and overdetermined systems.
 
-For hybrid, the update in fixed scaled coordinates is
+For hybrid, the update in the current numerical coordinates is
 
 $$
-A_{\mathrm{new}} = A + \frac{(y-Az)z^T}{z^Tz},\qquad
+A_{\mathrm{new}} = A + \frac{(y-Av)v^T}{v^Tv},\qquad
 y=F(x_{\mathrm{trial}})-F(x_{\mathrm{base}}).
 $$
+
+Here $v=C^{-1}\mathrm{diag}(s)^{-1}(x_{\mathrm{trial}}-x_{\mathrm{base}})$
+uses the actual rounded trial. Holding $C$ fixed through secant updates keeps
+the Jacobian model and its factors in the same coordinates.
 
 This retains the defining dogleg/Broyden structure of Powell's hybrid method.
 It differs from native MINPACK HYBRJ in its factorization safeguards, shared configurable
@@ -211,7 +257,7 @@ solver. See the [HYBRJ source](https://netlib.org/minpack/hybrj.f).
 
 Both custom methods support dense square and overdetermined systems; SciPy's
 native `hybr` requires a square system. The experiments have no sparse linear
-algebra, automatic scaling, bounds, robust loss, or global convergence guarantee.
+algebra, automatic residual scaling, bounds, robust loss, or global convergence guarantee.
 Residuals and variables still need sensible scaling. Damped LM still performs
 dense SVDs, and Python bookkeeping can be material for inexpensive residuals.
 The [timing experiment](06_time_performance.md) compares the custom solvers with
@@ -230,6 +276,8 @@ Using these compiled kernels does not call a native root solver.
   Its `radius` is the radius available for the next trial.
 - `trials`: every attempted step, its accepted base, actual distance, radius
   used, agreement ratio, domain validity, and acceptance decision.
+  Trust-region `scaled_step_norm` is the physical norm $\|z\|_2$;
+  `numerical_step_norm` separately records $\|C^{-1}z\|_2$.
 - `evaluations`: every residual call, tagged as initial, trial, or finite
   difference. Derivative probes are intentionally outside the trial-radius
   guarantee and use their own distance setting.
@@ -243,6 +291,13 @@ counts undefined solver trials, not a failed initial evaluation or derivative
 probe. A callback always receives a complete detached accepted-point record,
 including coordinates, regardless of the storage level. Use full histories
 when auditing actual evaluation locations; summary logs cannot reconstruct them.
+
+Results also expose `jacobian_scaling`, the final detached factor vector
+`jacobian_scale`, and `jacobian_scale_updates`. The factors multiply `x_scale`
+for numerical linear algebra; they do not replace the physical scales used
+for reported step sizes. Updates count fresh nonzero Jacobians used to update
+the factors, not Broyden updates or extra model calls. If no Jacobian is needed,
+the factors remain one and the update count is zero.
 
 The cap is subject only to floating-point rounding (eight machine epsilons in
 the scaled norm). Coordinate-rounding checks reserve room for addition to large
@@ -272,7 +327,7 @@ The extended suite adds 100-variable Broyden tridiagonal, dense discrete integra
 equation, and 50-cell thermodynamic duct systems. See the benchmark help and
 [timing instructions](06_time_performance.md) for selecting these workloads.
 
-The production `pysolver_view/nonlinear_system.py` remains separate. Its current
-history records residual/Jacobian calls, and its final-point selection uses
-`x_last` instead of SciPy's returned `solution.x`; that should be addressed
-before integrating accepted-iterate reporting into the public solver class.
+The public `NonlinearSystemSolver` now supports `library="pysolver"` for all four
+methods. Final points come from the backend, and accepted-iteration observations
+are available through `update_on="iteration"`. Native SciPy remains the default.
+See [public usage, option precedence, and callback contracts](10_public_interface.md).

@@ -8,7 +8,7 @@ import numpy as np
 from scipy.linalg import norm
 from scipy.optimize import brentq
 
-from ..src.solvers.linear_model import LinearModel
+from pysolver_view.solvers.root.linear_model import LinearModel
 
 
 class LinearModelTests(unittest.TestCase):
@@ -188,9 +188,7 @@ class LinearModelTests(unittest.TestCase):
 
     def test_missing_condition_estimator_preserves_svd_fallback(self):
         """Without TRCON, the model must retain a correct conservative SVD solve."""
-        with patch(
-            "development.root_step_control.src.solvers.linear_model._TRCON", None
-        ):
+        with patch("pysolver_view.solvers.root.linear_model._TRCON", None):
             model = LinearModel(np.eye(4), np.arange(4.0))
             np.testing.assert_array_equal(model.gauss_newton, -np.arange(4.0))
             self.assertEqual(model.stats["svd_factorizations"], 1)

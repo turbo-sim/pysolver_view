@@ -56,6 +56,19 @@ normalized residuals and their consistent Jacobian from the problem object.
 The radius is a joint Euclidean limit, so all variables cannot simultaneously
 take their individual component maxima.
 
+Default `jacobian_scaling=True` adds numerical column equilibration without
+changing these physical limits. If $S=\operatorname{diag}(s)$ and $C$ contains
+the numerical factors, the solver factors $A=J_rSC$ and uses numerical steps
+$v=C^{-1}z$. LM and hybrid first restrict $\|v\|_2\leq\Delta$, then shorten
+the candidate along its ray if needed to also satisfy $\|z\|_2\leq\Delta$.
+Both norms are checked after coordinate rounding. Thus automatic numerical
+scaling does not make a specified temperature or pressure cap less strict.
+It changes the numerical direction and can improve column balance, but does
+not choose physical scales, normalize residuals, or guarantee domain validity.
+Set `jacobian_scaling=False` to disable it. The
+[scaling policy](07_usage_and_controls.md#jacobian-scaling-and-physical-limits)
+describes how factors are updated from fresh Jacobians.
+
 As an illustrative calculation, suppose two solver coordinates are temperature
 and $y=\log(p/p_{\mathrm{ref}})$, with scales $s_T=10\,\mathrm{K}$ and $s_y=0.05$.
 An initial radius of 0.2 limits the first trial to $|\Delta T|\leq2\,\mathrm{K}$
@@ -65,7 +78,7 @@ approximately 5.13%. These numbers illustrate how to interpret the settings;
 they are not fluid-independent safe values.
 
 ```python
-from development.root_step_control import StepControlOptions
+from pysolver_view import StepControlOptions
 
 # Example only: coordinates are T and log(p / p_ref).
 options = StepControlOptions(
@@ -115,12 +128,14 @@ Use actual versus predicted decrease:
 
 $$
 \rho_k=\frac{\phi(x_k)-\phi(x_k+p_k)}
-{-r_k^T A_kz_k-\frac12\|A_kz_k\|_2^2},
-\qquad A_k\approx J_r(x_k)\,\operatorname{diag}(s).
+{-r_k^T A_kv_k-\frac12\|A_kv_k\|_2^2},
+\qquad A_k\approx J_r(x_k)SC_k,\qquad v_k=C_k^{-1}S^{-1}p_k.
 $$
 
-Here $A_k$ is the current scaled Jacobian model; hybrid can use a Broyden
-approximation between full Jacobian evaluations.
+Here $p_k$ is the actual rounded physical displacement after enforcing both
+limits. $A_k$ is the current numerical Jacobian model; hybrid can use a Broyden
+approximation between full Jacobian evaluations, keeping $C_k$ fixed during
+those updates. With scaling disabled, $C_k=I$ and $v_k=z_k$.
 
 With a positive denominator, the current implementation accepts a valid trial
 only if the numerator is positive and $\rho_k\geq\eta$, with default
@@ -133,7 +148,7 @@ The implemented update policy is:
 | Outcome | Radius action |
 | --- | --- |
 | Undefined trial, or $\rho_k<0.25$ | Multiply by `shrink_factor` |
-| $\rho_k\geq0.75$ and the trial uses at least 80% of the radius | Multiply by `growth_factor`, capped at `max_radius` |
+| $\rho_k\geq0.75$ and either the physical or numerical step norm uses at least 80% of the radius | Multiply by `growth_factor`, capped at `max_radius` |
 | Otherwise | Retain the radius |
 
 Thus even a weak accepted step can lead to a smaller next radius. Growth is not
@@ -153,6 +168,8 @@ try a smaller or opposite-sided probe. Prefer verified analytic derivatives
 when available for the intended regime. Domain-aware finite differences need
 their own implementation, accuracy checks and budgets. Reducing the probe
 indefinitely can amplify property noise and cancellation.
+Jacobian equilibration does not change probe distances or add model calls;
+an explicit `derivative_abs_step` still selects physical probe distances.
 
 The PySolverView suite includes real CoolProp evaluations in coupled
 20- and 100-variable heated-duct models. Its benchmark compares both generous and conservative trial
@@ -170,6 +187,7 @@ complete cost measure.
 | Available now | Proposed next additions |
 | --- | --- |
 | Fixed initial/max radii, conditional growth, explicit failure recovery, histories | Problem-provided cheap domain checks or physical distance limits |
+| Default numerical Jacobian equilibration independent of physical `x_scale` | Problem-specific validation of scales and behavior near domain boundaries |
 | Separate derivative-probe setting and failure diagnostic | Domain-aware derivative probes and checks against property noise |
 | Retained accepted solver state | Application-managed thermodynamic state restoration |
 | Standard mathematical suite and single-phase CoolProp duct workloads | Application thermodynamics, difficult starts and phase-boundary comparisons |

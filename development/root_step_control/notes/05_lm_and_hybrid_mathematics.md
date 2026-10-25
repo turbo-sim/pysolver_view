@@ -6,7 +6,7 @@ a damped least-squares step. Powell's hybrid method chooses a step along a
 dogleg path and reuses derivative information through secant updates.
 
 This note derives those ideas and connects them to
-[trust_region.py](../src/solvers/trust_region.py) and [linear_model.py](../src/solvers/linear_model.py).
+[trust_region.py](../../../pysolver_view/solvers/root/trust_region.py) and [linear_model.py](../../../pysolver_view/solvers/root/linear_model.py).
 The equations describe the algorithm families; details explicitly labeled
 **PySolverView** describe our experimental implementation. It is an independent
 implementation, not the exact native MINPACK iteration used by SciPy.
@@ -44,11 +44,26 @@ Variables such as temperature and pressure have different units. Define
 characteristic distances $s_i>0$ and
 
 $$
-S=\operatorname{diag}(s_1,\ldots,s_n),\qquad p=Sz,\qquad A=JS.
+S=\operatorname{diag}(s_1,\ldots,s_n),\qquad u=S^{-1}p,\qquad A_0=JS.
 $$
 
-Here $z$ is the dimensionless displacement. The linear residual model becomes
-$r+Az$, and its squared-norm model is
+Here $u$ is the dimensionless physical displacement. `x_scale` supplies $s$;
+these caller-selected values remain fixed throughout a solve. The physical
+distance control is
+
+$$
+\|u\|_2=\|S^{-1}p\|_2\leq\Delta.
+$$
+
+The custom solvers also enable `jacobian_scaling=True` by default. Positive
+numerical factors $c_i$ form $C=\operatorname{diag}(c)$ and define
+
+$$
+u=Cz,\qquad p=SCz,\qquad A=A_0C=JSC.
+$$
+
+The local linear algebra uses the numerical coordinate $z$. The residual model
+is $r+Az$, and its squared-norm model is
 
 $$
 q(z)=\frac12\|r+Az\|_2^2
@@ -56,22 +71,60 @@ q(z)=\frac12\|r+Az\|_2^2
 \qquad g=A^Tr,\quad B=A^TA.
 $$
 
-When $A=JS$, $g$ is the gradient of the merit function in scaled coordinates.
+When $A=JSC$, $g$ is the gradient of the merit function in numerical coordinates.
 Hybrid will also use an approximate $A$; its $g$ is then the gradient of the
 current model, which can differ from the true merit gradient.
 
-The trust region is
+The numerical trust region is
 
 $$
 \|z\|_2\leq\Delta
 \quad\Longleftrightarrow\quad
-\|S^{-1}p\|_2\leq\Delta.
+\|(SC)^{-1}p\|_2\leq\Delta.
 $$
 
-It is a sphere in scaled coordinates and generally an ellipsoid in physical
-coordinates. In PySolverView, `x_scale` is the vector $s$ and `radius` is $\Delta$.
-This is a distance constraint, not a time step or a fraction of a Newton
-direction.
+It is a sphere in numerical coordinates and generally an ellipsoid in physical
+coordinates. A candidate computed inside this region is shortened along its
+ray if needed to enforce the separate physical cap $\|Cz\|_2\leq\Delta$.
+Both use the same configured `radius`, but different metrics. The controls
+remain distances, not time steps or fractions of a Newton direction. With
+`jacobian_scaling=False`, $C=I$ and the two metrics coincide.
+
+### How the numerical factors are chosen
+
+On the first fresh Jacobian with a nonzero column, let
+$a_{0j}=\|(A_0)_{:j}\|_2$ and choose a fixed reference
+
+$$
+a_{\mathrm{ref}}=
+\exp\!\left(\operatorname{median}_{j:a_{0j}>0}\log a_{0j}\right).
+$$
+
+For an even number of nonzero columns this is the geometric mean of the two
+middle norms. It is fixed for the solve, so changing the overall Jacobian
+magnitude does not repeatedly reset the coordinate convention. At each fresh
+Jacobian evaluation $k$, retain the largest observed norm per column and set
+
+$$
+\bar a_{kj}=\max_{0\leq\ell\leq k}\|(A_{0,\ell})_{:j}\|_2,\qquad
+c_{kj}=\operatorname{clip}\!\left(
+\frac{a_{\mathrm{ref}}}{\bar a_{kj}},
+\sqrt{\epsilon_{\mathrm{mach}}},
+\frac{1}{\sqrt{\epsilon_{\mathrm{mach}}}}\right).
+$$
+
+A column that has always been zero uses $c_j=1$ until a nonzero derivative
+is observed. Stable logarithmic norm calculations avoid intermediate overflow
+in this policy. Factors do not grow once a column has been observed nonzero.
+Scaling needs no additional model or derivative calls. LM updates it with
+fresh derivatives after acceptance; hybrid keeps $C$ fixed during all Broyden
+updates and recomputes it only with a fresh application Jacobian. A periodic
+QR refactorization of the approximate model does not change $C$.
+
+Balancing columns changes the LM damping metric and the hybrid dogleg path;
+it does not make every Jacobian well conditioned or guarantee convergence.
+The fixed physical $S$ still governs every solver trial's physical cap,
+reported scaled step size, small-step termination, and derivative probes.
 
 Residual scaling is a separate choice. If physical equations are $R(x)=0$,
 the application might supply $F(x)=W R(x)$ with fixed positive diagonal $W$.
@@ -125,8 +178,9 @@ $\epsilon_{\mathrm{mach}}\max(m,n)\sigma_{\max}$ are treated as zero for that
 Gauss–Newton solve. This numerical-rank decision is an approximation for tiny
 but mathematically nonzero singular values.
 
-Both methods immediately use $z_{\mathrm{GN}}$ when it fits inside the radius.
-Their main difference appears when it does not.
+Both methods use $z_{\mathrm{GN}}$ as the numerical candidate when it fits
+inside the numerical radius. The separate physical cap may still shorten it.
+Their main difference appears when the numerical candidate needs restriction.
 
 ## 3. Levenberg–Marquardt: solve the constrained quadratic model
 
@@ -181,21 +235,29 @@ direction; it does not merely multiply a Newton step by a scalar.
 In physical coordinates, the corresponding equation is
 
 $$
-\bigl(J^TJ+\lambda S^{-2}\bigr)p=-J^Tr.
+\bigl(J^TJ+\lambda (SC)^{-2}\bigr)p=-J^Tr.
 $$
 
-Thus the variable scales determine both the distance metric and the relative
-penalty on motion in each variable. In the large-damping limit,
-$p\approx-\lambda^{-1}S^2J^Tr$, which generally differs from an unscaled
-steepest-descent step in physical coordinates.
+Thus the combined numerical scales $SC$ determine the relative damping penalty
+on motion in each variable. In the large-damping limit,
+$p\approx-\lambda^{-1}(SC)^2J^Tr$, which generally differs from an unscaled
+steepest-descent step in physical coordinates. This equation describes the
+numerical LM candidate before the independent physical-distance safeguard.
+
+If $\|Cz\|_2>\Delta$, the custom driver replaces the candidate by a shorter
+point along the same ray. In exact arithmetic this retains positive model
+reduction for a descent candidate. It is generally **not** the exact minimizer
+of $q$ over the intersection $\|z\|_2\leq\Delta$, $\|Cz\|_2\leq\Delta$.
+The LM optimality equations above apply to the numerical subproblem, not
+necessarily to the final physically clipped trial.
 
 ### How PySolverView computes a damped step
 
-For the thin SVD $A=U\Sigma V^T$, put $c=U^Tr$. Then
+For the thin SVD $A=U\Sigma V^T$, put $b=U^Tr$. Then
 
 $$
 z(\lambda)=-Vd(\lambda),\qquad
-d_i(\lambda)=\frac{\sigma_i c_i}{\sigma_i^2+\lambda}.
+d_i(\lambda)=\frac{\sigma_i b_i}{\sigma_i^2+\lambda}.
 $$
 
 Since the columns of $V$ are orthonormal,
@@ -203,7 +265,7 @@ Since the columns of $V$ are orthonormal,
 $$
 h(\lambda)=\|z(\lambda)\|_2=\|d(\lambda)\|_2
 =\left(\sum_i
-\frac{\sigma_i^2c_i^2}{(\sigma_i^2+\lambda)^2}\right)^{1/2}.
+\frac{\sigma_i^2b_i^2}{(\sigma_i^2+\lambda)^2}\right)^{1/2}.
 $$
 
 When $h>0$, its derivative is
@@ -221,8 +283,8 @@ its midpoint. A previously computed damping value can initialize a retry.
 
 The code normalizes singular values by $\sigma_{\max}$ and searches in
 $\mu=\lambda/\sigma_{\max}^2$ to improve numerical scaling. With
-$a_i=\sigma_i/\sigma_{\max}$ and $b_i=a_ic_i/\sigma_{\max}$, it evaluates
-$d_i=b_i/(a_i^2+\mu)$. The length calculation therefore needs only scalar
+$a_i=\sigma_i/\sigma_{\max}$ and $e_i=a_ib_i/\sigma_{\max}$, it evaluates
+$d_i=e_i/(a_i^2+\mu)$. The length calculation therefore needs only scalar
 spectral coefficients during the search; multiplication by $V$ is needed
 once for the final step.
 
@@ -318,6 +380,8 @@ scaling details.
 ![LM and dogleg steps for one local least-squares model](../results_step_geometry/lm_hybrid_step_geometry.png)
 
 The figure uses $r=(3,3)^T$, $A=\operatorname{diag}(1,3)$, and $\Delta=1.5$.
+Here $A$ is an already specified numerical model; the illustration has no
+additional physical clipping. It isolates the two numerical subproblems.
 The unconstrained solution is $z_{\mathrm{GN}}=(-3,-1)^T$, outside the circle.
 The Cauchy point is $z_{\mathrm C}=(-15/41,-45/41)^T$, inside it.
 The hybrid step follows the second dogleg segment to the circle. LM follows a
@@ -346,7 +410,7 @@ The dogleg path determines a trial step. Reusing derivative information is a
 separate part of the hybrid algorithm. After a valid trial, define
 
 $$
-z=S^{-1}(x_{\mathrm{trial}}-x_{\mathrm{base}}),\qquad
+z=(SC)^{-1}(x_{\mathrm{trial}}-x_{\mathrm{base}}),\qquad
 y=F(x_{\mathrm{trial}})-F(x_{\mathrm{base}}).
 $$
 
@@ -361,7 +425,11 @@ $$
 Multiplying by $z$ verifies the secant condition immediately. Among all
 corrections $E$ satisfying $Ez=y-Az$, this correction has minimum Frobenius
 norm. It changes the model just enough, in that matrix norm, to match this
-one observed displacement. This choice depends on the fixed scaling $S$.
+one observed displacement. This choice depends on the current scaling $SC$.
+Both $S$ and $C$ stay fixed while this approximate model is updated. A new
+numerical metric is introduced only alongside a freshly evaluated Jacobian,
+with new factors built in that metric. The secant step uses the actual
+rounded physical coordinates after any radial clipping.
 
 A rejected but valid trial still contains derivative information. PySolverView may use
 its secant pair without accepting its location. The residual anchoring the
@@ -441,7 +509,7 @@ $$
 \beta_{\mathrm s}\Delta,
 &\text{undefined trial or }\rho<0.25,\\
 \min(\Delta_{\max},\beta_{\mathrm g}\Delta),
-&\rho\geq0.75\text{ and }\|z\|_2\geq0.8\Delta,\\
+&\rho\geq0.75\text{ and }\max(\|z\|_2,\|Cz\|_2)\geq0.8\Delta,\\
 \Delta,
 &\text{otherwise}.
 \end{cases}
@@ -452,11 +520,14 @@ $\beta_{\mathrm g}=\texttt{growth\_factor}$. The defaults are 0.25 and 2.
 Acceptance and radius adjustment are distinct decisions: with the default
 settings, a trial with $0.1\leq\rho<0.25$ is accepted but the next radius
 shrinks. A very accurate interior step does not automatically expand the
-radius, because the current boundary did not restrict it.
+radius, because neither boundary restricted it. Either an active numerical
+boundary or an active physical boundary can justify radius growth.
 
 Before evaluation, PySolverView checks the actual displacement after conversion back to
 physical coordinates and floating-point addition. The predicted reduction
-and secant update use that actual displacement. The driver permits only
+and secant update use the actual numerical displacement
+$z=(SC)^{-1}(x_{\mathrm{trial}}-x_{\mathrm{base}})$. The driver audits both
+physical and numerical norms, permitting only
 rounding-scale radius excess, bounded by eight machine epsilons in relative
 scaled norm, and reports stagnation if no suitable movement is representable.
 
@@ -510,12 +581,14 @@ $$
 \|F(x)\|_2\leq\texttt{residual\_tol}.
 $$
 
-If this is not satisfied, a fresh-model gradient below `gtol`, an unrepresentable
-or sufficiently small step, or an exhausted budget is a failure diagnostic.
+If this is not satisfied, a fresh-model numerical gradient
+$\|A^Tr\|_\infty$ below `gtol`, an unrepresentable or sufficiently small step,
+or an exhausted budget is a failure diagnostic. Jacobian scaling changes this
+gradient metric as well as the numerical trust geometry.
 The scaled small-step test is
 
 $$
-\|z\|_2\leq
+\|u\|_2=\|S^{-1}p\|_2\leq
 \texttt{xtol}\bigl(\texttt{xtol}+\|S^{-1}x\|_2\bigr).
 $$
 
@@ -525,14 +598,16 @@ refresh nor a monotone residual history guarantees eventual convergence.
 
 | Mathematical operation | PySolverView implementation |
 | --- | --- |
-| Scaled Jacobian $A=JS$ | `solve_root`: `jacobian * scale` |
+| Physical Jacobian coordinates $A_0=JS$ | `_solve_trust_region`: `jacobian * scale` |
+| Numerical factors $C$ and Jacobian $A=A_0C$ | `JacobianScaling.update` and `_solve_trust_region` |
 | QR or numerical-rank Gauss–Newton solve | `LinearModel.gauss_newton` |
 | Damped LM radius equation | `LinearModel._lm` |
 | Cauchy point and sphere intersection | `LinearModel._dogleg` |
-| Broyden correction and residual anchoring | `solve_root` after a valid trial |
+| Broyden correction and residual anchoring | `_update_powell_jacobian` after a valid trial |
 | Maintained QR and conditioning checks | `LinearModel.update` |
-| Actual/predicted reduction, acceptance, radius | `solve_root` |
-| Root-only success and failure diagnostics | `solve_root` |
+| Physical/numerical distance audit after rounding | `prepare_equilibrated_trial` |
+| Actual/predicted reduction, acceptance, radius | `_solve_trust_region` |
+| Root-only success and failure diagnostics | `_solve_trust_region` |
 
 The [linear-model tests](../tests/test_linear_model.py) check LM steps against an
 independent scalar root solve and optimality residuals, dogleg geometry,

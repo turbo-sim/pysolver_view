@@ -5,8 +5,8 @@ import warnings
 
 import numpy as np
 
-from ..src.solvers.linear_model import LinearModel
-from ..src.solver import (
+from pysolver_view.solvers.root.linear_model import LinearModel
+from pysolver_view.solvers.root.solver import (
     BacktrackingOptions,
     DomainError,
     METHOD_DISPLAY_NAMES,
