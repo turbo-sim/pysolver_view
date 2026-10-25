@@ -491,3 +491,13 @@ PyGMO/IPOPT/SNOPT execution, Hessian validation, downstream application migratio
 and publication remain outside this change. No release version was bumped.
 The user's existing edit to `demos/demo_slsqp_controls/run_sensitivity.py` was
 preserved.
+
+## Repository text and contributor guidance - 25 October 2026
+
+Replaced 164 typographic dash/minus characters in 29 maintained text files with
+ASCII hyphens, including solver labels, matching test expectations, notes, and
+a tracked SVG. Added root `AGENTS.md` covering the current source layout, Poetry
+environment, coding/docstring style, ASCII and Markdown math rules, numerical
+and reporting contracts, test selection, examples, plots, and release scope.
+The maintained-text scan is clean. The current master test runner passes
+502 tests, with the agreed 10 Hessian checks excluded.
