@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=6aa4cbdb"></script>
+    <script src="../../../../_static/documentation_options.js?v=d15849c6"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -179,6 +179,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.constrained_rosenbrock.html">pysolver_view.optimization.problems.constrained_rosenbrock module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.hs71.html">pysolver_view.optimization.problems.hs71 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.lorenz.html">pysolver_view.optimization.problems.lorenz module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.root_adapter.html">pysolver_view.optimization.problems.root_adapter module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.rosenbrock.html">pysolver_view.optimization.problems.rosenbrock module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.slsqp_controls.html">pysolver_view.optimization.problems.slsqp_controls module</a></li>
 </ul>
@@ -452,7 +453,9 @@
 
 <span class="sd">    A numerically singular Jacobian terminates rather than selecting a truncated</span>
 <span class="sd">    least-squares direction. NewtonOptions (or a matching dictionary) selects</span>
-<span class="sd">    protected backtracking by default; backtracking=None selects full steps.</span>
+<span class="sd">    protected backtracking by default; backtracking=None accepts valid steps</span>
+<span class="sd">    without a decrease test. first_step_fraction optionally damps the direction;</span>
+<span class="sd">    its default of one selects full steps when backtracking is disabled.</span>
 <span class="sd">    No least-squares stationarity test is applied to Newton directions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_solve_line_search</span><span class="p">(</span>
@@ -532,7 +535,8 @@
 <span class="sd">    the projected change. method labels results only and selects no algorithm.</span>
 
 <span class="sd">    Options may be NewtonOptions or a nested dictionary. Backtracking=None</span>
-<span class="sd">    commits every valid full step; otherwise Armijo decrease is required.</span>
+<span class="sd">    commits every valid fraction-controlled step; otherwise Armijo decrease is</span>
+<span class="sd">    required. The direction cap grows after accepted moves, up to a full step.</span>
 <span class="sd">    Only recognized DomainError and nonfinite model values permit trial retry.</span>
 <span class="sd">    Failures return the last accepted point, not the last attempted point.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -548,6 +552,9 @@
     <span class="n">limits</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">search</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">search</span><span class="o">.</span><span class="n">step_limits</span>
     <span class="n">step_limit</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">limits</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">limits</span><span class="o">.</span><span class="n">initial_limit</span>
     <span class="n">step_policy</span> <span class="o">=</span> <span class="s2">&quot;full_step&quot;</span> <span class="k">if</span> <span class="n">search</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;backtracking&quot;</span>
+    <span class="k">if</span> <span class="n">search</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">options</span><span class="o">.</span><span class="n">first_step_fraction</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">step_policy</span> <span class="o">=</span> <span class="s2">&quot;fraction_controlled&quot;</span>
+    <span class="n">fraction_cap</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">first_step_fraction</span>
     <span class="n">recorder</span> <span class="o">=</span> <span class="n">HistoryRecorder</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">history_level</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">observer</span><span class="p">)</span>
     <span class="n">evaluator</span> <span class="o">=</span> <span class="n">ModelEvaluator</span><span class="p">(</span>
         <span class="n">fun</span><span class="p">,</span> <span class="n">jac</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">recorder</span><span class="p">,</span> <span class="n">square</span><span class="o">=</span><span class="n">requires_square</span>
@@ -669,7 +676,11 @@
                     <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;No finite descent direction above residual tolerance.&quot;</span>
                 <span class="p">)</span>
 
-        <span class="n">fraction</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">step_limit</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">step_limit</span> <span class="o">/</span> <span class="n">raw_length</span><span class="p">)</span>
+        <span class="n">fraction</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">fraction_cap</span>
+            <span class="k">if</span> <span class="n">step_limit</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="nb">min</span><span class="p">(</span><span class="n">fraction_cap</span><span class="p">,</span> <span class="n">step_limit</span> <span class="o">/</span> <span class="n">raw_length</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">reductions_allowed</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">search</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">search</span><span class="o">.</span><span class="n">max_backtracks</span>
         <span class="k">for</span> <span class="n">backtracks</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">reductions_allowed</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">ntrials</span> <span class="o">&gt;=</span> <span class="n">options</span><span class="o">.</span><span class="n">max_iterations</span><span class="p">:</span>
@@ -711,7 +722,11 @@
                 <span class="n">valid</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">accepted</span> <span class="o">=</span> <span class="n">search</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">actual</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">actual</span> <span class="o">&gt;=</span> <span class="n">required</span><span class="p">)</span>
                 <span class="n">reason</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">&quot;full step&quot;</span>
+                    <span class="p">(</span>
+                        <span class="s2">&quot;full step&quot;</span>
+                        <span class="k">if</span> <span class="n">actual_fraction</span> <span class="o">==</span> <span class="mi">1</span>
+                        <span class="k">else</span> <span class="s2">&quot;fraction-controlled step&quot;</span>
+                    <span class="p">)</span>
                     <span class="k">if</span> <span class="n">search</span> <span class="ow">is</span> <span class="kc">None</span>
                     <span class="k">else</span> <span class="p">(</span>
                         <span class="s2">&quot;Armijo decrease&quot;</span>
@@ -758,6 +773,7 @@
                 <span class="p">)</span>
                 <span class="n">recorder</span><span class="o">.</span><span class="n">trial</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">trial_x</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">accepted</span><span class="p">:</span>
+                <span class="n">fraction_cap</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">fraction_cap</span> <span class="o">*</span> <span class="n">options</span><span class="o">.</span><span class="n">step_growth_factor</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">step_limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">backtracks</span><span class="p">:</span>
                         <span class="n">step_limit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">step_limit</span><span class="p">,</span> <span class="n">scaled_norm</span><span class="p">)</span>
@@ -775,7 +791,10 @@
                     <span class="k">return</span> <span class="n">finish</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Residual tolerance satisfied.&quot;</span><span class="p">)</span>
                 <span class="k">break</span>
             <span class="k">if</span> <span class="n">search</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">finish</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Undefined full-step trial: </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">trial_kind</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;full-step&quot;</span> <span class="k">if</span> <span class="n">actual_fraction</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;fraction-controlled&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="n">finish</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Undefined </span><span class="si">{</span><span class="n">trial_kind</span><span class="si">}</span><span class="s2"> trial: </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">ntrials</span> <span class="o">&gt;=</span> <span class="n">options</span><span class="o">.</span><span class="n">max_iterations</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">finish</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Trial iteration budget exhausted.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">evaluator</span><span class="o">.</span><span class="n">nfev</span> <span class="o">&gt;=</span> <span class="n">options</span><span class="o">.</span><span class="n">max_nfev</span><span class="p">:</span>

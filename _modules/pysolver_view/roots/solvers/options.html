@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=6aa4cbdb"></script>
+    <script src="../../../../_static/documentation_options.js?v=d15849c6"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -179,6 +179,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.constrained_rosenbrock.html">pysolver_view.optimization.problems.constrained_rosenbrock module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.hs71.html">pysolver_view.optimization.problems.hs71 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.lorenz.html">pysolver_view.optimization.problems.lorenz module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.root_adapter.html">pysolver_view.optimization.problems.root_adapter module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.rosenbrock.html">pysolver_view.optimization.problems.rosenbrock module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.slsqp_controls.html">pysolver_view.optimization.problems.slsqp_controls module</a></li>
 </ul>
@@ -553,8 +554,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure Newton-Raphson or Gauss-Newton with optional backtracking.</span>
 
 <span class="sd">    Omission enables protected backtracking. Explicit backtracking=None selects</span>
-<span class="sd">    full valid steps, even if the residual increases. Root success always</span>
-<span class="sd">    requires residual_tol. max_iterations counts trial attempts, max_nfev counts</span>
+<span class="sd">    valid steps without a decrease test, even if the residual increases. With</span>
+<span class="sd">    the default first_step_fraction=1 these are full Newton steps. Root success</span>
+<span class="sd">    always requires residual_tol. max_iterations counts trial attempts, max_nfev counts</span>
 <span class="sd">    every residual call including undefined trials and finite-difference probes.</span>
 <span class="sd">    For Gauss-Newton, gtol detects a negligible projected residual change</span>
 <span class="sd">    ||A z|| &lt;= gtol * min(1, ||F||), rather than testing an arbitrarily scaled</span>
@@ -565,6 +567,14 @@
 <span class="sd">    and physical backtracking limits unchanged. Full-rank Newton/Gauss-Newton</span>
 <span class="sd">    directions are unchanged in exact arithmetic; rank-deficient minimum-norm</span>
 <span class="sd">    Gauss-Newton directions can change. False disables numerical equilibration.</span>
+
+<span class="sd">    first_step_fraction is a dimensionless initial multiplier in (0, 1] of</span>
+<span class="sd">    the Newton direction. After each accepted move this cap grows by</span>
+<span class="sd">    step_growth_factor (finite and &gt;= 1), up to 1. It is independent of the</span>
+<span class="sd">    absolute x_scale displacement envelope; both restrictions apply when</span>
+<span class="sd">    backtracking is enabled, and Armijo may shorten the trial further. Rejected</span>
+<span class="sd">    trials do not advance the schedule. A growth factor of 1 fixes the cap.</span>
+<span class="sd">    The defaults leave existing full-step and backtracking behavior unchanged.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x_scale</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="mf">1.0</span>
@@ -581,11 +591,19 @@
         <span class="n">default_factory</span><span class="o">=</span><span class="n">BacktrackingOptions</span>
     <span class="p">)</span>
     <span class="n">jacobian_scaling</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">first_step_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">step_growth_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate common controls and normalize nested dictionaries consistently.&quot;&quot;&quot;</span>
         <span class="n">_validate_derivatives</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">_validate_scaling</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">_positive_finite</span><span class="p">(</span><span class="s2">&quot;first_step_fraction&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_step_fraction</span><span class="p">)</span>
+        <span class="n">_positive_finite</span><span class="p">(</span><span class="s2">&quot;step_growth_factor&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_growth_factor</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_step_fraction</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;first_step_fraction must be &lt;= 1.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_growth_factor</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;step_growth_factor must be &gt;= 1.&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;residual_tol&quot;</span><span class="p">,</span> <span class="s2">&quot;xtol&quot;</span><span class="p">,</span> <span class="s2">&quot;gtol&quot;</span><span class="p">,</span> <span class="s2">&quot;finite_diff_step&quot;</span><span class="p">):</span>
             <span class="n">_positive_finite</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;max_iterations&quot;</span><span class="p">,</span> <span class="s2">&quot;max_nfev&quot;</span><span class="p">):</span>

@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=6aa4cbdb"></script>
+    <script src="../_static/documentation_options.js?v=d15849c6"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -180,6 +180,7 @@
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.constrained_rosenbrock.html">pysolver_view.optimization.problems.constrained_rosenbrock module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.hs71.html">pysolver_view.optimization.problems.hs71 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.lorenz.html">pysolver_view.optimization.problems.lorenz module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.root_adapter.html">pysolver_view.optimization.problems.root_adapter module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.rosenbrock.html">pysolver_view.optimization.problems.rosenbrock module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.slsqp_controls.html">pysolver_view.optimization.problems.slsqp_controls module</a></li>
 </ul>
@@ -498,12 +499,14 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.derivative_abs_step"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.derivative_abs_step</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.derivative_method"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.derivative_method</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.finite_diff_step"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.finite_diff_step</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.first_step_fraction"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.first_step_fraction</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.gtol"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.gtol</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.history_level"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.history_level</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.jacobian_scaling"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.jacobian_scaling</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.max_iterations"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.max_iterations</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.max_nfev"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.max_nfev</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.residual_tol"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.residual_tol</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.step_growth_factor"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.step_growth_factor</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.x_scale"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.x_scale</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.xtol"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.xtol</span></code></a></li>
 </ul>
@@ -578,12 +581,13 @@ the initial trial against Armijo, but does not retry a rejected point.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pysolver_view.roots.solvers.options.NewtonOptions">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysolver_view.roots.solvers.options.</span></span><span class="sig-name descname"><span class="pre">NewtonOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_scale:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_tol:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xtol:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1e-12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtol:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1e-12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_nfev:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">finite_diff_step:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative_method:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'2-point'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative_abs_step:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_level:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'full'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backtracking:</span> <span class="pre">~pysolver_view.roots.solvers.options.BacktrackingOptions</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jacobian_scaling:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/roots/solvers/options.html#NewtonOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.roots.solvers.options.NewtonOptions" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysolver_view.roots.solvers.options.</span></span><span class="sig-name descname"><span class="pre">NewtonOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_scale:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_tol:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xtol:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1e-12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtol:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1e-12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_nfev:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">finite_diff_step:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative_method:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'2-point'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative_abs_step:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_level:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'full'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backtracking:</span> <span class="pre">~pysolver_view.roots.solvers.options.BacktrackingOptions</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jacobian_scaling:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step_fraction:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_growth_factor:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/roots/solvers/options.html#NewtonOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.roots.solvers.options.NewtonOptions" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Configure Newton-Raphson or Gauss-Newton with optional backtracking.</p>
 <p>Omission enables protected backtracking. Explicit backtracking=None selects
-full valid steps, even if the residual increases. Root success always
-requires residual_tol. max_iterations counts trial attempts, max_nfev counts
+valid steps without a decrease test, even if the residual increases. With
+the default first_step_fraction=1 these are full Newton steps. Root success
+always requires residual_tol. max_iterations counts trial attempts, max_nfev counts
 every residual call including undefined trials and finite-difference probes.
 For Gauss-Newton, gtol detects a negligible projected residual change
 ||A z|| &lt;= gtol * min(1, ||F||), rather than testing an arbitrarily scaled
@@ -593,6 +597,13 @@ maximum norms at fresh Jacobians. This leaves x_scale, derivative probes,
 and physical backtracking limits unchanged. Full-rank Newton/Gauss-Newton
 directions are unchanged in exact arithmetic; rank-deficient minimum-norm
 Gauss-Newton directions can change. False disables numerical equilibration.</p>
+<p>first_step_fraction is a dimensionless initial multiplier in (0, 1] of
+the Newton direction. After each accepted move this cap grows by
+step_growth_factor (finite and &gt;= 1), up to 1. It is independent of the
+absolute x_scale displacement envelope; both restrictions apply when
+backtracking is enabled, and Armijo may shorten the trial further. Rejected
+trials do not advance the schedule. A growth factor of 1 fixes the cap.
+The defaults leave existing full-step and backtracking behavior unchanged.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pysolver_view.roots.solvers.options.NewtonOptions.backtracking">
 <span class="sig-name descname"><span class="pre">backtracking</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#pysolver_view.roots.solvers.options.BacktrackingOptions" title="pysolver_view.roots.solvers.options.BacktrackingOptions"><span class="pre">BacktrackingOptions</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pysolver_view.roots.solvers.options.NewtonOptions.backtracking" title="Link to this definition">#</a></dt>
@@ -611,6 +622,11 @@ Gauss-Newton directions can change. False disables numerical equilibration.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pysolver_view.roots.solvers.options.NewtonOptions.finite_diff_step">
 <span class="sig-name descname"><span class="pre">finite_diff_step</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-07</span></em><a class="headerlink" href="#pysolver_view.roots.solvers.options.NewtonOptions.finite_diff_step" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysolver_view.roots.solvers.options.NewtonOptions.first_step_fraction">
+<span class="sig-name descname"><span class="pre">first_step_fraction</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#pysolver_view.roots.solvers.options.NewtonOptions.first_step_fraction" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -641,6 +657,11 @@ Gauss-Newton directions can change. False disables numerical equilibration.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pysolver_view.roots.solvers.options.NewtonOptions.residual_tol">
 <span class="sig-name descname"><span class="pre">residual_tol</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-08</span></em><a class="headerlink" href="#pysolver_view.roots.solvers.options.NewtonOptions.residual_tol" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pysolver_view.roots.solvers.options.NewtonOptions.step_growth_factor">
+<span class="sig-name descname"><span class="pre">step_growth_factor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.5</span></em><a class="headerlink" href="#pysolver_view.roots.solvers.options.NewtonOptions.step_growth_factor" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -845,12 +866,14 @@ growth toward max_limit. Numerical derivative probes have separate controls.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.derivative_abs_step"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.derivative_abs_step</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.derivative_method"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.derivative_method</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.finite_diff_step"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.finite_diff_step</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.first_step_fraction"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.first_step_fraction</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.gtol"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.gtol</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.history_level"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.history_level</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.jacobian_scaling"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.jacobian_scaling</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.max_iterations"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.max_iterations</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.max_nfev"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.max_nfev</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.residual_tol"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.residual_tol</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.step_growth_factor"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.step_growth_factor</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.x_scale"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.x_scale</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.roots.solvers.options.NewtonOptions.xtol"><code class="docutils literal notranslate"><span class="pre">NewtonOptions.xtol</span></code></a></li>
 </ul>

@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=6aa4cbdb"></script>
+    <script src="_static/documentation_options.js?v=d15849c6"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -182,6 +182,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html">pysolver_view.optimization.problems.constrained_rosenbrock module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.hs71.html">pysolver_view.optimization.problems.hs71 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.lorenz.html">pysolver_view.optimization.problems.lorenz module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.root_adapter.html">pysolver_view.optimization.problems.root_adapter module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.rosenbrock.html">pysolver_view.optimization.problems.rosenbrock module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.slsqp_controls.html">pysolver_view.optimization.problems.slsqp_controls module</a></li>
 </ul>
@@ -489,6 +490,7 @@
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#controlled-slsqp-callbacks">Controlled SLSQP callbacks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-equations-as-equality-constraints">Solving equations as equality constraints</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-unconstrained-optimization">Example 1: Unconstrained optimization</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-definition">Problem definition</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-implementation">Problem implementation</a></li>
@@ -549,6 +551,59 @@ The callback performs no additional model or KKT evaluations by itself.</p>
 controlled SLSQP at its current accepted point. Other callback errors propagate.
 <code class="docutils literal notranslate"><span class="pre">backend_callback</span></code> is available only with <code class="docutils literal notranslate"><span class="pre">library=&quot;pysolver&quot;</span></code>; native SciPy
 callbacks do not certify accepted points.</p>
+</section>
+<section id="solving-equations-as-equality-constraints">
+<h2>Solving equations as equality constraints<a class="headerlink" href="#solving-equations-as-equality-constraints" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">as_optimization_problem</span></code> to solve an existing root problem through an
+equality-capable optimizer. For residual equations <span class="math notranslate nohighlight">\(F(x)=0\)</span>, the adapter creates</p>
+<div class="math notranslate nohighlight">
+\[
+\min_x 0 \qquad \text{subject to } F(x)=0.
+\]</div>
+<p>It returns an <code class="docutils literal notranslate"><span class="pre">OptimizationProblem</span></code> wrapper without changing the original
+problem or evaluating it during conversion. The packed fitness is
+<code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">*residual(x)]</span></code>. If the root problem supplies <code class="docutils literal notranslate"><span class="pre">gradient(x)</span></code>, its Jacobian is
+reused with a zero objective-gradient row; otherwise the optimization frontend
+uses its configured numerical differentiation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pysolver_view</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">psv</span>
+
+<span class="n">equations</span> <span class="o">=</span> <span class="n">psv</span><span class="o">.</span><span class="n">ExtendedRosenbrockProblem</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">x0</span> <span class="o">=</span> <span class="n">equations</span><span class="o">.</span><span class="n">x0</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">psv</span><span class="o">.</span><span class="n">as_optimization_problem</span><span class="p">(</span><span class="n">equations</span><span class="p">,</span> <span class="n">n_variables</span><span class="o">=</span><span class="n">x0</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">psv</span><span class="o">.</span><span class="n">OptimizationSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="p">,</span>
+    <span class="n">library</span><span class="o">=</span><span class="s2">&quot;pysolver&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;slsqp&quot;</span><span class="p">,</span>
+    <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span>
+    <span class="n">max_iterations</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">extra_options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;first_step_fraction&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+        <span class="s2">&quot;max_step_fraction&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">&quot;step_growth_factor&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">print_convergence</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+<span class="n">residual_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">equations</span><span class="o">.</span><span class="n">residual</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">root_found</span> <span class="o">=</span> <span class="n">residual_norm</span> <span class="o">&lt;=</span> <span class="mf">1e-8</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">solver</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="n">root_found</span><span class="p">,</span> <span class="n">residual_norm</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">n_equations</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">n_variables</span></code> for square systems. Supply it explicitly
+for rectangular systems. Bounds default to unbounded variables; optional
+<code class="docutils literal notranslate"><span class="pre">bounds=(lower,</span> <span class="pre">upper)</span></code> follows the optimization problem convention. The adapter
+does not automatically rescale equations, infer physical bounds or apply the
+root solver’s <code class="docutils literal notranslate"><span class="pre">x_scale</span></code>. The original residual units and domain-error behavior
+remain part of the model contract.</p>
+<p>The selected backend must support the constraint count and rank. In particular,
+SLSQP cannot handle more equality constraints than variables, and dependent
+constraint rows can prevent its subproblem from being solved.</p>
+<p>Keep optimizer success and root acceptance separate. With a zero objective,
+stationarity alone provides no evidence that the equations hold. Check the
+returned point against the original residual tolerance. A maximum constraint
+violation and the residual two-norm are different metrics; the explicit
+post-solve evaluation above is additional model work outside solver counters.</p>
 </section>
 <section id="example-1-unconstrained-optimization">
 <h2>Example 1: Unconstrained optimization<a class="headerlink" href="#example-1-unconstrained-optimization" title="Link to this heading">#</a></h2>
@@ -923,6 +978,7 @@ separately; it is not repeated in <code class="docutils literal notranslate"><sp
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#controlled-slsqp-callbacks">Controlled SLSQP callbacks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-equations-as-equality-constraints">Solving equations as equality constraints</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-unconstrained-optimization">Example 1: Unconstrained optimization</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-definition">Problem definition</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-implementation">Problem implementation</a></li>

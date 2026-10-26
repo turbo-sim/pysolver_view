@@ -16,5 +16,6 @@ Submodules
    pysolver_view.optimization.problems.constrained_rosenbrock
    pysolver_view.optimization.problems.hs71
    pysolver_view.optimization.problems.lorenz
+   pysolver_view.optimization.problems.root_adapter
    pysolver_view.optimization.problems.rosenbrock
    pysolver_view.optimization.problems.slsqp_controls

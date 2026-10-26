@@ -42,6 +42,64 @@ controlled SLSQP at its current accepted point. Other callback errors propagate.
 `backend_callback` is available only with `library="pysolver"`; native SciPy
 callbacks do not certify accepted points.
 
+## Solving equations as equality constraints
+
+Use `as_optimization_problem` to solve an existing root problem through an
+equality-capable optimizer. For residual equations $F(x)=0$, the adapter creates
+
+$$
+\min_x 0 \qquad \text{subject to } F(x)=0.
+$$
+
+It returns an `OptimizationProblem` wrapper without changing the original
+problem or evaluating it during conversion. The packed fitness is
+`[0, *residual(x)]`. If the root problem supplies `gradient(x)`, its Jacobian is
+reused with a zero objective-gradient row; otherwise the optimization frontend
+uses its configured numerical differentiation.
+
+```python
+import numpy as np
+import pysolver_view as psv
+
+equations = psv.ExtendedRosenbrockProblem(n=2)
+x0 = equations.x0
+problem = psv.as_optimization_problem(equations, n_variables=x0.size)
+solver = psv.OptimizationSolver(
+    problem,
+    library="pysolver",
+    method="slsqp",
+    tolerance=1e-8,
+    max_iterations=200,
+    extra_options={
+        "first_step_fraction": 0.2,
+        "max_step_fraction": 1.0,
+        "step_growth_factor": 1.5,
+    },
+    print_convergence=False,
+)
+x = solver.solve(x0)
+residual_norm = np.linalg.norm(equations.residual(x))
+root_found = residual_norm <= 1e-8
+print(solver.success, root_found, residual_norm)
+```
+
+`n_equations` defaults to `n_variables` for square systems. Supply it explicitly
+for rectangular systems. Bounds default to unbounded variables; optional
+`bounds=(lower, upper)` follows the optimization problem convention. The adapter
+does not automatically rescale equations, infer physical bounds or apply the
+root solver's `x_scale`. The original residual units and domain-error behavior
+remain part of the model contract.
+
+The selected backend must support the constraint count and rank. In particular,
+SLSQP cannot handle more equality constraints than variables, and dependent
+constraint rows can prevent its subproblem from being solved.
+
+Keep optimizer success and root acceptance separate. With a zero objective,
+stationarity alone provides no evidence that the equations hold. Check the
+returned point against the original residual tolerance. A maximum constraint
+violation and the residual two-norm are different metrics; the explicit
+post-solve evaluation above is additional model work outside solver counters.
+
 ## Example 1: Unconstrained optimization
 
 ### Problem definition
