@@ -15,6 +15,7 @@ _EXPORTS = {
     "SOLVER_OPTIONS": (".roots.methods", "SOLVER_OPTIONS"),
     "OptimizationSolver": (".optimization", "OptimizationSolver"),
     "OptimizationProblem": (".optimization.problems", "OptimizationProblem"),
+    "as_optimization_problem": (".optimization.problems", "as_optimization_problem"),
     "count_constraints": (".optimization", "count_constraints"),
     "combine_objective_and_constraints": (
         ".optimization",

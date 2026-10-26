@@ -4,6 +4,7 @@ from importlib import import_module
 
 _EXPORTS = {
     "OptimizationProblem": (".base", "OptimizationProblem"),
+    "as_optimization_problem": (".root_adapter", "as_optimization_problem"),
     "StudyProblem": (".slsqp_controls", "StudyProblem"),
     "RosenbrockProblem": (".rosenbrock", "RosenbrockProblem"),
     "RosenbrockProblemConstrained": (
