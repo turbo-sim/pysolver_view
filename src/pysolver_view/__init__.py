@@ -2,7 +2,7 @@
 
 from importlib import import_module
 
-__version__ = "0.7.2"
+__version__ = "0.7.3"
 URL_GITHUB = "https://github.com/turbo-sim/pysolver_view"
 URL_DOCS = "https://turbo-sim.github.io/pysolver_view/"
 _EXPORTS = {
