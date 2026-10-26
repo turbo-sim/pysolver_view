@@ -61,8 +61,13 @@ options = {
 }
 ```
 
-`backtracking=None` selects full valid Newton-family steps, even if the residual
-increases. `backtracking={"step_limits": None}` retains Armijo backtracking but
+`backtracking=None` selects full valid Newton-family steps with the default
+`first_step_fraction=1`, even if the residual increases. A smaller
+`first_step_fraction` initially damps the direction; `step_growth_factor`
+(default 1.5) grows that cap after accepted moves, up to 1. Set growth to 1
+for a fixed fraction. This dimensionless control is separate from the absolute
+displacement envelope, and both restrictions apply when enabled.
+`backtracking={"step_limits": None}` retains Armijo backtracking but
 removes the distance envelope. Neither configuration is a universal robustness
 guarantee. Bounds and distances apply to scaled coordinates $z_i=p_i/s_i$;
 choose scales from physical characteristic changes. Normalize residual equations

@@ -25,7 +25,9 @@ def solve_newton_raphson(
 
     A numerically singular Jacobian terminates rather than selecting a truncated
     least-squares direction. NewtonOptions (or a matching dictionary) selects
-    protected backtracking by default; backtracking=None selects full steps.
+    protected backtracking by default; backtracking=None accepts valid steps
+    without a decrease test. first_step_fraction optionally damps the direction;
+    its default of one selects full steps when backtracking is disabled.
     No least-squares stationarity test is applied to Newton directions.
     """
     return _solve_line_search(
@@ -101,7 +103,8 @@ def _solve_line_search(
     the projected change. method labels results only and selects no algorithm.
 
     Options may be NewtonOptions or a nested dictionary. Backtracking=None
-    commits every valid full step; otherwise Armijo decrease is required.
+    commits every valid fraction-controlled step; otherwise Armijo decrease is
+    required. The direction cap grows after accepted moves, up to a full step.
     Only recognized DomainError and nonfinite model values permit trial retry.
     Failures return the last accepted point, not the last attempted point.
     """
@@ -117,6 +120,9 @@ def _solve_line_search(
     limits = None if search is None else search.step_limits
     step_limit = None if limits is None else limits.initial_limit
     step_policy = "full_step" if search is None else "backtracking"
+    if search is None and options.first_step_fraction < 1:
+        step_policy = "fraction_controlled"
+    fraction_cap = options.first_step_fraction
     recorder = HistoryRecorder(options.history_level, callback, observer)
     evaluator = ModelEvaluator(
         fun, jac, scale, options, recorder, square=requires_square
@@ -238,7 +244,11 @@ def _solve_line_search(
                     3, "No finite descent direction above residual tolerance."
                 )
 
-        fraction = 1.0 if step_limit is None else min(1.0, step_limit / raw_length)
+        fraction = (
+            fraction_cap
+            if step_limit is None
+            else min(fraction_cap, step_limit / raw_length)
+        )
         reductions_allowed = 0 if search is None else search.max_backtracks
         for backtracks in range(reductions_allowed + 1):
             if ntrials >= options.max_iterations:
@@ -280,7 +290,11 @@ def _solve_line_search(
                 valid = True
                 accepted = search is None or (actual > 0 and actual >= required)
                 reason = (
-                    "full step"
+                    (
+                        "full step"
+                        if actual_fraction == 1
+                        else "fraction-controlled step"
+                    )
                     if search is None
                     else (
                         "Armijo decrease"
@@ -327,6 +341,7 @@ def _solve_line_search(
                 )
                 recorder.trial(x, trial_x, record)
             if accepted:
+                fraction_cap = min(1.0, fraction_cap * options.step_growth_factor)
                 if step_limit is not None:
                     if backtracks:
                         step_limit = min(step_limit, scaled_norm)
@@ -344,7 +359,10 @@ def _solve_line_search(
                     return finish(0, "Residual tolerance satisfied.")
                 break
             if search is None:
-                return finish(4, f"Undefined full-step trial: {reason}")
+                trial_kind = (
+                    "full-step" if actual_fraction == 1 else "fraction-controlled"
+                )
+                return finish(4, f"Undefined {trial_kind} trial: {reason}")
             if ntrials >= options.max_iterations:
                 return finish(1, "Trial iteration budget exhausted.")
             if evaluator.nfev >= options.max_nfev:

@@ -120,8 +120,9 @@ class NewtonOptions:
     """Configure Newton-Raphson or Gauss-Newton with optional backtracking.
 
     Omission enables protected backtracking. Explicit backtracking=None selects
-    full valid steps, even if the residual increases. Root success always
-    requires residual_tol. max_iterations counts trial attempts, max_nfev counts
+    valid steps without a decrease test, even if the residual increases. With
+    the default first_step_fraction=1 these are full Newton steps. Root success
+    always requires residual_tol. max_iterations counts trial attempts, max_nfev counts
     every residual call including undefined trials and finite-difference probes.
     For Gauss-Newton, gtol detects a negligible projected residual change
     ||A z|| <= gtol * min(1, ||F||), rather than testing an arbitrarily scaled
@@ -132,6 +133,14 @@ class NewtonOptions:
     and physical backtracking limits unchanged. Full-rank Newton/Gauss-Newton
     directions are unchanged in exact arithmetic; rank-deficient minimum-norm
     Gauss-Newton directions can change. False disables numerical equilibration.
+
+    first_step_fraction is a dimensionless initial multiplier in (0, 1] of
+    the Newton direction. After each accepted move this cap grows by
+    step_growth_factor (finite and >= 1), up to 1. It is independent of the
+    absolute x_scale displacement envelope; both restrictions apply when
+    backtracking is enabled, and Armijo may shorten the trial further. Rejected
+    trials do not advance the schedule. A growth factor of 1 fixes the cap.
+    The defaults leave existing full-step and backtracking behavior unchanged.
     """
 
     x_scale: object = 1.0
@@ -148,11 +157,19 @@ class NewtonOptions:
         default_factory=BacktrackingOptions
     )
     jacobian_scaling: bool = True
+    first_step_fraction: float = 1.0
+    step_growth_factor: float = 1.5
 
     def __post_init__(self):
         """Validate common controls and normalize nested dictionaries consistently."""
         _validate_derivatives(self)
         _validate_scaling(self)
+        _positive_finite("first_step_fraction", self.first_step_fraction)
+        _positive_finite("step_growth_factor", self.step_growth_factor)
+        if self.first_step_fraction > 1:
+            raise ValueError("first_step_fraction must be <= 1.")
+        if self.step_growth_factor < 1:
+            raise ValueError("step_growth_factor must be >= 1.")
         for name in ("residual_tol", "xtol", "gtol", "finite_diff_step"):
             _positive_finite(name, getattr(self, name))
         for name in ("max_iterations", "max_nfev"):

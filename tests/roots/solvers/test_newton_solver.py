@@ -44,6 +44,49 @@ def logarithmic_jacobian(x):
 class NewtonSolverTests(unittest.TestCase):
     """Verify direction, policy, counting and recovery contracts from actual calls."""
 
+    def test_direction_fraction_schedule_and_fixed_damping(self):
+        """Actual moves follow fractions of fresh directions, independently of scale."""
+        matrix = np.array([[2.0, 1.0], [0.5, 3.0]])
+        target = np.array([3.0, -2.0])
+        for method in METHODS:
+            for growth, expected in ((2.0, [0.2, 0.4, 0.8, 1.0]), (1.0, [0.2] * 4)):
+                result = solve_root(
+                    lambda x: matrix @ x - target,
+                    [0.0, 0.0],
+                    lambda x: matrix,
+                    method=method,
+                    options={
+                        "backtracking": None,
+                        "first_step_fraction": 0.2,
+                        "step_growth_factor": growth,
+                        "x_scale": [0.1, 10.0],
+                        "max_iterations": 4,
+                    },
+                )
+                self.assertEqual(result.step_policy, "fraction_controlled")
+                self.assertEqual(result.success, growth == 2.0)
+                self.assertEqual((result.nfev, result.njev), (5, 4))
+                for before, after, fraction in zip(
+                    result.history, result.history[1:], expected
+                ):
+                    direction = np.linalg.solve(matrix, target - matrix @ before["x"])
+                    np.testing.assert_allclose(
+                        after["x"] - before["x"], fraction * direction
+                    )
+                    self.assertAlmostEqual(after["step_fraction"], fraction)
+
+    def test_direction_fraction_controls_reject_invalid_values(self):
+        """Reject invalid fraction schedules before any model evaluation."""
+        for name, values in (
+            ("first_step_fraction", [0, -0.1, 1.1, np.nan, np.inf, True]),
+            ("step_growth_factor", [0, 0.5, np.nan, np.inf, True]),
+        ):
+            for value in values:
+                with self.subTest(name=name, value=value), self.assertRaises(
+                    ValueError
+                ):
+                    NewtonOptions(**{name: value})
+
     def test_author_names_are_canonical_in_registry_and_default_result(self):
         """Public names and returned metadata use authors, including normalized aliases."""
         self.assertEqual(
