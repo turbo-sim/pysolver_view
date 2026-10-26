@@ -1,6 +1,6 @@
 # PySolverView progress
 
-Last updated: **2026-10-25**
+Last updated: **2026-10-26**
 
 Keep this file to completed milestones and outstanding tasks. Implementation
 notes and reproduction commands live in [docs/development](docs/development/README.md).
@@ -17,6 +17,9 @@ notes and reproduction commands live in [docs/development](docs/development/READ
   distinct feasibility/optimality limits and unavailable KKT without diagnostic work.
 - [x] Integrate LM, Powell hybrid, Newton-Raphson, and Gauss-Newton through
   `library="pysolver"`, including aliases, backtracking, and Jacobian scaling.
+- [x] Adapt existing root problems to zero-objective equality-constrained
+  optimization and compare Newton and SLSQP with matching initial direction
+  fractions on radiative heat.
 - [x] Reorganize the package under `src/`, retaining compatible public imports.
 - [x] Isolate evaluation caches and counters per run; preserve detached results/history.
 - [x] Make JAX/CoolProp lazy, separate PyGMO/plugin detection, and remove import-time

@@ -6,6 +6,76 @@ for a nonlinear boundary-value problem with many coupled unknowns. The shorter
 custom root interface on algebraic systems. The original
 [demo_nonlinear_system.py](demo_nonlinear_system.py) compares equation solving
 with an equality-constrained optimization formulation.
+The [radiative SLSQP comparison](demo_radiative_heat_slsqp.py) applies the general
+root-to-optimization adapter to the existing collocation problem.
+
+## Radiative heat: Newton and constrained SLSQP
+
+Run the eight-solve comparison with:
+
+```powershell
+python demos/demo_eqn_solving/demo_radiative_heat_slsqp.py
+python demos/demo_eqn_solving/demo_radiative_heat_slsqp.py --no-show
+
+# Smaller spatial problem for a quick check.
+python demos/demo_eqn_solving/demo_radiative_heat_slsqp.py --degree 48 --no-show
+```
+
+The new script imports `RadiativeHeatProblem`, `NUM_POINTS` and the independent
+reference solve from `demo_radiative_heat_collocation.py`. It reuses the physical
+equations, spatial discretization, initial guess and analytic Jacobian. The
+default remains 500 nodes and 1000 unknowns, starting from uniform temperature
+0.3 and zero flux.
+
+The comparison runs both Newton-Raphson and custom SLSQP with initial direction
+fractions 1.0 (full), 0.3, 0.2 and 0.1. Both methods grow their direction caps
+by `step_growth_factor=1.5` toward 1.0 after accepted moves. These are initial
+fractions, not fixed damping factors, absolute step radii or per-node bounds.
+Newton uses `backtracking=None` for all four runs and can accept valid steps
+that increase the residual. SLSQP retains its native merit line search and
+custom domain recovery: its full-step setting starts with a cap of 1.0 but
+can still shorten a proposed direction.
+
+Matching fractions use the same color in every plot. Newton uses solid lines
+and circles; SLSQP uses dashed lines and squares, with white marker faces.
+
+The SLSQP problem is created with the installed general adapter:
+
+```python
+optimization_problem = psv.as_optimization_problem(
+    problem, n_variables=initial.size
+)
+```
+
+The adapter supplies objective zero and the original residual vector as
+equality constraints. It performs no model evaluation during conversion and
+does not modify the root problem. The analytic optimization Jacobian consists
+of a zero objective row followed by the original residual Jacobian. No extra
+physical bounds or residual scaling are introduced in this comparison.
+
+Each final state is checked against the original residual two-norm, with default
+target $10^{-8}$, and the independent adaptive boundary-value solution.
+Optimizer success and root acceptance are reported separately: the objective
+is always zero, so its value or stationarity cannot establish a root. The
+optimizer's maximum constraint violation also differs from the residual
+two-norm used for the common root check.
+
+Convergence plots show accepted residual two-norms against accepted-move index
+and cumulative model calls, together with accepted step sizes. Model-call totals
+include work between accepted points; the curves do not reconstruct every
+rejected trial. SLSQP's native major-iteration count is retained separately from
+the accepted-move count. JSON retains accepted states, root trial records and
+SLSQP events. Reference solves and explicit post-solve checks are outside the
+reported solver call counts. The scalar objective is not used as a convergence
+curve because it contains no progress information here.
+
+Results are saved beside the new script in `results_radiative_heat_slsqp/`:
+`summary.csv`, `results.json`, `solution.png/.svg` and `convergence.png/.svg`.
+Use `--output PATH` to choose another directory. The CLI also exposes
+`--degree`, `--initial-temperature`, `--heating`, `--radiation`, `--tolerance`
+and `--max-iterations`. Changing these settings can expose failed solves, which
+remain visible in the results. Dense SLSQP on the default 1000-variable system
+can be substantially more expensive than the direct root solve.
 
 ## Nonlinear conduction with radiation
 
