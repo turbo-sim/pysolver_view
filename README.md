@@ -7,6 +7,8 @@ and root finding, including native SciPy methods and custom solvers with step co
 ## Features
 
 - Print and visualize convergence history
+- Print final optimization reports at a chosen width, preserving full names:
+  `solver.print_optimization_report(width=120)` (default 80 characters).
 - Streamlined problem definition (object-oriented)
 - Improved function and gradient evaluation to avoid unnecesary model evaluations
 - Controlled Levenberg-Marquardt, Powell hybrid, Newton-Raphson, and Gauss-Newton

@@ -177,7 +177,7 @@ def test_unavailable_fit_has_no_false_report_certificate(monkeypatch):
     assert not result["feasibility_dual_ok"]
     report = solver.make_kkt_optimality_report([1, 2], 1e-8)
     assert "Assessment unavailable" in report
-    assert "Synthetic unavailable diagnostic" in report
+    assert "Synthetic unavailable diagnostic" in " ".join(report.split())
     line = next(
         line for line in report.splitlines() if "First order optimality" in line
     )

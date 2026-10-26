@@ -15,6 +15,8 @@ notes and reproduction commands live in [docs/development](docs/development/READ
   for consumer diagnostics, preserving standard reporting and callback cancellation.
 - [x] Render custom optimization final reports from detached solved data, preserving
   distinct feasibility/optimality limits and unavailable KKT without diagnostic work.
+- [x] Support configurable final-report widths with aligned numeric columns and
+  complete wrapped variable/constraint names in console, logger, and saved output.
 - [x] Integrate LM, Powell hybrid, Newton-Raphson, and Gauss-Newton through
   `library="pysolver"`, including aliases, backtracking, and Jacobian scaling.
 - [x] Adapt existing root problems to zero-objective equality-constrained

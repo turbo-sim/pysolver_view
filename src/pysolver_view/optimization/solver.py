@@ -758,6 +758,7 @@ class OptimizationSolver:
         filename=None,
         output_dir="output",
         to_console=True,
+        width=80,
     ):
         """Print or save selected variables, constraints, KKT and multipliers.
 
@@ -791,7 +792,13 @@ class OptimizationSolver:
             Directory receiving the saved report.
         to_console : bool
             Print the report independently of live convergence display settings.
+        width : int, optional
+            Maximum line width in characters, at least 60. Default is 80.
+            Extra space expands name columns. Long names and notes wrap onto
+            continuation lines instead of being shortened. Applies equally to
+            console, logger, and saved final reports; live convergence is separate.
         """
+        width = tables.validate_report_width(width)
         if x is None and self.x_final is None:
             raise ValueError("This report requires a completed solve or an explicit x.")
         cached_final = (
@@ -806,6 +813,7 @@ class OptimizationSolver:
                 include_constraints,
                 include_kkt_conditions,
                 include_multipliers,
+                width=width,
             )
         else:
             x_phys = x if x is not None else self.x_final
@@ -813,15 +821,23 @@ class OptimizationSolver:
             tol = 5 * self.options["tolerance"] if tol is None else tol
             sections = []
             if include_kkt_conditions:
-                sections.append(self.make_kkt_optimality_report(x_norm, tol))
+                sections.append(
+                    self.make_kkt_optimality_report(x_norm, tol, width=width)
+                )
             if include_design_variables:
                 if self.problem.problem_scale is not None:
-                    sections.append(self.make_variables_report(x_norm, normalized=True))
-                sections.append(self.make_variables_report(x_phys, normalized=False))
+                    sections.append(
+                        self.make_variables_report(x_norm, normalized=True, width=width)
+                    )
+                sections.append(
+                    self.make_variables_report(x_phys, normalized=False, width=width)
+                )
             if include_constraints:
-                sections.append(self.make_constraint_report(x_norm, tol))
+                sections.append(self.make_constraint_report(x_norm, tol, width=width))
             if include_multipliers:
-                sections.append(self.make_lagrange_multipliers_report(x_norm, tol))
+                sections.append(
+                    self.make_lagrange_multipliers_report(x_norm, tol, width=width)
+                )
         full_text = "\n".join(sections)
         if savefile:
             os.makedirs(output_dir, exist_ok=True)
@@ -840,7 +856,13 @@ class OptimizationSolver:
             print(full_text)
 
     def _final_report_sections(
-        self, include_variables, include_constraints, include_kkt, include_multipliers
+        self,
+        include_variables,
+        include_constraints,
+        include_kkt,
+        include_multipliers,
+        *,
+        width=80,
     ):
         """Format detached final custom-solver data without requesting diagnostics."""
         result = self.result
@@ -858,7 +880,11 @@ class OptimizationSolver:
         if include_kkt:
             sections.append(
                 tables.final_kkt_report(
-                    assessment, feasibility_tol, optimality_tol, enabled=enabled
+                    assessment,
+                    feasibility_tol,
+                    optimality_tol,
+                    enabled=enabled,
+                    width=width,
                 )
             )
         if include_variables:
@@ -869,6 +895,7 @@ class OptimizationSolver:
                         data["bounds_solver"],
                         data["variable_names"],
                         normalized=True,
+                        width=width,
                     )
                 )
             sections.append(
@@ -877,6 +904,7 @@ class OptimizationSolver:
                     data["bounds_physical"],
                     data["variable_names"],
                     normalized=False,
+                    width=width,
                 )
             )
         if include_constraints or include_multipliers:
@@ -889,7 +917,7 @@ class OptimizationSolver:
                 has_metadata=data["has_constraint_data"],
             )
             if include_constraints:
-                sections.append(tables.constraint_report(constraints))
+                sections.append(tables.constraint_report(constraints, width=width))
             if include_multipliers:
                 sections.append(
                     tables.final_multipliers_report(
@@ -898,11 +926,12 @@ class OptimizationSolver:
                         data["variable_names"],
                         data["bounds_solver"],
                         enabled=enabled,
+                        width=width,
                     )
                 )
         return sections
 
-    def make_variables_report(self, x_norm, normalized=True):
+    def make_variables_report(self, x_norm, normalized=True, *, width=80):
         """
         Generate design variable report as a string.
 
@@ -912,12 +941,15 @@ class OptimizationSolver:
             Normalized design variables (input to the solver).
         normalized : bool, optional
             Whether to report in normalized or physical values. Default is True.
+        width : int, optional
+            Maximum line width, at least 60; complete names wrap as needed.
 
         Returns
         -------
         str
             Formatted string report.
         """
+        width = tables.validate_report_width(width)
         return tables.variables_report(
             x_norm,
             (
@@ -927,6 +959,7 @@ class OptimizationSolver:
             ),
             self.problem.variable_names,
             normalized,
+            width=width,
         )
 
     def get_constraint_data(self, x_norm, tol):
@@ -1022,9 +1055,9 @@ class OptimizationSolver:
         """
         return kkt_adapter.kkt_from_cache(self._evaluation, x_norm, tol)
 
-    def make_kkt_optimality_report(self, x_norm, tol):
+    def make_kkt_optimality_report(self, x_norm, tol, *, width=80):
         r"""
-        Generate a detailed KKT condition satisfaction report (80-character width).
+        Generate a detailed KKT condition satisfaction report.
 
         This report includes five key Karush-Kuhn-Tucker (KKT) checks:
 
@@ -1048,37 +1081,48 @@ class OptimizationSolver:
             Normalized decision variable vector to evaluate the KKT conditions at.
         tol : float
             Numerical tolerance used for comparisons in optimality and feasibility checks.
+        width : int, optional
+            Maximum line width, at least 60; notes wrap as needed.
 
         Returns
         -------
         str
             A formatted report string summarizing KKT condition satisfaction.
         """
-        return tables.kkt_report(self.evaluate_kkt_conditions(x_norm, tol), tol)
+        width = tables.validate_report_width(width)
+        return tables.kkt_report(
+            self.evaluate_kkt_conditions(x_norm, tol), tol, width=width
+        )
 
-    def make_constraint_report(self, x_norm, tol):
-        """
-        generate a formatted constraint report at x_phys, using get_constraint_data to build/validate the entries.
-        """
-        return tables.constraint_report(self.get_constraint_data(x_norm, tol))
+    def make_constraint_report(self, x_norm, tol, *, width=80):
+        """Format named constraints within ``width`` characters (minimum 60)."""
+        width = tables.validate_report_width(width)
+        return tables.constraint_report(
+            self.get_constraint_data(x_norm, tol), width=width
+        )
 
-    def make_lagrange_multipliers_report(self, x_norm, tol):
+    def make_lagrange_multipliers_report(self, x_norm, tol, *, width=80):
         """
         Generate a report of all Lagrange multipliers:
         - Equalities: always included
         - Inequalities and finite bounds: all independently estimated multipliers.
         - Unavailable estimates: NaN with an explicit reason.
 
+        ``width`` is the maximum line width (at least 60). Complete names wrap
+        onto aligned continuation lines instead of being shortened.
+
         Returns
         -------
         str
             The formatted multipliers report as a single string.
         """
+        width = tables.validate_report_width(width)
         return tables.multipliers_report(
             self.evaluate_kkt_conditions(x_norm, tol),
             self.get_constraint_data(x_norm, tol),
             self.problem.variable_names,
             self.problem.get_bounds_normalized(),
+            width=width,
         )
 
     @property

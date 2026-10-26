@@ -90,8 +90,9 @@ def forbid_diagnostic_work(monkeypatch, solver):
     monkeypatch.setattr(kkt, "linprog", forbidden)
 
 
+@pytest.mark.parametrize("width", [80, 100, 120])
 def test_final_full_report_is_passive_and_keeps_public_signed_names(
-    monkeypatch, capsys, tmp_path
+    monkeypatch, capsys, tmp_path, width
 ):
     """Render original physical metadata and public multipliers without new work."""
     solver = solved_named_problem()
@@ -104,9 +105,15 @@ def test_final_full_report_is_passive_and_keeps_public_signed_names(
     forbid_diagnostic_work(monkeypatch, solver)
 
     print_full_report(
-        solver, savefile=True, filename="optimization_report.txt", output_dir=tmp_path
+        solver,
+        savefile=True,
+        filename="optimization_report.txt",
+        output_dir=tmp_path,
+        width=width,
     )
     report = capsys.readouterr().out
+    assert max(map(len, report.splitlines())) <= width
+    assert "-" * width in report
     assert report == (tmp_path / "optimization_report.txt").read_text() + "\n"
     for section in (
         "Optimization variables report",
