@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=d15849c6"></script>
+    <script src="../_static/documentation_options.js?v=444dcb17"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -199,6 +199,7 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="pysolver_view.reporting.html">pysolver_view.reporting package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="pysolver_view.reporting.layout.html">pysolver_view.reporting.layout module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pysolver_view.reporting.logging.html">pysolver_view.reporting.logging module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pysolver_view.reporting.plots.html">pysolver_view.reporting.plots module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pysolver_view.reporting.style.html">pysolver_view.reporting.style module</a></li>
@@ -798,14 +799,14 @@ or if required keys are missing from any entry.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.solver.OptimizationSolver.make_constraint_report">
-<span class="sig-name descname"><span class="pre">make_constraint_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/solver.html#OptimizationSolver.make_constraint_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.solver.OptimizationSolver.make_constraint_report" title="Link to this definition">#</a></dt>
-<dd><p>generate a formatted constraint report at x_phys, using get_constraint_data to build/validate the entries.</p>
+<span class="sig-name descname"><span class="pre">make_constraint_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/solver.html#OptimizationSolver.make_constraint_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.solver.OptimizationSolver.make_constraint_report" title="Link to this definition">#</a></dt>
+<dd><p>Format named constraints within <code class="docutils literal notranslate"><span class="pre">width</span></code> characters (minimum 60).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.solver.OptimizationSolver.make_kkt_optimality_report">
-<span class="sig-name descname"><span class="pre">make_kkt_optimality_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/solver.html#OptimizationSolver.make_kkt_optimality_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.solver.OptimizationSolver.make_kkt_optimality_report" title="Link to this definition">#</a></dt>
-<dd><p>Generate a detailed KKT condition satisfaction report (80-character width).</p>
+<span class="sig-name descname"><span class="pre">make_kkt_optimality_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/solver.html#OptimizationSolver.make_kkt_optimality_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.solver.OptimizationSolver.make_kkt_optimality_report" title="Link to this definition">#</a></dt>
+<dd><p>Generate a detailed KKT condition satisfaction report.</p>
 <p>This report includes five key Karush-Kuhn-Tucker (KKT) checks:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\|\nabla L(x, \lambda)\| \leq \mathrm{tol} \quad &amp;\text{(First order optimality)} \\
@@ -828,6 +829,8 @@ or if required keys are missing from any entry.</p>
 </dd>
 <dt><strong>tol</strong><span class="classifier">float</span></dt><dd><p>Numerical tolerance used for comparisons in optimality and feasibility checks.</p>
 </dd>
+<dt><strong>width</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum line width, at least 60; notes wrap as needed.</p>
+</dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -841,11 +844,13 @@ or if required keys are missing from any entry.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.solver.OptimizationSolver.make_lagrange_multipliers_report">
-<span class="sig-name descname"><span class="pre">make_lagrange_multipliers_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/solver.html#OptimizationSolver.make_lagrange_multipliers_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.solver.OptimizationSolver.make_lagrange_multipliers_report" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">make_lagrange_multipliers_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/solver.html#OptimizationSolver.make_lagrange_multipliers_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.solver.OptimizationSolver.make_lagrange_multipliers_report" title="Link to this definition">#</a></dt>
 <dd><p>Generate a report of all Lagrange multipliers:
 - Equalities: always included
 - Inequalities and finite bounds: all independently estimated multipliers.
 - Unavailable estimates: NaN with an explicit reason.</p>
+<p><code class="docutils literal notranslate"><span class="pre">width</span></code> is the maximum line width (at least 60). Complete names wrap
+onto aligned continuation lines instead of being shortened.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -858,7 +863,7 @@ or if required keys are missing from any entry.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.solver.OptimizationSolver.make_variables_report">
-<span class="sig-name descname"><span class="pre">make_variables_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/solver.html#OptimizationSolver.make_variables_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.solver.OptimizationSolver.make_variables_report" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">make_variables_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/solver.html#OptimizationSolver.make_variables_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.solver.OptimizationSolver.make_variables_report" title="Link to this definition">#</a></dt>
 <dd><p>Generate design variable report as a string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -866,6 +871,8 @@ or if required keys are missing from any entry.</p>
 <dt><strong>x_norm</strong><span class="classifier">array-like</span></dt><dd><p>Normalized design variables (input to the solver).</p>
 </dd>
 <dt><strong>normalized</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to report in normalized or physical values. Default is True.</p>
+</dd>
+<dt><strong>width</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum line width, at least 60; complete names wrap as needed.</p>
 </dd>
 </dl>
 </dd>
@@ -965,7 +972,7 @@ problem class name and the optimization start datetime.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.solver.OptimizationSolver.print_optimization_report">
-<span class="sig-name descname"><span class="pre">print_optimization_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_design_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_kkt_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_multipliers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'output'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_console</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/solver.html#OptimizationSolver.print_optimization_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.solver.OptimizationSolver.print_optimization_report" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">print_optimization_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_design_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_kkt_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_multipliers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'output'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_console</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/solver.html#OptimizationSolver.print_optimization_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.solver.OptimizationSolver.print_optimization_report" title="Link to this definition">#</a></dt>
 <dd><p>Print or save selected variables, constraints, KKT and multipliers.</p>
 <p>With the custom <code class="docutils literal notranslate"><span class="pre">pysolver</span></code> backend, omitting both <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">tol</span></code>
 renders detached data for the authoritative final point. Its cached KKT
@@ -995,6 +1002,11 @@ default diagnostic tolerance is five times the native solver tolerance.</p>
 <dt><strong>output_dir</strong><span class="classifier">str or path-like</span></dt><dd><p>Directory receiving the saved report.</p>
 </dd>
 <dt><strong>to_console</strong><span class="classifier">bool</span></dt><dd><p>Print the report independently of live convergence display settings.</p>
+</dd>
+<dt><strong>width</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum line width in characters, at least 60. Default is 80.
+Extra space expands name columns. Long names and notes wrap onto
+continuation lines instead of being shortened. Applies equally to
+console, logger, and saved final reports; live convergence is separate.</p>
 </dd>
 </dl>
 </dd>

@@ -431,11 +431,23 @@ solver.print_optimization_report(
     include_constraints=True,
     include_kkt_conditions=True,
     include_multipliers=True,
+    width=120,
     savefile=True,
     filename="optimization_report.txt",
     output_dir="output",
 )
 ```
+
+Use `width=80`, `width=100`, or `width=120` to control the maximum number of
+characters per final-report line. The default is 80; the minimum is 60.
+Additional width expands the name columns, while numeric columns stay aligned.
+Long variable and constraint names wrap onto continuation lines rather than
+being shortened with `...`. Notes and diagnostic messages wrap as well.
+The same width applies to console, logger, and saved output. Individual
+`make_variables_report`, `make_constraint_report`, `make_kkt_optimality_report`,
+and `make_lagrange_multipliers_report` methods also accept `width`.
+This controls final report tables; the live convergence table retains its
+separate column layout.
 
 Convergence plots use detached recorded observations and save PNG and SVG.
 For `library="pysolver"`, leaving both `x` and `tol` unspecified in the final

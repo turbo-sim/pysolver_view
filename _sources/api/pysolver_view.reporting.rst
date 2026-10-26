@@ -12,6 +12,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   pysolver_view.reporting.layout
    pysolver_view.reporting.logging
    pysolver_view.reporting.plots
    pysolver_view.reporting.style

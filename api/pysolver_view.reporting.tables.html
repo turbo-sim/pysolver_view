@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=d15849c6"></script>
+    <script src="../_static/documentation_options.js?v=444dcb17"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -52,8 +52,6 @@
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/pysolver_view.reporting.tables';</script>
     <link rel="canonical" href="https://turbo-sim.github.io/pysolver_view/api/pysolver_view.reporting.tables.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -199,6 +197,7 @@
 </ul>
 </details></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="pysolver_view.reporting.html">pysolver_view.reporting package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pysolver_view.reporting.layout.html">pysolver_view.reporting.layout module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pysolver_view.reporting.logging.html">pysolver_view.reporting.logging module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pysolver_view.reporting.plots.html">pysolver_view.reporting.plots module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pysolver_view.reporting.style.html">pysolver_view.reporting.style module</a></li>
@@ -511,98 +510,38 @@
 <p>Pure report formatting from supplied variables, constraints and KKT data.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pysolver_view.reporting.tables.constraint_report">
-<span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">constraint_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#constraint_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.constraint_report" title="Link to this definition">#</a></dt>
-<dd><p>generate a formatted constraint report at x_phys, using get_constraint_data to build/validate the entries.</p>
+<span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">constraint_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#constraint_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.constraint_report" title="Link to this definition">#</a></dt>
+<dd><p>Format named constraint values and targets without shortening names.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pysolver_view.reporting.tables.final_kkt_report">
-<span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">final_kkt_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assessment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feasibility_tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimality_tol</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#final_kkt_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.final_kkt_report" title="Link to this definition">#</a></dt>
-<dd><p>Render a cached final certificate with its separate acceptance limits.</p>
-<p>Metrics and multipliers use public signs and solver coordinates. Missing
-diagnostics remain unavailable; this formatter never estimates multipliers.</p>
+<span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">final_kkt_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assessment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feasibility_tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimality_tol</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#final_kkt_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.final_kkt_report" title="Link to this definition">#</a></dt>
+<dd><p>Render a cached certificate with separate tolerances and no diagnostics.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pysolver_view.reporting.tables.final_multipliers_report">
-<span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">final_multipliers_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assessment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#final_multipliers_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.final_multipliers_report" title="Link to this definition">#</a></dt>
-<dd><p>Format cached public multipliers through the existing named table.</p>
+<span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">final_multipliers_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assessment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#final_multipliers_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.final_multipliers_report" title="Link to this definition">#</a></dt>
+<dd><p>Format cached public multipliers through the named width-bounded table.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pysolver_view.reporting.tables.kkt_report">
-<span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">kkt_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kkt_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#kkt_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.kkt_report" title="Link to this definition">#</a></dt>
-<dd><p>Generate a detailed KKT condition satisfaction report (80-character width).</p>
-<p>This report includes five key Karush-Kuhn-Tucker (KKT) checks:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}\|\nabla L(x, \lambda)\| \leq \mathrm{tol} \quad &amp;\text{(First order optimality)} \\
-\max |c_{\text{eq}}(x)| \leq \mathrm{tol} \quad &amp;\text{(Equality feasibility)} \\
-\max(0, c_{\text{ineq}}(x)) \leq \mathrm{tol} \quad &amp;\text{(Inequality feasibility)} \\
-\min(\lambda_{\text{ineq}}) \geq 0 \quad &amp;\text{(Dual feasibility)} \\
-\max |\lambda_i \cdot c_i| \leq \mathrm{tol} \quad &amp;\text{(Complementary slackness)}\end{split}\]</div>
-<p>For each condition, the report shows:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Actual computed value</p></li>
-<li><p>Comparison direction and target (tolerance or 0)</p></li>
-<li><p>Satisfaction status</p></li>
-</ul>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>x_norm</strong><span class="classifier">array-like</span></dt><dd><p>Normalized decision variable vector to evaluate the KKT conditions at.</p>
-</dd>
-<dt><strong>tol</strong><span class="classifier">float</span></dt><dd><p>Numerical tolerance used for comparisons in optimality and feasibility checks.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>str</dt><dd><p>A formatted report string summarizing KKT condition satisfaction.</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">kkt_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kkt_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#kkt_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.kkt_report" title="Link to this definition">#</a></dt>
+<dd><p>Format an explicit KKT diagnostic with one common acceptance tolerance.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pysolver_view.reporting.tables.multipliers_report">
-<span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">multipliers_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kkt_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#multipliers_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.multipliers_report" title="Link to this definition">#</a></dt>
-<dd><p>Generate a report of all Lagrange multipliers:
-- Equalities: always included
-- Inequalities and finite bounds: all independently estimated multipliers.
-- Unavailable estimates: NaN with an explicit reason.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt>str</dt><dd><p>The formatted multipliers report as a single string.</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">multipliers_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kkt_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#multipliers_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.multipliers_report" title="Link to this definition">#</a></dt>
+<dd><p>Format signed user-constraint and finite-bound multiplier estimates.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pysolver_view.reporting.tables.variables_report">
-<span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">variables_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#variables_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.variables_report" title="Link to this definition">#</a></dt>
-<dd><p>Generate design variable report as a string.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>x_norm</strong><span class="classifier">array-like</span></dt><dd><p>Normalized design variables (input to the solver).</p>
-</dd>
-<dt><strong>normalized</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to report in normalized or physical values. Default is True.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>str</dt><dd><p>Formatted string report.</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<span class="sig-prename descclassname"><span class="pre">pysolver_view.reporting.tables.</span></span><span class="sig-name descname"><span class="pre">variables_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/reporting/tables.html#variables_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.reporting.tables.variables_report" title="Link to this definition">#</a></dt>
+<dd><p>Format physical/normalized variables, wrapping full names to width.</p>
 </dd></dl>
 
 </section>

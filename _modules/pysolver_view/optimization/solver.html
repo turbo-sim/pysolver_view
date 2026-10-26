@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=d15849c6"></script>
+    <script src="../../../_static/documentation_options.js?v=444dcb17"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -196,6 +196,7 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/pysolver_view.reporting.html">pysolver_view.reporting package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/pysolver_view.reporting.layout.html">pysolver_view.reporting.layout module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/pysolver_view.reporting.logging.html">pysolver_view.reporting.logging module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/pysolver_view.reporting.plots.html">pysolver_view.reporting.plots module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/pysolver_view.reporting.style.html">pysolver_view.reporting.style module</a></li>
@@ -1203,6 +1204,7 @@
         <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">,</span>
         <span class="n">to_console</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print or save selected variables, constraints, KKT and multipliers.</span>
 
@@ -1236,7 +1238,13 @@
 <span class="sd">            Directory receiving the saved report.</span>
 <span class="sd">        to_console : bool</span>
 <span class="sd">            Print the report independently of live convergence display settings.</span>
+<span class="sd">        width : int, optional</span>
+<span class="sd">            Maximum line width in characters, at least 60. Default is 80.</span>
+<span class="sd">            Extra space expands name columns. Long names and notes wrap onto</span>
+<span class="sd">            continuation lines instead of being shortened. Applies equally to</span>
+<span class="sd">            console, logger, and saved final reports; live convergence is separate.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">validate_report_width</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_final</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;This report requires a completed solve or an explicit x.&quot;</span><span class="p">)</span>
         <span class="n">cached_final</span> <span class="o">=</span> <span class="p">(</span>
@@ -1251,6 +1259,7 @@
                 <span class="n">include_constraints</span><span class="p">,</span>
                 <span class="n">include_kkt_conditions</span><span class="p">,</span>
                 <span class="n">include_multipliers</span><span class="p">,</span>
+                <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">x_phys</span> <span class="o">=</span> <span class="n">x</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_final</span>
@@ -1258,15 +1267,23 @@
             <span class="n">tol</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">tol</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">tol</span>
             <span class="n">sections</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="n">include_kkt_conditions</span><span class="p">:</span>
-                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_kkt_optimality_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">))</span>
+                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">make_kkt_optimality_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">if</span> <span class="n">include_design_variables</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">problem_scale</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_phys</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+                    <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">make_variables_report</span><span class="p">(</span><span class="n">x_phys</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">if</span> <span class="n">include_constraints</span><span class="p">:</span>
-                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_constraint_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">))</span>
+                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_constraint_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">include_multipliers</span><span class="p">:</span>
-                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">make_lagrange_multipliers_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">))</span>
+                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">make_lagrange_multipliers_report</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+                <span class="p">)</span>
         <span class="n">full_text</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sections</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">savefile</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1286,7 +1303,13 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_final_report_sections</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">include_variables</span><span class="p">,</span> <span class="n">include_constraints</span><span class="p">,</span> <span class="n">include_kkt</span><span class="p">,</span> <span class="n">include_multipliers</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">include_variables</span><span class="p">,</span>
+        <span class="n">include_constraints</span><span class="p">,</span>
+        <span class="n">include_kkt</span><span class="p">,</span>
+        <span class="n">include_multipliers</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Format detached final custom-solver data without requesting diagnostics.&quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span>
@@ -1304,7 +1327,11 @@
         <span class="k">if</span> <span class="n">include_kkt</span><span class="p">:</span>
             <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">tables</span><span class="o">.</span><span class="n">final_kkt_report</span><span class="p">(</span>
-                    <span class="n">assessment</span><span class="p">,</span> <span class="n">feasibility_tol</span><span class="p">,</span> <span class="n">optimality_tol</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="n">enabled</span>
+                    <span class="n">assessment</span><span class="p">,</span>
+                    <span class="n">feasibility_tol</span><span class="p">,</span>
+                    <span class="n">optimality_tol</span><span class="p">,</span>
+                    <span class="n">enabled</span><span class="o">=</span><span class="n">enabled</span><span class="p">,</span>
+                    <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">include_variables</span><span class="p">:</span>
@@ -1315,6 +1342,7 @@
                         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;bounds_solver&quot;</span><span class="p">],</span>
                         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;variable_names&quot;</span><span class="p">],</span>
                         <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
             <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -1323,6 +1351,7 @@
                     <span class="n">data</span><span class="p">[</span><span class="s2">&quot;bounds_physical&quot;</span><span class="p">],</span>
                     <span class="n">data</span><span class="p">[</span><span class="s2">&quot;variable_names&quot;</span><span class="p">],</span>
                     <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">include_constraints</span> <span class="ow">or</span> <span class="n">include_multipliers</span><span class="p">:</span>
@@ -1335,7 +1364,7 @@
                 <span class="n">has_metadata</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;has_constraint_data&quot;</span><span class="p">],</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">include_constraints</span><span class="p">:</span>
-                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tables</span><span class="o">.</span><span class="n">constraint_report</span><span class="p">(</span><span class="n">constraints</span><span class="p">))</span>
+                <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tables</span><span class="o">.</span><span class="n">constraint_report</span><span class="p">(</span><span class="n">constraints</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">include_multipliers</span><span class="p">:</span>
                 <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="n">tables</span><span class="o">.</span><span class="n">final_multipliers_report</span><span class="p">(</span>
@@ -1344,13 +1373,14 @@
                         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;variable_names&quot;</span><span class="p">],</span>
                         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;bounds_solver&quot;</span><span class="p">],</span>
                         <span class="n">enabled</span><span class="o">=</span><span class="n">enabled</span><span class="p">,</span>
+                        <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
         <span class="k">return</span> <span class="n">sections</span>
 
 <div class="viewcode-block" id="OptimizationSolver.make_variables_report">
 <a class="viewcode-back" href="../../../api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.make_variables_report">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">make_variables_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_variables_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate design variable report as a string.</span>
 
@@ -1360,12 +1390,15 @@
 <span class="sd">            Normalized design variables (input to the solver).</span>
 <span class="sd">        normalized : bool, optional</span>
 <span class="sd">            Whether to report in normalized or physical values. Default is True.</span>
+<span class="sd">        width : int, optional</span>
+<span class="sd">            Maximum line width, at least 60; complete names wrap as needed.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            Formatted string report.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">validate_report_width</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">tables</span><span class="o">.</span><span class="n">variables_report</span><span class="p">(</span>
             <span class="n">x_norm</span><span class="p">,</span>
             <span class="p">(</span>
@@ -1375,6 +1408,7 @@
             <span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">variable_names</span><span class="p">,</span>
             <span class="n">normalized</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -1479,9 +1513,9 @@
 
 <div class="viewcode-block" id="OptimizationSolver.make_kkt_optimality_report">
 <a class="viewcode-back" href="../../../api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.make_kkt_optimality_report">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">make_kkt_optimality_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_kkt_optimality_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate a detailed KKT condition satisfaction report (80-character width).</span>
+<span class="sd">        Generate a detailed KKT condition satisfaction report.</span>
 
 <span class="sd">        This report includes five key Karush-Kuhn-Tucker (KKT) checks:</span>
 
@@ -1505,43 +1539,54 @@
 <span class="sd">            Normalized decision variable vector to evaluate the KKT conditions at.</span>
 <span class="sd">        tol : float</span>
 <span class="sd">            Numerical tolerance used for comparisons in optimality and feasibility checks.</span>
+<span class="sd">        width : int, optional</span>
+<span class="sd">            Maximum line width, at least 60; notes wrap as needed.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            A formatted report string summarizing KKT condition satisfaction.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">tables</span><span class="o">.</span><span class="n">kkt_report</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluate_kkt_conditions</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">),</span> <span class="n">tol</span><span class="p">)</span></div>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">validate_report_width</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tables</span><span class="o">.</span><span class="n">kkt_report</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_kkt_conditions</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">),</span> <span class="n">tol</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="OptimizationSolver.make_constraint_report">
 <a class="viewcode-back" href="../../../api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.make_constraint_report">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">make_constraint_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        generate a formatted constraint report at x_phys, using get_constraint_data to build/validate the entries.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">tables</span><span class="o">.</span><span class="n">constraint_report</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_constraint_data</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">))</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_constraint_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Format named constraints within ``width`` characters (minimum 60).&quot;&quot;&quot;</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">validate_report_width</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tables</span><span class="o">.</span><span class="n">constraint_report</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_constraint_data</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="OptimizationSolver.make_lagrange_multipliers_report">
 <a class="viewcode-back" href="../../../api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.make_lagrange_multipliers_report">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">make_lagrange_multipliers_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_lagrange_multipliers_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a report of all Lagrange multipliers:</span>
 <span class="sd">        - Equalities: always included</span>
 <span class="sd">        - Inequalities and finite bounds: all independently estimated multipliers.</span>
 <span class="sd">        - Unavailable estimates: NaN with an explicit reason.</span>
 
+<span class="sd">        ``width`` is the maximum line width (at least 60). Complete names wrap</span>
+<span class="sd">        onto aligned continuation lines instead of being shortened.</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The formatted multipliers report as a single string.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">tables</span><span class="o">.</span><span class="n">validate_report_width</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">tables</span><span class="o">.</span><span class="n">multipliers_report</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_kkt_conditions</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_constraint_data</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">variable_names</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_bounds_normalized</span><span class="p">(),</span>
+            <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 

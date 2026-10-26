@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=d15849c6"></script>
+    <script src="_static/documentation_options.js?v=444dcb17"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -199,6 +199,7 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.reporting.html">pysolver_view.reporting package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.reporting.layout.html">pysolver_view.reporting.layout module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.reporting.logging.html">pysolver_view.reporting.logging module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.reporting.plots.html">pysolver_view.reporting.plots module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/pysolver_view.reporting.style.html">pysolver_view.reporting.style module</a></li>
@@ -907,12 +908,23 @@ final design, constraints, KKT conditions, and Lagrange multipliers:</p>
     <span class="n">include_constraints</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">include_kkt_conditions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">include_multipliers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>
     <span class="n">savefile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;optimization_report.txt&quot;</span><span class="p">,</span>
     <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;output&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">width=80</span></code>, <code class="docutils literal notranslate"><span class="pre">width=100</span></code>, or <code class="docutils literal notranslate"><span class="pre">width=120</span></code> to control the maximum number of
+characters per final-report line. The default is 80; the minimum is 60.
+Additional width expands the name columns, while numeric columns stay aligned.
+Long variable and constraint names wrap onto continuation lines rather than
+being shortened with <code class="docutils literal notranslate"><span class="pre">...</span></code>. Notes and diagnostic messages wrap as well.
+The same width applies to console, logger, and saved output. Individual
+<code class="docutils literal notranslate"><span class="pre">make_variables_report</span></code>, <code class="docutils literal notranslate"><span class="pre">make_constraint_report</span></code>, <code class="docutils literal notranslate"><span class="pre">make_kkt_optimality_report</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">make_lagrange_multipliers_report</span></code> methods also accept <code class="docutils literal notranslate"><span class="pre">width</span></code>.
+This controls final report tables; the live convergence table retains its
+separate column layout.</p>
 <p>Convergence plots use detached recorded observations and save PNG and SVG.
 For <code class="docutils literal notranslate"><span class="pre">library=&quot;pysolver&quot;</span></code>, leaving both <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">tol</span></code> unspecified in the final
 report uses the authoritative saved solution and cached public KKT certificate.
