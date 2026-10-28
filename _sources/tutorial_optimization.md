@@ -42,6 +42,73 @@ controlled SLSQP at its current accepted point. Other callback errors propagate.
 `backend_callback` is available only with `library="pysolver"`; native SciPy
 callbacks do not certify accepted points.
 
+## Pounce interior-point and active-set SQP
+
+Install the optional, pinned Pounce solver in the project environment:
+
+```bash
+poetry install --extras pounce
+# For an installed release: pip install 'pysolver_view[pounce]'
+```
+
+The same problem can be solved with either NLP algorithm:
+
+```python
+solver = psv.OptimizationSolver(
+    problem,
+    library="pounce",
+    method="ipm",  # "sqp" selects active-set SQP
+    tolerance=1e-8,
+    max_iterations=300,
+    update_on="iteration",
+)
+solver.solve(x0)
+```
+
+Both methods use the frontend's combined objective/constraint evaluations and
+analytic or bounded numerical first derivatives. Public inequalities stay
+$g(x)\leq0$; the adapter supplies their lower/upper bounds directly. The initial
+implementation declares a dense Jacobian and uses quasi-Newton Hessians:
+limited-memory for IPM and damped BFGS for SQP. Exact Hessians, sparse structure,
+and cross-solve working-set reuse are not yet exposed by this adapter.
+
+Generic tolerance and iteration limits map to `tol`/`max_iter`, and on SQP also
+to `sqp_tol`, `sqp_constr_viol_tol`, `sqp_dual_inf_tol`, and `sqp_max_iter`.
+Additional Pounce options go in `extra_options`. Internal NLP scaling and bound
+relaxation default to off, preserving the frontend's coordinates and declared
+bounds. The backend keeps native termination and all diagnostic arrays in
+`backend_result.info`. The public result adds `native_info`, `native_multipliers`
+(in solver coordinates), and `effective_options`. Strict native success and
+original-model feasibility are required; with `check_kkt=True`, an independent
+first-order assessment of the returned point must also pass at
+`50*tolerance`. An acceptable-level native exit remains distinguishable through
+`solver_success` and is not promoted to strict success. This assessment does
+not prove a minimum for a nonconvex model.
+
+Pounce's iteration hook supplies scalar metrics without a current-iterate
+accessor. The adapter follows Pounce's own `minimize` facade by retaining the
+last objective-evaluation coordinates. `iteration_history` records these as
+`event_kind="native_iteration"`, `accepted=None`, and
+`coordinate_source="last_objective_evaluation"`. `native_metrics` preserves
+Pounce's internal objective, residuals, barrier parameter, step information, and
+line-search counts separately from original-model values. A restoration hook
+describes a feasibility subproblem and has no original-model point: it appears
+only in `backend_result.history` and `backend_callback`, with `x=None`.
+The native returned solution always owns the final result.
+
+`callback_functions` receive copied regular native coordinates and callback
+counts independently of `update_on`; `backend_callback` receives complete
+detached records, including restoration. Return `False` or raise `StopIteration`
+to cancel. Other application exceptions propagate, rather than being hidden
+by Pounce's native evaluation-failure handling. `check_kkt=False` disables
+automatic multiplier fitting, while explicitly requested KKT reports still work.
+
+There is no Python setting equivalent to custom SLSQP's
+`first_step_fraction=0.20`. Pounce's line-search reduction factors and
+fraction-to-boundary settings have different meanings; the adapter rejects
+`first_step_fraction`, `max_step_fraction`, and `step_growth_factor`. A genuine
+first-step cap would require an upstream Pounce interface change.
+
 ## Solving equations as equality constraints
 
 Use `as_optimization_problem` to solve an existing root problem through an

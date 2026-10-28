@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=444dcb17"></script>
+    <script src="_static/documentation_options.js?v=d6acfc83"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -167,6 +167,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.optimization.html">pysolver_view.optimization package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.optimization.backends.html">pysolver_view.optimization.backends package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.custom.html">pysolver_view.optimization.backends.custom module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.pounce.html">pysolver_view.optimization.backends.pounce module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.pygmo.html">pysolver_view.optimization.backends.pygmo module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.pygmo_nlopt.html">pysolver_view.optimization.backends.pygmo_nlopt module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.pygmo_nonfree.html">pysolver_view.optimization.backends.pygmo_nonfree module</a></li>
@@ -177,6 +178,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.optimization.problems.html">pysolver_view.optimization.problems package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.base.html">pysolver_view.optimization.problems.base module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html">pysolver_view.optimization.problems.constrained_rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.coupled_rosenbrock.html">pysolver_view.optimization.problems.coupled_rosenbrock module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.hs71.html">pysolver_view.optimization.problems.hs71 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.lorenz.html">pysolver_view.optimization.problems.lorenz module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.root_adapter.html">pysolver_view.optimization.problems.root_adapter module</a></li>
@@ -532,10 +534,10 @@
 </li>
       <li><a href="api/pysolver_view.differentiation.finite_difference.html#pysolver_view.differentiation.finite_difference.complex_step_derivative">complex_step_derivative() (in module pysolver_view.differentiation.finite_difference)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/pysolver_view.differentiation.hessians.html#pysolver_view.differentiation.hessians.compute_hessians_jax">compute_hessians_jax() (in module pysolver_view.differentiation.hessians)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/pysolver_view.optimization.constraints.html#pysolver_view.optimization.constraints.constraint_data_from_values">constraint_data_from_values() (in module pysolver_view.optimization.constraints)</a>
 </li>
       <li><a href="api/pysolver_view.reporting.tables.html#pysolver_view.reporting.tables.constraint_report">constraint_report() (in module pysolver_view.reporting.tables)</a>
@@ -549,6 +551,8 @@
       <li><a href="api/pysolver_view.roots.solvers.evaluation.html#pysolver_view.roots.solvers.evaluation.ModelEvaluator.counts">counts() (pysolver_view.roots.solvers.evaluation.ModelEvaluator method)</a>
 </li>
       <li><a href="api/pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.html#pysolver_view.roots.problems.coupled_overdetermined_rosenbrock.CoupledOverdeterminedRosenbrockProblem">CoupledOverdeterminedRosenbrockProblem (class in pysolver_view.roots.problems.coupled_overdetermined_rosenbrock)</a>
+</li>
+      <li><a href="api/pysolver_view.optimization.problems.coupled_rosenbrock.html#pysolver_view.optimization.problems.coupled_rosenbrock.CoupledRosenbrockProblem">CoupledRosenbrockProblem (class in pysolver_view.optimization.problems.coupled_rosenbrock)</a>
 </li>
       <li><a href="api/pysolver_view.reporting.logging.html#pysolver_view.reporting.logging.create_logger">create_logger() (in module pysolver_view.reporting.logging)</a>
 </li>
@@ -655,6 +659,8 @@
       <ul>
         <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained.fitness">(pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained method)</a>
 </li>
+        <li><a href="api/pysolver_view.optimization.problems.coupled_rosenbrock.html#pysolver_view.optimization.problems.coupled_rosenbrock.CoupledRosenbrockProblem.fitness">(pysolver_view.optimization.problems.coupled_rosenbrock.CoupledRosenbrockProblem method)</a>
+</li>
         <li><a href="api/pysolver_view.optimization.problems.hs71.html#pysolver_view.optimization.problems.hs71.HS71Problem.fitness">(pysolver_view.optimization.problems.hs71.HS71Problem method)</a>
 </li>
         <li><a href="api/pysolver_view.optimization.problems.lorenz.html#pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt.fitness">(pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt method)</a>
@@ -707,6 +713,8 @@
       <ul>
         <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained.get_bounds">(pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained method)</a>
 </li>
+        <li><a href="api/pysolver_view.optimization.problems.coupled_rosenbrock.html#pysolver_view.optimization.problems.coupled_rosenbrock.CoupledRosenbrockProblem.get_bounds">(pysolver_view.optimization.problems.coupled_rosenbrock.CoupledRosenbrockProblem method)</a>
+</li>
         <li><a href="api/pysolver_view.optimization.problems.hs71.html#pysolver_view.optimization.problems.hs71.HS71Problem.get_bounds">(pysolver_view.optimization.problems.hs71.HS71Problem method)</a>
 </li>
         <li><a href="api/pysolver_view.optimization.problems.lorenz.html#pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt.get_bounds">(pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt method)</a>
@@ -737,6 +745,8 @@
       <ul>
         <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained.get_nec">(pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained method)</a>
 </li>
+        <li><a href="api/pysolver_view.optimization.problems.coupled_rosenbrock.html#pysolver_view.optimization.problems.coupled_rosenbrock.CoupledRosenbrockProblem.get_nec">(pysolver_view.optimization.problems.coupled_rosenbrock.CoupledRosenbrockProblem method)</a>
+</li>
         <li><a href="api/pysolver_view.optimization.problems.hs71.html#pysolver_view.optimization.problems.hs71.HS71Problem.get_nec">(pysolver_view.optimization.problems.hs71.HS71Problem method)</a>
 </li>
         <li><a href="api/pysolver_view.optimization.problems.lorenz.html#pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt.get_nec">(pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt method)</a>
@@ -751,6 +761,8 @@
       <ul>
         <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained.get_nic">(pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained method)</a>
 </li>
+        <li><a href="api/pysolver_view.optimization.problems.coupled_rosenbrock.html#pysolver_view.optimization.problems.coupled_rosenbrock.CoupledRosenbrockProblem.get_nic">(pysolver_view.optimization.problems.coupled_rosenbrock.CoupledRosenbrockProblem method)</a>
+</li>
         <li><a href="api/pysolver_view.optimization.problems.hs71.html#pysolver_view.optimization.problems.hs71.HS71Problem.get_nic">(pysolver_view.optimization.problems.hs71.HS71Problem method)</a>
 </li>
         <li><a href="api/pysolver_view.optimization.problems.lorenz.html#pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt.get_nic">(pysolver_view.optimization.problems.lorenz.LorentzEquationsOpt method)</a>
@@ -760,10 +772,10 @@
         <li><a href="api/pysolver_view.optimization.problems.slsqp_controls.html#pysolver_view.optimization.problems.slsqp_controls.StudyProblem.get_nic">(pysolver_view.optimization.problems.slsqp_controls.StudyProblem method)</a>
 </li>
       </ul></li>
-      <li><a href="api/pysolver_view.roots.problems.suites.html#pysolver_view.roots.problems.suites.get_problems">get_problems() (in module pysolver_view.roots.problems.suites)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/pysolver_view.roots.problems.suites.html#pysolver_view.roots.problems.suites.get_problems">get_problems() (in module pysolver_view.roots.problems.suites)</a>
+</li>
       <li><a href="api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.grad_count">grad_count (pysolver_view.optimization.solver.OptimizationSolver property)</a>
 
       <ul>
@@ -773,6 +785,8 @@
       <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained.gradient">gradient() (pysolver_view.optimization.problems.constrained_rosenbrock.RosenbrockProblemConstrained method)</a>
 
       <ul>
+        <li><a href="api/pysolver_view.optimization.problems.coupled_rosenbrock.html#pysolver_view.optimization.problems.coupled_rosenbrock.CoupledRosenbrockProblem.gradient">(pysolver_view.optimization.problems.coupled_rosenbrock.CoupledRosenbrockProblem method)</a>
+</li>
         <li><a href="api/pysolver_view.optimization.problems.rosenbrock.html#pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem.gradient">(pysolver_view.optimization.problems.rosenbrock.RosenbrockProblem method)</a>
 </li>
         <li><a href="api/pysolver_view.optimization.problems.slsqp_controls.html#pysolver_view.optimization.problems.slsqp_controls.StudyProblem.gradient">(pysolver_view.optimization.problems.slsqp_controls.StudyProblem method)</a>
@@ -858,8 +872,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/pysolver_view.optimization.solvers.slsqp.options.html#pysolver_view.optimization.solvers.slsqp.options.Evaluation.inequalities">inequalities (pysolver_view.optimization.solvers.slsqp.options.Evaluation attribute)</a>
 </li>
-      <li><a href="api/pysolver_view.optimization.problems.slsqp_controls.html#pysolver_view.optimization.problems.slsqp_controls.StudyProblem.initial">initial (pysolver_view.optimization.problems.slsqp_controls.StudyProblem property)</a>
+      <li><a href="api/pysolver_view.optimization.problems.coupled_rosenbrock.html#pysolver_view.optimization.problems.coupled_rosenbrock.CoupledRosenbrockProblem.initial">initial (pysolver_view.optimization.problems.coupled_rosenbrock.CoupledRosenbrockProblem property)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.slsqp_controls.html#pysolver_view.optimization.problems.slsqp_controls.StudyProblem.initial">(pysolver_view.optimization.problems.slsqp_controls.StudyProblem property)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/pysolver_view.roots.solvers.options.html#pysolver_view.roots.solvers.options.StepLimitOptions.initial_limit">initial_limit (pysolver_view.roots.solvers.options.StepLimitOptions attribute)</a>
@@ -970,6 +988,12 @@
         <li><a href="api/pysolver_view.optimization.backends.registry.html#pysolver_view.optimization.backends.registry.minimize_nlopt">(in module pysolver_view.optimization.backends.registry)</a>
 </li>
       </ul></li>
+      <li><a href="api/pysolver_view.optimization.backends.pounce.html#pysolver_view.optimization.backends.pounce.minimize_pounce">minimize_pounce() (in module pysolver_view.optimization.backends.pounce)</a>
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.backends.registry.html#pysolver_view.optimization.backends.registry.minimize_pounce">(in module pysolver_view.optimization.backends.registry)</a>
+</li>
+      </ul></li>
       <li><a href="api/pysolver_view.optimization.backends.pygmo.html#pysolver_view.optimization.backends.pygmo.minimize_pygmo">minimize_pygmo() (in module pysolver_view.optimization.backends.pygmo)</a>
 
       <ul>
@@ -1022,6 +1046,8 @@
 </li>
         <li><a href="api/pysolver_view.optimization.backends.custom.html#module-pysolver_view.optimization.backends.custom">pysolver_view.optimization.backends.custom</a>
 </li>
+        <li><a href="api/pysolver_view.optimization.backends.pounce.html#module-pysolver_view.optimization.backends.pounce">pysolver_view.optimization.backends.pounce</a>
+</li>
         <li><a href="api/pysolver_view.optimization.backends.pygmo.html#module-pysolver_view.optimization.backends.pygmo">pysolver_view.optimization.backends.pygmo</a>
 </li>
         <li><a href="api/pysolver_view.optimization.backends.pygmo_nlopt.html#module-pysolver_view.optimization.backends.pygmo_nlopt">pysolver_view.optimization.backends.pygmo_nlopt</a>
@@ -1043,6 +1069,8 @@
         <li><a href="api/pysolver_view.optimization.problems.base.html#module-pysolver_view.optimization.problems.base">pysolver_view.optimization.problems.base</a>
 </li>
         <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#module-pysolver_view.optimization.problems.constrained_rosenbrock">pysolver_view.optimization.problems.constrained_rosenbrock</a>
+</li>
+        <li><a href="api/pysolver_view.optimization.problems.coupled_rosenbrock.html#module-pysolver_view.optimization.problems.coupled_rosenbrock">pysolver_view.optimization.problems.coupled_rosenbrock</a>
 </li>
         <li><a href="api/pysolver_view.optimization.problems.hs71.html#module-pysolver_view.optimization.problems.hs71">pysolver_view.optimization.problems.hs71</a>
 </li>
@@ -1425,6 +1453,13 @@
 </li>
       </ul></li>
       <li>
+    pysolver_view.optimization.backends.pounce
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.backends.pounce.html#module-pysolver_view.optimization.backends.pounce">module</a>
+</li>
+      </ul></li>
+      <li>
     pysolver_view.optimization.backends.pygmo
 
       <ul>
@@ -1499,6 +1534,13 @@
 
       <ul>
         <li><a href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html#module-pysolver_view.optimization.problems.constrained_rosenbrock">module</a>
+</li>
+      </ul></li>
+      <li>
+    pysolver_view.optimization.problems.coupled_rosenbrock
+
+      <ul>
+        <li><a href="api/pysolver_view.optimization.problems.coupled_rosenbrock.html#module-pysolver_view.optimization.problems.coupled_rosenbrock">module</a>
 </li>
       </ul></li>
       <li>
@@ -1606,6 +1648,8 @@
         <li><a href="api/pysolver_view.reporting.html#module-pysolver_view.reporting">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     pysolver_view.reporting.layout
 
@@ -1613,8 +1657,6 @@
         <li><a href="api/pysolver_view.reporting.layout.html#module-pysolver_view.reporting.layout">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     pysolver_view.reporting.logging
 

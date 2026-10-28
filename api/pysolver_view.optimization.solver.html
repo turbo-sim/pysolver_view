@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=444dcb17"></script>
+    <script src="../_static/documentation_options.js?v=d6acfc83"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -170,6 +170,7 @@
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="pysolver_view.optimization.html">pysolver_view.optimization package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3 has-children"><a class="reference internal" href="pysolver_view.optimization.backends.html">pysolver_view.optimization.backends package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.backends.custom.html">pysolver_view.optimization.backends.custom module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.backends.pounce.html">pysolver_view.optimization.backends.pounce module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.backends.pygmo.html">pysolver_view.optimization.backends.pygmo module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.backends.pygmo_nlopt.html">pysolver_view.optimization.backends.pygmo_nlopt module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.backends.pygmo_nonfree.html">pysolver_view.optimization.backends.pygmo_nonfree module</a></li>
@@ -180,6 +181,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="pysolver_view.optimization.problems.html">pysolver_view.optimization.problems package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.base.html">pysolver_view.optimization.problems.base module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.constrained_rosenbrock.html">pysolver_view.optimization.problems.constrained_rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.coupled_rosenbrock.html">pysolver_view.optimization.problems.coupled_rosenbrock module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.hs71.html">pysolver_view.optimization.problems.hs71 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.lorenz.html">pysolver_view.optimization.problems.lorenz module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.root_adapter.html">pysolver_view.optimization.problems.root_adapter module</a></li>
@@ -601,15 +603,19 @@ preserve the exact scale of the original formulation.</p></li>
 </dd>
 <dt><strong>logger</strong><span class="classifier">logging.Logger, optional</span></dt><dd><p>Logger object to which logging messages will be directed. Logging is disabled if <cite>logger</cite> is None.</p>
 </dd>
-<dt><strong>update_on</strong><span class="classifier">str, optional</span></dt><dd><p>Selects ‘gradient’ (default), ‘function’, or SLSQP ‘iteration’ events.
+<dt><strong>update_on</strong><span class="classifier">str, optional</span></dt><dd><p>Selects ‘gradient’ (default), ‘function’, or native ‘iteration’ events.
 SciPy callbacks denote major iterations with unknown acceptance; custom
-SLSQP records accepted points. Derivative probes never generate observations.</p>
+SLSQP records accepted points. Pounce records native observations with
+reconstructed coordinates and unknown acceptance. Derivative probes
+never generate observations.</p>
 </dd>
 <dt><strong>callback_functions</strong><span class="classifier">list of callable or callable, optional</span></dt><dd><p>Callbacks receive (copied_solver_coordinates, callback_count). The count
 is not a solver iteration number. SciPy uses the selected observation
 stream; custom SLSQP uses initial/accepted points only and supports
 cancellation with StopIteration or a False return. Final synchronization
-does not invoke callbacks.</p>
+does not invoke callbacks. Pounce callbacks receive regular native
+iteration observations independently of <code class="docutils literal notranslate"><span class="pre">update_on</span></code> and support the
+same cancellation signals; they do not receive restoration subproblems.</p>
 </dd>
 <dt><strong>plot_improvement_only</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, plots only display iterations that improve the objective function value (useful for gradient-free optimizers) (default is False).</p>
 </dd>
@@ -617,7 +623,10 @@ does not invoke callbacks.</p>
 unavailable optimality and no multiplier estimation runs automatically.
 Custom SLSQP success then requires native success and feasibility only.
 Explicit evaluate_kkt_conditions or requested KKT/multiplier reports still
-perform an on-demand assessment, outside the automatic solve policy.</p>
+perform an on-demand assessment, outside the automatic solve policy.
+Pounce checks its authoritative final point with independent first-order
+KKT diagnostics at <code class="docutils literal notranslate"><span class="pre">50*tolerance</span></code> and requires that check for frontend
+success. With checks disabled it still verifies original-model feasibility.</p>
 </dd>
 <dt><strong>backend_callback</strong><span class="classifier">callable, optional</span></dt><dd><p>With <code class="docutils literal notranslate"><span class="pre">library=&quot;pysolver&quot;</span></code>, receive a detached copy of each initial or
 accepted SLSQP record, including KKT diagnostics and recovery counters.
@@ -626,7 +635,13 @@ convention: equalities are zero and inequalities are nonnegative, as
 in <code class="docutils literal notranslate"><span class="pre">backend_result.history</span></code>. This differs from the frontend’s public
 nonpositive inequalities and equality multiplier signs. Rejected trials,
 derivative probes, and final synchronization do not invoke this hook.
-Return False or raise StopIteration to stop at the accepted point.</p>
+Return False or raise StopIteration to stop at the accepted point.
+With <code class="docutils literal notranslate"><span class="pre">library=&quot;pounce&quot;</span></code>, receive native records in public constraint
+signs, including internally scaled <code class="docutils literal notranslate"><span class="pre">native_metrics</span></code>. Regular <code class="docutils literal notranslate"><span class="pre">x</span></code>
+coordinates come from the last objective evaluation, and acceptance is
+unknown. Restoration records have <code class="docutils literal notranslate"><span class="pre">x=None</span></code> and <code class="docutils literal notranslate"><span class="pre">fitness=None</span></code>.
+Returning False or raising StopIteration requests a native stop; other
+application errors propagate after Pounce releases control.</p>
 </dd>
 </dl>
 </dd>

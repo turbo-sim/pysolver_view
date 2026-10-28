@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=444dcb17"></script>
+    <script src="_static/documentation_options.js?v=d6acfc83"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -170,6 +170,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="api/pysolver_view.optimization.html">pysolver_view.optimization package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.optimization.backends.html">pysolver_view.optimization.backends package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.custom.html">pysolver_view.optimization.backends.custom module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.pounce.html">pysolver_view.optimization.backends.pounce module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.pygmo.html">pysolver_view.optimization.backends.pygmo module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.pygmo_nlopt.html">pysolver_view.optimization.backends.pygmo_nlopt module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.backends.pygmo_nonfree.html">pysolver_view.optimization.backends.pygmo_nonfree module</a></li>
@@ -180,6 +181,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="api/pysolver_view.optimization.problems.html">pysolver_view.optimization.problems package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.base.html">pysolver_view.optimization.problems.base module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.constrained_rosenbrock.html">pysolver_view.optimization.problems.constrained_rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.coupled_rosenbrock.html">pysolver_view.optimization.problems.coupled_rosenbrock module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.hs71.html">pysolver_view.optimization.problems.hs71 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.lorenz.html">pysolver_view.optimization.problems.lorenz module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/pysolver_view.optimization.problems.root_adapter.html">pysolver_view.optimization.problems.root_adapter module</a></li>
@@ -491,6 +493,7 @@
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#controlled-slsqp-callbacks">Controlled SLSQP callbacks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pounce-interior-point-and-active-set-sqp">Pounce interior-point and active-set SQP</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-equations-as-equality-constraints">Solving equations as equality constraints</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-unconstrained-optimization">Example 1: Unconstrained optimization</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-definition">Problem definition</a></li>
@@ -552,6 +555,65 @@ The callback performs no additional model or KKT evaluations by itself.</p>
 controlled SLSQP at its current accepted point. Other callback errors propagate.
 <code class="docutils literal notranslate"><span class="pre">backend_callback</span></code> is available only with <code class="docutils literal notranslate"><span class="pre">library=&quot;pysolver&quot;</span></code>; native SciPy
 callbacks do not certify accepted points.</p>
+</section>
+<section id="pounce-interior-point-and-active-set-sqp">
+<h2>Pounce interior-point and active-set SQP<a class="headerlink" href="#pounce-interior-point-and-active-set-sqp" title="Link to this heading">#</a></h2>
+<p>Install the optional, pinned Pounce solver in the project environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install<span class="w"> </span>--extras<span class="w"> </span>pounce
+<span class="c1"># For an installed release: pip install &#39;pysolver_view[pounce]&#39;</span>
+</pre></div>
+</div>
+<p>The same problem can be solved with either NLP algorithm:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span> <span class="o">=</span> <span class="n">psv</span><span class="o">.</span><span class="n">OptimizationSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="p">,</span>
+    <span class="n">library</span><span class="o">=</span><span class="s2">&quot;pounce&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;ipm&quot;</span><span class="p">,</span>  <span class="c1"># &quot;sqp&quot; selects active-set SQP</span>
+    <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span>
+    <span class="n">max_iterations</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+    <span class="n">update_on</span><span class="o">=</span><span class="s2">&quot;iteration&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Both methods use the frontend’s combined objective/constraint evaluations and
+analytic or bounded numerical first derivatives. Public inequalities stay
+<span class="math notranslate nohighlight">\(g(x)\leq0\)</span>; the adapter supplies their lower/upper bounds directly. The initial
+implementation declares a dense Jacobian and uses quasi-Newton Hessians:
+limited-memory for IPM and damped BFGS for SQP. Exact Hessians, sparse structure,
+and cross-solve working-set reuse are not yet exposed by this adapter.</p>
+<p>Generic tolerance and iteration limits map to <code class="docutils literal notranslate"><span class="pre">tol</span></code>/<code class="docutils literal notranslate"><span class="pre">max_iter</span></code>, and on SQP also
+to <code class="docutils literal notranslate"><span class="pre">sqp_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">sqp_constr_viol_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">sqp_dual_inf_tol</span></code>, and <code class="docutils literal notranslate"><span class="pre">sqp_max_iter</span></code>.
+Additional Pounce options go in <code class="docutils literal notranslate"><span class="pre">extra_options</span></code>. Internal NLP scaling and bound
+relaxation default to off, preserving the frontend’s coordinates and declared
+bounds. The backend keeps native termination and all diagnostic arrays in
+<code class="docutils literal notranslate"><span class="pre">backend_result.info</span></code>. The public result adds <code class="docutils literal notranslate"><span class="pre">native_info</span></code>, <code class="docutils literal notranslate"><span class="pre">native_multipliers</span></code>
+(in solver coordinates), and <code class="docutils literal notranslate"><span class="pre">effective_options</span></code>. Strict native success and
+original-model feasibility are required; with <code class="docutils literal notranslate"><span class="pre">check_kkt=True</span></code>, an independent
+first-order assessment of the returned point must also pass at
+<code class="docutils literal notranslate"><span class="pre">50*tolerance</span></code>. An acceptable-level native exit remains distinguishable through
+<code class="docutils literal notranslate"><span class="pre">solver_success</span></code> and is not promoted to strict success. This assessment does
+not prove a minimum for a nonconvex model.</p>
+<p>Pounce’s iteration hook supplies scalar metrics without a current-iterate
+accessor. The adapter follows Pounce’s own <code class="docutils literal notranslate"><span class="pre">minimize</span></code> facade by retaining the
+last objective-evaluation coordinates. <code class="docutils literal notranslate"><span class="pre">iteration_history</span></code> records these as
+<code class="docutils literal notranslate"><span class="pre">event_kind=&quot;native_iteration&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">accepted=None</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">coordinate_source=&quot;last_objective_evaluation&quot;</span></code>. <code class="docutils literal notranslate"><span class="pre">native_metrics</span></code> preserves
+Pounce’s internal objective, residuals, barrier parameter, step information, and
+line-search counts separately from original-model values. A restoration hook
+describes a feasibility subproblem and has no original-model point: it appears
+only in <code class="docutils literal notranslate"><span class="pre">backend_result.history</span></code> and <code class="docutils literal notranslate"><span class="pre">backend_callback</span></code>, with <code class="docutils literal notranslate"><span class="pre">x=None</span></code>.
+The native returned solution always owns the final result.</p>
+<p><code class="docutils literal notranslate"><span class="pre">callback_functions</span></code> receive copied regular native coordinates and callback
+counts independently of <code class="docutils literal notranslate"><span class="pre">update_on</span></code>; <code class="docutils literal notranslate"><span class="pre">backend_callback</span></code> receives complete
+detached records, including restoration. Return <code class="docutils literal notranslate"><span class="pre">False</span></code> or raise <code class="docutils literal notranslate"><span class="pre">StopIteration</span></code>
+to cancel. Other application exceptions propagate, rather than being hidden
+by Pounce’s native evaluation-failure handling. <code class="docutils literal notranslate"><span class="pre">check_kkt=False</span></code> disables
+automatic multiplier fitting, while explicitly requested KKT reports still work.</p>
+<p>There is no Python setting equivalent to custom SLSQP’s
+<code class="docutils literal notranslate"><span class="pre">first_step_fraction=0.20</span></code>. Pounce’s line-search reduction factors and
+fraction-to-boundary settings have different meanings; the adapter rejects
+<code class="docutils literal notranslate"><span class="pre">first_step_fraction</span></code>, <code class="docutils literal notranslate"><span class="pre">max_step_fraction</span></code>, and <code class="docutils literal notranslate"><span class="pre">step_growth_factor</span></code>. A genuine
+first-step cap would require an upstream Pounce interface change.</p>
 </section>
 <section id="solving-equations-as-equality-constraints">
 <h2>Solving equations as equality constraints<a class="headerlink" href="#solving-equations-as-equality-constraints" title="Link to this heading">#</a></h2>
@@ -990,6 +1052,7 @@ separately; it is not repeated in <code class="docutils literal notranslate"><sp
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#controlled-slsqp-callbacks">Controlled SLSQP callbacks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pounce-interior-point-and-active-set-sqp">Pounce interior-point and active-set SQP</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-equations-as-equality-constraints">Solving equations as equality constraints</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-unconstrained-optimization">Example 1: Unconstrained optimization</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-definition">Problem definition</a></li>

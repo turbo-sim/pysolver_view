@@ -13,6 +13,7 @@ Submodules
    :maxdepth: 4
 
    pysolver_view.optimization.backends.custom
+   pysolver_view.optimization.backends.pounce
    pysolver_view.optimization.backends.pygmo
    pysolver_view.optimization.backends.pygmo_nlopt
    pysolver_view.optimization.backends.pygmo_nonfree

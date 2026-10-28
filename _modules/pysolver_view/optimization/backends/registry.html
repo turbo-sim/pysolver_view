@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=444dcb17"></script>
+    <script src="../../../../_static/documentation_options.js?v=d6acfc83"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -167,6 +167,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/pysolver_view.optimization.html">pysolver_view.optimization package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/pysolver_view.optimization.backends.html">pysolver_view.optimization.backends package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.backends.custom.html">pysolver_view.optimization.backends.custom module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.backends.pounce.html">pysolver_view.optimization.backends.pounce module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.backends.pygmo.html">pysolver_view.optimization.backends.pygmo module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.backends.pygmo_nlopt.html">pysolver_view.optimization.backends.pygmo_nlopt module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.backends.pygmo_nonfree.html">pysolver_view.optimization.backends.pygmo_nonfree module</a></li>
@@ -177,6 +178,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.html">pysolver_view.optimization.problems package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.base.html">pysolver_view.optimization.problems.base module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.constrained_rosenbrock.html">pysolver_view.optimization.problems.constrained_rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.coupled_rosenbrock.html">pysolver_view.optimization.problems.coupled_rosenbrock module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.hs71.html">pysolver_view.optimization.problems.hs71 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.lorenz.html">pysolver_view.optimization.problems.lorenz module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/pysolver_view.optimization.problems.root_adapter.html">pysolver_view.optimization.problems.root_adapter module</a></li>
@@ -506,6 +508,16 @@
 
 
 
+<div class="viewcode-block" id="minimize_pounce">
+<a class="viewcode-back" href="../../../../api/pysolver_view.optimization.backends.registry.html#pysolver_view.optimization.backends.registry.minimize_pounce">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">minimize_pounce</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load the optional Pounce adapter only when a Pounce solve is requested.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.pounce</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize_pounce</span> <span class="k">as</span> <span class="n">run</span>
+
+    <span class="k">return</span> <span class="n">run</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span></div>
+
+
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">.scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize_scipy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.custom</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize_pysolver</span>
 
@@ -514,12 +526,14 @@
     <span class="s2">&quot;pysolver&quot;</span><span class="p">:</span> <span class="n">minimize_pysolver</span><span class="p">,</span>
     <span class="s2">&quot;pygmo&quot;</span><span class="p">:</span> <span class="n">minimize_pygmo</span><span class="p">,</span>
     <span class="s2">&quot;pygmo_nlopt&quot;</span><span class="p">:</span> <span class="n">minimize_nlopt</span><span class="p">,</span>
+    <span class="s2">&quot;pounce&quot;</span><span class="p">:</span> <span class="n">minimize_pounce</span><span class="p">,</span>
 <span class="p">}</span>
 <span class="n">VALID_LIBRARIES_AND_METHODS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;scipy&quot;</span><span class="p">:</span> <span class="n">SCIPY_SOLVERS</span><span class="p">,</span>
     <span class="s2">&quot;pysolver&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;slsqp&quot;</span><span class="p">],</span>
     <span class="s2">&quot;pygmo&quot;</span><span class="p">:</span> <span class="n">PYGMO_SOLVERS</span><span class="p">,</span>
     <span class="s2">&quot;pygmo_nlopt&quot;</span><span class="p">:</span> <span class="n">NLOPT_SOLVERS</span><span class="p">,</span>
+    <span class="s2">&quot;pounce&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ipm&quot;</span><span class="p">,</span> <span class="s2">&quot;sqp&quot;</span><span class="p">],</span>
 <span class="p">}</span>
 <span class="n">CAPABILITIES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="p">(</span><span class="n">library</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span> <span class="nb">dict</span><span class="p">(</span>
@@ -554,6 +568,18 @@
             <span class="n">cancellation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">step_controls</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">),</span>
+        <span class="o">**</span><span class="p">{</span>
+            <span class="p">(</span><span class="s2">&quot;pounce&quot;</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">shape</span><span class="o">=</span><span class="s2">&quot;scalar objective; dense first derivatives&quot;</span><span class="p">,</span>
+                <span class="n">verified</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">constraints</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">derivatives</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">events</span><span class="o">=</span><span class="s2">&quot;native_iteration&quot;</span><span class="p">,</span>
+                <span class="n">cancellation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">step_controls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ipm&quot;</span><span class="p">,</span> <span class="s2">&quot;sqp&quot;</span><span class="p">)</span>
+        <span class="p">},</span>
     <span class="p">}</span>
 <span class="p">)</span>
 </pre></div>

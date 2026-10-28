@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=444dcb17"></script>
+    <script src="../_static/documentation_options.js?v=d6acfc83"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -168,6 +168,7 @@
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="pysolver_view.optimization.html">pysolver_view.optimization package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3 current active has-children"><a class="current reference internal" href="#">pysolver_view.optimization.backends package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.backends.custom.html">pysolver_view.optimization.backends.custom module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.backends.pounce.html">pysolver_view.optimization.backends.pounce module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.backends.pygmo.html">pysolver_view.optimization.backends.pygmo module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.backends.pygmo_nlopt.html">pysolver_view.optimization.backends.pygmo_nlopt module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.backends.pygmo_nonfree.html">pysolver_view.optimization.backends.pygmo_nonfree module</a></li>
@@ -178,6 +179,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="pysolver_view.optimization.problems.html">pysolver_view.optimization.problems package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.base.html">pysolver_view.optimization.problems.base module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.constrained_rosenbrock.html">pysolver_view.optimization.problems.constrained_rosenbrock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.coupled_rosenbrock.html">pysolver_view.optimization.problems.coupled_rosenbrock module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.hs71.html">pysolver_view.optimization.problems.hs71 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.lorenz.html">pysolver_view.optimization.problems.lorenz module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pysolver_view.optimization.problems.root_adapter.html">pysolver_view.optimization.problems.root_adapter module</a></li>
@@ -511,6 +513,10 @@
 <li class="toctree-l2"><a class="reference internal" href="pysolver_view.optimization.backends.custom.html#pysolver_view.optimization.backends.custom.minimize_pysolver"><code class="docutils literal notranslate"><span class="pre">minimize_pysolver()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="pysolver_view.optimization.backends.pounce.html">pysolver_view.optimization.backends.pounce module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pysolver_view.optimization.backends.pounce.html#pysolver_view.optimization.backends.pounce.minimize_pounce"><code class="docutils literal notranslate"><span class="pre">minimize_pounce()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="pysolver_view.optimization.backends.pygmo.html">pysolver_view.optimization.backends.pygmo module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pysolver_view.optimization.backends.pygmo.html#pysolver_view.optimization.backends.pygmo.PygmoProblem"><code class="docutils literal notranslate"><span class="pre">PygmoProblem</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="pysolver_view.optimization.backends.pygmo.html#pysolver_view.optimization.backends.pygmo.minimize_pygmo"><code class="docutils literal notranslate"><span class="pre">minimize_pygmo()</span></code></a></li>
@@ -526,6 +532,7 @@
 <li class="toctree-l2"><a class="reference internal" href="pysolver_view.optimization.backends.registry.html#pysolver_view.optimization.backends.registry.PYGMO_SOLVERS"><code class="docutils literal notranslate"><span class="pre">PYGMO_SOLVERS</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="pysolver_view.optimization.backends.registry.html#pysolver_view.optimization.backends.registry.SCIPY_SOLVERS"><code class="docutils literal notranslate"><span class="pre">SCIPY_SOLVERS</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="pysolver_view.optimization.backends.registry.html#pysolver_view.optimization.backends.registry.minimize_nlopt"><code class="docutils literal notranslate"><span class="pre">minimize_nlopt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pysolver_view.optimization.backends.registry.html#pysolver_view.optimization.backends.registry.minimize_pounce"><code class="docutils literal notranslate"><span class="pre">minimize_pounce()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="pysolver_view.optimization.backends.registry.html#pysolver_view.optimization.backends.registry.minimize_pygmo"><code class="docutils literal notranslate"><span class="pre">minimize_pygmo()</span></code></a></li>
 </ul>
 </li>
