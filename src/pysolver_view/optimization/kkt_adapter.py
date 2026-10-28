@@ -6,7 +6,7 @@ import numpy as np
 from ..diagnostics.kkt import assess_kkt
 
 
-def kkt_from_cache(self, x_norm, tol):
+def kkt_from_cache(self, x_norm, tol, *, optimality_tol=None):
     """Assess public-sign KKT residuals using only same-point cached arrays.
 
     The legacy dual-feasibility field remains a signed minimum multiplier.
@@ -22,7 +22,9 @@ def kkt_from_cache(self, x_norm, tol):
         raise ValueError(
             "KKT assessment requires values and derivatives at the same point."
         )
-    if self._kkt_cache is not None and self._kkt_cache[0] == tol:
+    optimality_tol = tol if optimality_tol is None else optimality_tol
+    tolerances = (tol, optimality_tol)
+    if self._kkt_cache is not None and self._kkt_cache[0] == tolerances:
         return copy.deepcopy(self._kkt_cache[1])
     bounds = self.problem.get_bounds_normalized()
     lower, upper = (
@@ -41,7 +43,7 @@ def kkt_from_cache(self, x_norm, tol):
         lower,
         upper,
         feasibility_tol=tol,
-        optimality_tol=tol,
+        optimality_tol=optimality_tol,
     )
     self.kkt_time += time.perf_counter() - started_check
     self.kkt_count += 1
@@ -87,13 +89,13 @@ def kkt_from_cache(self, x_norm, tol):
         "feasibility_inequality": inequality_error,
         "feasibility_dual": signed_dual,
         "complementary_slackness": complementarity,
-        "first_order_optimality_ok": bool(first <= tol),
+        "first_order_optimality_ok": bool(first <= optimality_tol),
         "feasibility_equality_ok": bool(equality_error <= tol),
         "feasibility_inequality_ok": bool(inequality_error <= tol),
-        "feasibility_dual_ok": bool(signed_dual >= -tol),
-        "complementary_slackness_ok": bool(complementarity <= tol),
+        "feasibility_dual_ok": bool(signed_dual >= -optimality_tol),
+        "complementary_slackness_ok": bool(complementarity <= optimality_tol),
     }
-    self._kkt_cache = tol, copy.deepcopy(result)
+    self._kkt_cache = tolerances, copy.deepcopy(result)
     return result
 
 

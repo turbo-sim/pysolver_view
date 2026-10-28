@@ -9,6 +9,8 @@ notes and reproduction commands live in [docs/development](docs/development/READ
 
 - [x] Add optional Pounce IPM/SQP backends with truthful native observations,
   cancellation, original exception propagation, and independent final KKT checks.
+- [x] Support sufficient user-KKT stopping for Pounce, preserve earlier native
+  exits, and reconcile tiny box excursions before bounded derivative probes.
 - [x] Compare direct and wrapped Pounce against full and 0.20-first-step custom
   SLSQP on a moderate constrained NLP, retaining reproducible plots and audits.
 - [x] Correct final-result ownership, point-consistent histories, and non-mutating plots.

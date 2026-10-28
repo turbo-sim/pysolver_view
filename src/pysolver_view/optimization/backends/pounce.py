@@ -1,11 +1,64 @@
 """Adapt optional Pounce NLP solvers to package evaluations and observations."""
 
 from copy import deepcopy
+from numbers import Real
 
 import numpy as np
 from scipy.optimize import OptimizeResult
 
 from ...exceptions import DomainError
+
+
+def resolve_pounce_controls(options, check_kkt=True):
+    """Validate frontend stopping and absolute solver-coordinate bound tolerances."""
+    tolerance = options["tolerance"]
+    controls = dict(
+        stop_on_kkt=options.get("stop_on_kkt", False),
+        feasibility_tol=options.get("feasibility_tol", 50 * tolerance),
+        optimality_tol=options.get("optimality_tol", 50 * tolerance),
+        bound_tolerance=options.get("bound_tolerance", 1e-8),
+    )
+    if not isinstance(controls["stop_on_kkt"], bool):
+        raise TypeError("stop_on_kkt must be boolean.")
+    if controls["stop_on_kkt"] and not check_kkt:
+        raise ValueError("stop_on_kkt requires check_kkt=True.")
+    for name in ("feasibility_tol", "optimality_tol", "bound_tolerance"):
+        value = controls[name]
+        if (
+            isinstance(value, (bool, np.bool_))
+            or not isinstance(value, Real)
+            or not np.isfinite(value)
+            or (value < 0 if name == "bound_tolerance" else value <= 0)
+        ):
+            raise ValueError(
+                f"{name} must be finite and {'nonnegative' if name == 'bound_tolerance' else 'positive'}."
+            )
+    return controls
+
+
+def reconcile_bound_point(x, lower, upper, tolerance):
+    """Project only tolerance-sized box excursions, preserving larger failures.
+
+    All native value and derivative callbacks use the same reconciled point.
+    This supplies feasible bases to bounded finite differences, whose probes
+    then stay inside the original box. Raw native coordinates remain separate.
+    ``tolerance`` is an absolute distance in the caller's solver coordinates.
+    """
+    point = np.asarray(x, dtype=float).copy()
+    if not np.all(np.isfinite(point)):
+        raise ValueError("Pounce supplied nonfinite evaluation coordinates.")
+    projected = np.clip(point, lower, upper)
+    correction = float(np.max(np.abs(projected - point), initial=0))
+    if correction > tolerance:
+        raise DomainError(
+            "Pounce evaluation point exceeds bound_tolerance.",
+            metadata=dict(
+                native_x=point.tolist(),
+                maximum_violation=correction,
+                bound_tolerance=tolerance,
+            ),
+        )
+    return projected, correction
 
 
 class _PounceCallbacks:
@@ -18,7 +71,16 @@ class _PounceCallbacks:
     Restoration observations have no user-space point or objective attached.
     """
 
-    def __init__(self, problem, dimension, equality_count, inequality_count):
+    def __init__(
+        self,
+        problem,
+        dimension,
+        equality_count,
+        inequality_count,
+        *,
+        bounds=None,
+        bound_tolerance=1e-8,
+    ):
         """Initialize detached per-run values and delayed application errors."""
         self.problem = problem
         self.dimension = dimension
@@ -26,10 +88,27 @@ class _PounceCallbacks:
         self.constraint_count = equality_count + inequality_count
         self.last_objective_x = None
         self.last_objective_fitness = None
+        self.last_objective_native_x = None
+        self.bounds = bounds
+        self.bound_tolerance = bound_tolerance
+        self.projection_count = 0
+        self.maximum_projection = 0.0
+        self.kkt_stop_requested = False
+        self.stop_candidate = None
         self.application_error = None
         self.history = []
         self.objective_calls = 0
         self.gradient_calls = 0
+
+    def evaluation_point(self, x):
+        """Reconcile every callback consistently and account for corrections."""
+        if self.bounds is None:
+            return np.asarray(x, dtype=float).copy(), 0.0
+        point, correction = reconcile_bound_point(x, *self.bounds, self.bound_tolerance)
+        if correction:
+            self.projection_count += 1
+            self.maximum_projection = max(self.maximum_projection, correction)
+        return point, correction
 
     def _remember_error(self, error):
         """Retain the first application error that Pounce would otherwise hide."""
@@ -40,7 +119,8 @@ class _PounceCallbacks:
         """Read combined fitness once and remember only actual objective points."""
         self.objective_calls += 1
         try:
-            values = np.asarray(self.problem.fitness(x)).copy()
+            point, _ = self.evaluation_point(x)
+            values = np.asarray(self.problem.fitness(point)).copy()
             objective_value = float(values[0])
         except DomainError:
             # Raising signals native evaluation failure and permits line-search
@@ -49,7 +129,8 @@ class _PounceCallbacks:
         except BaseException as error:
             self._remember_error(error)
             raise
-        self.last_objective_x = np.asarray(x, dtype=float).copy()
+        self.last_objective_native_x = np.asarray(x, dtype=float).copy()
+        self.last_objective_x = point.copy()
         self.last_objective_fitness = values.copy()
         return objective_value
 
@@ -57,7 +138,8 @@ class _PounceCallbacks:
         """Use the frontend's analytic or accounted numerical objective gradient."""
         self.gradient_calls += 1
         try:
-            matrix = np.asarray(self.problem.gradient(x)).reshape(
+            point, _ = self.evaluation_point(x)
+            matrix = np.asarray(self.problem.gradient(point)).reshape(
                 1 + self.constraint_count, self.dimension
             )
             return matrix[0].copy()
@@ -69,7 +151,8 @@ class _PounceCallbacks:
     def constraints(self, x):
         """Return equality rows then nonpositive inequality rows without reversal."""
         try:
-            return np.asarray(self.problem.fitness(x))[1:].copy()
+            point, _ = self.evaluation_point(x)
+            return np.asarray(self.problem.fitness(point))[1:].copy()
         except DomainError:
             raise
         except BaseException as error:
@@ -86,7 +169,8 @@ class _PounceCallbacks:
     def jacobian(self, x):
         """Flatten frontend constraint-Jacobian rows in the declared dense order."""
         try:
-            matrix = np.asarray(self.problem.gradient(x)).reshape(
+            point, _ = self.evaluation_point(x)
+            matrix = np.asarray(self.problem.gradient(point)).reshape(
                 1 + self.constraint_count, self.dimension
             )
             return matrix[1:].ravel().copy()
@@ -108,7 +192,7 @@ class _PounceCallbacks:
         alpha_pr,
         ls_trials,
     ):
-        """Publish detached native metrics without performing hidden model work.
+        """Publish detached metrics and relay cancellation or explicit KKT stops.
 
         ``obj_value``, ``inf_pr``, and ``inf_du`` retain the native internal
         scaling. The separately stored ``fitness`` uses frontend solver-space
@@ -126,6 +210,7 @@ class _PounceCallbacks:
                 "last_objective_evaluation" if regular_point else "unavailable"
             ),
             "x": self.last_objective_x.copy() if regular_point else None,
+            "native_x": self.last_objective_native_x.copy() if regular_point else None,
             "fitness": (self.last_objective_fitness.copy() if regular_point else None),
             "native_metrics": {
                 "alg_mod": int(alg_mod),
@@ -146,7 +231,13 @@ class _PounceCallbacks:
         if callback is None:
             return True
         try:
-            return callback(deepcopy(entry)) is not False
+            decision = callback(deepcopy(entry))
+            if isinstance(decision, dict) and decision.get("kkt_converged"):
+                self.kkt_stop_requested = True
+                self.stop_candidate = deepcopy(entry)
+                self.history[-1]["kkt_stop_requested"] = True
+                return False
+            return decision is not False
         except StopIteration:
             return False
         except BaseException as error:
@@ -177,8 +268,10 @@ def minimize_pounce(problem, x0, method, solver_options):
     Returns
     -------
     scipy.optimize.OptimizeResult
-        Authoritative native returned point, strict native success, detached
-        observation history and diagnostics. ``solver_success`` additionally
+        Native returned point reconciled only within ``bound_tolerance``, plus
+        the raw ``native_x``, observation history, and diagnostics. Success means
+        strict native success or a requested KKT stop, subject to the frontend's
+        independent final-point check. ``solver_success`` additionally
         identifies acceptable-level native termination. Multipliers retain
         Pounce's ``grad(f) + J.T @ lambda - z_lower + z_upper`` convention in
         the frontend's solver coordinates; no physical rescaling occurs here.
@@ -186,6 +279,9 @@ def minimize_pounce(problem, x0, method, solver_options):
     if method not in {"ipm", "sqp"}:
         raise ValueError("The pounce backend supports only 'ipm' and 'sqp'.")
     configured = dict(solver_options)
+    controls = resolve_pounce_controls(configured, getattr(problem, "check_kkt", True))
+    for name in controls:
+        configured.pop(name, None)
     tolerance = configured.pop("tolerance")
     max_iterations = configured.pop("max_iterations")
     unsupported = sorted(
@@ -238,6 +334,13 @@ def minimize_pounce(problem, x0, method, solver_options):
             sqp_max_iter=int(max_iterations),
         )
     options.update(configured)
+    if controls["stop_on_kkt"] and (
+        options["nlp_scaling_method"] != "none"
+        or options.get("obj_scaling_factor", 1.0) != 1.0
+    ):
+        raise ValueError(
+            "stop_on_kkt requires nlp_scaling_method='none' and obj_scaling_factor=1."
+        )
     try:
         import pounce
     except ImportError as error:
@@ -250,14 +353,19 @@ def minimize_pounce(problem, x0, method, solver_options):
     equality_count = int(problem.get_nec())
     inequality_count = int(problem.get_nic())
     constraint_count = equality_count + inequality_count
-    callbacks = _PounceCallbacks(
-        problem, initial.size, equality_count, inequality_count
-    )
     bounds = problem.get_bounds()
     lower, upper = (
         (np.full(initial.size, -np.inf), np.full(initial.size, np.inf))
         if bounds is None
         else (np.asarray(bounds[0], dtype=float), np.asarray(bounds[1], dtype=float))
+    )
+    callbacks = _PounceCallbacks(
+        problem,
+        initial.size,
+        equality_count,
+        inequality_count,
+        bounds=(lower, upper),
+        bound_tolerance=controls["bound_tolerance"],
     )
     native = pounce.Problem(
         n=initial.size,
@@ -279,9 +387,13 @@ def minimize_pounce(problem, x0, method, solver_options):
     if callbacks.application_error is not None:
         raise callbacks.application_error
 
-    point = np.asarray(x, dtype=float).copy()
+    native_point = np.asarray(x, dtype=float).copy()
+    point, final_correction = reconcile_bound_point(
+        native_point, lower, upper, controls["bound_tolerance"]
+    )
     info = deepcopy(dict(native_info))
     status = int(info["status"])
+    stopped_on_kkt = callbacks.kkt_stop_requested and status == 5
     fitness = None
     if callbacks.last_objective_x is not None and np.array_equal(
         callbacks.last_objective_x, point
@@ -302,17 +414,30 @@ def minimize_pounce(problem, x0, method, solver_options):
     }
     return OptimizeResult(
         x=point,
+        native_x=native_point,
         fun=float(info.get("obj_val", np.nan)),
         fitness=fitness,
-        success=status == 0,
+        success=status == 0 or stopped_on_kkt,
         solver_success=status in (0, 1),
         status=status,
-        message=str(info.get("status_msg", status)),
+        message=(
+            "Stopped after PySolverView first-order KKT convergence"
+            if stopped_on_kkt
+            else str(info.get("status_msg", status))
+        ),
         nit=int(info.get("iter_count", 0)),
         nfev=int(info.get("n_obj_evals", callbacks.objective_calls)),
         njev=int(info.get("n_grad_evals", callbacks.gradient_calls)),
         history=deepcopy(callbacks.history),
         info=info,
         native_multipliers=native_multipliers,
-        effective_options=deepcopy(options),
+        effective_options=deepcopy({**options, **controls}),
+        stopped_on_kkt=stopped_on_kkt,
+        kkt_stop_requested=callbacks.kkt_stop_requested,
+        bound_projection=dict(
+            tolerance=controls["bound_tolerance"],
+            callback_count=callbacks.projection_count,
+            maximum_correction=callbacks.maximum_projection,
+            final_correction=final_correction,
+        ),
     )

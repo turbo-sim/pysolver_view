@@ -79,9 +79,10 @@ relaxation default to off, preserving the frontend's coordinates and declared
 bounds. The backend keeps native termination and all diagnostic arrays in
 `backend_result.info`. The public result adds `native_info`, `native_multipliers`
 (in solver coordinates), and `effective_options`. Strict native success and
-original-model feasibility are required; with `check_kkt=True`, an independent
-first-order assessment of the returned point must also pass at
-`50*tolerance`. An acceptable-level native exit remains distinguishable through
+original-model feasibility are required by default; with `check_kkt=True`, an
+independent first-order assessment of the returned point must also pass.
+`feasibility_tol` and `optimality_tol` in `extra_options` configure its separate
+limits; both default to `50*tolerance`. An acceptable-level native exit remains distinguishable through
 `solver_success` and is not promoted to strict success. This assessment does
 not prove a minimum for a nonconvex model.
 
@@ -94,7 +95,46 @@ Pounce's internal objective, residuals, barrier parameter, step information, and
 line-search counts separately from original-model values. A restoration hook
 describes a feasibility subproblem and has no original-model point: it appears
 only in `backend_result.history` and `backend_callback`, with `x=None`.
-The native returned solution always owns the final result.
+The native returned solution owns the final result, subject to the tiny bound
+reconciliation described below; a cached observation cannot certify a different
+returned point.
+
+To make your first-order criteria sufficient for termination, enable:
+
+```python
+extra_options = {
+    "stop_on_kkt": True,
+    "feasibility_tol": 1e-6,
+    "optimality_tol": 1e-4,
+    "mu_strategy": "adaptive",  # IPM only; the native default is monotone
+}
+```
+
+Pass this dictionary as `OptimizationSolver(..., extra_options=extra_options)`.
+At regular feasible observations, the frontend obtains missing derivatives and
+checks full first-order KKT conditions, including stationarity and complementarity.
+This diagnostic work is counted; feasibility alone cannot trigger success.
+A passing assessment requests a stop through the native callback. A native exit
+also ends the solve immediately, whether or not your criteria pass. This is an
+OR stopping rule, with no forced continuation or wrapper retry.
+
+The actual returned point is independently checked before reporting success.
+`result.stopped_on_kkt` and `result.termination == "kkt_converged"` identify this
+verified exit. Native status 5 (`User_Requested_Stop`) and `solver_success=False`
+are preserved, while frontend `success=True` records the verified user criteria.
+Explicit user cancellation remains unsuccessful. KKT stopping requires
+`check_kkt=True`, `nlp_scaling_method="none"`, and `obj_scaling_factor=1`, so the
+native objective can be checked against the cached original-model observation.
+
+Pounce can produce tiny excursions outside a box bound. The adapter reconciles
+all value and derivative callbacks to the same feasible point when the maximum
+excursion is at most `bound_tolerance` (default `1e-8`, absolute solver-coordinate
+units). Bounded finite differences then direct their probes inside the box.
+Larger excursions remain domain failures; the model never receives a silently
+accepted large violation. `bound_tolerance=0` requests strict box handling.
+`result.bound_projection` records corrections and `result.native_x_solver`
+preserves the raw returned native coordinates. The final reported point and
+its KKT check use the reconciled coordinates consistently.
 
 `callback_functions` receive copied regular native coordinates and callback
 counts independently of `update_on`; `backend_callback` receives complete

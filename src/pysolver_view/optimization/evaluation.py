@@ -230,6 +230,7 @@ class BackendProblem:
     """
 
     def __init__(self, wrapped_problem):
+        self.check_kkt = wrapped_problem.check_kkt
         self.iteration_callback = lambda x: wrapped_problem._record_iteration(x)
         self.accepted_callback = lambda entry: wrapped_problem._record_custom_iteration(
             entry

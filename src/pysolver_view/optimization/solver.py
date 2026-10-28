@@ -125,8 +125,12 @@ class OptimizationSolver:
         Explicit evaluate_kkt_conditions or requested KKT/multiplier reports still
         perform an on-demand assessment, outside the automatic solve policy.
         Pounce checks its authoritative final point with independent first-order
-        KKT diagnostics at ``50*tolerance`` and requires that check for frontend
-        success. With checks disabled it still verifies original-model feasibility.
+        KKT diagnostics and requires that check for frontend success. Its
+        ``extra_options`` accept separate ``feasibility_tol`` and ``optimality_tol``
+        (each defaults to ``50*tolerance``). ``stop_on_kkt=True`` makes a passing
+        assessment sufficient to request native termination. A native exit always
+        ends the solve, even before those criteria pass. With checks disabled it
+        still verifies original-model feasibility.
     backend_callback : callable, optional
         With ``library="pysolver"``, receive a detached copy of each initial or
         accepted SLSQP record, including KKT diagnostics and recovery counters.
@@ -256,6 +260,13 @@ class OptimizationSolver:
 
     def _reset_run_state(self):
         """Reset results, observations, and counters before an independent solve."""
+        self._pounce_controls = None
+        if self.library == "pounce":
+            from .backends.pounce import resolve_pounce_controls
+
+            self._pounce_controls = resolve_pounce_controls(
+                self.options, self.check_kkt
+            )
         self._evaluation = OptimizationEvaluation(
             self.problem,
             library=self.library,
@@ -403,7 +414,9 @@ class OptimizationSolver:
         ):
             self._evaluate_gradient(self.x_final_norm, diagnostic=True)
             self._pounce_kkt = self._kkt_from_cache(
-                self.x_final_norm, 50 * self.options["tolerance"]
+                self.x_final_norm,
+                self._pounce_controls["feasibility_tol"],
+                optimality_tol=self._pounce_controls["optimality_tol"],
             )
         self.f_final = copy.deepcopy(final_values[0])
         self.success = solution.success
@@ -418,7 +431,7 @@ class OptimizationSolver:
         )
         if self.library == "pounce":
             feasible = final_snapshot["constraint_violation"] <= (
-                50 * self.options["tolerance"]
+                self._pounce_controls["feasibility_tol"]
             )
             verified = not self.check_kkt or bool(
                 self._pounce_kkt and self._pounce_kkt["passed"]
@@ -546,9 +559,19 @@ class OptimizationSolver:
             and np.array_equal(point, self.cache["x_jac"])
         ):
             # This is a pure reconstruction from already available values/derivatives.
-            optimality = self._kkt_from_cache(point, 50 * self.options["tolerance"])[
-                "first_order_optimality"
-            ]
+            optimality = self._kkt_from_cache(
+                point,
+                (
+                    self._pounce_controls["feasibility_tol"]
+                    if self.library == "pounce"
+                    else 50 * self.options["tolerance"]
+                ),
+                optimality_tol=(
+                    self._pounce_controls["optimality_tol"]
+                    if self.library == "pounce"
+                    else None
+                ),
+            )["first_order_optimality"]
         return dict(
             x=point,
             event_kind=event_kind,
@@ -597,10 +620,13 @@ class OptimizationSolver:
         Pounce provides scalar iteration metrics but no current-iterate accessor.
         Regular coordinates come from its last objective evaluation; restoration
         records have no original-model point and reach only ``backend_callback``.
-        No model work is performed to construct an observation from cached values.
+        Observations use cached values. Opt-in KKT stopping explicitly evaluates
+        missing derivatives at feasible regular observations; its model probes
+        and mathematical assessment are accounted as diagnostic work.
         """
         self.iteration_count = int(entry["iteration"])
         point = entry.get("x")
+        assessment = None
         if point is not None and entry.get("fitness") is not None:
             snapshot = self._observation_snapshot(
                 point, "native_iteration", values=entry["fitness"]
@@ -608,6 +634,40 @@ class OptimizationSolver:
             snapshot["accepted"] = None
             snapshot["coordinate_source"] = entry["coordinate_source"]
             snapshot["native_metrics"] = copy.deepcopy(entry["native_metrics"])
+            snapshot["native_x"] = copy.deepcopy(entry.get("native_x", point))
+            metrics = entry["native_metrics"]
+            if (
+                self._pounce_controls["stop_on_kkt"]
+                and snapshot["constraint_violation"]
+                <= self._pounce_controls["feasibility_tol"]
+                and metrics.get("alg_mod") == 0
+                and np.isclose(
+                    metrics.get("obj_value", np.nan),
+                    entry["fitness"][0],
+                    rtol=8 * np.finfo(float).eps,
+                    atol=8 * np.finfo(float).eps,
+                )
+            ):
+                # Explicit convergence work is accounted as diagnostics. Cached
+                # derivatives are reused; new probes remain bounded and silent.
+                self._evaluate_fitness(point, diagnostic=True)
+                self._evaluate_gradient(point, diagnostic=True)
+                assessment = self._kkt_from_cache(
+                    point,
+                    self._pounce_controls["feasibility_tol"],
+                    optimality_tol=self._pounce_controls["optimality_tol"],
+                )
+                snapshot["kkt"] = copy.deepcopy(assessment)
+                snapshot["optimality"] = assessment["first_order_optimality"]
+                # Diagnostic derivative work belongs to this observation too.
+                for name, value in (
+                    ("grad_count", self.grad_count),
+                    ("func_count", self.func_count),
+                    ("func_count_total", self.func_count_tot),
+                    ("derivative_func_count", self.derivative_func_count),
+                    ("diagnostic_func_count", self.diagnostic_func_count),
+                ):
+                    snapshot[name] = value
             previous = (
                 self.iteration_history[-1]["x"] if self.iteration_history else None
             )
@@ -636,6 +696,8 @@ class OptimizationSolver:
                             raise StopIteration("Stopped by user callback")
             finally:
                 self._in_callback = False
+        if assessment is not None and assessment["passed"]:
+            return dict(kkt_converged=True)
 
     def _record_custom_iteration(self, entry):
         """Record accepted custom-driver points and notify cancellable callbacks.
@@ -1138,7 +1200,7 @@ class OptimizationSolver:
         self._evaluate_gradient(point, diagnostic=True)
         return self._kkt_from_cache(point, tol)
 
-    def _kkt_from_cache(self, x_norm, tol):
+    def _kkt_from_cache(self, x_norm, tol, *, optimality_tol=None):
         """Assess public-sign KKT residuals using only same-point cached arrays.
 
         The legacy dual-feasibility field remains a signed minimum multiplier.
@@ -1146,7 +1208,9 @@ class OptimizationSolver:
         infinity-norm stationarity. Multiplier indices are user inequalities,
         then all lower-bound slots, then all upper-bound slots.
         """
-        return kkt_adapter.kkt_from_cache(self._evaluation, x_norm, tol)
+        return kkt_adapter.kkt_from_cache(
+            self._evaluation, x_norm, tol, optimality_tol=optimality_tol
+        )
 
     def make_kkt_optimality_report(self, x_norm, tol, *, width=80):
         r"""

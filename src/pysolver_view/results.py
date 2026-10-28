@@ -61,6 +61,27 @@ def optimization_result(run, solution, final_values, final_snapshot):
         result.native_multipliers = copy.deepcopy(solution.native_multipliers)
         result.native_multiplier_coordinates = "solver"
         result.effective_options = copy.deepcopy(solution.effective_options)
+        result.native_x_solver = solution.native_x.copy()
+        result.bound_projection = copy.deepcopy(solution.bound_projection)
+        result.kkt_stop_requested = solution.kkt_stop_requested
+        result.stopped_on_kkt = bool(solution.stopped_on_kkt and run.success)
+        result.termination = (
+            "kkt_converged"
+            if result.stopped_on_kkt
+            else (
+                "kkt_check_failed"
+                if solution.stopped_on_kkt
+                else (
+                    "cancelled"
+                    if solution.status == 5
+                    else (
+                        "native_converged"
+                        if solution.status in (0, 1)
+                        else "native_failure"
+                    )
+                )
+            )
+        )
         result.kkt = copy.deepcopy(run._pounce_kkt)
         result.kkt_passed = (
             bool(run._pounce_kkt and run._pounce_kkt["passed"])
@@ -68,7 +89,7 @@ def optimization_result(run, solution, final_values, final_snapshot):
             else None
         )
         result.feasible = bool(
-            result.constraint_violation <= 50 * run.options["tolerance"]
+            result.constraint_violation <= run._pounce_controls["feasibility_tol"]
         )
         result.stationary = (
             bool(run._pounce_kkt and run._pounce_kkt["first_order_optimality_ok"])

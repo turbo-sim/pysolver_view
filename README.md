@@ -50,6 +50,10 @@ Pounce 0.13.0 is pinned in the optional `pounce` extra. Install it with
 `OptimizationSolver(problem, library="pounce", method="ipm")` or `method="sqp"`.
 The backend uses the same combined problem and derivative contracts as SLSQP.
 Pounce does not expose the custom SLSQP first-step fraction controls.
+For sufficient user-KKT termination, pass `extra_options={"stop_on_kkt": True,
+"feasibility_tol": 1e-6, "optimality_tol": 1e-4}`. A native exit also ends the
+solve; the actual returned point is verified before reporting success. See the
+[Pounce controls and bound handling](docs/source/tutorial_optimization.md#pounce-interior-point-and-active-set-sqp).
 The [native and wrapper comparisons](development/pounce_solvers/README.md) reproduce a
 24-variable constrained NLP study with independent feasibility and KKT audits.
 
