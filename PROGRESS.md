@@ -1,12 +1,16 @@
 # PySolverView progress
 
-Last updated: **2026-10-26**
+Last updated: **2026-10-28**
 
 Keep this file to completed milestones and outstanding tasks. Implementation
 notes and reproduction commands live in [docs/development](docs/development/README.md).
 
 ## Completed
 
+- [x] Add optional Pounce IPM/SQP backends with truthful native observations,
+  cancellation, original exception propagation, and independent final KKT checks.
+- [x] Compare direct and wrapped Pounce against full and 0.20-first-step custom
+  SLSQP on a moderate constrained NLP, retaining reproducible plots and audits.
 - [x] Correct final-result ownership, point-consistent histories, and non-mutating plots.
 - [x] Separate iteration, model-call, derivative-probe, and diagnostic accounting.
 - [x] Consolidate KKT assessment, multiplier handling, bounds, and acceptance diagnostics.

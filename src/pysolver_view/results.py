@@ -56,6 +56,25 @@ def optimization_result(run, solution, final_values, final_snapshot):
         result.kkt_evaluations = solution.get("kkt_evaluations", 0)
         result.kkt_time = solution.get("kkt_time", 0.0)
         result.optimality = solution.optimality if run.check_kkt else float("nan")
+    if run.library == "pounce":
+        result.native_info = copy.deepcopy(solution.info)
+        result.native_multipliers = copy.deepcopy(solution.native_multipliers)
+        result.native_multiplier_coordinates = "solver"
+        result.effective_options = copy.deepcopy(solution.effective_options)
+        result.kkt = copy.deepcopy(run._pounce_kkt)
+        result.kkt_passed = (
+            bool(run._pounce_kkt and run._pounce_kkt["passed"])
+            if run.check_kkt
+            else None
+        )
+        result.feasible = bool(
+            result.constraint_violation <= 50 * run.options["tolerance"]
+        )
+        result.stationary = (
+            bool(run._pounce_kkt and run._pounce_kkt["first_order_optimality_ok"])
+            if run.check_kkt
+            else None
+        )
     return result
 
 

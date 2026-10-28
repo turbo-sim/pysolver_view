@@ -103,15 +103,19 @@ class OptimizationSolver:
     logger : logging.Logger, optional
         Logger object to which logging messages will be directed. Logging is disabled if `logger` is None.
     update_on : str, optional
-        Selects 'gradient' (default), 'function', or SLSQP 'iteration' events.
+        Selects 'gradient' (default), 'function', or native 'iteration' events.
         SciPy callbacks denote major iterations with unknown acceptance; custom
-        SLSQP records accepted points. Derivative probes never generate observations.
+        SLSQP records accepted points. Pounce records native observations with
+        reconstructed coordinates and unknown acceptance. Derivative probes
+        never generate observations.
     callback_functions : list of callable or callable, optional
         Callbacks receive (copied_solver_coordinates, callback_count). The count
         is not a solver iteration number. SciPy uses the selected observation
         stream; custom SLSQP uses initial/accepted points only and supports
         cancellation with StopIteration or a False return. Final synchronization
-        does not invoke callbacks.
+        does not invoke callbacks. Pounce callbacks receive regular native
+        iteration observations independently of ``update_on`` and support the
+        same cancellation signals; they do not receive restoration subproblems.
     plot_improvement_only : bool, optional
         If True, plots only display iterations that improve the objective function value (useful for gradient-free optimizers) (default is False).
     check_kkt : bool, optional
@@ -120,6 +124,9 @@ class OptimizationSolver:
         Custom SLSQP success then requires native success and feasibility only.
         Explicit evaluate_kkt_conditions or requested KKT/multiplier reports still
         perform an on-demand assessment, outside the automatic solve policy.
+        Pounce checks its authoritative final point with independent first-order
+        KKT diagnostics at ``50*tolerance`` and requires that check for frontend
+        success. With checks disabled it still verifies original-model feasibility.
     backend_callback : callable, optional
         With ``library="pysolver"``, receive a detached copy of each initial or
         accepted SLSQP record, including KKT diagnostics and recovery counters.
@@ -129,6 +136,12 @@ class OptimizationSolver:
         nonpositive inequalities and equality multiplier signs. Rejected trials,
         derivative probes, and final synchronization do not invoke this hook.
         Return False or raise StopIteration to stop at the accepted point.
+        With ``library="pounce"``, receive native records in public constraint
+        signs, including internally scaled ``native_metrics``. Regular ``x``
+        coordinates come from the last objective evaluation, and acceptance is
+        unknown. Restoration records have ``x=None`` and ``fitness=None``.
+        Returning False or raising StopIteration requests a native stop; other
+        application errors propagate after Pounce releases control.
 
     Methods
     -------
@@ -188,8 +201,10 @@ class OptimizationSolver:
         self.callback_functions = self._validate_callback(callback_functions)
         if backend_callback is not None and not callable(backend_callback):
             raise TypeError("backend_callback must be callable or None.")
-        if backend_callback is not None and library != "pysolver":
-            raise ValueError("backend_callback requires library='pysolver'.")
+        if backend_callback is not None and library not in {"pysolver", "pounce"}:
+            raise ValueError(
+                "backend_callback requires library='pysolver' or 'pounce'."
+            )
         self.backend_callback = backend_callback
         self.callback_function_call_count = 0
         self.plot_improvement_only = plot_improvement_only
@@ -258,6 +273,7 @@ class OptimizationSolver:
         self._in_callback = False
         self._custom_initial_pending = self.library == "pysolver"
         self._custom_kkt = None
+        self._pounce_kkt = None
         # Initialize variables for convergence report
         self.f_final = None
         self.x_final = None
@@ -279,6 +295,7 @@ class OptimizationSolver:
             "objective_value": [],
             "constraint_violation": [],
             "norm_step": [],
+            "native_metrics": [],
         }
 
         # Initialize dictionary for cached variables
@@ -352,9 +369,13 @@ class OptimizationSolver:
         self._write_header()
         if self.library in {"scipy", "pysolver"} and self.method == "slsqp":
             self.iteration_count = 0
+        if self.library == "pounce":
+            self.iteration_count = 0
         if self.update_on == "iteration" and self.iteration_count is None:
-            raise ValueError("Iteration observations require SciPy or pysolver SLSQP.")
-        if self.library != "pysolver":
+            raise ValueError(
+                "Iteration observations require SciPy/pysolver SLSQP or Pounce."
+            )
+        if self.library not in {"pysolver", "pounce"}:
             self._print_convergence_progress(x0, event_kind="initial")
         problem = BackendProblem(self)
         backend_options = dict(self.options)
@@ -375,6 +396,15 @@ class OptimizationSolver:
             final_values = self._evaluate_fitness(self.x_final_norm, diagnostic=True)
         if final_values is None:
             final_values = np.full(1 + self.N_eq + self.N_ineq, np.nan)
+        if (
+            self.library == "pounce"
+            and self.check_kkt
+            and np.all(np.isfinite(final_values))
+        ):
+            self._evaluate_gradient(self.x_final_norm, diagnostic=True)
+            self._pounce_kkt = self._kkt_from_cache(
+                self.x_final_norm, 50 * self.options["tolerance"]
+            )
         self.f_final = copy.deepcopy(final_values[0])
         self.success = solution.success
         self.message = solution.message
@@ -386,6 +416,16 @@ class OptimizationSolver:
             if np.all(np.isfinite(final_values))
             else dict(optimality=float("nan"), constraint_violation=float("inf"))
         )
+        if self.library == "pounce":
+            feasible = final_snapshot["constraint_violation"] <= (
+                50 * self.options["tolerance"]
+            )
+            verified = not self.check_kkt or bool(
+                self._pounce_kkt and self._pounce_kkt["passed"]
+            )
+            self.success = bool(solution.success and feasible and verified)
+            if solution.success and not self.success:
+                self.message += "; PySolverView final feasibility/KKT check failed"
         if "x" in final_snapshot and (
             self.x_last_norm is None
             or not np.array_equal(self.x_final_norm, self.x_last_norm)
@@ -500,6 +540,8 @@ class OptimizationSolver:
                 optimality = assessment["stationarity"]
         elif (
             self.check_kkt
+            and self.cache["x"] is not None
+            and np.array_equal(point, self.cache["x"])
             and self.cache["x_jac"] is not None
             and np.array_equal(point, self.cache["x_jac"])
         ):
@@ -524,6 +566,7 @@ class OptimizationSolver:
                 else float(np.linalg.norm(point - self.x_last_norm))
             ),
             optimality=optimality,
+            native_metrics=None,
         )
 
     def _record_iteration(self, x):
@@ -547,6 +590,52 @@ class OptimizationSolver:
     def _public_driver_kkt(assessment):
         """Detach driver diagnostics and convert equality multipliers to public signs."""
         return kkt_adapter.public_driver_kkt(assessment)
+
+    def _record_pounce_iteration(self, entry):
+        """Publish native observations without treating cached trials as accepted.
+
+        Pounce provides scalar iteration metrics but no current-iterate accessor.
+        Regular coordinates come from its last objective evaluation; restoration
+        records have no original-model point and reach only ``backend_callback``.
+        No model work is performed to construct an observation from cached values.
+        """
+        self.iteration_count = int(entry["iteration"])
+        point = entry.get("x")
+        if point is not None and entry.get("fitness") is not None:
+            snapshot = self._observation_snapshot(
+                point, "native_iteration", values=entry["fitness"]
+            )
+            snapshot["accepted"] = None
+            snapshot["coordinate_source"] = entry["coordinate_source"]
+            snapshot["native_metrics"] = copy.deepcopy(entry["native_metrics"])
+            previous = (
+                self.iteration_history[-1]["x"] if self.iteration_history else None
+            )
+            snapshot["norm_step"] = (
+                0.0 if previous is None else float(np.linalg.norm(point - previous))
+            )
+            self.iteration_history.append(copy.deepcopy(snapshot))
+            if self.update_on == "iteration":
+                self._publish_observation(snapshot, notify=False)
+        if self.backend_callback is not None or (
+            point is not None and self.callback_functions
+        ):
+            self._in_callback = True
+            try:
+                if self.backend_callback is not None:
+                    if self.backend_callback(copy.deepcopy(entry)) is False:
+                        raise StopIteration("Stopped by backend callback")
+                if point is not None:
+                    if self.callback_functions:
+                        self.callback_function_call_count += 1
+                    for callback in self.callback_functions:
+                        if (
+                            callback(point.copy(), self.callback_function_call_count)
+                            is False
+                        ):
+                            raise StopIteration("Stopped by user callback")
+            finally:
+                self._in_callback = False
 
     def _record_custom_iteration(self, entry):
         """Record accepted custom-driver points and notify cancellable callbacks.
@@ -608,7 +697,11 @@ class OptimizationSolver:
         self.convergence_report.append(status)
         if self.plot:
             self._plot_convergence_callback([], [])
-        if notify and self.callback_functions and self.library != "pysolver":
+        if (
+            notify
+            and self.callback_functions
+            and self.library not in {"pysolver", "pounce"}
+        ):
             self.callback_function_call_count += 1
             self._in_callback = True
             try:

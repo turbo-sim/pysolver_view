@@ -73,6 +73,13 @@ def minimize_nlopt(problem, x0, method, options):
     return run(problem, x0, method, options)
 
 
+def minimize_pounce(problem, x0, method, options):
+    """Load the optional Pounce adapter only when a Pounce solve is requested."""
+    from .pounce import minimize_pounce as run
+
+    return run(problem, x0, method, options)
+
+
 from .scipy import minimize_scipy
 from .custom import minimize_pysolver
 
@@ -81,12 +88,14 @@ OPTIMIZATION_LIBRARIES = {
     "pysolver": minimize_pysolver,
     "pygmo": minimize_pygmo,
     "pygmo_nlopt": minimize_nlopt,
+    "pounce": minimize_pounce,
 }
 VALID_LIBRARIES_AND_METHODS = {
     "scipy": SCIPY_SOLVERS,
     "pysolver": ["slsqp"],
     "pygmo": PYGMO_SOLVERS,
     "pygmo_nlopt": NLOPT_SOLVERS,
+    "pounce": ["ipm", "sqp"],
 }
 CAPABILITIES = {
     (library, method): dict(
@@ -121,5 +130,17 @@ CAPABILITIES.update(
             cancellation=True,
             step_controls=True,
         ),
+        **{
+            ("pounce", method): dict(
+                shape="scalar objective; dense first derivatives",
+                verified=True,
+                constraints=True,
+                derivatives=True,
+                events="native_iteration",
+                cancellation=True,
+                step_controls=False,
+            )
+            for method in ("ipm", "sqp")
+        },
     }
 )

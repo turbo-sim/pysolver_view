@@ -51,7 +51,11 @@ def update_optimization_plot(self, x, iter, initialize=False, showfig=True):
                 "iteration": (
                     "Accepted SLSQP iterations"
                     if self.library == "pysolver"
-                    else "Native SLSQP major iterations"
+                    else (
+                        "Native Pounce iterations"
+                        if self.library == "pounce"
+                        else "Native SLSQP major iterations"
+                    )
                 ),
             }[self.update_on]
         )

@@ -2143,6 +2143,36 @@ dev = ["pre-commit", "tox"]
 testing = ["coverage", "pytest", "pytest-benchmark"]
 
 [[package]]
+name = "pounce-solver"
+version = "0.13.0"
+description = "Python interface to POUNCE — a pure-Rust interior-point optimization solver for nonlinear, conic (LP/QP/SOCP/SDP/exp/power), and global problems (NLP core ported from Ipopt). cyipopt-style Problem class, scipy-style minimize() facade, solve_qp/solve_socp/sos_minimize, and JAX-friendly autodiff / implicit differentiation."
+optional = true
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "extra == \"pounce\""
+files = [
+    {file = "pounce_solver-0.13.0-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:caa1bacf83ee881e14bd579286bb39b270d84e4cb56d0b6657d3297b638456c9"},
+    {file = "pounce_solver-0.13.0-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:9248ca8444e8d3e53e15c8a0b244730d65714f6d164ca279b282b69c6fcce6b0"},
+    {file = "pounce_solver-0.13.0-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:aec11d3999f500cea25a81ed6f7a2c462a76889988cac6b8d5240370038a741f"},
+    {file = "pounce_solver-0.13.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1141d1b23b6dd03f92e68d32db310c59883c490c191850143eff512be45ab0dd"},
+    {file = "pounce_solver-0.13.0-cp39-abi3-win_amd64.whl", hash = "sha256:636fd3935d46a666b7a33c6b113f6c421e151e9a3e066dfda0d0a7895c05b5a4"},
+    {file = "pounce_solver-0.13.0.tar.gz", hash = "sha256:2ec19f51864bb6815ee3527c98001c01722bd3b29a5c1471d07ea29eb577c190"},
+]
+
+[package.dependencies]
+numpy = ">=1.23"
+scipy = ">=1.11"
+
+[package.extras]
+dev = ["jax (>=0.4.30)", "jaxlib (>=0.4.30)", "jsonschema (>=4)", "plotly (>=5)", "pytest (>=7)", "pyyaml (>=6)", "scipy (>=1.11)", "torch (>=2.2)"]
+diffrax = ["diffrax (>=0.5)"]
+gams = ["gamsapi[core] (>=45)", "pyyaml (>=6)"]
+jax = ["jax (>=0.4.30)", "jaxlib (>=0.4.30)"]
+scipy = ["scipy (>=1.11)"]
+torch = ["torch (>=2.2)"]
+viz = ["plotly (>=5)"]
+
+[[package]]
 name = "prompt-toolkit"
 version = "3.0.52"
 description = "Library for building powerful interactive command lines in Python"
@@ -4057,9 +4087,10 @@ tzlocal = {version = ">=4.0", markers = "sys_platform != \"darwin\" and sys_plat
 
 [extras]
 jax = ["jax"]
+pounce = ["pounce-solver"]
 thermodynamics = ["CoolProp"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.14"
-content-hash = "81e3858a156fc6283317b56e029f1ebe8cf8084ee4ae587f679f3a2bb719f30e"
+content-hash = "4c1943a45a4fe5881a9bf969ab87a4c33d06c5df210e10a67a8c5b151c99e1ae"

@@ -19,6 +19,7 @@ TEST_SUITES = {
         "tests/roots/test_convergence_benchmark.py",
         "tests/roots/test_timing_benchmark.py",
         "tests/optimization/test_slsqp_controls_study.py",
+        "tests/optimization/test_pounce_studies.py",
     ],
 }
 ENABLED_SUITES = ["package"]

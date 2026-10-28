@@ -3,7 +3,7 @@
 These are maintainer working notes for personal use. This directory is outside
 `docs/source/` and is not included in the published documentation or navigation.
 
-`development/` contains five reproducible study scripts. Reusable numerical
+`development/` contains reproducible study scripts. Reusable numerical
 algorithms, problem models and audit helpers are installed under
 [`src/pysolver_view/`](../../src/pysolver_view/), and all tests live in
 [`tests/`](../../tests/). Design notes and mathematical explanations live here
@@ -13,6 +13,8 @@ under [`docs/development/`](.).
 
 | Script | Purpose beyond the demos | Generated output |
 | --- | --- | --- |
+| [Native Pounce NLP](../../development/pounce_solvers/run_native_solver_comparison.py) | Direct IPM/SQP versus custom SLSQP with first-step fractions 1.00/0.20; original-model feasibility and KKT audits | [Native report](../../development/pounce_solvers/results_native_comparison/REPORT.md) |
+| [Pounce wrapper](../../development/pounce_solvers/run_wrapper_solver_comparison.py) | Same constrained model through the public backend, with native/wrapper parity checks | [Wrapper report](../../development/pounce_solvers/results_wrapper_comparison/REPORT.md) |
 | [Root convergence](../../development/root_step_control/run_convergence_benchmark.py) | Broad native/custom comparisons, four-method controls, domain recovery and rectangular/inconsistent cases; audits actual trial distances | [Native/custom report](../../development/root_step_control/results_convergence/REPORT.md), [custom report](../../development/root_step_control/results_custom_convergence/REPORT.md) |
 | [Root timing](../../development/root_step_control/run_timing_benchmark.py) | Randomized clean/instrumented timings, physical-call accounting and QR/SVD/linear-solve costs across mathematical and CoolProp workloads | [Timing report](../../development/root_step_control/results_time_perf/RESULTS.md) |
 | [Interface timing](../../development/root_step_control/run_adapter_timing.py) | Direct numerical driver versus public interface overhead on three 100-variable problems | [Interface report](../../development/root_step_control/results_adapter_perf/RESULTS.md) |
@@ -39,6 +41,9 @@ python development/root_step_control/run_timing_benchmark.py
 python development/root_step_control/run_adapter_timing.py
 python development/root_step_control/run_step_geometry.py
 python development/slsqp_controls/run_validation.py
+poetry install --extras pounce
+poetry run python development/pounce_solvers/run_native_solver_comparison.py --no-show
+poetry run python -m development.pounce_solvers.run_wrapper_solver_comparison --no-show
 ```
 
 Each script accepts `--output` and `--help`. Convergence has a separate

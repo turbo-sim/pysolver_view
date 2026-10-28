@@ -12,6 +12,10 @@ _EXPORTS = {
         "RosenbrockProblemConstrained",
     ),
     "HS71Problem": (".hs71", "HS71Problem"),
+    "CoupledRosenbrockProblem": (
+        ".coupled_rosenbrock",
+        "CoupledRosenbrockProblem",
+    ),
     "LorentzEquationsOpt": (".lorenz", "LorentzEquationsOpt"),
 }
 __all__ = list(_EXPORTS)

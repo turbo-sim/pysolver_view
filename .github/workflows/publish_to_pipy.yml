@@ -31,7 +31,7 @@ jobs:
 
     
     - name: Install dependencies
-      run: poetry install --extras jax
+      run: poetry install --extras "jax pounce"
 
     - name: Run tests
       run: poetry run python tests/run_tests.py
@@ -52,10 +52,10 @@ jobs:
       - name: Install Poetry
         uses: abatilo/actions-poetry@v3
         with:
-          poetry-version: "1.8.2"
+          poetry-version: "2.1.2"
 
       - name: Install dependencies
-        run: poetry install --extras jax
+        run: poetry install --extras "jax pounce"
 
       - name: Run tests
         run: poetry run python tests/run_tests.py

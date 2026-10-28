@@ -176,7 +176,7 @@ class OptimizationEvaluation:
                             },
                         ) from error
 
-                if self.library == "pysolver":
+                if self.library in {"pysolver", "pounce"}:
                     methods = {
                         "forward_finite_differences": "2-point",
                         "central_finite_differences": "3-point",
@@ -232,6 +232,9 @@ class BackendProblem:
     def __init__(self, wrapped_problem):
         self.iteration_callback = lambda x: wrapped_problem._record_iteration(x)
         self.accepted_callback = lambda entry: wrapped_problem._record_custom_iteration(
+            entry
+        )
+        self.native_callback = lambda entry: wrapped_problem._record_pounce_iteration(
             entry
         )
         self.fitness = lambda x: wrapped_problem.fitness(x)

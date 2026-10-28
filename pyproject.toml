@@ -26,10 +26,12 @@ toml = "^0.10.2"
 cycler = "^0.12.1"
 jax = { version = "^0.5.3", optional = true }
 CoolProp = { version = ">=6.6,<8", optional = true }
+pounce-solver = { version = "0.13.0", optional = true }
 
 [tool.poetry.extras]
 jax = ["jax"]
 thermodynamics = ["CoolProp"]
+pounce = ["pounce-solver"]
 
 [tool.poetry.group.dev.dependencies]
 ipython = ">=8.13,<8.17"
@@ -59,6 +61,7 @@ build-backend = "poetry.core.masonry.api"
 # Installation of optional dependencies
 # pip install pysolver_view
 # pip install pysolver_view[jax]
+# pip install pysolver_view[pounce]
 # poetry install --extras jax
 
 # Version bumping and releasing (run from the repository root):

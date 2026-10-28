@@ -35,6 +35,8 @@ Install the checkout before running tests or demos; the package lives under
 python -m pip install -e .
 # Optional physical benchmark models:
 python -m pip install -e '.[thermodynamics]'
+# Optional Pounce interior-point and active-set SQP NLP solvers:
+python -m pip install -e '.[pounce]'
 ```
 
 Install development dependencies with `poetry install --with dev --extras jax`. Add the
@@ -42,6 +44,14 @@ Install development dependencies with `poetry install --with dev --extras jax`. 
 Custom SLSQP requires SciPy 1.17.1, which is selected automatically on Python
 3.11 and newer. Python 3.10 retains its existing SciPy dependency range for
 native methods and custom roots; the full test suite needs Python 3.11 or newer.
+
+Pounce 0.13.0 is pinned in the optional `pounce` extra. Install it with
+`poetry install --extras pounce`, then select
+`OptimizationSolver(problem, library="pounce", method="ipm")` or `method="sqp"`.
+The backend uses the same combined problem and derivative contracts as SLSQP.
+Pounce does not expose the custom SLSQP first-step fraction controls.
+The [native and wrapper comparisons](development/pounce_solvers/README.md) reproduce a
+24-variable constrained NLP study with independent feasibility and KKT audits.
 
 ```bash
 poetry run python tests/run_tests.py
