@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=d6acfc83"></script>
+    <script src="../_static/documentation_options.js?v=6d507e9e"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -491,6 +491,8 @@
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.backends.pounce.minimize_pounce"><code class="docutils literal notranslate"><span class="pre">minimize_pounce()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.backends.pounce.reconcile_bound_point"><code class="docutils literal notranslate"><span class="pre">reconcile_bound_point()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.backends.pounce.resolve_pounce_controls"><code class="docutils literal notranslate"><span class="pre">resolve_pounce_controls()</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -530,8 +532,10 @@ requests are rejected rather than silently changed by the native solver.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt>scipy.optimize.OptimizeResult</dt><dd><p>Authoritative native returned point, strict native success, detached
-observation history and diagnostics. <code class="docutils literal notranslate"><span class="pre">solver_success</span></code> additionally
+<dt>scipy.optimize.OptimizeResult</dt><dd><p>Native returned point reconciled only within <code class="docutils literal notranslate"><span class="pre">bound_tolerance</span></code>, plus
+the raw <code class="docutils literal notranslate"><span class="pre">native_x</span></code>, observation history, and diagnostics. Success means
+strict native success or a requested KKT stop, subject to the frontend’s
+independent final-point check. <code class="docutils literal notranslate"><span class="pre">solver_success</span></code> additionally
 identifies acceptable-level native termination. Multipliers retain
 Pounce’s <code class="docutils literal notranslate"><span class="pre">grad(f)</span> <span class="pre">+</span> <span class="pre">J.T</span> <span class="pre">&#64;</span> <span class="pre">lambda</span> <span class="pre">-</span> <span class="pre">z_lower</span> <span class="pre">+</span> <span class="pre">z_upper</span></code> convention in
 the frontend’s solver coordinates; no physical rescaling occurs here.</p>
@@ -539,6 +543,22 @@ the frontend’s solver coordinates; no physical rescaling occurs here.</p>
 </dl>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pysolver_view.optimization.backends.pounce.reconcile_bound_point">
+<span class="sig-prename descclassname"><span class="pre">pysolver_view.optimization.backends.pounce.</span></span><span class="sig-name descname"><span class="pre">reconcile_bound_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/backends/pounce.html#reconcile_bound_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.backends.pounce.reconcile_bound_point" title="Link to this definition">#</a></dt>
+<dd><p>Project only tolerance-sized box excursions, preserving larger failures.</p>
+<p>All native value and derivative callbacks use the same reconciled point.
+This supplies feasible bases to bounded finite differences, whose probes
+then stay inside the original box. Raw native coordinates remain separate.
+<code class="docutils literal notranslate"><span class="pre">tolerance</span></code> is an absolute distance in the caller’s solver coordinates.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pysolver_view.optimization.backends.pounce.resolve_pounce_controls">
+<span class="sig-prename descclassname"><span class="pre">pysolver_view.optimization.backends.pounce.</span></span><span class="sig-name descname"><span class="pre">resolve_pounce_controls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_kkt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/backends/pounce.html#resolve_pounce_controls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.backends.pounce.resolve_pounce_controls" title="Link to this definition">#</a></dt>
+<dd><p>Validate frontend stopping and absolute solver-coordinate bound tolerances.</p>
 </dd></dl>
 
 </section>
@@ -591,6 +611,8 @@ the frontend’s solver coordinates; no physical rescaling occurs here.</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.backends.pounce.minimize_pounce"><code class="docutils literal notranslate"><span class="pre">minimize_pounce()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.backends.pounce.reconcile_bound_point"><code class="docutils literal notranslate"><span class="pre">reconcile_bound_point()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.backends.pounce.resolve_pounce_controls"><code class="docutils literal notranslate"><span class="pre">resolve_pounce_controls()</span></code></a></li>
 </ul>
   </nav></div>
 

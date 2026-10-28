@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=d6acfc83"></script>
+    <script src="../_static/documentation_options.js?v=6d507e9e"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -625,8 +625,12 @@ Custom SLSQP success then requires native success and feasibility only.
 Explicit evaluate_kkt_conditions or requested KKT/multiplier reports still
 perform an on-demand assessment, outside the automatic solve policy.
 Pounce checks its authoritative final point with independent first-order
-KKT diagnostics at <code class="docutils literal notranslate"><span class="pre">50*tolerance</span></code> and requires that check for frontend
-success. With checks disabled it still verifies original-model feasibility.</p>
+KKT diagnostics and requires that check for frontend success. Its
+<code class="docutils literal notranslate"><span class="pre">extra_options</span></code> accept separate <code class="docutils literal notranslate"><span class="pre">feasibility_tol</span></code> and <code class="docutils literal notranslate"><span class="pre">optimality_tol</span></code>
+(each defaults to <code class="docutils literal notranslate"><span class="pre">50*tolerance</span></code>). <code class="docutils literal notranslate"><span class="pre">stop_on_kkt=True</span></code> makes a passing
+assessment sufficient to request native termination. A native exit always
+ends the solve, even before those criteria pass. With checks disabled it
+still verifies original-model feasibility.</p>
 </dd>
 <dt><strong>backend_callback</strong><span class="classifier">callable, optional</span></dt><dd><p>With <code class="docutils literal notranslate"><span class="pre">library=&quot;pysolver&quot;</span></code>, receive a detached copy of each initial or
 accepted SLSQP record, including KKT diagnostics and recovery counters.

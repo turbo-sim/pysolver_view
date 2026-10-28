@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=d6acfc83"></script>
+    <script src="../../../_static/documentation_options.js?v=6d507e9e"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -556,8 +556,12 @@
 <span class="sd">        Explicit evaluate_kkt_conditions or requested KKT/multiplier reports still</span>
 <span class="sd">        perform an on-demand assessment, outside the automatic solve policy.</span>
 <span class="sd">        Pounce checks its authoritative final point with independent first-order</span>
-<span class="sd">        KKT diagnostics at ``50*tolerance`` and requires that check for frontend</span>
-<span class="sd">        success. With checks disabled it still verifies original-model feasibility.</span>
+<span class="sd">        KKT diagnostics and requires that check for frontend success. Its</span>
+<span class="sd">        ``extra_options`` accept separate ``feasibility_tol`` and ``optimality_tol``</span>
+<span class="sd">        (each defaults to ``50*tolerance``). ``stop_on_kkt=True`` makes a passing</span>
+<span class="sd">        assessment sufficient to request native termination. A native exit always</span>
+<span class="sd">        ends the solve, even before those criteria pass. With checks disabled it</span>
+<span class="sd">        still verifies original-model feasibility.</span>
 <span class="sd">    backend_callback : callable, optional</span>
 <span class="sd">        With ``library=&quot;pysolver&quot;``, receive a detached copy of each initial or</span>
 <span class="sd">        accepted SLSQP record, including KKT diagnostics and recovery counters.</span>
@@ -687,6 +691,13 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_reset_run_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset results, observations, and counters before an independent solve.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pounce_controls</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">library</span> <span class="o">==</span> <span class="s2">&quot;pounce&quot;</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.backends.pounce</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_pounce_controls</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pounce_controls</span> <span class="o">=</span> <span class="n">resolve_pounce_controls</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_kkt</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_evaluation</span> <span class="o">=</span> <span class="n">OptimizationEvaluation</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span>
             <span class="n">library</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">library</span><span class="p">,</span>
@@ -836,7 +847,9 @@
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_gradient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_final_norm</span><span class="p">,</span> <span class="n">diagnostic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pounce_kkt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kkt_from_cache</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">x_final_norm</span><span class="p">,</span> <span class="mi">50</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">x_final_norm</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pounce_controls</span><span class="p">[</span><span class="s2">&quot;feasibility_tol&quot;</span><span class="p">],</span>
+                <span class="n">optimality_tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pounce_controls</span><span class="p">[</span><span class="s2">&quot;optimality_tol&quot;</span><span class="p">],</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">f_final</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">final_values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="n">solution</span><span class="o">.</span><span class="n">success</span>
@@ -851,7 +864,7 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">library</span> <span class="o">==</span> <span class="s2">&quot;pounce&quot;</span><span class="p">:</span>
             <span class="n">feasible</span> <span class="o">=</span> <span class="n">final_snapshot</span><span class="p">[</span><span class="s2">&quot;constraint_violation&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span>
-                <span class="mi">50</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pounce_controls</span><span class="p">[</span><span class="s2">&quot;feasibility_tol&quot;</span><span class="p">]</span>
             <span class="p">)</span>
             <span class="n">verified</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_kkt</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_pounce_kkt</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pounce_kkt</span><span class="p">[</span><span class="s2">&quot;passed&quot;</span><span class="p">]</span>
@@ -986,9 +999,19 @@
             <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="s2">&quot;x_jac&quot;</span><span class="p">])</span>
         <span class="p">):</span>
             <span class="c1"># This is a pure reconstruction from already available values/derivatives.</span>
-            <span class="n">optimality</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kkt_from_cache</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="mi">50</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">])[</span>
-                <span class="s2">&quot;first_order_optimality&quot;</span>
-            <span class="p">]</span>
+            <span class="n">optimality</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kkt_from_cache</span><span class="p">(</span>
+                <span class="n">point</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pounce_controls</span><span class="p">[</span><span class="s2">&quot;feasibility_tol&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">library</span> <span class="o">==</span> <span class="s2">&quot;pounce&quot;</span>
+                    <span class="k">else</span> <span class="mi">50</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="n">optimality_tol</span><span class="o">=</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pounce_controls</span><span class="p">[</span><span class="s2">&quot;optimality_tol&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">library</span> <span class="o">==</span> <span class="s2">&quot;pounce&quot;</span>
+                    <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">),</span>
+            <span class="p">)[</span><span class="s2">&quot;first_order_optimality&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="n">x</span><span class="o">=</span><span class="n">point</span><span class="p">,</span>
             <span class="n">event_kind</span><span class="o">=</span><span class="n">event_kind</span><span class="p">,</span>
@@ -1037,10 +1060,13 @@
 <span class="sd">        Pounce provides scalar iteration metrics but no current-iterate accessor.</span>
 <span class="sd">        Regular coordinates come from its last objective evaluation; restoration</span>
 <span class="sd">        records have no original-model point and reach only ``backend_callback``.</span>
-<span class="sd">        No model work is performed to construct an observation from cached values.</span>
+<span class="sd">        Observations use cached values. Opt-in KKT stopping explicitly evaluates</span>
+<span class="sd">        missing derivatives at feasible regular observations; its model probes</span>
+<span class="sd">        and mathematical assessment are accounted as diagnostic work.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iteration_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">])</span>
         <span class="n">point</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+        <span class="n">assessment</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">point</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fitness&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">snapshot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observation_snapshot</span><span class="p">(</span>
                 <span class="n">point</span><span class="p">,</span> <span class="s2">&quot;native_iteration&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;fitness&quot;</span><span class="p">]</span>
@@ -1048,6 +1074,40 @@
             <span class="n">snapshot</span><span class="p">[</span><span class="s2">&quot;accepted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">snapshot</span><span class="p">[</span><span class="s2">&quot;coordinate_source&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;coordinate_source&quot;</span><span class="p">]</span>
             <span class="n">snapshot</span><span class="p">[</span><span class="s2">&quot;native_metrics&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;native_metrics&quot;</span><span class="p">])</span>
+            <span class="n">snapshot</span><span class="p">[</span><span class="s2">&quot;native_x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;native_x&quot;</span><span class="p">,</span> <span class="n">point</span><span class="p">))</span>
+            <span class="n">metrics</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;native_metrics&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pounce_controls</span><span class="p">[</span><span class="s2">&quot;stop_on_kkt&quot;</span><span class="p">]</span>
+                <span class="ow">and</span> <span class="n">snapshot</span><span class="p">[</span><span class="s2">&quot;constraint_violation&quot;</span><span class="p">]</span>
+                <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pounce_controls</span><span class="p">[</span><span class="s2">&quot;feasibility_tol&quot;</span><span class="p">]</span>
+                <span class="ow">and</span> <span class="n">metrics</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alg_mod&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span>
+                    <span class="n">metrics</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;obj_value&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
+                    <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;fitness&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="n">rtol</span><span class="o">=</span><span class="mi">8</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span>
+                    <span class="n">atol</span><span class="o">=</span><span class="mi">8</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">):</span>
+                <span class="c1"># Explicit convergence work is accounted as diagnostics. Cached</span>
+                <span class="c1"># derivatives are reused; new probes remain bounded and silent.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_fitness</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">diagnostic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_gradient</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">diagnostic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">assessment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kkt_from_cache</span><span class="p">(</span>
+                    <span class="n">point</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pounce_controls</span><span class="p">[</span><span class="s2">&quot;feasibility_tol&quot;</span><span class="p">],</span>
+                    <span class="n">optimality_tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pounce_controls</span><span class="p">[</span><span class="s2">&quot;optimality_tol&quot;</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">snapshot</span><span class="p">[</span><span class="s2">&quot;kkt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">assessment</span><span class="p">)</span>
+                <span class="n">snapshot</span><span class="p">[</span><span class="s2">&quot;optimality&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">assessment</span><span class="p">[</span><span class="s2">&quot;first_order_optimality&quot;</span><span class="p">]</span>
+                <span class="c1"># Diagnostic derivative work belongs to this observation too.</span>
+                <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="s2">&quot;grad_count&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad_count</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s2">&quot;func_count&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">func_count</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s2">&quot;func_count_total&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">func_count_tot</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s2">&quot;derivative_func_count&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">derivative_func_count</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s2">&quot;diagnostic_func_count&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">diagnostic_func_count</span><span class="p">),</span>
+                <span class="p">):</span>
+                    <span class="n">snapshot</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
             <span class="n">previous</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">iteration_history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">iteration_history</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="p">)</span>
@@ -1076,6 +1136,8 @@
                             <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">(</span><span class="s2">&quot;Stopped by user callback&quot;</span><span class="p">)</span>
             <span class="k">finally</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_in_callback</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">assessment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">assessment</span><span class="p">[</span><span class="s2">&quot;passed&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">kkt_converged</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_record_custom_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Record accepted custom-driver points and notify cancellable callbacks.</span>
@@ -1596,7 +1658,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kkt_from_cache</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_kkt_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_kkt_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">optimality_tol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Assess public-sign KKT residuals using only same-point cached arrays.</span>
 
 <span class="sd">        The legacy dual-feasibility field remains a signed minimum multiplier.</span>
@@ -1604,7 +1666,9 @@
 <span class="sd">        infinity-norm stationarity. Multiplier indices are user inequalities,</span>
 <span class="sd">        then all lower-bound slots, then all upper-bound slots.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">kkt_adapter</span><span class="o">.</span><span class="n">kkt_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_evaluation</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">kkt_adapter</span><span class="o">.</span><span class="n">kkt_from_cache</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_evaluation</span><span class="p">,</span> <span class="n">x_norm</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">optimality_tol</span><span class="o">=</span><span class="n">optimality_tol</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="OptimizationSolver.make_kkt_optimality_report">
 <a class="viewcode-back" href="../../../api/pysolver_view.optimization.solver.html#pysolver_view.optimization.solver.OptimizationSolver.make_kkt_optimality_report">[docs]</a>

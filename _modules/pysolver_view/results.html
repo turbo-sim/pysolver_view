@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=d6acfc83"></script>
+    <script src="../../_static/documentation_options.js?v=6d507e9e"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -492,6 +492,27 @@
         <span class="n">result</span><span class="o">.</span><span class="n">native_multipliers</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">solution</span><span class="o">.</span><span class="n">native_multipliers</span><span class="p">)</span>
         <span class="n">result</span><span class="o">.</span><span class="n">native_multiplier_coordinates</span> <span class="o">=</span> <span class="s2">&quot;solver&quot;</span>
         <span class="n">result</span><span class="o">.</span><span class="n">effective_options</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">solution</span><span class="o">.</span><span class="n">effective_options</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">native_x_solver</span> <span class="o">=</span> <span class="n">solution</span><span class="o">.</span><span class="n">native_x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">bound_projection</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">solution</span><span class="o">.</span><span class="n">bound_projection</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">kkt_stop_requested</span> <span class="o">=</span> <span class="n">solution</span><span class="o">.</span><span class="n">kkt_stop_requested</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">stopped_on_kkt</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">solution</span><span class="o">.</span><span class="n">stopped_on_kkt</span> <span class="ow">and</span> <span class="n">run</span><span class="o">.</span><span class="n">success</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">termination</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;kkt_converged&quot;</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">stopped_on_kkt</span>
+            <span class="k">else</span> <span class="p">(</span>
+                <span class="s2">&quot;kkt_check_failed&quot;</span>
+                <span class="k">if</span> <span class="n">solution</span><span class="o">.</span><span class="n">stopped_on_kkt</span>
+                <span class="k">else</span> <span class="p">(</span>
+                    <span class="s2">&quot;cancelled&quot;</span>
+                    <span class="k">if</span> <span class="n">solution</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">5</span>
+                    <span class="k">else</span> <span class="p">(</span>
+                        <span class="s2">&quot;native_converged&quot;</span>
+                        <span class="k">if</span> <span class="n">solution</span><span class="o">.</span><span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="k">else</span> <span class="s2">&quot;native_failure&quot;</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">result</span><span class="o">.</span><span class="n">kkt</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">_pounce_kkt</span><span class="p">)</span>
         <span class="n">result</span><span class="o">.</span><span class="n">kkt_passed</span> <span class="o">=</span> <span class="p">(</span>
             <span class="nb">bool</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">_pounce_kkt</span> <span class="ow">and</span> <span class="n">run</span><span class="o">.</span><span class="n">_pounce_kkt</span><span class="p">[</span><span class="s2">&quot;passed&quot;</span><span class="p">])</span>
@@ -499,7 +520,7 @@
             <span class="k">else</span> <span class="kc">None</span>
         <span class="p">)</span>
         <span class="n">result</span><span class="o">.</span><span class="n">feasible</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">constraint_violation</span> <span class="o">&lt;=</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">run</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">]</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">constraint_violation</span> <span class="o">&lt;=</span> <span class="n">run</span><span class="o">.</span><span class="n">_pounce_controls</span><span class="p">[</span><span class="s2">&quot;feasibility_tol&quot;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">result</span><span class="o">.</span><span class="n">stationary</span> <span class="o">=</span> <span class="p">(</span>
             <span class="nb">bool</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">_pounce_kkt</span> <span class="ow">and</span> <span class="n">run</span><span class="o">.</span><span class="n">_pounce_kkt</span><span class="p">[</span><span class="s2">&quot;first_order_optimality_ok&quot;</span><span class="p">])</span>

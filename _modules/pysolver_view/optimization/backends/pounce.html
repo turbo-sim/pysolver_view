@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=d6acfc83"></script>
+    <script src="../../../../_static/documentation_options.js?v=6d507e9e"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -430,11 +430,70 @@
 <span></span><span class="sd">&quot;&quot;&quot;Adapt optional Pounce NLP solvers to package evaluations and observations.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptimizeResult</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">...exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DomainError</span>
+
+
+<div class="viewcode-block" id="resolve_pounce_controls">
+<a class="viewcode-back" href="../../../../api/pysolver_view.optimization.backends.pounce.html#pysolver_view.optimization.backends.pounce.resolve_pounce_controls">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_pounce_controls</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">check_kkt</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate frontend stopping and absolute solver-coordinate bound tolerances.&quot;&quot;&quot;</span>
+    <span class="n">tolerance</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">]</span>
+    <span class="n">controls</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">stop_on_kkt</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stop_on_kkt&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">feasibility_tol</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;feasibility_tol&quot;</span><span class="p">,</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">tolerance</span><span class="p">),</span>
+        <span class="n">optimality_tol</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;optimality_tol&quot;</span><span class="p">,</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">tolerance</span><span class="p">),</span>
+        <span class="n">bound_tolerance</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bound_tolerance&quot;</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">controls</span><span class="p">[</span><span class="s2">&quot;stop_on_kkt&quot;</span><span class="p">],</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;stop_on_kkt must be boolean.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">controls</span><span class="p">[</span><span class="s2">&quot;stop_on_kkt&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">check_kkt</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;stop_on_kkt requires check_kkt=True.&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;feasibility_tol&quot;</span><span class="p">,</span> <span class="s2">&quot;optimality_tol&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_tolerance&quot;</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">controls</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">))</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Real</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="p">(</span><span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;bound_tolerance&quot;</span> <span class="k">else</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be finite and </span><span class="si">{</span><span class="s1">&#39;nonnegative&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;bound_tolerance&#39;</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;positive&#39;</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">controls</span></div>
+
+
+
+<div class="viewcode-block" id="reconcile_bound_point">
+<a class="viewcode-back" href="../../../../api/pysolver_view.optimization.backends.pounce.html#pysolver_view.optimization.backends.pounce.reconcile_bound_point">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reconcile_bound_point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Project only tolerance-sized box excursions, preserving larger failures.</span>
+
+<span class="sd">    All native value and derivative callbacks use the same reconciled point.</span>
+<span class="sd">    This supplies feasible bases to bounded finite differences, whose probes</span>
+<span class="sd">    then stay inside the original box. Raw native coordinates remain separate.</span>
+<span class="sd">    ``tolerance`` is an absolute distance in the caller&#39;s solver coordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">point</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Pounce supplied nonfinite evaluation coordinates.&quot;</span><span class="p">)</span>
+    <span class="n">projected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span>
+    <span class="n">correction</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">projected</span> <span class="o">-</span> <span class="n">point</span><span class="p">),</span> <span class="n">initial</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">correction</span> <span class="o">&gt;</span> <span class="n">tolerance</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DomainError</span><span class="p">(</span>
+            <span class="s2">&quot;Pounce evaluation point exceeds bound_tolerance.&quot;</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">native_x</span><span class="o">=</span><span class="n">point</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                <span class="n">maximum_violation</span><span class="o">=</span><span class="n">correction</span><span class="p">,</span>
+                <span class="n">bound_tolerance</span><span class="o">=</span><span class="n">tolerance</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">projected</span><span class="p">,</span> <span class="n">correction</span></div>
+
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">_PounceCallbacks</span><span class="p">:</span>
@@ -447,7 +506,16 @@
 <span class="sd">    Restoration observations have no user-space point or objective attached.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">dimension</span><span class="p">,</span> <span class="n">equality_count</span><span class="p">,</span> <span class="n">inequality_count</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">problem</span><span class="p">,</span>
+        <span class="n">dimension</span><span class="p">,</span>
+        <span class="n">equality_count</span><span class="p">,</span>
+        <span class="n">inequality_count</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">bound_tolerance</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize detached per-run values and delayed application errors.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">problem</span> <span class="o">=</span> <span class="n">problem</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="n">dimension</span>
@@ -455,10 +523,27 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">constraint_count</span> <span class="o">=</span> <span class="n">equality_count</span> <span class="o">+</span> <span class="n">inequality_count</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_objective_x</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_objective_fitness</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_objective_native_x</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="n">bounds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bound_tolerance</span> <span class="o">=</span> <span class="n">bound_tolerance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projection_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maximum_projection</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kkt_stop_requested</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_candidate</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">application_error</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">objective_calls</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gradient_calls</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluation_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reconcile every callback consistently and account for corrections.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="mf">0.0</span>
+        <span class="n">point</span><span class="p">,</span> <span class="n">correction</span> <span class="o">=</span> <span class="n">reconcile_bound_point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">bounds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bound_tolerance</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">correction</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">projection_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">maximum_projection</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum_projection</span><span class="p">,</span> <span class="n">correction</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">point</span><span class="p">,</span> <span class="n">correction</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_remember_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Retain the first application error that Pounce would otherwise hide.&quot;&quot;&quot;</span>
@@ -469,7 +554,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Read combined fitness once and remember only actual objective points.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">objective_calls</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">fitness</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">point</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_point</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">fitness</span><span class="p">(</span><span class="n">point</span><span class="p">))</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">objective_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">except</span> <span class="n">DomainError</span><span class="p">:</span>
             <span class="c1"># Raising signals native evaluation failure and permits line-search</span>
@@ -478,7 +564,8 @@
         <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_remember_error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
             <span class="k">raise</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last_objective_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_objective_native_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_objective_x</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_objective_fitness</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">objective_value</span>
 
@@ -486,7 +573,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Use the frontend&#39;s analytic or accounted numerical objective gradient.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gradient_calls</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+            <span class="n">point</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_point</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">point</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
                 <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -498,7 +586,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return equality rows then nonpositive inequality rows without reversal.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">fitness</span><span class="p">(</span><span class="n">x</span><span class="p">))[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">point</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_point</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">fitness</span><span class="p">(</span><span class="n">point</span><span class="p">))[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">DomainError</span><span class="p">:</span>
             <span class="k">raise</span>
         <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
@@ -515,7 +604,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten frontend constraint-Jacobian rows in the declared dense order.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+            <span class="n">point</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_point</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">point</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
                 <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -537,7 +627,7 @@
         <span class="n">alpha_pr</span><span class="p">,</span>
         <span class="n">ls_trials</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish detached native metrics without performing hidden model work.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish detached metrics and relay cancellation or explicit KKT stops.</span>
 
 <span class="sd">        ``obj_value``, ``inf_pr``, and ``inf_du`` retain the native internal</span>
 <span class="sd">        scaling. The separately stored ``fitness`` uses frontend solver-space</span>
@@ -555,6 +645,7 @@
                 <span class="s2">&quot;last_objective_evaluation&quot;</span> <span class="k">if</span> <span class="n">regular_point</span> <span class="k">else</span> <span class="s2">&quot;unavailable&quot;</span>
             <span class="p">),</span>
             <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_objective_x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">regular_point</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;native_x&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_objective_native_x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">regular_point</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s2">&quot;fitness&quot;</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_objective_fitness</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">regular_point</span> <span class="k">else</span> <span class="kc">None</span><span class="p">),</span>
             <span class="s2">&quot;native_metrics&quot;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">&quot;alg_mod&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">alg_mod</span><span class="p">),</span>
@@ -575,7 +666,13 @@
         <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">entry</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span>
+            <span class="n">decision</span> <span class="o">=</span> <span class="n">callback</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">entry</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">decision</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">decision</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kkt_converged&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">kkt_stop_requested</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stop_candidate</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;kkt_stop_requested&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="n">decision</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span>
         <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
@@ -608,8 +705,10 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    scipy.optimize.OptimizeResult</span>
-<span class="sd">        Authoritative native returned point, strict native success, detached</span>
-<span class="sd">        observation history and diagnostics. ``solver_success`` additionally</span>
+<span class="sd">        Native returned point reconciled only within ``bound_tolerance``, plus</span>
+<span class="sd">        the raw ``native_x``, observation history, and diagnostics. Success means</span>
+<span class="sd">        strict native success or a requested KKT stop, subject to the frontend&#39;s</span>
+<span class="sd">        independent final-point check. ``solver_success`` additionally</span>
 <span class="sd">        identifies acceptable-level native termination. Multipliers retain</span>
 <span class="sd">        Pounce&#39;s ``grad(f) + J.T @ lambda - z_lower + z_upper`` convention in</span>
 <span class="sd">        the frontend&#39;s solver coordinates; no physical rescaling occurs here.</span>
@@ -617,6 +716,9 @@
     <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;ipm&quot;</span><span class="p">,</span> <span class="s2">&quot;sqp&quot;</span><span class="p">}:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The pounce backend supports only &#39;ipm&#39; and &#39;sqp&#39;.&quot;</span><span class="p">)</span>
     <span class="n">configured</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">solver_options</span><span class="p">)</span>
+    <span class="n">controls</span> <span class="o">=</span> <span class="n">resolve_pounce_controls</span><span class="p">(</span><span class="n">configured</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="s2">&quot;check_kkt&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">controls</span><span class="p">:</span>
+        <span class="n">configured</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">tolerance</span> <span class="o">=</span> <span class="n">configured</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;tolerance&quot;</span><span class="p">)</span>
     <span class="n">max_iterations</span> <span class="o">=</span> <span class="n">configured</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;max_iterations&quot;</span><span class="p">)</span>
     <span class="n">unsupported</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
@@ -669,6 +771,13 @@
             <span class="n">sqp_max_iter</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">max_iterations</span><span class="p">),</span>
         <span class="p">)</span>
     <span class="n">options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">configured</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">controls</span><span class="p">[</span><span class="s2">&quot;stop_on_kkt&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="n">options</span><span class="p">[</span><span class="s2">&quot;nlp_scaling_method&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span>
+        <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;obj_scaling_factor&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">!=</span> <span class="mf">1.0</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;stop_on_kkt requires nlp_scaling_method=&#39;none&#39; and obj_scaling_factor=1.&quot;</span>
+        <span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">pounce</span>
     <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
@@ -681,14 +790,19 @@
     <span class="n">equality_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">get_nec</span><span class="p">())</span>
     <span class="n">inequality_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">get_nic</span><span class="p">())</span>
     <span class="n">constraint_count</span> <span class="o">=</span> <span class="n">equality_count</span> <span class="o">+</span> <span class="n">inequality_count</span>
-    <span class="n">callbacks</span> <span class="o">=</span> <span class="n">_PounceCallbacks</span><span class="p">(</span>
-        <span class="n">problem</span><span class="p">,</span> <span class="n">initial</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">equality_count</span><span class="p">,</span> <span class="n">inequality_count</span>
-    <span class="p">)</span>
     <span class="n">bounds</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">get_bounds</span><span class="p">()</span>
     <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">initial</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">initial</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="k">else</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">callbacks</span> <span class="o">=</span> <span class="n">_PounceCallbacks</span><span class="p">(</span>
+        <span class="n">problem</span><span class="p">,</span>
+        <span class="n">initial</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+        <span class="n">equality_count</span><span class="p">,</span>
+        <span class="n">inequality_count</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">),</span>
+        <span class="n">bound_tolerance</span><span class="o">=</span><span class="n">controls</span><span class="p">[</span><span class="s2">&quot;bound_tolerance&quot;</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">native</span> <span class="o">=</span> <span class="n">pounce</span><span class="o">.</span><span class="n">Problem</span><span class="p">(</span>
         <span class="n">n</span><span class="o">=</span><span class="n">initial</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
@@ -710,9 +824,13 @@
     <span class="k">if</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">application_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">application_error</span>
 
-    <span class="n">point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">native_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">point</span><span class="p">,</span> <span class="n">final_correction</span> <span class="o">=</span> <span class="n">reconcile_bound_point</span><span class="p">(</span>
+        <span class="n">native_point</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">controls</span><span class="p">[</span><span class="s2">&quot;bound_tolerance&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
     <span class="n">info</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">native_info</span><span class="p">))</span>
     <span class="n">status</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span>
+    <span class="n">stopped_on_kkt</span> <span class="o">=</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">kkt_stop_requested</span> <span class="ow">and</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">5</span>
     <span class="n">fitness</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">last_objective_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span>
         <span class="n">callbacks</span><span class="o">.</span><span class="n">last_objective_x</span><span class="p">,</span> <span class="n">point</span>
@@ -733,19 +851,32 @@
     <span class="p">}</span>
     <span class="k">return</span> <span class="n">OptimizeResult</span><span class="p">(</span>
         <span class="n">x</span><span class="o">=</span><span class="n">point</span><span class="p">,</span>
+        <span class="n">native_x</span><span class="o">=</span><span class="n">native_point</span><span class="p">,</span>
         <span class="n">fun</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;obj_val&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)),</span>
         <span class="n">fitness</span><span class="o">=</span><span class="n">fitness</span><span class="p">,</span>
-        <span class="n">success</span><span class="o">=</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">success</span><span class="o">=</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">stopped_on_kkt</span><span class="p">,</span>
         <span class="n">solver_success</span><span class="o">=</span><span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
         <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
-        <span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status_msg&quot;</span><span class="p">,</span> <span class="n">status</span><span class="p">)),</span>
+        <span class="n">message</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Stopped after PySolverView first-order KKT convergence&quot;</span>
+            <span class="k">if</span> <span class="n">stopped_on_kkt</span>
+            <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status_msg&quot;</span><span class="p">,</span> <span class="n">status</span><span class="p">))</span>
+        <span class="p">),</span>
         <span class="n">nit</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;iter_count&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
         <span class="n">nfev</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;n_obj_evals&quot;</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">objective_calls</span><span class="p">)),</span>
         <span class="n">njev</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;n_grad_evals&quot;</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">gradient_calls</span><span class="p">)),</span>
         <span class="n">history</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">callbacks</span><span class="o">.</span><span class="n">history</span><span class="p">),</span>
         <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span>
         <span class="n">native_multipliers</span><span class="o">=</span><span class="n">native_multipliers</span><span class="p">,</span>
-        <span class="n">effective_options</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">options</span><span class="p">),</span>
+        <span class="n">effective_options</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">({</span><span class="o">**</span><span class="n">options</span><span class="p">,</span> <span class="o">**</span><span class="n">controls</span><span class="p">}),</span>
+        <span class="n">stopped_on_kkt</span><span class="o">=</span><span class="n">stopped_on_kkt</span><span class="p">,</span>
+        <span class="n">kkt_stop_requested</span><span class="o">=</span><span class="n">callbacks</span><span class="o">.</span><span class="n">kkt_stop_requested</span><span class="p">,</span>
+        <span class="n">bound_projection</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">tolerance</span><span class="o">=</span><span class="n">controls</span><span class="p">[</span><span class="s2">&quot;bound_tolerance&quot;</span><span class="p">],</span>
+            <span class="n">callback_count</span><span class="o">=</span><span class="n">callbacks</span><span class="o">.</span><span class="n">projection_count</span><span class="p">,</span>
+            <span class="n">maximum_correction</span><span class="o">=</span><span class="n">callbacks</span><span class="o">.</span><span class="n">maximum_projection</span><span class="p">,</span>
+            <span class="n">final_correction</span><span class="o">=</span><span class="n">final_correction</span><span class="p">,</span>
+        <span class="p">),</span>
     <span class="p">)</span></div>
 
 </pre></div>

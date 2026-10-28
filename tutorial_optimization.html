@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=d6acfc83"></script>
+    <script src="_static/documentation_options.js?v=6d507e9e"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -588,9 +588,10 @@ relaxation default to off, preserving the frontend’s coordinates and declared
 bounds. The backend keeps native termination and all diagnostic arrays in
 <code class="docutils literal notranslate"><span class="pre">backend_result.info</span></code>. The public result adds <code class="docutils literal notranslate"><span class="pre">native_info</span></code>, <code class="docutils literal notranslate"><span class="pre">native_multipliers</span></code>
 (in solver coordinates), and <code class="docutils literal notranslate"><span class="pre">effective_options</span></code>. Strict native success and
-original-model feasibility are required; with <code class="docutils literal notranslate"><span class="pre">check_kkt=True</span></code>, an independent
-first-order assessment of the returned point must also pass at
-<code class="docutils literal notranslate"><span class="pre">50*tolerance</span></code>. An acceptable-level native exit remains distinguishable through
+original-model feasibility are required by default; with <code class="docutils literal notranslate"><span class="pre">check_kkt=True</span></code>, an
+independent first-order assessment of the returned point must also pass.
+<code class="docutils literal notranslate"><span class="pre">feasibility_tol</span></code> and <code class="docutils literal notranslate"><span class="pre">optimality_tol</span></code> in <code class="docutils literal notranslate"><span class="pre">extra_options</span></code> configure its separate
+limits; both default to <code class="docutils literal notranslate"><span class="pre">50*tolerance</span></code>. An acceptable-level native exit remains distinguishable through
 <code class="docutils literal notranslate"><span class="pre">solver_success</span></code> and is not promoted to strict success. This assessment does
 not prove a minimum for a nonconvex model.</p>
 <p>Pounce’s iteration hook supplies scalar metrics without a current-iterate
@@ -602,7 +603,41 @@ Pounce’s internal objective, residuals, barrier parameter, step information, a
 line-search counts separately from original-model values. A restoration hook
 describes a feasibility subproblem and has no original-model point: it appears
 only in <code class="docutils literal notranslate"><span class="pre">backend_result.history</span></code> and <code class="docutils literal notranslate"><span class="pre">backend_callback</span></code>, with <code class="docutils literal notranslate"><span class="pre">x=None</span></code>.
-The native returned solution always owns the final result.</p>
+The native returned solution owns the final result, subject to the tiny bound
+reconciliation described below; a cached observation cannot certify a different
+returned point.</p>
+<p>To make your first-order criteria sufficient for termination, enable:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">extra_options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;stop_on_kkt&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;feasibility_tol&quot;</span><span class="p">:</span> <span class="mf">1e-6</span><span class="p">,</span>
+    <span class="s2">&quot;optimality_tol&quot;</span><span class="p">:</span> <span class="mf">1e-4</span><span class="p">,</span>
+    <span class="s2">&quot;mu_strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;adaptive&quot;</span><span class="p">,</span>  <span class="c1"># IPM only; the native default is monotone</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Pass this dictionary as <code class="docutils literal notranslate"><span class="pre">OptimizationSolver(...,</span> <span class="pre">extra_options=extra_options)</span></code>.
+At regular feasible observations, the frontend obtains missing derivatives and
+checks full first-order KKT conditions, including stationarity and complementarity.
+This diagnostic work is counted; feasibility alone cannot trigger success.
+A passing assessment requests a stop through the native callback. A native exit
+also ends the solve immediately, whether or not your criteria pass. This is an
+OR stopping rule, with no forced continuation or wrapper retry.</p>
+<p>The actual returned point is independently checked before reporting success.
+<code class="docutils literal notranslate"><span class="pre">result.stopped_on_kkt</span></code> and <code class="docutils literal notranslate"><span class="pre">result.termination</span> <span class="pre">==</span> <span class="pre">&quot;kkt_converged&quot;</span></code> identify this
+verified exit. Native status 5 (<code class="docutils literal notranslate"><span class="pre">User_Requested_Stop</span></code>) and <code class="docutils literal notranslate"><span class="pre">solver_success=False</span></code>
+are preserved, while frontend <code class="docutils literal notranslate"><span class="pre">success=True</span></code> records the verified user criteria.
+Explicit user cancellation remains unsuccessful. KKT stopping requires
+<code class="docutils literal notranslate"><span class="pre">check_kkt=True</span></code>, <code class="docutils literal notranslate"><span class="pre">nlp_scaling_method=&quot;none&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">obj_scaling_factor=1</span></code>, so the
+native objective can be checked against the cached original-model observation.</p>
+<p>Pounce can produce tiny excursions outside a box bound. The adapter reconciles
+all value and derivative callbacks to the same feasible point when the maximum
+excursion is at most <code class="docutils literal notranslate"><span class="pre">bound_tolerance</span></code> (default <code class="docutils literal notranslate"><span class="pre">1e-8</span></code>, absolute solver-coordinate
+units). Bounded finite differences then direct their probes inside the box.
+Larger excursions remain domain failures; the model never receives a silently
+accepted large violation. <code class="docutils literal notranslate"><span class="pre">bound_tolerance=0</span></code> requests strict box handling.
+<code class="docutils literal notranslate"><span class="pre">result.bound_projection</span></code> records corrections and <code class="docutils literal notranslate"><span class="pre">result.native_x_solver</span></code>
+preserves the raw returned native coordinates. The final reported point and
+its KKT check use the reconciled coordinates consistently.</p>
 <p><code class="docutils literal notranslate"><span class="pre">callback_functions</span></code> receive copied regular native coordinates and callback
 counts independently of <code class="docutils literal notranslate"><span class="pre">update_on</span></code>; <code class="docutils literal notranslate"><span class="pre">backend_callback</span></code> receives complete
 detached records, including restoration. Return <code class="docutils literal notranslate"><span class="pre">False</span></code> or raise <code class="docutils literal notranslate"><span class="pre">StopIteration</span></code>
