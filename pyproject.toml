@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pysolver_view"
 version = "0.8.1"
-description = "Visualization of solver convergence evolution"
+description = "Python package for nonlinear equation solving and constrained optimization, with convergence monitoring and numerical diagnostics."
 authors = ["Roberto Agromayor"]
 license = "MIT"
 readme = "README.md"

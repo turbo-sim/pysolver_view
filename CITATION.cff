@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+type: software
+message: If you use this software, please cite it using this metadata and record the version or commit used.
+title: 'PySolverView: Python package for nonlinear equation solving and constrained optimization, with convergence
+  monitoring and numerical diagnostics'
+abstract: Python package for nonlinear equation solving and constrained optimization, with convergence monitoring
+  and numerical diagnostics.
+authors:
+- family-names: Agromayor
+  given-names: Roberto
+  orcid: https://orcid.org/0009-0009-9289-1130
+version: 0.8.1
+repository-code: https://github.com/turbo-sim/pysolver_view
+url: https://github.com/turbo-sim/pysolver_view

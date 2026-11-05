@@ -1,8 +1,7 @@
 
 # PySolverView
 
-PySolverView provides a common interface and convergence histories for optimization
-and root finding, including native SciPy methods and custom solvers with step controls.
+Python package for nonlinear equation solving and constrained optimization, with convergence monitoring and numerical diagnostics.
 
 ## Features
 
@@ -110,3 +109,11 @@ A real bump requires a clean working tree.
 
 ## Other info
 - Pygmo and pygmo-plugin-nonfree should be installed with Conda
+
+<!-- research-software-metadata:start -->
+## Development and citation
+
+Roberto Agromayor is the main developer of PySolverView.
+
+Citation metadata is provided in [CITATION.cff](CITATION.cff). For version-specific reproducibility, also record the release or commit used.
+<!-- research-software-metadata:end -->
