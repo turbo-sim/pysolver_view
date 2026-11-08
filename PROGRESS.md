@@ -1,12 +1,14 @@
 # PySolverView progress
 
-Last updated: **2026-10-28**
+Last updated: **2026-11-08**
 
 Keep this file to completed milestones and outstanding tasks. Implementation
 notes and reproduction commands live in [docs/development](docs/development/README.md).
 
 ## Completed
 
+- [x] Support optional exact component Hessians in Pounce IPM/SQP, including
+  shared sparse patterns, physical-coordinate scaling, caching and work counts.
 - [x] Add optional Pounce IPM/SQP backends with truthful native observations,
   cancellation, original exception propagation, and independent final KKT checks.
 - [x] Support sufficient user-KKT stopping for Pounce, preserve earlier native
@@ -66,7 +68,8 @@ notes and reproduction commands live in [docs/development](docs/development/READ
 - [ ] Publish the approved `0.7.0` release, then replace consumers' editable
   dependencies with release constraints and validate clean installations.
 
-PyGMO/IPOPT/SNOPT execution and Hessian validation remain outside the agreed
-release gates. Longer-term improvements above are not automatically release blockers.
+PyGMO/IPOPT/SNOPT execution and legacy numerical-Hessian helper validation remain
+outside the agreed release gates. Pounce exact-Hessian contracts are covered by
+the routine suite. Longer-term improvements above are not automatically release blockers.
 See [current limitations](docs/development/limitations.md) and
 [validation commands](docs/development/validation.md) for details.

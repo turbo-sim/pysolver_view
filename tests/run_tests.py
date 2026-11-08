@@ -23,8 +23,9 @@ TEST_SUITES = {
     ],
 }
 ENABLED_SUITES = ["package"]
-# Hessian validation remains outside the agreed migration scope.
-PYTEST_OPTIONS = ["-q", "-k", "not hessian"]
+# Keep legacy numerical-Hessian studies separate, while covering Pounce's
+# user-requested exact-Hessian backend contract in the normal regression suite.
+PYTEST_OPTIONS = ["-q", "-k", "not hessian or pounce"]
 CACHE_DIR = REPO_ROOT / "build" / "pytest_cache"
 
 

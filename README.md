@@ -48,6 +48,10 @@ Pounce 0.13.0 is pinned in the optional `pounce` extra. Install it with
 `poetry install --extras pounce`, then select
 `OptimizationSolver(problem, library="pounce", method="ipm")` or `method="sqp"`.
 The backend uses the same combined problem and derivative contracts as SLSQP.
+Problems defining `hessians(x)` also enable exact Lagrangian Hessians, with
+optional shared sparsity from `hessian_sparsity()`. Physical coordinate scaling,
+component ordering and evaluation counts are handled by the adapter. See the
+[Hessian contract](docs/source/tutorial_optimization.md#exact-component-hessians).
 Pounce does not expose the custom SLSQP first-step fraction controls.
 For sufficient user-KKT termination, pass `extra_options={"stop_on_kkt": True,
 "feasibility_tol": 1e-6, "optimality_tol": 1e-4}`. A native exit also ends the
@@ -71,8 +75,9 @@ the source structure, authoring conventions, and additional build options.
 
 Control test paths and default pytest options in
 [`tests/run_tests.py`](tests/run_tests.py). By default it runs the complete
-`tests/` tree, including study checks, with Hessian validation excluded from the
-agreed migration scope. Both existing CI test jobs call this same script.
+`tests/` tree, including study checks and Pounce exact-Hessian contracts. Legacy
+numerical-Hessian helper validation remains excluded from the agreed migration
+scope. Both existing CI test jobs call this same script.
 
 The [source-layout migration guide](docs/source/source_layout.md) documents
 canonical imports, compatibility exports, optional dependencies and the explicit

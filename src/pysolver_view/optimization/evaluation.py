@@ -1,6 +1,7 @@
 """Per-run optimization evaluation and backend callback contracts."""
 
 import copy
+from time import perf_counter
 import numpy as np
 from .. import numerical_differentiation
 from ..exceptions import DomainError
@@ -35,6 +36,11 @@ class OptimizationEvaluation:
         self.kkt_count = 0
         self.kkt_time = 0.0
         self.grad_count = 0
+        self.hess_count = 0
+        self.hess_time = 0.0
+        self.failed_hess_count = 0
+        self._hessian_cache = None
+        self._hessian_structure = None
         self.func_count = 0
         self.func_count_tot = 0
         self.accepted_constraint_metadata = None
@@ -221,6 +227,87 @@ class OptimizationEvaluation:
         )
         return grad
 
+    def hessian_structure(self, dimension):
+        """Validate and cache a shared lower-triangle component-Hessian pattern."""
+        if self._hessian_structure is None:
+            provider = getattr(self.problem, "hessian_sparsity", None)
+            if callable(provider):
+                pattern = provider()
+                if not isinstance(pattern, (tuple, list)) or len(pattern) != 2:
+                    raise ValueError("hessian_sparsity() must return (rows, columns)")
+                rows, columns = (np.asarray(value) for value in pattern)
+                if (
+                    rows.ndim != 1
+                    or columns.shape != rows.shape
+                    or rows.dtype.kind not in "iu"
+                    or columns.dtype.kind not in "iu"
+                    or np.any(columns < 0)
+                    or np.any(rows >= dimension)
+                    or np.any(rows < columns)
+                ):
+                    raise ValueError(
+                        "Hessian sparsity must contain valid integer lower-triangle indices"
+                    )
+                if (
+                    np.unique(rows.astype(np.int64) * dimension + columns).size
+                    != rows.size
+                ):
+                    raise ValueError("Hessian sparsity contains duplicate entries")
+                rows, columns = rows.astype(np.int64), columns.astype(np.int64)
+            else:
+                rows, columns = np.tril_indices(dimension)
+            self._hessian_structure = (rows.copy(), columns.copy())
+        return tuple(index.copy() for index in self._hessian_structure)
+
+    def evaluate_hessians(self, x):
+        """Evaluate physical component Hessians in solver coordinates, without probes."""
+        point = np.asarray(x, dtype=float).copy()
+        if self._hessian_cache is not None and np.array_equal(
+            point, self._hessian_cache[0]
+        ):
+            return self._hessian_cache[1].copy()
+        started = perf_counter()
+        self.hess_count += 1
+        try:
+            rows, columns = self.hessian_structure(point.size)
+            physical = self.problem.scale_normalized_to_physical(point)
+            value = np.asarray(self.problem.hessians(physical))
+            count = 1 + self.N_eq + self.N_ineq
+            if count == 1 and value.shape == (point.size, point.size):
+                value = value[None]
+            if value.shape == (count, point.size, point.size):
+                if not np.allclose(
+                    value, value.transpose(0, 2, 1), rtol=1e-9, atol=1e-12
+                ):
+                    raise ValueError("Dense component Hessians must be symmetric")
+                value = value[:, rows, columns]
+            elif count == 1 and value.shape == (rows.size,):
+                value = value[None]
+            if value.shape != (count, rows.size):
+                raise ValueError(
+                    f"hessians(x) must return {(count,rows.size)} lower-triangle values or {(count,point.size,point.size)} dense components"
+                )
+            if value.dtype.kind not in "fiu" or not np.all(np.isfinite(value)):
+                raise ValueError("Component Hessians must be finite real arrays")
+            value = value.astype(float, copy=True)
+            if self.problem.problem_scale is not None:
+                lower, upper = (
+                    np.asarray(a, dtype=float) for a in self.problem.get_bounds()
+                )
+                factors = (upper - lower) / self.problem.problem_scale
+                if not np.all(np.isfinite(factors)):
+                    raise ValueError(
+                        "Normalized Hessians require finite physical bound ranges"
+                    )
+                value *= factors[rows] * factors[columns]
+        except BaseException:
+            self.failed_hess_count += 1
+            raise
+        finally:
+            self.hess_time += perf_counter() - started
+        self._hessian_cache = (point, value.copy())
+        return value
+
 
 class BackendProblem:
     """
@@ -247,8 +334,11 @@ class BackendProblem:
         self.get_nic = lambda: wrapped_problem.problem.get_nic()
 
         # If the original problem defines Hessians, provide them as well.
-        if hasattr(wrapped_problem.problem, "hessians"):
-            self.hessians = lambda x: wrapped_problem.problem.hessians(x)
+        if callable(getattr(wrapped_problem.problem, "hessians", None)):
+            self.hessians = lambda x: wrapped_problem._evaluation.evaluate_hessians(x)
+            self.hessian_structure = (
+                lambda n: wrapped_problem._evaluation.hessian_structure(n)
+            )
 
         # Define anonymous functions for objective and constraints with their Jacobians.
         self.f = lambda x: wrapped_problem.fitness(x)[0]

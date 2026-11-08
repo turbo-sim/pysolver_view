@@ -17,6 +17,19 @@ class OptimizationProblem(ABC):
 
     Additionally, specific problem classes can define the `gradient` method to compute the Jacobians. If this method is not present in the derived class, the solver will revert to using forward finite differences for Jacobian calculations.
 
+    Pounce also accepts an optional ``hessians(x)`` method in physical
+    coordinates. Components are ordered objective, equalities, then public
+    nonpositive inequalities. Return shape ``(1 + nec + nic, n, n)`` or packed
+    lower triangles ``(1 + nec + nic, n*(n+1)//2)``. For an objective alone,
+    an ``(n, n)`` matrix or a packed vector is also accepted. An optional
+    ``hessian_sparsity()`` returns fixed integer ``(rows, columns)`` with
+    unique lower-triangle indices shared by all components; packed values
+    then follow that order. The declared pattern must include every possible
+    nonzero across all components and iterates. Pounce forms the Lagrangian
+    combination and its own barrier terms. Coordinate normalization applies
+    both chain-rule factors automatically. No numerical Hessian fallback is
+    introduced by this contract.
+
     Methods
     -------
     fitness(x)

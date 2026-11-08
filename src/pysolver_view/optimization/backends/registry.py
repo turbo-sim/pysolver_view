@@ -132,7 +132,7 @@ CAPABILITIES.update(
         ),
         **{
             ("pounce", method): dict(
-                shape="scalar objective; dense first derivatives",
+                shape="scalar objective; exact component Hessians optional",
                 verified=True,
                 constraints=True,
                 derivatives=True,

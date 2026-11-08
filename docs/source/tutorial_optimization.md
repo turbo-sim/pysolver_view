@@ -67,10 +67,63 @@ solver.solve(x0)
 
 Both methods use the frontend's combined objective/constraint evaluations and
 analytic or bounded numerical first derivatives. Public inequalities stay
-$g(x)\leq0$; the adapter supplies their lower/upper bounds directly. The initial
-implementation declares a dense Jacobian and uses quasi-Newton Hessians:
-limited-memory for IPM and damped BFGS for SQP. Exact Hessians, sparse structure,
-and cross-solve working-set reuse are not yet exposed by this adapter.
+$g(x)\leq0$; the adapter supplies their lower/upper bounds directly. Constraint
+Jacobians currently use dense structure. A problem defining `hessians(x)`
+automatically enables exact second derivatives for IPM and SQP; otherwise the
+defaults are limited-memory IPM and damped-BFGS SQP. Cross-solve working-set
+reuse is not exposed by this adapter.
+
+### Exact component Hessians
+
+Define `hessians(x)` in the same physical coordinates as `fitness(x)` and
+`gradient(x)`. Components follow the fitness order: objective, equalities,
+then public nonpositive inequalities. Supported shapes are:
+
+- `(1 + nec + nic, n, n)` for symmetric dense matrices.
+- `(1 + nec + nic, n*(n+1)//2)` for packed lower triangles, in
+  `np.tril_indices(n)` order.
+- For an objective without general constraints, `(n, n)` or a packed vector
+  is also accepted.
+
+For example, a quadratic objective and quadratic inequality can return:
+
+```python
+def hessians(self, x):
+    return np.array([
+        [[2.0, 0.0], [0.0, 2.0]],  # objective
+        [[2.0, 0.0], [0.0, 2.0]],  # g(x) = x[0]**2 + x[1]**2 - 1 <= 0
+    ])
+```
+
+The adapter supplies the full Lagrangian Hessian
+$H_L=\sigma H_f+\sum_i\lambda_i H_{g_i}$ using Pounce's objective factor and
+constraint multipliers. Constraint signs are not reversed. Do not add barrier
+or bound contributions; Pounce owns those. With `problem_scale`, the adapter
+evaluates at the physical point and applies both coordinate chain-rule factors,
+$H_{\mathrm{solver}}=D H_{\mathrm{physical}}D$.
+
+Optionally define `hessian_sparsity()` returning fixed integer `(rows, columns)`
+arrays with unique lower-triangle indices. This shared pattern must contain
+every potentially nonzero entry across all components and all iterates.
+`hessians(x)` may then return `(1 + nec + nic, nnz)` values in that exact order;
+dense components are also accepted and sampled at the declared entries. This
+avoids declaring a dense Hessian to Pounce. An invalid pattern, shape,
+nonsymmetric dense matrix, nonfinite values or callback exception raises an
+actionable error rather than silently switching to quasi-Newton curvature.
+
+Explicit `extra_options={"hessian_approximation": "limited-memory"}` keeps IPM
+on its first-derivative path even when Hessians are available. For SQP, use
+`extra_options={"sqp_hessian": "damped-bfgs"}`. Requesting exact curvature without
+a callable `hessians` method raises. No finite-difference Hessian fallback is
+introduced. JAX remains optional; a user problem may compile its own exact AD
+Hessians or supply analytic ones.
+
+`solver.result.nhev`, `hessian_time` and `failed_hessian_count` track actual
+component evaluations. Components are cached at one point, so different
+Lagrangian multipliers do not repeat model work there. `backend_result.nhev`
+counts native Hessian requests and `backend_result.hessian_nnz` records the
+declared size. Hessian calls do not create iteration events or trigger separate
+KKT checks; `check_kkt=False` continues to disable those checks independently.
 
 Generic tolerance and iteration limits map to `tol`/`max_iter`, and on SQP also
 to `sqp_tol`, `sqp_constr_viol_tol`, `sqp_dual_inf_tol`, and `sqp_max_iter`.

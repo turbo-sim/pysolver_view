@@ -245,6 +245,42 @@ class _PounceCallbacks:
             return False
 
 
+class _PounceHessianCallbacks(_PounceCallbacks):
+    """Supply the exact Lagrangian Hessian using public constraint signs."""
+
+    def __init__(self, *args, **kwargs):
+        """Retain a fixed lower-triangle pattern for this native solve."""
+        super().__init__(*args, **kwargs)
+        self.hessian_calls = 0
+        self.hessian_rows, self.hessian_columns = self.problem.hessian_structure(
+            self.dimension
+        )
+
+    def hessianstructure(self):
+        """Keep the provider's lower-triangle value order."""
+        return self.hessian_rows.copy(), self.hessian_columns.copy()
+
+    def hessian(self, x, lagrange, obj_factor):
+        """Form obj_factor*H_f + sum(lambda_i*H_gi), excluding barrier terms."""
+        self.hessian_calls += 1
+        try:
+            point, _ = self.evaluation_point(x)
+            multipliers = np.asarray(lagrange, dtype=float)
+            if (
+                multipliers.shape != (self.constraint_count,)
+                or not np.all(np.isfinite(multipliers))
+                or not np.isfinite(obj_factor)
+            ):
+                raise ValueError(
+                    "Invalid Lagrangian Hessian multipliers or objective factor"
+                )
+            components = self.problem.hessians(point)
+            return np.einsum("i,ij->j", np.r_[obj_factor, multipliers], components)
+        except BaseException as error:
+            self._remember_error(error)
+            raise
+
+
 def minimize_pounce(problem, x0, method, solver_options):
     """Solve a smooth constrained NLP through Pounce's cyipopt-style interface.
 
@@ -262,8 +298,8 @@ def minimize_pounce(problem, x0, method, solver_options):
         Generic ``tolerance`` and ``max_iterations`` plus Pounce native options.
         Defaults disable Pounce scaling and bound relaxation because the
         frontend already owns problem scaling and declared-bound diagnostics.
-        Only first derivatives are supplied, so exact Lagrangian Hessian
-        requests are rejected rather than silently changed by the native solver.
+        Supplied component Hessians select exact curvature by default. Without
+        them, quasi-Newton curvature remains the default.
 
     Returns
     -------
@@ -307,14 +343,13 @@ def minimize_pounce(problem, x0, method, solver_options):
             "The pounce backend uses the general NLP interface; "
             "solver_selection must be 'nlp'."
         )
-    if any(
+    has_hessians = callable(getattr(problem, "hessians", None))
+    if not has_hessians and any(
         str(configured.get(name, "")).lower() == "exact"
         for name in ("hessian_approximation", "sqp_hessian")
     ):
         raise ValueError(
-            "The pounce wrapper currently supplies first derivatives only and "
-            "uses quasi-Newton Hessians; exact Lagrangian Hessians are not "
-            "supported."
+            "Exact Pounce Hessians require the problem to define hessians(x)."
         )
     options = {
         "algorithm": algorithm,
@@ -323,17 +358,28 @@ def minimize_pounce(problem, x0, method, solver_options):
         "print_level": 0,
         "nlp_scaling_method": "none",
         "bound_relax_factor": 0.0,
-        "hessian_approximation": "limited-memory",
+        "hessian_approximation": "exact" if has_hessians else "limited-memory",
     }
     if method == "sqp":
         options.update(
-            sqp_hessian="damped-bfgs",
+            sqp_hessian="exact" if has_hessians else "damped-bfgs",
             sqp_tol=tolerance,
             sqp_constr_viol_tol=tolerance,
             sqp_dual_inf_tol=tolerance,
             sqp_max_iter=int(max_iterations),
         )
     options.update(configured)
+    exact = (
+        options.get("hessian_approximation") == "exact"
+        if method == "ipm"
+        else options.get("sqp_hessian") == "exact"
+    )
+    if method == "sqp" and not exact:
+        if configured.get("hessian_approximation") == "exact":
+            raise ValueError(
+                "SQP exact hessian_approximation requires sqp_hessian='exact'"
+            )
+        options["hessian_approximation"] = "limited-memory"
     if controls["stop_on_kkt"] and (
         options["nlp_scaling_method"] != "none"
         or options.get("obj_scaling_factor", 1.0) != 1.0
@@ -359,7 +405,8 @@ def minimize_pounce(problem, x0, method, solver_options):
         if bounds is None
         else (np.asarray(bounds[0], dtype=float), np.asarray(bounds[1], dtype=float))
     )
-    callbacks = _PounceCallbacks(
+    callback_class = _PounceHessianCallbacks if exact else _PounceCallbacks
+    callbacks = callback_class(
         problem,
         initial.size,
         equality_count,
@@ -428,6 +475,8 @@ def minimize_pounce(problem, x0, method, solver_options):
         nit=int(info.get("iter_count", 0)),
         nfev=int(info.get("n_obj_evals", callbacks.objective_calls)),
         njev=int(info.get("n_grad_evals", callbacks.gradient_calls)),
+        nhev=getattr(callbacks, "hessian_calls", 0),
+        hessian_nnz=(len(callbacks.hessian_rows) if exact else None),
         history=deepcopy(callbacks.history),
         info=info,
         native_multipliers=native_multipliers,
