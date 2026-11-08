@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=6d507e9e"></script>
+    <script src="../_static/documentation_options.js?v=7a24fef8"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -525,8 +525,8 @@ nonpositive. Derivative evaluations and caching belong to this object.</p>
 <dt><strong>solver_options</strong><span class="classifier">dict</span></dt><dd><p>Generic <code class="docutils literal notranslate"><span class="pre">tolerance</span></code> and <code class="docutils literal notranslate"><span class="pre">max_iterations</span></code> plus Pounce native options.
 Defaults disable Pounce scaling and bound relaxation because the
 frontend already owns problem scaling and declared-bound diagnostics.
-Only first derivatives are supplied, so exact Lagrangian Hessian
-requests are rejected rather than silently changed by the native solver.</p>
+Supplied component Hessians select exact curvature by default. Without
+them, quasi-Newton curvature remains the default.</p>
 </dd>
 </dl>
 </dd>

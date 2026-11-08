@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=6d507e9e"></script>
+    <script src="_static/documentation_options.js?v=7a24fef8"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -493,7 +493,10 @@
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#controlled-slsqp-callbacks">Controlled SLSQP callbacks</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pounce-interior-point-and-active-set-sqp">Pounce interior-point and active-set SQP</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pounce-interior-point-and-active-set-sqp">Pounce interior-point and active-set SQP</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exact-component-hessians">Exact component Hessians</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-equations-as-equality-constraints">Solving equations as equality constraints</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-unconstrained-optimization">Example 1: Unconstrained optimization</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-definition">Problem definition</a></li>
@@ -577,10 +580,57 @@ callbacks do not certify accepted points.</p>
 </div>
 <p>Both methods use the frontend’s combined objective/constraint evaluations and
 analytic or bounded numerical first derivatives. Public inequalities stay
-<span class="math notranslate nohighlight">\(g(x)\leq0\)</span>; the adapter supplies their lower/upper bounds directly. The initial
-implementation declares a dense Jacobian and uses quasi-Newton Hessians:
-limited-memory for IPM and damped BFGS for SQP. Exact Hessians, sparse structure,
-and cross-solve working-set reuse are not yet exposed by this adapter.</p>
+<span class="math notranslate nohighlight">\(g(x)\leq0\)</span>; the adapter supplies their lower/upper bounds directly. Constraint
+Jacobians currently use dense structure. A problem defining <code class="docutils literal notranslate"><span class="pre">hessians(x)</span></code>
+automatically enables exact second derivatives for IPM and SQP; otherwise the
+defaults are limited-memory IPM and damped-BFGS SQP. Cross-solve working-set
+reuse is not exposed by this adapter.</p>
+<section id="exact-component-hessians">
+<h3>Exact component Hessians<a class="headerlink" href="#exact-component-hessians" title="Link to this heading">#</a></h3>
+<p>Define <code class="docutils literal notranslate"><span class="pre">hessians(x)</span></code> in the same physical coordinates as <code class="docutils literal notranslate"><span class="pre">fitness(x)</span></code> and
+<code class="docutils literal notranslate"><span class="pre">gradient(x)</span></code>. Components follow the fitness order: objective, equalities,
+then public nonpositive inequalities. Supported shapes are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">+</span> <span class="pre">nec</span> <span class="pre">+</span> <span class="pre">nic,</span> <span class="pre">n,</span> <span class="pre">n)</span></code> for symmetric dense matrices.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">+</span> <span class="pre">nec</span> <span class="pre">+</span> <span class="pre">nic,</span> <span class="pre">n*(n+1)//2)</span></code> for packed lower triangles, in
+<code class="docutils literal notranslate"><span class="pre">np.tril_indices(n)</span></code> order.</p></li>
+<li><p>For an objective without general constraints, <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">n)</span></code> or a packed vector
+is also accepted.</p></li>
+</ul>
+<p>For example, a quadratic objective and quadratic inequality can return:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">hessians</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="p">[[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]],</span>  <span class="c1"># objective</span>
+        <span class="p">[[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]],</span>  <span class="c1"># g(x) = x[0]**2 + x[1]**2 - 1 &lt;= 0</span>
+    <span class="p">])</span>
+</pre></div>
+</div>
+<p>The adapter supplies the full Lagrangian Hessian
+<span class="math notranslate nohighlight">\(H_L=\sigma H_f+\sum_i\lambda_i H_{g_i}\)</span> using Pounce’s objective factor and
+constraint multipliers. Constraint signs are not reversed. Do not add barrier
+or bound contributions; Pounce owns those. With <code class="docutils literal notranslate"><span class="pre">problem_scale</span></code>, the adapter
+evaluates at the physical point and applies both coordinate chain-rule factors,
+<span class="math notranslate nohighlight">\(H_{\mathrm{solver}}=D H_{\mathrm{physical}}D\)</span>.</p>
+<p>Optionally define <code class="docutils literal notranslate"><span class="pre">hessian_sparsity()</span></code> returning fixed integer <code class="docutils literal notranslate"><span class="pre">(rows,</span> <span class="pre">columns)</span></code>
+arrays with unique lower-triangle indices. This shared pattern must contain
+every potentially nonzero entry across all components and all iterates.
+<code class="docutils literal notranslate"><span class="pre">hessians(x)</span></code> may then return <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">+</span> <span class="pre">nec</span> <span class="pre">+</span> <span class="pre">nic,</span> <span class="pre">nnz)</span></code> values in that exact order;
+dense components are also accepted and sampled at the declared entries. This
+avoids declaring a dense Hessian to Pounce. An invalid pattern, shape,
+nonsymmetric dense matrix, nonfinite values or callback exception raises an
+actionable error rather than silently switching to quasi-Newton curvature.</p>
+<p>Explicit <code class="docutils literal notranslate"><span class="pre">extra_options={&quot;hessian_approximation&quot;:</span> <span class="pre">&quot;limited-memory&quot;}</span></code> keeps IPM
+on its first-derivative path even when Hessians are available. For SQP, use
+<code class="docutils literal notranslate"><span class="pre">extra_options={&quot;sqp_hessian&quot;:</span> <span class="pre">&quot;damped-bfgs&quot;}</span></code>. Requesting exact curvature without
+a callable <code class="docutils literal notranslate"><span class="pre">hessians</span></code> method raises. No finite-difference Hessian fallback is
+introduced. JAX remains optional; a user problem may compile its own exact AD
+Hessians or supply analytic ones.</p>
+<p><code class="docutils literal notranslate"><span class="pre">solver.result.nhev</span></code>, <code class="docutils literal notranslate"><span class="pre">hessian_time</span></code> and <code class="docutils literal notranslate"><span class="pre">failed_hessian_count</span></code> track actual
+component evaluations. Components are cached at one point, so different
+Lagrangian multipliers do not repeat model work there. <code class="docutils literal notranslate"><span class="pre">backend_result.nhev</span></code>
+counts native Hessian requests and <code class="docutils literal notranslate"><span class="pre">backend_result.hessian_nnz</span></code> records the
+declared size. Hessian calls do not create iteration events or trigger separate
+KKT checks; <code class="docutils literal notranslate"><span class="pre">check_kkt=False</span></code> continues to disable those checks independently.</p>
 <p>Generic tolerance and iteration limits map to <code class="docutils literal notranslate"><span class="pre">tol</span></code>/<code class="docutils literal notranslate"><span class="pre">max_iter</span></code>, and on SQP also
 to <code class="docutils literal notranslate"><span class="pre">sqp_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">sqp_constr_viol_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">sqp_dual_inf_tol</span></code>, and <code class="docutils literal notranslate"><span class="pre">sqp_max_iter</span></code>.
 Additional Pounce options go in <code class="docutils literal notranslate"><span class="pre">extra_options</span></code>. Internal NLP scaling and bound
@@ -649,6 +699,7 @@ automatic multiplier fitting, while explicitly requested KKT reports still work.
 fraction-to-boundary settings have different meanings; the adapter rejects
 <code class="docutils literal notranslate"><span class="pre">first_step_fraction</span></code>, <code class="docutils literal notranslate"><span class="pre">max_step_fraction</span></code>, and <code class="docutils literal notranslate"><span class="pre">step_growth_factor</span></code>. A genuine
 first-step cap would require an upstream Pounce interface change.</p>
+</section>
 </section>
 <section id="solving-equations-as-equality-constraints">
 <h2>Solving equations as equality constraints<a class="headerlink" href="#solving-equations-as-equality-constraints" title="Link to this heading">#</a></h2>
@@ -1087,7 +1138,10 @@ separately; it is not repeated in <code class="docutils literal notranslate"><sp
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#controlled-slsqp-callbacks">Controlled SLSQP callbacks</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pounce-interior-point-and-active-set-sqp">Pounce interior-point and active-set SQP</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pounce-interior-point-and-active-set-sqp">Pounce interior-point and active-set SQP</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exact-component-hessians">Exact component Hessians</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-equations-as-equality-constraints">Solving equations as equality constraints</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-unconstrained-optimization">Example 1: Unconstrained optimization</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-definition">Problem definition</a></li>

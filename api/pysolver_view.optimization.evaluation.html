@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=6d507e9e"></script>
+    <script src="../_static/documentation_options.js?v=7a24fef8"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -492,7 +492,9 @@
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.evaluation.BackendProblem"><code class="docutils literal notranslate"><span class="pre">BackendProblem</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.evaluation.OptimizationEvaluation"><code class="docutils literal notranslate"><span class="pre">OptimizationEvaluation</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.evaluation.OptimizationEvaluation.evaluate_hessians"><code class="docutils literal notranslate"><span class="pre">OptimizationEvaluation.evaluate_hessians()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.evaluation.OptimizationEvaluation.final_constraint_metadata"><code class="docutils literal notranslate"><span class="pre">OptimizationEvaluation.final_constraint_metadata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.evaluation.OptimizationEvaluation.hessian_structure"><code class="docutils literal notranslate"><span class="pre">OptimizationEvaluation.hessian_structure()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.evaluation.OptimizationEvaluation.record_accepted_metadata"><code class="docutils literal notranslate"><span class="pre">OptimizationEvaluation.record_accepted_metadata()</span></code></a></li>
 </ul>
 </li>
@@ -525,9 +527,21 @@ This class uses anonymous functions (lambda) to prevent issues with deep copying
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Own model work, point caches and derivative accounting for one solve.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.evaluation.OptimizationEvaluation.evaluate_hessians">
+<span class="sig-name descname"><span class="pre">evaluate_hessians</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/evaluation.html#OptimizationEvaluation.evaluate_hessians"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.evaluation.OptimizationEvaluation.evaluate_hessians" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate physical component Hessians in solver coordinates, without probes.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pysolver_view.optimization.evaluation.OptimizationEvaluation.final_constraint_metadata">
 <span class="sig-name descname"><span class="pre">final_constraint_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/evaluation.html#OptimizationEvaluation.final_constraint_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.evaluation.OptimizationEvaluation.final_constraint_metadata" title="Link to this definition">#</a></dt>
 <dd><p>Return detached final metadata without evaluating the model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pysolver_view.optimization.evaluation.OptimizationEvaluation.hessian_structure">
+<span class="sig-name descname"><span class="pre">hessian_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dimension</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pysolver_view/optimization/evaluation.html#OptimizationEvaluation.hessian_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pysolver_view.optimization.evaluation.OptimizationEvaluation.hessian_structure" title="Link to this definition">#</a></dt>
+<dd><p>Validate and cache a shared lower-triangle component-Hessian pattern.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -589,7 +603,9 @@ This class uses anonymous functions (lambda) to prevent issues with deep copying
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.evaluation.BackendProblem"><code class="docutils literal notranslate"><span class="pre">BackendProblem</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.evaluation.OptimizationEvaluation"><code class="docutils literal notranslate"><span class="pre">OptimizationEvaluation</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.evaluation.OptimizationEvaluation.evaluate_hessians"><code class="docutils literal notranslate"><span class="pre">OptimizationEvaluation.evaluate_hessians()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.evaluation.OptimizationEvaluation.final_constraint_metadata"><code class="docutils literal notranslate"><span class="pre">OptimizationEvaluation.final_constraint_metadata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.evaluation.OptimizationEvaluation.hessian_structure"><code class="docutils literal notranslate"><span class="pre">OptimizationEvaluation.hessian_structure()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pysolver_view.optimization.evaluation.OptimizationEvaluation.record_accepted_metadata"><code class="docutils literal notranslate"><span class="pre">OptimizationEvaluation.record_accepted_metadata()</span></code></a></li>
 </ul>
 </li>

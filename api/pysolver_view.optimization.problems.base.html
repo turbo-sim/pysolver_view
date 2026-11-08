@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=6d507e9e"></script>
+    <script src="../_static/documentation_options.js?v=7a24fef8"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -530,6 +530,18 @@
 <li><p><cite>get_nineq</cite>: Return the number of inequality constraints associated with the problem.</p></li>
 </ul>
 <p>Additionally, specific problem classes can define the <cite>gradient</cite> method to compute the Jacobians. If this method is not present in the derived class, the solver will revert to using forward finite differences for Jacobian calculations.</p>
+<p>Pounce also accepts an optional <code class="docutils literal notranslate"><span class="pre">hessians(x)</span></code> method in physical
+coordinates. Components are ordered objective, equalities, then public
+nonpositive inequalities. Return shape <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">+</span> <span class="pre">nec</span> <span class="pre">+</span> <span class="pre">nic,</span> <span class="pre">n,</span> <span class="pre">n)</span></code> or packed
+lower triangles <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">+</span> <span class="pre">nec</span> <span class="pre">+</span> <span class="pre">nic,</span> <span class="pre">n*(n+1)//2)</span></code>. For an objective alone,
+an <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">n)</span></code> matrix or a packed vector is also accepted. An optional
+<code class="docutils literal notranslate"><span class="pre">hessian_sparsity()</span></code> returns fixed integer <code class="docutils literal notranslate"><span class="pre">(rows,</span> <span class="pre">columns)</span></code> with
+unique lower-triangle indices shared by all components; packed values
+then follow that order. The declared pattern must include every possible
+nonzero across all components and iterates. Pounce forms the Lagrangian
+combination and its own barrier terms. Coordinate normalization applies
+both chain-rule factors automatically. No numerical Hessian fallback is
+introduced by this contract.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">

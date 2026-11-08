@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=6d507e9e"></script>
+    <script src="../../../../_static/documentation_options.js?v=7a24fef8"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -680,6 +680,42 @@
             <span class="k">return</span> <span class="kc">False</span>
 
 
+<span class="k">class</span><span class="w"> </span><span class="nc">_PounceHessianCallbacks</span><span class="p">(</span><span class="n">_PounceCallbacks</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supply the exact Lagrangian Hessian using public constraint signs.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retain a fixed lower-triangle pattern for this native solve.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hessian_calls</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hessian_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hessian_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">hessian_structure</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">hessianstructure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Keep the provider&#39;s lower-triangle value order.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hessian_rows</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">hessian_columns</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">hessian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">lagrange</span><span class="p">,</span> <span class="n">obj_factor</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Form obj_factor*H_f + sum(lambda_i*H_gi), excluding barrier terms.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hessian_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">point</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_point</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lagrange</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">multipliers</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint_count</span><span class="p">,)</span>
+                <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">multipliers</span><span class="p">))</span>
+                <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">obj_factor</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Invalid Lagrangian Hessian multipliers or objective factor&quot;</span>
+                <span class="p">)</span>
+            <span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">hessians</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;i,ij-&gt;j&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">obj_factor</span><span class="p">,</span> <span class="n">multipliers</span><span class="p">],</span> <span class="n">components</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remember_error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+
 <div class="viewcode-block" id="minimize_pounce">
 <a class="viewcode-back" href="../../../../api/pysolver_view.optimization.backends.pounce.html#pysolver_view.optimization.backends.pounce.minimize_pounce">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">minimize_pounce</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">solver_options</span><span class="p">):</span>
@@ -699,8 +735,8 @@
 <span class="sd">        Generic ``tolerance`` and ``max_iterations`` plus Pounce native options.</span>
 <span class="sd">        Defaults disable Pounce scaling and bound relaxation because the</span>
 <span class="sd">        frontend already owns problem scaling and declared-bound diagnostics.</span>
-<span class="sd">        Only first derivatives are supplied, so exact Lagrangian Hessian</span>
-<span class="sd">        requests are rejected rather than silently changed by the native solver.</span>
+<span class="sd">        Supplied component Hessians select exact curvature by default. Without</span>
+<span class="sd">        them, quasi-Newton curvature remains the default.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -744,14 +780,13 @@
             <span class="s2">&quot;The pounce backend uses the general NLP interface; &quot;</span>
             <span class="s2">&quot;solver_selection must be &#39;nlp&#39;.&quot;</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+    <span class="n">has_hessians</span> <span class="o">=</span> <span class="nb">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="s2">&quot;hessians&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_hessians</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span>
         <span class="nb">str</span><span class="p">(</span><span class="n">configured</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;exact&quot;</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;hessian_approximation&quot;</span><span class="p">,</span> <span class="s2">&quot;sqp_hessian&quot;</span><span class="p">)</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;The pounce wrapper currently supplies first derivatives only and &quot;</span>
-            <span class="s2">&quot;uses quasi-Newton Hessians; exact Lagrangian Hessians are not &quot;</span>
-            <span class="s2">&quot;supported.&quot;</span>
+            <span class="s2">&quot;Exact Pounce Hessians require the problem to define hessians(x).&quot;</span>
         <span class="p">)</span>
     <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;algorithm&quot;</span><span class="p">:</span> <span class="n">algorithm</span><span class="p">,</span>
@@ -760,17 +795,28 @@
         <span class="s2">&quot;print_level&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="s2">&quot;nlp_scaling_method&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
         <span class="s2">&quot;bound_relax_factor&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="s2">&quot;hessian_approximation&quot;</span><span class="p">:</span> <span class="s2">&quot;limited-memory&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;hessian_approximation&quot;</span><span class="p">:</span> <span class="s2">&quot;exact&quot;</span> <span class="k">if</span> <span class="n">has_hessians</span> <span class="k">else</span> <span class="s2">&quot;limited-memory&quot;</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;sqp&quot;</span><span class="p">:</span>
         <span class="n">options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="n">sqp_hessian</span><span class="o">=</span><span class="s2">&quot;damped-bfgs&quot;</span><span class="p">,</span>
+            <span class="n">sqp_hessian</span><span class="o">=</span><span class="s2">&quot;exact&quot;</span> <span class="k">if</span> <span class="n">has_hessians</span> <span class="k">else</span> <span class="s2">&quot;damped-bfgs&quot;</span><span class="p">,</span>
             <span class="n">sqp_tol</span><span class="o">=</span><span class="n">tolerance</span><span class="p">,</span>
             <span class="n">sqp_constr_viol_tol</span><span class="o">=</span><span class="n">tolerance</span><span class="p">,</span>
             <span class="n">sqp_dual_inf_tol</span><span class="o">=</span><span class="n">tolerance</span><span class="p">,</span>
             <span class="n">sqp_max_iter</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">max_iterations</span><span class="p">),</span>
         <span class="p">)</span>
     <span class="n">options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">configured</span><span class="p">)</span>
+    <span class="n">exact</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hessian_approximation&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;exact&quot;</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;ipm&quot;</span>
+        <span class="k">else</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sqp_hessian&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;exact&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;sqp&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exact</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">configured</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hessian_approximation&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;exact&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;SQP exact hessian_approximation requires sqp_hessian=&#39;exact&#39;&quot;</span>
+            <span class="p">)</span>
+        <span class="n">options</span><span class="p">[</span><span class="s2">&quot;hessian_approximation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;limited-memory&quot;</span>
     <span class="k">if</span> <span class="n">controls</span><span class="p">[</span><span class="s2">&quot;stop_on_kkt&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="p">(</span>
         <span class="n">options</span><span class="p">[</span><span class="s2">&quot;nlp_scaling_method&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span>
         <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;obj_scaling_factor&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">!=</span> <span class="mf">1.0</span>
@@ -796,7 +842,8 @@
         <span class="k">if</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="k">else</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
     <span class="p">)</span>
-    <span class="n">callbacks</span> <span class="o">=</span> <span class="n">_PounceCallbacks</span><span class="p">(</span>
+    <span class="n">callback_class</span> <span class="o">=</span> <span class="n">_PounceHessianCallbacks</span> <span class="k">if</span> <span class="n">exact</span> <span class="k">else</span> <span class="n">_PounceCallbacks</span>
+    <span class="n">callbacks</span> <span class="o">=</span> <span class="n">callback_class</span><span class="p">(</span>
         <span class="n">problem</span><span class="p">,</span>
         <span class="n">initial</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
         <span class="n">equality_count</span><span class="p">,</span>
@@ -865,6 +912,8 @@
         <span class="n">nit</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;iter_count&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
         <span class="n">nfev</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;n_obj_evals&quot;</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">objective_calls</span><span class="p">)),</span>
         <span class="n">njev</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;n_grad_evals&quot;</span><span class="p">,</span> <span class="n">callbacks</span><span class="o">.</span><span class="n">gradient_calls</span><span class="p">)),</span>
+        <span class="n">nhev</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">callbacks</span><span class="p">,</span> <span class="s2">&quot;hessian_calls&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">hessian_nnz</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">callbacks</span><span class="o">.</span><span class="n">hessian_rows</span><span class="p">)</span> <span class="k">if</span> <span class="n">exact</span> <span class="k">else</span> <span class="kc">None</span><span class="p">),</span>
         <span class="n">history</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">callbacks</span><span class="o">.</span><span class="n">history</span><span class="p">),</span>
         <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span>
         <span class="n">native_multipliers</span><span class="o">=</span><span class="n">native_multipliers</span><span class="p">,</span>

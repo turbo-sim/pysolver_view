@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=6d507e9e"></script>
+    <script src="../../../_static/documentation_options.js?v=7a24fef8"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -430,6 +430,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Per-run optimization evaluation and backend callback contracts.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">perf_counter</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">numerical_differentiation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DomainError</span>
@@ -466,6 +467,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">kkt_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kkt_time</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">grad_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hess_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hess_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">failed_hess_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hessian_cache</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hessian_structure</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">func_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">func_count_tot</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">accepted_constraint_metadata</span> <span class="o">=</span> <span class="kc">None</span>
@@ -656,7 +662,94 @@
             <span class="n">c_ineq_jac</span><span class="o">=</span><span class="n">grad</span><span class="p">[</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_eq</span> <span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
             <span class="n">gradient</span><span class="o">=</span><span class="n">grad</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">grad</span></div>
+        <span class="k">return</span> <span class="n">grad</span>
+
+<div class="viewcode-block" id="OptimizationEvaluation.hessian_structure">
+<a class="viewcode-back" href="../../../api/pysolver_view.optimization.evaluation.html#pysolver_view.optimization.evaluation.OptimizationEvaluation.hessian_structure">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hessian_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dimension</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate and cache a shared lower-triangle component-Hessian pattern.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hessian_structure</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">provider</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="s2">&quot;hessian_sparsity&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">provider</span><span class="p">):</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="n">provider</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;hessian_sparsity() must return (rows, columns)&quot;</span><span class="p">)</span>
+                <span class="n">rows</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">pattern</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">rows</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span>
+                    <span class="ow">or</span> <span class="n">columns</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">rows</span><span class="o">.</span><span class="n">shape</span>
+                    <span class="ow">or</span> <span class="n">rows</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;iu&quot;</span>
+                    <span class="ow">or</span> <span class="n">columns</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;iu&quot;</span>
+                    <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">columns</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">rows</span> <span class="o">&gt;=</span> <span class="n">dimension</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">rows</span> <span class="o">&lt;</span> <span class="n">columns</span><span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Hessian sparsity must contain valid integer lower-triangle indices&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">rows</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span> <span class="o">*</span> <span class="n">dimension</span> <span class="o">+</span> <span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+                    <span class="o">!=</span> <span class="n">rows</span><span class="o">.</span><span class="n">size</span>
+                <span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Hessian sparsity contains duplicate entries&quot;</span><span class="p">)</span>
+                <span class="n">rows</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">rows</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span> <span class="n">columns</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rows</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_hessian_structure</span> <span class="o">=</span> <span class="p">(</span><span class="n">rows</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">columns</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">index</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hessian_structure</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OptimizationEvaluation.evaluate_hessians">
+<a class="viewcode-back" href="../../../api/pysolver_view.optimization.evaluation.html#pysolver_view.optimization.evaluation.OptimizationEvaluation.evaluate_hessians">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_hessians</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate physical component Hessians in solver coordinates, without probes.&quot;&quot;&quot;</span>
+        <span class="n">point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hessian_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span>
+            <span class="n">point</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hessian_cache</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hessian_cache</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">started</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hess_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rows</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hessian_structure</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+            <span class="n">physical</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">scale_normalized_to_physical</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">hessians</span><span class="p">(</span><span class="n">physical</span><span class="p">))</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_eq</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_ineq</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">point</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">point</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">point</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
+                    <span class="n">value</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-12</span>
+                <span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dense component Hessians must be symmetric&quot;</span><span class="p">)</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[:,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">rows</span><span class="o">.</span><span class="n">size</span><span class="p">,):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">rows</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;hessians(x) must return </span><span class="si">{</span><span class="p">(</span><span class="n">count</span><span class="p">,</span><span class="n">rows</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="si">}</span><span class="s2"> lower-triangle values or </span><span class="si">{</span><span class="p">(</span><span class="n">count</span><span class="p">,</span><span class="n">point</span><span class="o">.</span><span class="n">size</span><span class="p">,</span><span class="n">point</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="si">}</span><span class="s2"> dense components&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;fiu&quot;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Component Hessians must be finite real arrays&quot;</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">problem_scale</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_bounds</span><span class="p">()</span>
+                <span class="p">)</span>
+                <span class="n">factors</span> <span class="o">=</span> <span class="p">(</span><span class="n">upper</span> <span class="o">-</span> <span class="n">lower</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">problem_scale</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">factors</span><span class="p">)):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Normalized Hessians require finite physical bound ranges&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">value</span> <span class="o">*=</span> <span class="n">factors</span><span class="p">[</span><span class="n">rows</span><span class="p">]</span> <span class="o">*</span> <span class="n">factors</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">failed_hess_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">raise</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hess_time</span> <span class="o">+=</span> <span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">started</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hessian_cache</span> <span class="o">=</span> <span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+</div>
 
 
 
@@ -687,8 +780,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">get_nic</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">wrapped_problem</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_nic</span><span class="p">()</span>
 
         <span class="c1"># If the original problem defines Hessians, provide them as well.</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">wrapped_problem</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="s2">&quot;hessians&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">hessians</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">wrapped_problem</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">hessians</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">wrapped_problem</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="s2">&quot;hessians&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hessians</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">wrapped_problem</span><span class="o">.</span><span class="n">_evaluation</span><span class="o">.</span><span class="n">evaluate_hessians</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hessian_structure</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">wrapped_problem</span><span class="o">.</span><span class="n">_evaluation</span><span class="o">.</span><span class="n">hessian_structure</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="c1"># Define anonymous functions for objective and constraints with their Jacobians.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">wrapped_problem</span><span class="o">.</span><span class="n">fitness</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>

@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=6d507e9e"></script>
+    <script src="../../../../_static/documentation_options.js?v=7a24fef8"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>let toggleHintShow = 'Click to show';</script>
@@ -447,6 +447,19 @@
 <span class="sd">    - `get_nineq`: Return the number of inequality constraints associated with the problem.</span>
 
 <span class="sd">    Additionally, specific problem classes can define the `gradient` method to compute the Jacobians. If this method is not present in the derived class, the solver will revert to using forward finite differences for Jacobian calculations.</span>
+
+<span class="sd">    Pounce also accepts an optional ``hessians(x)`` method in physical</span>
+<span class="sd">    coordinates. Components are ordered objective, equalities, then public</span>
+<span class="sd">    nonpositive inequalities. Return shape ``(1 + nec + nic, n, n)`` or packed</span>
+<span class="sd">    lower triangles ``(1 + nec + nic, n*(n+1)//2)``. For an objective alone,</span>
+<span class="sd">    an ``(n, n)`` matrix or a packed vector is also accepted. An optional</span>
+<span class="sd">    ``hessian_sparsity()`` returns fixed integer ``(rows, columns)`` with</span>
+<span class="sd">    unique lower-triangle indices shared by all components; packed values</span>
+<span class="sd">    then follow that order. The declared pattern must include every possible</span>
+<span class="sd">    nonzero across all components and iterates. Pounce forms the Lagrangian</span>
+<span class="sd">    combination and its own barrier terms. Coordinate normalization applies</span>
+<span class="sd">    both chain-rule factors automatically. No numerical Hessian fallback is</span>
+<span class="sd">    introduced by this contract.</span>
 
 <span class="sd">    Methods</span>
 <span class="sd">    -------</span>
